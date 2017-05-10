@@ -1,0 +1,6 @@
+image: elsite_1m_right.png
+resolution: 1
+origin: [0, 0, 0]
+negate: 0
+occupied_thresh: 0.30
+free_thresh: 0.10

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_pallet_detection_sdf</name>
+  <version>0.0.0</version>
+  <description>The orunav_pallet_detection_sdf package, based on the SDF implementation by Daniel Canelhas</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>orunav_msgs</build_depend>
+  <build_depend>orunav_generic</build_depend>
+  <build_depend>orunav_rviz</build_depend>
+  <build_depend>orunav_conversions</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>tf_conversions</build_depend>
+
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>orunav_msgs</run_depend>
+  <run_depend>orunav_generic</run_depend>
+  <run_depend>orunav_rviz</run_depend>
+  <run_depend>orunav_conversions</run_depend>
+  <run_depend>pcl_ros</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>tf_conversions</run_depend>
+
+  <export>
+
+  </export>
+</package>

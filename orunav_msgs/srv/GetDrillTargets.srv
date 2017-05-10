@@ -1,0 +1,3 @@
+#get the current drill targets from the AC mission server
+---
+orunav_msgs/DrillTargetArray drill_targets

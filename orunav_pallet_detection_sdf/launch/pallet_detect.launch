@@ -1,0 +1,39 @@
+<launch>
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot1" />
+
+    <!--include file="$(find openni_launch)/launch/openni.launch">
+      <arg name="tf_prefix" value="robot1" />
+    </include-->
+
+    <include file="$(find openni2_launch)/launch/openni2_tf_prefix.launch">
+      <arg name="tf_prefix" value="robot1" />
+    </include>
+    
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen">
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/citi1_kuka_background.dat"/>
+      <param name="Dmax" value="0.2"/>
+      <param name="visualize" value="true"/>
+      <param name="visualize_sdf" value="true"/>
+      <param name="removeFloor" value="true"/>
+      <param name="sensor_time_offset" value="0.0"/>
+      <remap from="pointcloud" to ="/robot1/camera/depth_registered/points"/>
+      <param name="residual_thresh" value="0.01"/>
+      <param name="cov_thresh" value="0.2"/>
+      <param name="only_compute_filter_used" value="true"/>
+      <param name="depth_frame_id" value="robot1/camera_depth_frame" />
+      <param name="asus_camera" value="true" />
+      <param name="min_nb_matched_points" value="10000" />
+      <param name="min_match_nb_points_ratio" value="0.1" />
+    </node>
+  </group>
+
+<!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.502203 0.024297 0.696929 0.00534436 0.940198 0.00590517 0.340535 /world /robot1/camera_link 10"/-->
+
+<node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.503549 0.0207056 0.717198 -0.00638187 0.939847 0.013395 0.341274 /world /robot1/camera_link 10"/>
+
+<node pkg="tf" type="static_transform_publisher" name="world_robot1" args="0 0 0 0 0 0 /world /robot1/base_link 10"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orunav_pallet_detection_sdf)/launch/pallet_detect.rviz"/>
+
+</launch>

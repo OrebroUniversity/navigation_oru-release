@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_conversions</name>
+  <version>0.0.0</version>
+  <description>The orunav_conversions package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>orunav_msgs</build_depend>
+  <run_depend>orunav_msgs</run_depend>
+
+
+  <export>
+    <cpp cflags="-I${prefix}/include" /> 
+
+  </export>
+</package>

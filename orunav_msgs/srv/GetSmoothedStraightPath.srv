@@ -1,0 +1,8 @@
+#for a start and goal pose + steering return a path - note that this will not do any collision checks etc. what so ever - the intended usage is only for very small manuverse mainly involving "almost" straight movements.
+orunav_msgs/PoseSteering start
+orunav_msgs/PoseSteering goal
+float64 resolution
+float64 wheel_base
+int32 max_nb_opt_points
+---
+orunav_msgs/Path path

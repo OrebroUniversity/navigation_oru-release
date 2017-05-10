@@ -1,0 +1,6 @@
+#set a delay on a mission
+int32 goalID
+std_msgs/String activity
+int64 delay
+---
+bool success

@@ -1,0 +1,161 @@
+/**
+ * \file forklifter_plugin.h
+ * 
+ * \author Wojciech Domski
+ * 
+ * Header file for fork lifter plugin for gazebo.
+ * 
+ * To use this plugin inside URDF file similar note has to be added 
+ * inside this file:
+ * 
+ *          <controller:forklifter_plugin name="fork_lifter_controller" plugin="libforklifter_plugin.so">
+ *               <alwaysOn>true</alwaysOn>
+ *               <update>1000</update>
+ *               <updateRate>1000.0</updateRate>
+ *               <driveJoint>left_fork_joint</driveJoint>
+ *               <interface:position name="position_left_fork_0"/>
+ *               <topicName>cmd_fork</topicName>           <!-- topic name from which plugin recieves data -->
+ *               <pidP>45</pidP>                <!-- PID parameter for proportional  module -->
+ *               <pidI>10</pidI>                <!-- PID parameter for integrational module -->
+ *               <pidD>10</pidD>                <!-- PID parameter for derivative    module -->
+ *               <low>0.05</low>                <!-- low  position of the fork -->
+ *               <high>0.2</high>               <!-- high position of the fork -->
+ *               <MaxEffort>40</MaxEffort>  <!-- max force which can be applied for the forks -->
+ *           </controller:forklifter_plugin>
+ */
+
+#ifndef FORKLIFTER_PLUGIN_HH
+#define FORKLIFTER_PLUGIN_HH
+
+#include <map>
+
+#include <common/common.h>
+#include <physics/physics.h>
+
+// ROS
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+#include <geometry_msgs/Point.h>
+#include <nav_msgs/Odometry.h>
+
+// Custom Callback Queue
+#include <ros/callback_queue.h>
+#include <ros/advertise_options.h>
+
+// Boost
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+
+namespace gazebo
+{
+class Joint;
+class Entity;
+
+/**
+ * \brief Class ForkLifterPlugin
+ * 
+ * Class implementing methods for driving the forks of any vehicle which 
+ * joints are prismatic
+ */
+class ForkLifterPlugin : public ModelPlugin
+{
+  
+  public: 
+    ForkLifterPlugin();
+    ~ForkLifterPlugin();
+  
+  /**
+   * \brief Method which loads the functionality of plugin
+   * 
+   * Inside this method all parameters are read from URDF file 
+   * which has entry for using this plugin.
+   * 
+   * PID controller is initialized along with subscribtion to 
+   * topic through which data for the plugin are transfered.
+   * 
+   * \param[in] _parent   Parent inside SDF compatibile model
+   * \param[in] _sdf      SDF model
+   */
+  void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+  
+  protected: 
+    
+    /**
+     * \brief Method which is called periodicaly for update
+     * 
+     * Method is responsible to periodical computations which allows 
+     * to update the PID controller and controll the joint
+     * which is drived by this plugin
+     */ 
+    virtual void UpdateChild();
+    
+    virtual void FiniChild();
+
+private:
+
+  /**
+   * \brief Gets command from previously acquired data via topic
+   * 
+   * Method which copies data acquired via a method periodicaly called as 
+   * a separate thread.
+   * 
+   * Uses mutex for memory synchronisation. 
+   */ 
+  void GetForkCmd();
+
+  physics::WorldPtr world;
+  physics::ModelPtr parent;
+  event::ConnectionPtr updateConnection;
+
+  std::string driveJointName;
+
+  // ROS STUFF
+  ros::NodeHandle* rosnode_;
+  ros::Subscriber sub_;
+  tf::TransformBroadcaster *transform_broadcaster_;
+  std::string tf_prefix_;
+
+  boost::mutex lock;
+
+  std::string robotNamespace;
+  std::string topicName;
+
+  // Custom Callback Queue
+  ros::CallbackQueue queue_;
+  boost::thread callback_queue_thread_;
+  void QueueThread();
+
+  /**
+   * \brief Method which acquires data from topic
+   * 
+   * Method which acquires data from topic to \link z_ z_ \endlink 
+   * attribute.
+   * 
+   * \param[in] cmd_msg   Message send via subscribed topic
+   */
+  void cmdForkCallback(const geometry_msgs::Point::ConstPtr& cmd_msg);
+
+  double z_;
+  
+  bool alive_;
+  
+  gazebo::physics::JointPtr Fork;
+  common::PID  JointPID;
+  common::Time PreviousTime; //time for PID derivative and integral module
+  double MaxEffort;
+  
+  double RelativeHeight; //this is sp fo PID
+
+  double pid_p;
+  double pid_i;
+  double pid_d;
+  
+  double low;
+  double high;
+};
+
+}
+
+#endif
+

@@ -1,0 +1,42 @@
+<launch>
+
+  <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch"/>
+
+  <!-- pallet 1 -->
+  <group ns="pallet1">
+  <param name="tf_prefix" value="pallet1" />
+    <include file="$(find euro_pallet)/launch/euro_pallet.launch" >
+  	<arg name="pose_x" value="4.0"/> 
+  	<arg name="pose_y" value="13.0"/>
+	<arg name="pose_z" value="0.1"/>
+	<arg name="pose_yaw" default="0.12"/>
+	<arg name="name" value="pallet1" />
+    </include>
+  </group>
+
+  <!-- pallet 2 -->
+  <group ns="pallet2">
+    <param name="tf_prefix" value="pallet2" />
+    <include file="$(find euro_pallet)/launch/euro_pallet.launch">
+        <arg name="pose_x" value="6.0"/>
+  	<arg name="pose_y" value="13.4"/>
+	<arg name="pose_z" value="0.01"/>
+	<arg name="pose_yaw" default="-0.16"/>
+	<arg name="name" value="pallet2" />
+     </include>
+  </group>
+
+  <!-- pallet_half 3 -->
+  <group ns="pallet_half3">
+    <param name="tf_prefix" value="pallet_half3" />
+    <include file="$(find euro_pallet)/launch/euro_half_pallet.launch">
+        <arg name="pose_x" value="2.0"/>
+  	<arg name="pose_y" value="13.8"/>
+	<arg name="pose_z" value="0.01"/>
+	<arg name="pose_yaw" default="-0.16"/>
+	<arg name="name" value="pallet_half3" />
+     </include>
+  </group>
+
+
+</launch>

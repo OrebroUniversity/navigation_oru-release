@@ -1,0 +1,5 @@
+#cmakedefine SW_BUILD_SIMULATION
+#cmakedefine SW_ENABLE_LOGGING
+#cmakedefine SW_ENABLE_NAVSERVER_READER
+
+const unsigned int SW_PREVIEW_WINDOW_LEN = ${SW_PREVIEW_WINDOW_LEN};

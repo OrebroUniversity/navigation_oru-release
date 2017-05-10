@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="pose_x" default="0"/>
+  <arg name="pose_y" default="0"/>
+  <arg name="pose_z" default="0"/>
+  <arg name="pose_roll" default="0"/>
+  <arg name="pose_pitch" default="0"/>
+  <arg name="pose_yaw" default="0"/>
+  <arg name="name" default="euro_pallet"/>
+  
+  <param name="description" command="$(find xacro)/xacro.py '$(find euro_pallet)/urdf/euro_pallet.xacro'" />
+  
+  <node name="spawn_euro_pallet_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param description -model $(arg name) -x $(arg pose_x) -y $(arg pose_y) -z $(arg pose_z) -R $(arg pose_roll) -P $(arg pose_pitch) -Y $(arg pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />
+
+</launch>

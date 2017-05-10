@@ -1,0 +1,12 @@
+<launch>
+
+<!-- The /map should be the same as /world - since there are many node that will use a map of some kind
+     this to avoid having to utilize tf to get the map origin... change the .yaml file instead
+
+ -->
+<node pkg="tf" type="static_transform_publisher" name="origin_broadcaster" 
+    args="0 0 0 0 0 0 /world map 100" />
+
+<node name="map_server" pkg="map_server" type="map_server" args="$(find gazebo_worlds_oru)/maps/elsite_1m_right.yaml"/>
+
+</launch>

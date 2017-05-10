@@ -1,0 +1,4 @@
+#update task, same as ExecTask.srv, request from the vehicle to the coordinator to move -> service in the coordinator module
+orunav_msgs/Task task
+---
+int32 result

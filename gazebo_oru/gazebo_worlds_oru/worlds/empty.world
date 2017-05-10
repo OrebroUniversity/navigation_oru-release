@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="Empty">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <scene>
+      <sky>
+        <clouds>
+          <speed>12</speed>
+        </clouds>
+      </sky>
+    </scene>
+    <include>
+      <uri>model://sun</uri>
+      <pose>0.0 0.0 500 0 0 0</pose>
+    </include>
+  </world>
+</sdf>

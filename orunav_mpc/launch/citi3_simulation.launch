@@ -1,0 +1,7 @@
+<launch>    
+    <rosparam command="load" file="$(find orunav_mpc)/config/citi3_simulation.cfg" />
+
+    <node pkg="orunav_mpc" type="controller_node" name="robot3" output="screen">
+        <param name="robot_id" value="3" />
+    </node>
+</launch>

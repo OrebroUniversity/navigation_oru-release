@@ -1,0 +1,8 @@
+<launch>
+  
+  
+  <node name="orunav_debug" pkg="orunav_debug" type="control_log_parser" args="--log_filename /home/han/.ros/controller.log --sensor_log_filename /home/han/.ros/sensor.log --draw_actual_velocities"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orunav_debug)/launch/control_debug.rviz"/>
+
+</launch>

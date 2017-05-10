@@ -1,0 +1,3 @@
+#get the current list of obstacles for the AC motion planner
+---
+orunav_msgs/VectorMap vector_map

@@ -1,0 +1,32 @@
+<launch>
+
+<!-- STEP 1) set save_background_indices to false -->
+<!-- Get the TF and paste it back into this launch file -->
+<!-- Verify the TF and check that the origin fits - place an object inbetween the forks wheel and make sure that they corresponds to the world frame in the tf tree. -->
+<!-- Create a background indices snapshot - set save_background_indices to true, this file will be stored in the .ros folder and rename / move it - used as background_indices_file_name in the orunav_pallet_detection_sdf node. -->
+
+<!-- THIS IS WHAT WE WOULD LIKE TO FIND -->
+<!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.544789 0.0328316 0.819339 -0.00176918 0.931147 -0.00738716 0.364565 /world /camera_link 10"/-->
+
+<!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.502203 0.024297 0.696929 0.00534436 0.940198 0.00590517 0.340535 /world /robot1/camera_link 10"/-->
+<node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.503549 0.0207056 0.717198 -0.00638187 0.939847 0.013395 0.341274 /world /robot1/camera_link 10"/>
+
+
+ <!--include file="$(find openni_launch)/launch/openni.launch">
+   <arg name="tf_prefix" value="robot1" />
+ </include-->
+
+ <include file="$(find openni2_launch)/launch/openni2_tf_prefix.launch">
+   <arg name="tf_prefix" value="robot1" />
+ </include>
+
+  <node pkg="orunav_pallet_detection_sdf" type="camera_pose_calib_node" name="camera_pose_calib_node" output="screen">
+  <remap from="pointcloud" to ="/camera/depth_registered/points"/> <!-- MUST have registred points to this node -->
+  <param name="use_pallet_to_calib" value="false" />
+  <param name="save_background_indices" value="true" />
+  <param name="visualize_sdf" value="true" />
+    </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" 
+    args="-d $(find orunav_pallet_detection_sdf)/launch/camera_calibration.rviz"/>
+</launch>

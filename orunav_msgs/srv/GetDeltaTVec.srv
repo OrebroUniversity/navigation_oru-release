@@ -1,0 +1,7 @@
+# Computes a set of trajectory profiles deltaT's based on a given path.
+orunav_msgs/RobotTarget target
+orunav_msgs/Path path 
+nav_msgs/OccupancyGrid map
+---
+orunav_msgs/DeltaTVec dts
+bool valid

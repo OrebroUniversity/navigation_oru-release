@@ -1,0 +1,7 @@
+#used as a service to send information regarding inital pose estimates of objects and to alter wether the detection is active
+bool active 
+geometry_msgs/Pose pose
+orunav_msgs/ObjectType object
+float32 cov_thresh
+---
+int32 result

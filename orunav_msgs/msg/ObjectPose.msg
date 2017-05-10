@@ -1,0 +1,2 @@
+geometry_msgs/PoseStamped pose
+orunav_msgs/ObjectType object

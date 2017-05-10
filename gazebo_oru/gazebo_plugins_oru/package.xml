@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>gazebo_plugins_oru</name>
+  <version>0.0.0</version>
+  <description>The gazebo_plugins_oru package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>gazebo</build_depend>
+  <build_depend>gazebo_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>gazebo_plugin</build_depend>
+  <build_depend>orunav_generic</build_depend>
+
+  <run_depend>gazebo</run_depend>
+  <run_depend>gazebo_msgs</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>orunav_generic</run_depend>
+
+  <export>
+    <gazebo plugin_path="${prefix}/lib" />
+
+  </export>
+</package>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_fork_control</name>
+  <version>0.0.0</version>
+  <description>The orunav_fork_control package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rosconsole</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>orunav_msgs</build_depend>
+  <build_depend>orunav_generic</build_depend>
+  <build_depend>orunav_rviz</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rosconsole</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>orunav_msgs</run_depend>
+  <run_depend>orunav_generic</run_depend>
+  <run_depend>orunav_rviz</run_depend>
+
+  <export>
+
+  </export>
+</package>

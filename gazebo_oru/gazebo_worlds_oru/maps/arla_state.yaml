@@ -1,0 +1,6 @@
+image: arla_orig.png
+resolution: 0.05
+origin: [-15.0, -40.0, 0.0]
+negate: 1
+occupied_thresh: 0.35
+free_thresh: 0.196

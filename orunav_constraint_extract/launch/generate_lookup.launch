@@ -1,0 +1,16 @@
+<launch>
+      <!-- service -->
+      <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint1" output="screen">
+      	    <param name="load_type" value="1" />
+	    <param name="model_type" value="2" />
+	    <param name="resolution" value="0.1" />
+	    <param name="visualize" value="true" />
+	    <param name="save_constraints_and_path" value="true" />
+	    <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
+	    <param name="visualize_outer_constraints" value="false" />
+	    <param name="visualize_only_invalid" value="true" />
+	    <param name="skip_overlap" value="true" />
+  	    <param name="save_lookuptables" value="true" />
+      </node>  
+
+</launch>

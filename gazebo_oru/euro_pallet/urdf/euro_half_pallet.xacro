@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<robot name="euro_half_pallet" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <link name="base_link">
+    <inertial>
+      <mass value="2"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+      <origin/>
+    </inertial>
+    
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	<mesh filename="package://euro_pallet/meshes/EUR6_Half_Pallet.dae" scale = "1 1 1"/>
+      </geometry>
+    </visual>   
+    
+    <collision>
+      <!--		<origin rpy="0 0 0" xyz="-0.6 0.4 0"/> -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	<!-- package://euro_pallet/meshes/euro_pallet.dae -->
+	<mesh filename="package://euro_pallet/meshes/EUR6_Half_Pallet.dae" scale = "1 1 1"/>
+      </geometry>
+      <contact_coefficients mu="1" kp="10.0" kd="10.0"/> -->
+    </collision>
+  </link>
+</robot>

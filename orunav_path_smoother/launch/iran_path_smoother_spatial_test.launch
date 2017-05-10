@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!--include file="$(find gazebo_worlds_oru)/launch/empty_map_server.launch"/-->
+  <include file="$(find gazebo_worlds_oru)/launch/aass_lab_map_server.launch"/>
+
+
+  <!--node pkg="orunav_path_smoother" type="path_smoother_spatial_test" name="path_smoother_spatial_test" output="screen">
+    <param name="visualize" value="true" />
+  </node-->
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/click_n_pick.rviz"/>
+
+  
+  <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
+    <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
+    <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
+    <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
+    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
+    <param name="min_incr_path_dist" value="0.02" />
+    <param name="visualize" value="true" />
+  </node>
+
+  <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
+    <param name="load_type" value="1" />
+    <param name="model_type" value="2" />
+    <param name="visualize" value="true" />
+    <param name="save_constraints_and_path" value="true" />
+    <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
+    <param name="visualize_outer_constraints" value="false" />
+    <param name="visualize_only_invalid" value="false" />
+    <param name="skip_overlap" value="true" />
+    <param name="save_lookuptables" value="false" />
+  </node>  
+
+  <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
+    <param name="visualize" value="true" />
+    <param name="visualize_deep" value="false" />
+    <param name="wheel_base" value="1.190" />
+    <param name="minimize_phi_and_dist" value="false" />
+    <param name="init_controls" value="true" />
+    <param name="use_th_constraints" value="true" />
+    <param name="use_xy_constraints" value="true" />
+    <param name="phi_min" value="-1.2" />
+    <param name="phi_max" value="1.2" />
+  </node>  
+
+  <node pkg="orunav_trajectory_processor" type="deltatvec_service" name="deltatvec_service" output="screen">
+    <param name="visualize" value="true" />
+    <param name="fast_max_vel" value="1."/>
+    <param name="fast_max_rotational_vel" value="1."/>
+    <param name="fast_max_acc" value="1."/>
+    <param name="fast_max_steering_angle_vel" value="1."/>
+    <param name="fast_creep_speed" value="0."/>
+    <param name="fast_creep_distance" value="0."/>
+
+    <param name="slow_max_vel" value="0.2"/>
+    <param name="slow_max_rotational_vel" value="0.2"/>
+    <param name="slow_max_acc" value="0.2"/>
+    <param name="slow_max_steering_angle_vel" value="1."/>
+    <param name="slow_creep_speed" value="0."/>
+    <param name="slow_creep_distance" value="0."/>
+  </node>  
+
+
+
+</launch>

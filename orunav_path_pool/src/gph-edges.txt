@@ -1,0 +1,39 @@
+# This file contains an example graph of a set of poses (vertices) and edges between them
+# each pose is given on one line as 
+# id x,y,th: such that th is given in degrees 
+# each edge is specified on one line
+# the format of an edge is as follows:
+# id spose_id epose_id cost 
+# id: is the id of the edge; 
+# spose_id, epose_id: ids of start and end poses of the edge
+# cost: the cost of traversing the edge
+
+
+
+# First we give the poses
+BeginPoses # this is mandatory
+#id  x      y     th
+ 1  10.0   10.0   0.0
+ 2  12.0   10.0   45.0
+ 3  12.0   20.0   90.0 
+ 4  20.0   10.0   45.0 
+ 5  20.0   20.0   00.0
+EndPoses # this is mandatory
+
+# then we specify the edges as described above
+BeginEdges # this is mandatory
+# starting from pose 1
+#id spose_id epose_id    cost
+  1    1        2         10.0
+  2    1        3         30.0
+# starting from pose 2
+3 2 3  10.0
+4 2 4  20.0
+5 2 5  60.0
+
+# starting from pose 3
+6 3 2  20.0 # edge 6
+7 3 5  60.0
+# starting from pose 4
+8 4 5  20.0 
+EndEdges # this is mandatory

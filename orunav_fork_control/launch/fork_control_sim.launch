@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
+	      <param name="visualize" value="true" />
+    </node>
+</launch>

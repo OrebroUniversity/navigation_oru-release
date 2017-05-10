@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>cititruck_teleop</name>
+  <version>0.0.0</version>
+  <description>The cititruck_teleop package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <build_depend>roscpp</build_depend> -->
+  <build_depend>tf</build_depend> -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+
+  </export>
+</package>

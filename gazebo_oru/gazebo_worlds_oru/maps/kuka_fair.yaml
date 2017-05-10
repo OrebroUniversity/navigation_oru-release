@@ -1,0 +1,6 @@
+image: kuka_fair_5x3m.png
+resolution: 0.1
+origin: [-0.5, -1.5, 0.0]
+negate: 0
+occupied_thresh: 0.35
+free_thresh: 0.196

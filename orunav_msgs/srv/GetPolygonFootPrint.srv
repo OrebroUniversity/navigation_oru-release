@@ -1,0 +1,6 @@
+#for a given trajectory return the footprint (this is returned in the constraints.constraints_outer struct (inner constraints).
+orunav_msgs/RobotTarget target
+orunav_msgs/Path path
+---
+orunav_msgs/RobotConstraints constraints
+# more stuff?

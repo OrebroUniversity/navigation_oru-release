@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>gazebo_worlds_oru</name>
+  <version>0.0.0</version>
+  <description>The gazebo_worlds_oru package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+  
+  </export>
+</package>

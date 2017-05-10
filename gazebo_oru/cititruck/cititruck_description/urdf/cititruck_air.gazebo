@@ -1,0 +1,210 @@
+<?xml version="1.0"?>
+<robot>
+
+  <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+<!--      <robotNamespace>/cititruck</robotNamespace> -->
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="steer_drive_controller" filename="libgazebo_ros_steer_drive.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1000</updateRate>
+      <steerJoint>base2steer_joint</steerJoint>
+      <driveJoint>steer2sd_wheel_joint</driveJoint>
+      <fixedWheelLeftJoint>base2fixed_left_wheel_joint</fixedWheelLeftJoint>
+      <fixedWheelRightJoint>base2fixed_right_wheel_joint</fixedWheelRightJoint>
+
+      <wheelDiameter>0.16</wheelDiameter>
+      <steeringFixWheelDistanceX>1.190</steeringFixWheelDistanceX>
+      <steeringFixWheelDistanceY>0.0</steeringFixWheelDistanceY>
+      
+      <steerTorque>1000</steerTorque>
+      <driveTorque>1000</driveTorque>
+
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>/world</odometryFrame>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+
+      <publishWheelJointState>true</publishWheelJointState>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="fork_lifter_controller" filename="libgazebo_ros_fork_lifter.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>100</updateRate>
+
+      <forkJoint>fork_joint</forkJoint>
+      <forkTorque>100000</forkTorque>
+      <pidP>100000</pidP>
+
+      <commandTopic>cmd_fork</commandTopic>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <useVelocityControl>true</useVelocityControl>
+
+      <publishJointState>true</publishJointState>
+    </plugin>
+  </gazebo>
+  
+  <!-- Gazebo cannot handle multiple lasers?!?, here we only use the one at the fork direction -->
+
+  <!-- sick laser forkdir -->
+  <gazebo reference="laser_forkdir_link">
+    <sensor type="gpu_ray" name="laser_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-2.35619</min_angle>
+            <max_angle>2.35619</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
+        <topicName>laser_forkdir_scan</topicName>
+        <frameName>laser_forkdir_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <!-- standard camera -->
+  <!--gazebo reference="kinect_link">
+    <sensor type="camera" name="camera1">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo-->
+
+  <gazebo reference="kinect_link">
+    <sensor name="kinect_rgb_sensor" type="depth">
+      <always_on>true</always_on>
+      <update_rate>1.0</update_rate>
+      <camera>
+	<horizontal_fov>0.994837673637</horizontal_fov>
+	<image>
+	  <format>B8G8R8</format>
+	  <width>640</width>
+	  <height>480</height>
+	</image>
+	<clip>
+	  <near>0.01</near>
+	  <far>5</far>
+	</clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="kinect_rgb_frame_controller">
+	<alwaysOn>true</alwaysOn>
+	<updateRate>1.0</updateRate>
+	<cameraName>kinect_rgb</cameraName>
+	<imageTopicName>rgb/image_raw</imageTopicName>
+	<cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+	<depthImageTopicName>depth/image_raw</depthImageTopicName>
+	<depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+	<pointCloudTopicName>depth_registered/points</pointCloudTopicName>
+	<frameName>kinect_link</frameName>
+	<pointCloudCutoff>0.5</pointCloudCutoff>
+	<distortionK1>0.00000001</distortionK1>
+	<distortionK2>0.00000001</distortionK2>
+	<distortionK3>0.00000001</distortionK3>
+	<distortionT1>0.00000001</distortionT1>
+	<distortionT2>0.00000001</distortionT2>
+      </plugin>
+    </sensor>
+    <material value="Gazebo/Red"/>
+  </gazebo>
+  
+  <gazebo reference="steer_link">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="base_link" >
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="left_fork" >
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="right_fork" >
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="fixed_left_wheel_link" >
+<!--    <mu1 value="10000.0" />
+    <mu2 value="10000.0" />
+    <kp  value="10000000000.0" />
+    <kd  value="1.0" /> -->
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="fixed_right_wheel_link" >
+<!--    <mu1 value="10000.0" />
+    <mu2 value="10000.0" />
+    <kp  value="10000000000.0" />
+    <kd  value="1.0" /> -->
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="sd_wheel_link" >
+<!--    <mu1 value="10000.0" />
+    <mu2 value="10000.0" />
+    <kp  value="10000000000.0" />
+    <kd  value="1.0" /> -->
+    <material>Gazebo/Black</material>
+  </gazebo>
+     
+
+
+</robot>

@@ -1,0 +1,10 @@
+#for a given target and map return the found path
+orunav_msgs/RobotTarget target
+nav_msgs/OccupancyGrid map
+orunav_msgs/VectorMap vector_map
+orunav_msgs/GeoFence geofence
+float32 max_planning_time
+orunav_msgs/PathParameters params
+---
+orunav_msgs/Path path
+bool valid

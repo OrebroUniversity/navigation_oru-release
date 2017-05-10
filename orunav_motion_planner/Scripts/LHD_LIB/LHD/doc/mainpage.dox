@@ -1,0 +1,49 @@
+/**
+ * \mainpage Path/trajectory planner for LHD vehicles. \n
+ * 	
+ * \section Contents Contents
+ * - \ref ContactItem
+ * - \ref PurposeItem
+ * - \ref Organization
+ * - \ref LicenseItem
+ * - \ref ReferencesItem
+ * - \ref InstallItem
+ *
+ * \section ContactItem Contact 
+ * - Please send questions/remarks to dimitar.dimitrov@oru.se or marcello.cirillo@aass.oru.se
+ *
+ *
+ * \section PurposeItem Purpose of the library    
+ * A kinematic model of a Load-Haul-Dump (LHD) vehicle is used to plan a path/trajectory 
+ * between two given states (in the absence of obstacles). Via regions can be specified (see figures). 
+ *
+ * \image html xy.jpg
+ * \image html phi.jpg
+ *
+ * \section Organization Structure of a maneuver
+ *  
+ * \image html organization.jpg
+ *
+ * \section LicenseItem License
+ * \verbinclude "LICENSE"
+ *
+ * \section ReferencesItem References
+ * Work in progress ...
+ *
+ * \section InstallItem Compilation & other
+ * \verbinclude "INSTALL"
+ *
+ * \page ExampleItem Example
+ * \dontinclude "examples/demo.cpp"
+ *
+ * \section Part1 Include headers:
+ * \until end headers
+ *
+ * \section Part2 Problem definition:
+  * \until end problem definition
+ *
+ * \section Part3 Problem solution:
+ * \until end problem solution
+ *	
+ * \n
+ */

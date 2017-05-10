@@ -1,0 +1,7 @@
+<launch>
+	<include file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch"/>
+	
+	<node pkg="orunav_constraint_extract" type="grid_map_collision_test" name="grid_map_collision_test" args="--model_type 2 --load_type 2 --debug_nb 3" output="screen"/>
+
+	  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find orunav_constraint_extract)/launch/grid_map_collision_test.rviz"/>
+</launch>

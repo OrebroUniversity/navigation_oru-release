@@ -1,0 +1,20 @@
+<launch>
+
+<!-- THIS IS WHAT WE WOULD LIKE TO FIND -->
+<!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.544789 0.0328316 0.819339 -0.00176918 0.931147 -0.00738716 0.364565 /world /camera_link 10"/-->
+
+<!--node pkg="tf" type="static_transform_publisher" name="robot1_kinect_1" args="0.865331 -0.0419522 0.863999 0.0569153 0.950112 -0.0227423 0.305827 /world /robot1/camera_link 10"/-->
+
+<node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.500336 0.0355162 0.703872 0.00404298 0.938445 0.00366971 0.345386 /world /robot1/camera_link 10"/>
+
+ <!--include file="$(find openni_launch)/launch/openni.launch">
+   <arg name="tf_prefix" value="robot1" />
+ </include-->
+
+ <include file="$(find openni2_launch)/launch/openni2_tf_prefix.launch">
+   <arg name="tf_prefix" value="robot1" />
+ </include>
+
+  <node pkg="rviz" type="rviz" name="rviz" 
+    args="-d $(find orunav_pallet_detection_sdf)/launch/camera_calibration.rviz"/>
+</launch>

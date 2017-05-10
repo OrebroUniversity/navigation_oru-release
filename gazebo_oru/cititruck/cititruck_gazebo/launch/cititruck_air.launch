@@ -1,0 +1,16 @@
+<launch>
+  <arg name="robot_pose_x" default="0"/>
+  <arg name="robot_pose_y" default="0"/>
+  <arg name="robot_pose_z" default="0"/>
+  <arg name="robot_pose_roll" default="0"/>
+  <arg name="robot_pose_pitch" default="0"/>
+  <arg name="robot_pose_yaw" default="0"/>
+  <arg name="robot_name" default="cititruck"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck_air.xacro'" />
+
+  <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />
+
+ <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+</launch>

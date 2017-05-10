@@ -1,0 +1,10 @@
+# Computes a smoothed path with a given map and a given original path
+orunav_msgs/RobotTarget target
+orunav_msgs/Path path 
+nav_msgs/OccupancyGrid map
+orunav_msgs/RobotConstraints constraints
+int32 segmentaion_id
+---
+orunav_msgs/Path path 
+orunav_msgs/RobotConstraints constraints
+int32 segmentaion_id

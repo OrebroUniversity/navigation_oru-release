@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_mpc</name>
+  <version>0.0.0</version>
+  <description>The orunav_mpc package, originally implemented by Alexander Sherikov</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>orunav_msgs</build_depend>
+  <build_depend>orunav_generic</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>tf</build_depend>
+
+  <run_depend>orunav_msgs</run_depend>
+  <run_depend>orunav_generic</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+
+  <export>
+
+  </export>
+</package>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>cititruck_description</name>
+  <version>0.0.0</version>
+  <description>The cititruck_description package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+
+  </export>
+</package>

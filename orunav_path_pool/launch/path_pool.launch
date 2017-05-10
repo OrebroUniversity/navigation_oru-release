@@ -1,0 +1,10 @@
+<launch>	
+  <node pkg="orunav_path_pool" type="path_pool_get_path_service" name="path_pool_get_path_service" output="screen">
+      <param name="min_incr_path_dist" value="0.02" />
+      <param name="visualize" value="true" />
+      <param name="vehicle_length" value="0.68" /> <!-- This is not encoded in the wef -->
+      <param name="path_resolution" value="0.01" /> <!-- Discretize the splines (needed for the wef files) -->
+      <param name="wef_file_name" value="$(find orunav_path_pool)/wefs/OU_base.wef" />
+      <!--param name="path_dir" value="...."/--> <!-- To load a set of path use this parameter. -->
+  </node>
+</launch>

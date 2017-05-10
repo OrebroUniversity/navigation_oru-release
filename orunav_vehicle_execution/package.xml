@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_vehicle_execution</name>
+  <version>0.0.0</version>
+  <description>The orunav_vehicle_execution package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <maintainer email="federico.pecora@oru.se">Federico Pecora</maintainer>
+  <license>TODO</license>
+
+  <build_depend>cmake_modules</build_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rosconsole</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>orunav_msgs</build_depend>
+  <build_depend>orunav_generic</build_depend>
+  <build_depend>orunav_rviz</build_depend>
+  <build_depend>orunav_conversions</build_depend>
+  <build_depend>orunav_node_utils</build_depend>
+  <build_depend>orunav_trajectory_procesor</build_depend>
+  <build_depend>orunav_constraint_extract</build_depend>
+  <build_depend>laser_geometry</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rosconsole</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>orunav_msgs</run_depend>
+  <run_depend>orunav_generic</run_depend>
+  <run_depend>orunav_rviz</run_depend>
+  <run_depend>orunav_conversions</run_depend>
+  <run_depend>orunav_node_utils</run_depend>
+  <run_depend>orunav_trajectory_procesor</run_depend>
+  <run_depend>orunav_constraint_extract</run_depend>
+  <run_depend>laser_geometry</run_depend>
+
+  <export>
+
+  </export>
+</package>

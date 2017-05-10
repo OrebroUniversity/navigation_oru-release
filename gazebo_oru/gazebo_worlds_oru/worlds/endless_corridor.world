@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+
+    <physics type = "ode">
+      <ode>
+	<constraints>
+	  <cfm>0.0</cfm>
+	  <erp>0.2</erp>
+	</constraints>
+      </ode>
+    </physics>
+
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://endless_corridor</uri>
+    </include>
+  </world>
+</sdf>

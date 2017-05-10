@@ -1,0 +1,19 @@
+<launch>
+
+  <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck.xacro'" />
+
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot1" />
+    <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
+      <arg name="robot_pose_x" value="5.029"/> 
+      <arg name="robot_pose_y" value="13.538"/>
+      <arg name="robot_pose_yaw" default="0"/>
+      <arg name="robot_name" value="robot1" />
+    </include>
+  </group>
+  <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
+  <node pkg="tf" type="static_transform_publisher" name="kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" />
+
+</launch>

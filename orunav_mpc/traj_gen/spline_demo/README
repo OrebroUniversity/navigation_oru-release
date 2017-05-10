@@ -1,0 +1,41 @@
+For background refer to
+    (1) Feedback control of a nonholonomic car-like robot
+    A. De Luca   G. Oriolo   C. Samson
+    (Chapter of Robot Motion Planning and Control)
+
+Trajectory generator connects N points using cubic splines. All state information
+except the initial and final car orientations is ignored. Initial and final
+orientations are enforced using kGains parameter. 
+
+* The first and second derivatives are continuous along the whole trajectory. The 
+third derivative is not continuous in the points of connection of polynomials. 
+Consequently, the steering velocity is not reliable, and trajectory cannot be 
+reproduced by applying control inputs.
+
+* Satisfaction of constraints (on velocities, angles, positions) is not guaranteed.
+
+* The whole trajectory must be processed at the same time.
+
+* Only positive tangential velocities are generated.
+
+
+demo1:
+    * Geometric path description is separated from the timing information as
+    described in (1).
+
+    * Velocity profile (d\sigma / dt) is also generated using a cubic polynomial.
+    Initial and final velocities are 0.
+
+    * kGains define initial and final velocities with respect to the arc length 
+    (dx/d\sigma).
+
+    * The time constraints are imposed by assigning time stamps to fractions of
+    \sigma.
+
+demo2
+    * The timing information is not separated.
+
+    * The time constraints are imposed by assigning timestamps to particular states.
+    
+    * kGains are the actual initial and final velocities. Consequently these
+    velocities are not equal to zero.

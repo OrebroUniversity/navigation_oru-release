@@ -1,0 +1,4 @@
+#set a new task (sent from the vehicles in order to request a permit to perform additional maneuvers - for example pick up a pallet)
+orunav_msgs/Task task
+---
+int32 result

@@ -1,0 +1,10 @@
+<launch>
+  <node pkg="orunav_constraint_extract" type="polygonfootprint_service" name="polygonfootprint_service">
+    <param name="visualize" value="true"/>
+    <param name="distance" value="20."/>
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orunav_constraint_extract)/launch/polygonfootprint_test.rviz"/>
+  
+
+</launch>

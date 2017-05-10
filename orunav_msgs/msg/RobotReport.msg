@@ -1,0 +1,29 @@
+# ID of the robot
+int32 robot_id
+#####################
+
+time stamp
+
+# The vehicle is waiting for a task - the controller is in wait state
+int32 WAITING_FOR_TASK = 1
+# Performing load operations - controller is in wait state
+int32 PERFORMING_START_OPERATION = 2
+# Driving - the controller can be in all states but not in wait
+int32 DRIVING = 3
+# The end of trajectory is reached, performing goal operations - the controller is in wait state.
+int32 PERFORMING_GOAL_OPERATION = 4
+# Task failed - the requested task is not valid / possible to perform.
+int32 TASK_FAILED = 5
+
+# Status of the robot.
+int32 status
+
+#####################
+
+# The current state
+PoseSteering state
+
+#####################
+
+# The current path / constraint / coordination time sequence number, only valid if the vehicle is either driving or performing start / goal operations
+uint32 sequence_num

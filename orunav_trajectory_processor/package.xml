@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package>
+  <name>orunav_trajectory_processor</name>
+  <version>0.0.0</version>
+  <description>The orunav_trajectory_processor package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <build_depend>cmake_modules</build_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>orunav_msgs</build_depend>
+  <build_depend>orunav_generic</build_depend>
+  <build_depend>orunav_rviz</build_depend>
+  <build_depend>orunav_conversions</build_depend>
+  <build_depend>orunav_geometry</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>orunav_msgs</run_depend>
+  <run_depend>orunav_generic</run_depend>
+  <run_depend>orunav_rviz</run_depend>
+  <run_depend>orunav_conversions</run_depend>
+  <run_depend>orunav_geometry</run_depend>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+</package>

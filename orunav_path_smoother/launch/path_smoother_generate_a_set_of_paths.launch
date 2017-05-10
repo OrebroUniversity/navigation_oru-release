@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<launch>
+ 
+  <!--include file="$(find gazebo_worlds_oru)/launch/elsite_map_server_1m_right.launch"/-->
+  <!--include file="$(find gazebo_worlds_oru)/launch/elsite_map_server_1m_left.launch"/-->
+  <include file="$(find gazebo_worlds_oru)/launch/elsite_map_server_1m_down.launch"/>
+
+  <node pkg="orunav_path_smoother" type="path_smoother_spatial_test" name="path_smoother_spatial_test" output="screen">
+    <param name="visualize" value="false" />
+    <!--param name="start_goal_file" value="$(find orunav_path_smoother)/paths/elsite_paths_right.path" /-->
+    <param name="start_goal_file" value="$(find orunav_path_smoother)/paths/elsite_paths_down.path" />
+    <param name="move_constraints" value="false" />
+    <param name="start_idx" value="0" />
+  </node>
+
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/xa15_coord_2.rviz"/> -->
+
+      <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
+      <param name="model" value="xa15.reduced"/>
+      <param name="save_paths" value="true"/>
+      <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
+      <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
+      <param name="min_incr_path_dist" value="0.8" />
+      <param name="visualize" value="false" />
+    </node>
+    
+    <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
+      <param name="load_type" value="1" />
+      <param name="model_type" value="5" />
+      <param name="visualize" value="false" />
+      <param name="save_constraints_and_path" value="true" />
+      <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model5load1.dat" />
+      <param name="visualize_outer_constraints" value="false" />
+      <param name="visualize_only_invalid" value="false" />
+      <param name="skip_overlap" value="true" />
+      <param name="save_lookuptables" value="false" />
+    </node>  
+
+    <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
+      <param name="visualize" value="false" />
+      <param name="visualize_deep" value="false" />
+      <param name="wheel_base" value="3.2" />
+      <param name="minimize_phi_and_dist" value="true" />
+      <param name="init_controls" value="true" />
+      <param name="use_th_constraints" value="true" />
+      <param name="use_xy_constraints" value="true" />
+      <param name="phi_min" value="-0.7" /> <!-- -0.9 -->
+      <param name="phi_max" value="0.7" />  <!-- 0.9 -->
+      <param name="reassign_constraints" value="true" />
+      <param name="reassign_iters" value="2" />
+      <param name="reassign_min_distance" value="-1" />
+    </node>  
+
+    <node pkg="orunav_trajectory_processor" type="deltatvec_service" name="deltatvec_service" output="screen">
+      <param name="visualize" value="false" />
+      <param name="fast_max_vel" value="2.0"/>
+      <param name="fast_max_rotational_vel" value="0.3"/>
+      <param name="fast_max_acc" value="0.1"/>
+      <param name="fast_max_steering_angle_vel" value="0.6"/>
+      <param name="fast_creep_speed" value="0."/>
+      <param name="fast_creep_distance" value="0."/>
+      
+      <param name="slow_max_vel" value="0.05"/>
+      <param name="slow_max_rotational_vel" value="0.3"/>
+      <param name="slow_max_acc" value="0.1"/>
+      <param name="slow_max_steering_angle_vel" value="0.6"/>
+      <param name="slow_creep_speed" value="0."/>
+      <param name="slow_creep_distance" value="0."/>
+
+    </node>  
+
+
+</launch>

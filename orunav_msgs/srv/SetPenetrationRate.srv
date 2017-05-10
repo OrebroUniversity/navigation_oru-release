@@ -1,0 +1,5 @@
+#set a new penetration rate on a set of missions
+int32[] goalIDs
+float64 penetrationRate
+---
+bool success

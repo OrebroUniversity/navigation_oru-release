@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <name>euro_pallet</name>
+  <version>0.0.0</version>
+  <description>The euro_pallet package</description>
+
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>resource_retriever</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>resource_retriever</run_depend>
+
+  <export>
+
+  </export>
+</package>

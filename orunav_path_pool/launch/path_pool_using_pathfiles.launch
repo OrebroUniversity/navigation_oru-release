@@ -1,0 +1,10 @@
+<launch>	
+  <node pkg="orunav_path_pool" type="path_pool_get_path_service" name="path_pool_get_path_service" output="screen">
+      <param name="min_incr_path_dist" value="0.02" />
+      <param name="visualize" value="true" />
+      <param name="vehicle_length" value="0.68" /> <!-- This is not encoded in the wef -->
+      <param name="path_dir" value="$(find orunav_path_pool)/wefs/elsite"/> <!-- To load a set of path use this parameter. -->
+      <param name="max_angular_offset" value="0.5" />
+
+  </node>
+</launch>

@@ -1,0 +1,598 @@
+\documentclass[12pt,a4paper]{article}
+
+\newcommand{\mbm}[1]{\mbox{\boldmath $#1$}}
+
+\usepackage{graphicx,color,psfrag}
+
+\usepackage{tabularx,colortbl}
+\setlength{\extrarowheight}{3pt} % increase spacing for tables
+
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{epsfig}
+
+%\usepackage[sans]{dsfont} % double stroke fonts
+%\usepackage{bbm} % bbm fonts
+
+\usepackage{amsmath,bm}    % need for subequations
+
+\newenvironment{rcase}
+{\left. \begin{aligned}}
+{\end{aligned}\right\rbrace}
+
+%\usepackage{graphicx}   % need for figures
+\usepackage{verbatim}   % useful for program listings
+\usepackage{color}      % use if color is used in text
+\usepackage{subfigure}  % use for side-by-side figures
+\usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
+
+\usepackage{scalefnt}
+
+\usepackage{theorem}
+
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\normv}[1]{\lvert#1\rvert}
+
+%COLORS
+\definecolor{gray}{rgb}{0.8,0.8,0.8}\newcommand{\gray}{\color{gray}}
+\definecolor{darkgray}{rgb}{0.6,0.6,0.6}\newcommand{\darkgray}{\color{darkgray}}
+\definecolor{white}{rgb}{1.0,1.0,1.0}\newcommand{\white}{\color{white}}
+
+% gray box
+\newcommand{\gbox}[1]{
+  \begin{center}
+    \fcolorbox{black}{gray}{
+      \begin{minipage}[b]{0.98\textwidth}
+        \begin{center}
+          %\vspace{2mm}
+          \begin{minipage}{0.97\textwidth}
+            #1 
+          \end{minipage}
+          \vspace{2mm}
+        \end{center}
+      \end{minipage}
+    }
+  \end{center}
+}
+
+\newcommand{\wbox}[1]{
+  \begin{center}
+    \fcolorbox{black}{white}{
+      \begin{minipage}[b]{0.98\textwidth}
+        \begin{center}
+          %\vspace{2mm}
+          \begin{minipage}{0.97\textwidth}
+            #1 
+          \end{minipage}
+          \vspace{2mm}
+        \end{center}
+      \end{minipage}
+    }
+  \end{center}
+}
+
+\begin{document}
+
+\section{Linearization}
+
+Given a nonlinear differential equation 
+%
+\[
+\dot{\mbm{q}}(t) = \mbm{f}(\mbm{q}(t),\mbm{v}(t)),
+\]
+%
+where $\mbm{f} : \mathbb{R}^{n_q} \to \mathbb{R}^{n_q}$, we say that $\mbm{q}^r(t) : \mathbb{R}_{+}
+\to \mathbb{R}^{n_q}$ is an admissible trajectory if there exists $\mbm{v}^r(t) : \mathbb{R}_{+} \to
+\mathbb{R}^{n_u}$ such that
+%
+\[
+\dot{\mbm{q}}^r(t) = \mbm{f}(\mbm{q}^r(t),\mbm{v}^r(t)).
+\]
+%
+If $\mbm{q}^r(t)$ is ``close to'' $\mbm{q}(t)$, then (the dependence on $t$ is omitted for compactness)
+%
+\begin{align}
+\mbm{f}(\mbm{q},\mbm{v}) \approx \mbm{f}(\mbm{q}^r,\mbm{v}^r) + 
+\nabla_{q}\mbm{f}(\mbm{q}^r,\mbm{v}^r)(\mbm{q}-\mbm{q}^r) + \nabla_v\mbm{f}(\mbm{q}^r,\mbm{v}^r)(\mbm{v}-\mbm{v}^r), \nonumber
+\end{align}
+%
+where $\nabla_{q}\mbm{f}(\mbm{q}^r,\mbm{v}^r)$ stands for $\nabla_{q}\mbm{f}(\mbm{q},\mbm{v})$
+evaluated at $\mbm{q} = \mbm{q}^r$ and $\mbm{v} = \mbm{v}^r$ (likewise for $\nabla_v\mbm{f}$).
+Hence,
+%
+\begin{align}
+\dot{\mbm{q}} - \dot{\mbm{q}}^r = \mbm{f}(\mbm{q},\mbm{v}) - \mbm{f}(\mbm{q}^r,\mbm{v}^r)
+\approx \nabla_{q}\mbm{f}(\mbm{q}^r,\mbm{v}^r)(\mbm{q}-\mbm{q}^r) + \nabla_v\mbm{f}(\mbm{q}^r,\mbm{v}^r)(\mbm{v}-\mbm{v}^r). \nonumber
+\end{align}
+%
+In the case of a car-like robot $\mbm{q}^r(t) = (x^r(t),y^r(t),\theta^r(t),\phi^r(t))$ and 
+$\mbm{v}^r(t) = (v^r(t),\omega^r(t))$, hence
+%
+\[
+\nabla_{q}\mbm{f}(\mbm{q}^r,\mbm{v}^r) = 
+\left[
+\begin{array}{cccc}
+0 & 0 &-\sin(\theta^r)v^r &                 0  \\
+0 & 0 & \cos(\theta^r)v^r &                 0  \\
+0 & 0 &            0  & \frac{v^r}{l\cos(\phi^r)^2} \\
+0 & 0 &            0  &                 0    
+\end{array}
+\right], \quad
+%
+\nabla_v\mbm{f}(\mbm{q}^r,\mbm{v}^r) = 
+\left[
+\begin{array}{cc}
+\cos(\theta^r)  &  0 \\
+\sin(\theta^r)  &  0 \\
+\frac{\tan(\phi^r)}{l} & 0 \\
+0 & 1
+\end{array}
+\right]
+\]
+
+Discretizing using forward differences leads to 
+%
+\begin{align}
+\frac{\mbm{q}_{k+1} - \mbm{q}_k}{\Delta T} - \frac{\mbm{q}_{k+1}^{r} - \mbm{q}_k^{r}}{\Delta T} \approx 
+\nabla_{q}\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k)(\mbm{q}_k-\mbm{q}^r_k) + 
+\nabla_v\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k)(\mbm{v}_k-\mbm{v}^r_k). \nonumber 
+\end{align}
+%
+\begin{align}
+\mbm{q}_{k+1} - \mbm{q}_{k+1}^{r} + \mbm{q}_k^{r}  - \mbm{q}_k \approx 
+\Delta T\nabla_{q}\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k)(\mbm{q}_k-\mbm{q}^r_k) + 
+\Delta T\nabla_v\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k)
+(\mbm{v}_k-\mbm{v}^r_k). \nonumber
+\end{align}
+%
+\begin{align}
+\underbrace{\mbm{q}_{k+1} - \mbm{q}_{k+1}^{r}}_{\mbm{x}_{k+1}} \approx 
+\underbrace{\left(\Delta T\nabla_{q}\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k) + \mbm{I} \right)}_{\mbm{A}_k}\underbrace{(\mbm{q}_k-\mbm{q}^r_k)}_{\mbm{x}_k} + 
+\underbrace{\Delta T\nabla_v\mbm{f}(\mbm{q}^r_k,\mbm{v}^r_k)}_{\mbm{B}_k}
+\underbrace{(\mbm{v}_k-\mbm{v}^r_k)}_{\mbm{u}_k}. \nonumber
+\end{align}
+%
+We drop the approximate sign to obtain the following linear time-varying dynamical system
+%
+\begin{align}
+\mbm{x}_{k+1} = \mbm{A}_{k}\mbm{x}_k + \mbm{B}_k\mbm{u}_k, \quad k=0,\dots,D-1. \nonumber
+\end{align}
+%
+\gbox{
+\begin{align} 
+  \mathop{\mbox{minimize}} \:\: & \sum_{k=1}^{D}\mbm{x}_k^T\mbm{Q}_k\mbm{x}_k + \sum_{k=0}^{D-1}\mbm{u}_k^T\mbm{R}_k\mbm{u}_k \nonumber \\
+  \mbox{subject to} \ \ &  \mbm{x}_{k+1} = \mbm{A}_k\mbm{x}_k + \mbm{B}_k\mbm{u}_k, \quad k = 0, \dots, D-1 \nonumber \\
+  & \mbm{x}_0 \, \, \mbox{is known}, \nonumber \\
+  & \mbm{G}_k\mbm{x}_k \leq \mbm{g}_k - \mbm{G}_k\mbm{\mbm{q}_k^{r}}, \quad k = 1, \dots, D \nonumber \\
+  & \mbm{H}_k\mbm{u}_k \leq \mbm{h}_k - \mbm{H}_k\mbm{\mbm{v}_k^{r}}, \quad k = 0, \dots, D-1 \nonumber
+\end{align} 
+% 
+Where $\mbm{x}_k$ for $k=1,\dots,D$ and $\mbm{u}_k$ for $k=0,\dots,D-1$ are the decision
+variables. $\mbm{Q}_k$ for $k=1,\dots,D$ penalizes state deviation and $\mbm{R}_k$ for
+$k=0,\dots,D-1$ penalizes control input deviation.
+
+}
+
+\clearpage
+
+\section{Dense formulation}
+
+By using $\mbm{X} = (\mbm{x}_1,\dots,\mbm{x}_N)$, $\mbm{U} = (\mbm{u}_0,\dots,\mbm{u}_{N-1})$,
+$\mbm{Q} = \mbox{diag}(\mbm{Q}_1,\dots,\mbm{Q}_N)$ and $\mbm{R} =
+\mbox{diag}(\mbm{R}_{0},\dots,\mbm{R}_{N-1})$, the objective function can be expressed as
+%
+\begin{align}
+J(\mbm{X},\mbm{U}) = \mbm{X}^T\mbm{Q}\mbm{X} + \mbm{U}^T\mbm{R}\mbm{U}. \label{eq:obj_1}
+\end{align}
+%
+The system dynamics can be written as
+%
+\begin{align}
+\mbm{X} = \mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U}, \label{eq:recursive_dyn}
+\end{align}
+%
+where $\mbm{T}$ is a Toeplitz matrix and 
+$\mbm{S} = (\mbm{A}_0, \: \mbm{A}_1\mbm{A}_0, \: \mbm{A}_2\mbm{A}_1\mbm{A}_0, \: \dots, \: \mbm{A}_{N-1}\dots\mbm{A}_0)$.
+%
+\wbox{
+For example, for $D=3$ we have
+%
+\begin{align}
+\mbm{x}_{1} &= {\color{blue}\mbm{A}_{0}\mbm{x}_0 + \mbm{B}_0\mbm{u}_0} \nonumber \\
+\mbm{x}_{2} &= \mbm{A}_{1}\mbm{x}_1 + \mbm{B}_1\mbm{u}_1 \nonumber \\
+&= \mbm{A}_{1}(\mbm{A}_{0}\mbm{x}_0 + \mbm{B}_0\mbm{u}_0) + \mbm{B}_1\mbm{u}_1 \nonumber \\
+&= {\color{blue}\mbm{A}_{1}\mbm{A}_{0}\mbm{x}_0 + \mbm{A}_{1}\mbm{B}_0\mbm{u}_0 + \mbm{B}_1\mbm{u}_1} \nonumber \\
+\mbm{x}_{3} &= \mbm{A}_{2}\mbm{x}_2 + \mbm{B}_2\mbm{u}_2 \nonumber \\
+&= \mbm{A}_{2}(\mbm{A}_{1}\mbm{A}_{0}\mbm{x}_0 + \mbm{A}_{1}\mbm{B}_0\mbm{u}_0 + \mbm{B}_1\mbm{u}_1) + \mbm{B}_2\mbm{u}_2 \nonumber \\
+& = {\color{blue}\mbm{A}_{2}\mbm{A}_{1}\mbm{A}_{0}\mbm{x}_0 + \mbm{A}_{2}\mbm{A}_{1}\mbm{B}_0\mbm{u}_0 + \mbm{A}_{2}\mbm{B}_1\mbm{u}_1 + \mbm{B}_2\mbm{u}_2} \nonumber \\
+\mbm{x}_{4} &= \mbm{A}_{3}\mbm{x}_3 + \mbm{B}_3\mbm{u}_3 \nonumber \\
+&= \mbm{A}_{3}(\mbm{A}_{2}\mbm{A}_{1}\mbm{A}_{0}\mbm{x}_0 + \mbm{A}_{2}\mbm{A}_{1}\mbm{B}_0\mbm{u}_0 + \mbm{A}_{2}\mbm{B}_1\mbm{u}_1 + \mbm{B}_2\mbm{u}_2) + \mbm{B}_3\mbm{u}_3 \nonumber \\
+&= {\color{blue}\mbm{A}_{3}\mbm{A}_{2}\mbm{A}_{1}\mbm{A}_{0}\mbm{x}_0 + \mbm{A}_{3}\mbm{A}_{2}\mbm{A}_{1}\mbm{B}_0\mbm{u}_0 + \mbm{A}_{3}\mbm{A}_{2}\mbm{B}_1\mbm{u}_1 + \mbm{A}_{3}\mbm{B}_2\mbm{u}_2 + \mbm{B}_3\mbm{u}_3}. \nonumber
+\end{align}
+%
+Hence,
+%
+\begin{align}
+\underbrace{\left[\begin{array}{c} \mbm{x}_1 \\ \mbm{x}_2 \\ \mbm{x}_3 \\ \mbm{x}_4\end{array}\right]}_{\mbm{X}} = 
+\underbrace{\left[\begin{array}{c} 
+    \mbm{A}_0 \\ 
+    \mbm{A}_1\mbm{A}_0 \\ 
+    \mbm{A}_2\mbm{A}_1\mbm{A}_0 \\ 
+    \mbm{A}_3\mbm{A}_2\mbm{A}_1\mbm{A}_0 
+  \end{array}\right]}_{\mbm{S}}\mbm{x}_0 + 
+%
+\underbrace{\left[\begin{array}{cccc} 
+    \mbm{B}_0 & \mbm{0} & \mbm{0} & \mbm{0} \\ 
+    \mbm{A}_1\mbm{B}_0 & \mbm{B}_1 & \mbm{0} & \mbm{0} \\ 
+    \mbm{A}_2\mbm{A}_1\mbm{B}_0 & \mbm{A}_2\mbm{B}_1 & \mbm{B}_2 & \mbm{0} \\ 
+    \mbm{A}_3\mbm{A}_2\mbm{A}_1\mbm{B}_0 & \mbm{A}_3\mbm{A}_2\mbm{B}_1 & \mbm{A}_3\mbm{B}_2 & \mbm{B}_3 
+\end{array}\right]}_{\mbm{T}}
+\underbrace{\left[\begin{array}{c} \mbm{u}_0 \\ \mbm{u}_1 \\ \mbm{u}_2 \\ \mbm{u}_3 \end{array}\right]}_{\mbm{U}} \nonumber
+\end{align}
+}
+%
+Using \eqref{eq:recursive_dyn} we eliminate $\mbm{X}$ from \eqref{eq:obj_1} to obtain
+%
+\begin{align}
+  J(\mbm{U}) = (\mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U})^T\mbm{Q}(\mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U}) + \mbm{U}^T\mbm{R}\mbm{U} = \nonumber
+  \mbm{U}^T\underbrace{(\mbm{T}^T\mbm{Q}\mbm{T}+\mbm{R})}_{\mbm{P}}\mbm{U} + \mbm{U}^T\underbrace{(2\mbm{T}^T\mbm{Q}\mbm{S}\mbm{x}_0)}_{\mbm{p}}.
+\end{align}
+%
+The constraints $\mbm{G}\mbm{X} \leq \mbm{g}$ become $\mbm{G}\mbm{T}\mbm{U} \leq \mbm{g} -
+\mbm{G}\mbm{S}\mbm{x}_0$. Hence, we obtain the following QP:
+%
+\gbox{
+\begin{align} 
+  \mathop{\mbox{minimize}}_{\mbm{U}\in\mathbb{R}^{2D}} \:\: &  J(\mbm{U}) = \mbm{U}^T\mbm{P}\mbm{U} + \mbm{U}^T\mbm{p} \nonumber \\
+  \mbox{subject to} \ \ & 
+  \left[\begin{array}{c}\mbm{G}\mbm{T} \\ \mbm{H} \end{array}\right]\mbm{U} \leq 
+  \left[\begin{array}{c}\mbm{g} - \mbm{G}\mbm{S}\mbm{x}_0 \\  \mbm{h}\end{array}\right]. \nonumber
+\end{align} 
+}
+
+\clearpage
+
+
+\section{Constraints}
+
+\subsection{Bounds on the velocities}
+The velocities have upper and lower bounds $\mbm{v}_{min} \le \mbm{v} \le \mbm{v}_{max}$.
+After linearization we obtain 
+\begin{equation}
+\mbm{v}_{min} - \mbm{v}_k^r \le \mbm{v}_k - \mbm{v}_k^r \le \mbm{v}_{max} - \mbm{v}_k^r
+\quad
+\mbox{or} 
+\quad
+\mbm{v}_{min} - \mbm{v}_k^r \le \mbm{u}_k \le \mbm{v}_{max} - \mbm{v}_k^r,
+\end{equation}
+where $k = 0..D-1$.
+
+
+\subsection{Bounds on the steering angle}
+The model has a singularity point at $\phi = \pi/2$. To avoid it explicit bounds on $\phi$
+are imposed. Another reason for addition of these constraints are mechanical limits of the
+steering wheel, but on the test car the limits are greater than $\pi/2$. Consider the
+bounds $\phi_{min} \le \phi \le \phi_{max}$ after linearization:
+\begin{equation}
+\mbm{1}\phi_{min} - \begin{bmatrix} \phi^r_1\\ \vdots \\ \phi^r_{D} \end{bmatrix}
+\le
+\mbm{G} \mbm{X} 
+\le 
+\mbm{1}\phi_{max} - \begin{bmatrix} \phi^r_1\\ \vdots \\ \phi^r_{D} \end{bmatrix},
+\quad
+\mbox{where}
+\quad
+\mbm{G} = 
+\begin{bmatrix}
+    0       & 0 & 0 & 1 &  \dots    & \mbm{0}  & \mbm{0}  & \mbm{0}  & \mbm{0} \\
+    \vdots  &   &   &   &           &   &   &   & \vdots \\
+    \mbm{0} & \mbm{0}  & \mbm{0}  & \mbm{0}  &  \dots    & 0 & 0 & 0 & 1\\
+\end{bmatrix}.
+\end{equation}
+
+Note that due to the structure of $\mbm{T}$, $\mbm{G}\mbm{T}$ is constant and depends only on
+the sampling interval $\Delta T$:
+\begin{equation}
+\mbm{G}\mbm{T} = 
+\begin{bmatrix}
+    0       & \Delta T & 0      & 0         & \dots & 0         & 0 \\
+    0       & \Delta T & 0      & \Delta T  &       & \vdots    & \vdots \\
+    \vdots  & \vdots   & \vdots & \vdots    &       & 0         & 0 \\
+    0       & \Delta T & 0      & \Delta T  & \dots & 0         & \Delta T\\
+\end{bmatrix}.
+\end{equation}
+
+
+\subsection{Bounds on the orientation angle}
+Might be useful to avoid big deviations from the reference trajectories. Derivation is 
+straightforward and similar to the bounds on $\phi$, but $\mbm{G}\mbm{T}$ is varying.
+
+
+\subsection{Spatial constraints on position}
+Straightforward, no special handling.
+
+
+\subsection{Constraints on acceleration}
+Acceleration of a car, which follows a curved trajectory has two components: tangential
+and centripetal. Constraints can be imposed on the components of acceleration 
+separately. 
+
+We can estimate the tangential acceleration using the differences between tangential 
+velocities: $a_k^t = (v_k - v_{k-1})/\Delta T$, where $k=0..D-1$ and $v_{-1}$ is the 
+velocity applied on the previous iteration. The constraints on the control inputs of
+the linearized system are derived as follows
+\begin{equation}
+\Delta T a^t_{min} - v_k^r + v_{k-1}^r 
+\le 
+(v_k - v_k^r) - (v_{k-1} - v_{k-1}^r)
+\le
+\Delta T a^t_{max} - v_k^r + v_{k-1}^r.
+\end{equation}
+The first constraint, where $k=0$ is
+\begin{equation}
+\Delta T a^t_{min} - v_0^r + v_{-1}
+\le 
+\begin{bmatrix} 1 & 0 \end{bmatrix} \mbm{u}_0
+\le
+\Delta T a^t_{max} - v_0^r + v_{-1}.
+\end{equation}
+The remaining constraints have form
+\begin{equation}
+\mbm{1} \Delta T a^t_{min} 
+    - \begin{bmatrix} v_1^r \\ \vdots \\ v_{D-1}^r \end{bmatrix}
+    + \begin{bmatrix} v_0^r \\ \vdots \\ v_{D-2}^r \end{bmatrix}
+\le 
+\mbm{H}\mbm{U}
+\le
+\mbm{1}\Delta T a^t_{max}
+    - \begin{bmatrix} v_1^r \\ \vdots \\ v_{D-1}^r \end{bmatrix}
+    + \begin{bmatrix} v_0^r \\ \vdots \\ v_{D-2}^r \end{bmatrix},
+\end{equation}
+where 
+\begin{equation}
+\mbm{H} = 
+\begin{bmatrix}
+    -1      & 0      & 1      & 0      & \dots  & 0      & 0      & 0      & 0 \\
+    0       & 0      & -1     & 0      & \dots  & 0      & 0      & 0      & 0 \\
+    \vdots  & \vdots & \vdots & \vdots & \dots  & \vdots & \vdots & \vdots & \vdots \\
+    0       & 0      & 0      & 0      & \dots  & -1     & 0      & 1      & 0 \\
+\end{bmatrix}.
+\end{equation}
+
+The magnitude of centripetal acceleration can be expressed as 
+\begin{equation}\label{eq.ca}
+a^c = \frac{v^2}{R} = \normv{v} \normv{\omega},
+\end{equation}
+where $R$ is the radius of the curve and $\omega$ is the angular velocity of a car. Radius 
+$R = \normv{v^r}/\normv{\omega^r}$ of curvature is assumed to be independent from changes 
+of the control inputs. Estimation of the angular velocity can be obtained using change of 
+the reference orientation angle $\theta$ during one sampling period. 
+
+From 
+\begin{equation}
+a^c_{max} = \frac{v^2 \normv{\omega^r}}{\normv{v^r}}
+\end{equation}
+we can compute bounds on tangential velocity
+\begin{equation}
+v_{max} = \sqrt{\frac{a^c_{max} \normv{v^r}}{\normv{\omega^r}}},
+\quad
+v_{min} = -\sqrt{\frac{a^c_{max} \normv{v^r}}{\normv{\omega^r}}}.
+\end{equation}
+
+The constraints on tangential velocity in discrete form are
+\begin{equation}
+-\sqrt{\frac{a^c_{max} \normv{v^r_k}}{\normv{\omega^r_k}}}
+\le
+v_k
+\le
+\sqrt{\frac{a^c_{max} \normv{v^r_k}}{\normv{\omega^r_k}}},
+\quad
+\mbox{where}
+\quad
+\omega^r_k = \frac{\theta_{k+1}^r - \theta_{k}^r}{\Delta T},
+\quad k = 0..D-1.
+\end{equation}
+
+After subtraction of the reference velocity we obtain constraints on the
+control inputs of the linearized problem:
+\begin{equation}
+-\sqrt{\frac{a^c_{max} \normv{v^r_k}}{\normv{\omega^r_k}}} - v^r_k
+\le
+u_k
+\le
+\sqrt{\frac{a^c_{max} \normv{v^r_k}}{\normv{\omega^r_k}}} - v^r_k,
+\quad
+\quad k = 0..D-1.
+\end{equation}
+
+$\omega^r$ is zero when a car follows a straight line and hence does not 
+have centripetal acceleration. Consequently these constraints are valid 
+only while $\omega^r_k \neq 0$.
+
+Note that the first constraint on the tangential and all constraints on the
+centripetal accelerations are bounds on the control variables.
+
+
+
+\section{Adding an attractor (not implemented)}
+
+\begin{align}
+  \sum_{k=1}^{D}(\mbm{q}_k - \mbm{q}_k^r + \mbm{q}_k^r - \mbm{q}_k^d)^T\mbm{D}_k(\mbm{q}_k - \mbm{q}_k^r + \mbm{q}_k^r - \mbm{q}_k^d) = \nonumber \\
+  % 
+  \sum_{k=1}^{D}(\mbm{x}_k + \mbm{q}_k^r - \mbm{q}_k^d)^T\mbm{D}_k(\mbm{x}_k + \mbm{q}_k^r - \mbm{q}_k^d) = \nonumber \\
+  \sum_{k=1}^{D}(\mbm{x}_k + \mbm{q}_k^{\Delta})^T\mbm{D}_k(\mbm{x}_k + \mbm{q}_k^{\Delta}) = \nonumber \\
+  \sum_{k=1}^{D}\left[\mbm{x}_k^T\mbm{D}_k\mbm{x}_k + \mbm{x}_k^T\underbrace{2\mbm{D}_k\mbm{q}_k^{\Delta}}_{\mbm{d}_k} + 
+    \underbrace{(\mbm{q}_k^{\Delta})^T\mbm{D}_k\mbm{q}_k^{\Delta}}_{\mbox{constant}}\right]. \nonumber
+\end{align}
+%
+\begin{align}
+  \sum_{k=1}^{D}\mbm{x}_k^T\mbm{D}_k\mbm{x}_k + \sum_{k=1}^{D}\mbm{x}_k^T\mbm{d}_k. \nonumber
+\end{align}
+%
+Hence, to the objective function we add
+%
+\gbox{
+\begin{align} 
+  \sum_{k=1}^{D}\mbm{x}_k^T\mbm{Q}_k\mbm{x}_k + \sum_{k=0}^{D-1}\mbm{u}_k^T\mbm{R}_k\mbm{u}_k + 
+  \sum_{k=1}^{D}\mbm{x}_k^T\mbm{D}_k\mbm{x}_k + \sum_{k=1}^{D}\mbm{x}_k^T\mbm{d}_k. \nonumber
+\end{align} 
+}
+%
+Or equivalently
+%x
+\gbox{
+\begin{align} 
+  \sum_{k=1}^{D}\mbm{x}_k^T(\mbm{Q}_k + \mbm{D}_k)\mbm{x}_k + \sum_{k=0}^{D-1}\mbm{u}_k^T\mbm{R}_k\mbm{u}_k + \sum_{k=1}^{D}\mbm{x}_k^T\mbm{d}_k. \nonumber
+\end{align} 
+}
+%
+Hence,
+%
+\begin{align}
+J_d(\mbm{X},\mbm{U}) = \mbm{X}^T(\mbm{Q}+\mbm{D})\mbm{X} + \mbm{U}^T\mbm{R}\mbm{U} + \mbm{X}^T\mbm{d}.
+\end{align}
+
+\begin{align}
+  J_d(\mbm{U}) &= (\mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U})^T(\mbm{Q}+\mbm{D})(\mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U}) + \mbm{U}^T\mbm{R}\mbm{U} + 
+  (\mbm{S}\mbm{x}_0 + \mbm{T}\mbm{U})^T\mbm{d} \nonumber \\
+  % 
+  &= \mbm{U}^T\mbm{T}^T(\mbm{Q}+\mbm{D})\mbm{T}\mbm{U} + 
+  2\mbm{U}^T\mbm{T}^T(\mbm{Q}+\mbm{D})\mbm{S}\mbm{x}_0 + 
+  \mbm{U}^T\mbm{R}\mbm{U} + \mbm{U}^T\mbm{T}^T\mbm{d} \nonumber \\
+  %
+  &= \mbm{U}^T\left[\mbm{T}^T(\mbm{Q}+\mbm{D})\mbm{T}+\mbm{R}\right]\mbm{U} + 
+  \mbm{U}^T\left[\mbm{T}^T(2(\mbm{Q}+\mbm{D})\mbm{S}\mbm{x}_0 + \mbm{d})\right]. \nonumber
+\end{align}
+%
+Above two constant terms were omitted.
+%
+\gbox{
+\begin{align}
+  J_d(\mbm{U}) = 
+  \mbm{U}^T\underbrace{\left[\mbm{T}^T(\mbm{Q}+\mbm{D})\mbm{T}+\mbm{R}\right]}_{\mbm{P}_d}\mbm{U} + 
+  \mbm{U}^T\underbrace{\left[\mbm{T}^T(2(\mbm{Q}+\mbm{D})\mbm{S}\mbm{x}_0+\mbm{d})\right]}_{\mbm{p}_d},
+\end{align}
+%
+}
+
+\clearpage
+
+\gbox{
+\begin{align} 
+  \mathop{\mbox{minimize}}_{\mbm{U}\in\mathbb{R}^{2D}} \:\: &  J_d(\mbm{U}) = \mbm{U}^T\mbm{P}_d\mbm{U} + \mbm{U}^T\mbm{p}_d \nonumber \\
+  \mbox{subject to} \ \ & 
+  \left[\begin{array}{c}\bar{\mbm{G}} \\ \mbm{H} \end{array}\right]\mbm{U} \leq 
+  \left[\begin{array}{c}\bar{\mbm{g}} \\  \mbm{h}\end{array}\right]. \nonumber
+\end{align} 
+
+\begin{itemize}
+\item $\bar{\mbm{G}} = \mbm{G}\mbm{T}$
+\item $\bar{\mbm{g}} = \mbm{g} - \mbm{G}\mbm{S}\mbm{x}_0$
+\item $\mbm{P}_d = \mbm{T}^T(\mbm{Q}+\mbm{D})\mbm{T}+\mbm{R}$
+\item $\mbm{p}_d = \mbm{T}^T(2(\mbm{Q}+\mbm{D})\mbm{S}\mbm{x}_0+\mbm{d})$
+\item $\mbm{Q}$ penalizes deviation from reference state trajectory $\mbm{q}_k^{r}$ ($k=1,\dots,D$)
+\item $\mbm{R}$ penalizes deviation from reference control trajectory $\mbm{v}_k^{r}$ ($k=0,\dots,D-1$)
+\item $\mbm{D}$ penalizes deviation from $\mbm{q}_k^{d}$ ($k=1,\dots,D$)
+\end{itemize}
+%
+For the moment I envision to use $\mbm{q}_k^{d}$ of the form
+%
+\[
+\mbm{q}_k^{d} = \left[\begin{array}{c} x^d_k \\ y^d_k \\ 0 \\ 0 \end{array} \right],
+\]
+%
+as it is not clear how to set $\theta^d_k$ and $\phi^d_k$ in a meaningful way.
+}
+%
+In case there are only simple bounds on the control actions, we have
+%
+\gbox{
+\begin{align} 
+  \mathop{\mbox{minimize}}_{\mbm{U}\in\mathbb{R}^{2D}} \:\: &  J_d(\mbm{U}) = \mbm{U}^T\mbm{P}_d\mbm{U} + \mbm{U}^T\mbm{p}_d \nonumber \\
+  \mbox{subject to} \ \ & 
+  \bar{\mbm{G}}\mbm{U} \leq \bar{\mbm{g}} \nonumber \\
+  & \underline{\mbm{v}} - \mbm{v}_{k}^r \leq \mbm{u}_k \leq \overline{\mbm{v}} - \mbm{v}_{k}^r, \quad k=0,\dots, D-1. \nonumber
+\end{align} 
+%
+We could consider $\underline{\mbm{v}}$ and $\overline{\mbm{v}}$ to be variable with $k$ (but, for
+simplicity, in the current implementation they are assumed to be constant).  
+}
+%
+If there are no state constraints, we obtain
+%
+\gbox{
+\begin{align} 
+  \mathop{\mbox{minimize}}_{\mbm{U}\in\mathbb{R}^{2D}} \:\: &  J_d(\mbm{U}) = \mbm{U}^T\mbm{P}_d\mbm{U} + \mbm{U}^T\mbm{p}_d \nonumber \\
+  \mbox{subject to} \ \ 
+  & \underline{\mbm{v}} - \mbm{v}_{k}^r \leq \mbm{u}_k \leq \overline{\mbm{v}} - \mbm{v}_{k}^r, \quad k=0,\dots, D-1. \nonumber
+\end{align} 
+}
+%
+\gbox{ 
+  Note that state constraints could be violated by the real (nonlinear) model.
+}
+
+% =====================================================================================================================
+% =====================================================================================================================
+\end{document}
+% =====================================================================================================================
+% =====================================================================================================================
+
+The recursion 
+%
+\begin{align}
+\mbm{x}_{k+1} = \mbm{A}_k\mbm{x}_k + \mbm{B}_k\mbm{x}_k, \quad k = 0, \dots, D-1
+\end{align}
+%
+can be expressed as
+%
+\begin{align}
+\mbm{E}_x\mbm{z}_x + \mbm{E}_u\mbm{z}_u = \mbm{e}, \nonumber
+\end{align}
+%
+where
+%
+\begin{align}
+  \mbm{E}_x &= 
+  \left[\hspace{-0.05cm}
+    \begin{array}{cccccc} 
+      -\mbm{I}    &  \mbm{0}    &  \mbm{0}  & \dots  & \mbm{0}    & \mbm{0}  \\
+       \mbm{A}_1 & -\mbm{I}    &  \mbm{0}  & \dots  & \mbm{0}    & \mbm{0}  \\
+       \mbm{0}    &  \mbm{A}_2 & -\mbm{I}  & \dots  & \mbm{0}    & \mbm{0}  \\
+       \vdots     &  \vdots     &  \vdots   & \ddots & \vdots     & \vdots   \\
+       \mbm{0}    &  \mbm{0}    &  \mbm{0}  & \dots  & \mbm{A}_{D-1} & -\mbm{I} \\
+    \end{array}
+  \hspace{-0.05cm}\right], \nonumber \\
+  %  
+  \mbm{E}_u &= 
+  \left[\hspace{-0.05cm}
+    \begin{array}{cccccc} 
+      \mbm{B}_{0} & \mbm{0}    & \mbm{0}    & \dots  & \mbm{0} \\
+      \mbm{0}    & \mbm{B}_{1} & \mbm{0}    & \dots  & \mbm{0} \\
+      \mbm{0}    & \mbm{0}    & \mbm{B}_{2} & \dots  & \mbm{0} \\
+      \vdots     & \vdots     &  \vdots    & \ddots & \vdots  \\
+      \mbm{0}    & \mbm{0}    & \mbm{0}    & \dots  & \mbm{B}_{D-1} \\
+    \end{array}
+  \hspace{-0.05cm}\right], \quad \mbm{e} = 
+  \left[\hspace{-0.05cm}
+    \begin{array}{c}
+      -\mbm{A}_0\mbm{x}_0 \\ \mbm{0} \\ \mbm{0} \\ \vdots \\ \mbm{0} 
+    \end{array}
+  \hspace{-0.05cm}\right]. \nonumber
+\end{align}
+
+\[
+\mbm{z}_x = (\mbm{x}_1,\dots,\mbm{x}_D), \quad \mbm{z}_u = (\mbm{u}_0,\dots,\mbm{u}_{D-1}).
+\]
+
+
+\mathop{\mbox{minimize}}_{\mbm{z}_x,\, \mbm{z}_u} \:\: & 
+\left[\begin{array}{c} \mbm{z}_x \\ \mbm{z}_u \end{array}\right]^T
+\left[\begin{array}{cc} \mbm{H}_x & \mbm{0} \\ \mbm{0} & \mbm{H}_u\end{array}\right]
+\left[\begin{array}{c} \mbm{z}_x \\ \mbm{z}_u \end{array}\right], \nonumber \\
+
+\[
+\mbm{S} = \left[\begin{array}{c}\mbm{A}_0 \\ \mbm{A}_1\mbm{A}_0 \\ \mbm{A}_2\mbm{A}_1\mbm{A}_0 \\ \vdots \\ \mbm{A}_{N-1}\dots\mbm{A}_0 \end{array}\right].
+\]
