@@ -1,8 +1,6 @@
-==================================================
-== ORUNAV SOURCE TREE INSTALLATION INSTRUCTIONS ==
-==================================================
+Installation instructions
 
-This is a brief guide to installing the ROS-based software tools ORUNAV developed at ORU in a set of previous project (SAUNA, SAVIE, Semantic Robot). The tools require full ROS installation and two external packages. The installation assumes you have Ubuntu 16.04 LTS [ROS Kinetic] or Ubntu 14.04 LTS [ROS Indigo].
+This is a brief guide to installing the ROS-based software tools NAVIGATION_ORU developed at ORU in a set of previous project (SAUNA, SAVIE, Semantic Robot). The tools require full ROS installation and two external packages. The installation assumes you have Ubuntu 16.04 LTS [ROS Kinetic] or Ubntu 14.04 LTS [ROS Indigo].
 
 == Install ROS:
 
@@ -12,12 +10,12 @@ Please refer to http://wiki.ros.org/kinetic/Installation/Ubuntu
 
 $ sudo apt-get install ros-kinetic-map-server 
 
-== Get the orunav source tree:
+== Get the navigation_oru source tree:
 
-Download the orunav source tree from the ... repository into your catkin workspace (here we assume ~/catkin_ws):
+Download the navigation_oru source tree into your catkin workspace (here we assume ~/catkin_ws):
 
 $ cd ~/catkin_ws/src
-$ git clone ...
+$ git clone https://github.com/OrebroUniversity/navigation_oru-release.git navigation_oru
 
 Do not compile yet... please follow the instructions below first...
 
@@ -53,7 +51,7 @@ $ catkin_make -DCMAKE_BUILD_TYPE=Release
 
 Update the GAZEBO_MODEL_PATH variable, add the following to your ~/.bashrc file:
 
-export GAZEBO_MODEL_PATH=/home/<your user name>/catkin_ws/src/orunav/gazebo_oru/models:$GAZEBO_MODEL_PATH
+export GAZEBO_MODEL_PATH=/home/<your user name>/catkin_ws/src/navigation_oru/gazebo_oru/models:$GAZEBO_MODEL_PATH
 
 This is needed inorder to be able to load the different environements (otherwise you get "no namepace found" messages and an empty world).
 
