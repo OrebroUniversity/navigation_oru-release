@@ -84,8 +84,7 @@ In order to navigate to a pose in the environment, select the "2D Nav Goal" butt
 [gazebo_single_truck]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/gazebo_single_truck.png "Gazebo simulation of the AASS basement with a single forklift"
 [rviz_single_truck]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_single_truck.png "RViz visualization of the AASS basement with a single forklift"
 [rviz_task_bar]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_task_bar.png "RViz task bar"
-[rviz_single_truck_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/single_truck_run.png "RViz visualization of a sample run"
-
+[rviz_single_truck_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_single_truck_run.png "RViz visualization of a sample run"
 
 
 #### A set of three trucks - empty environment
