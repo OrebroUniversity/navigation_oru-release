@@ -28,7 +28,7 @@
     <param name="tf_prefix" value="robot3" />
     <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
       <arg name="robot_pose_x" value="3.426"/> 
-      <arg name="robot_pose_y" value="20.438"/>
+      <arg name="robot_pose_y" value="16.438"/>
       <arg name="robot_pose_yaw" default="2.31"/>
       <arg name="robot_name" value="robot3" />
     </include>
