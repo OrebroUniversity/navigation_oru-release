@@ -122,7 +122,7 @@ The alignement of the pallets is done using a sdf based tracker - due to the cam
 ![alt text][sdf_pallet_model]
 ![alt text][sdf_pallet_aligned]
 
-[sdf_pallet_model]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_task_bar.png "SDF model of an EUR-pallet"
-[sdf_pallet_aligned]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/single_truck_run.png "The aligned pallet"
+[sdf_pallet_model]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_model.png "SDF model of an EUR-pallet"
+[sdf_pallet_aligned]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_aligned.png "The aligned pallet"
 [rviz_pallet_picking]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_pallet_picking.png "RViz visualization of pallet picking, the red box is the intial pallet pose estimate and the green one is the estimated one."
 [gazebo_pallet_picking]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/gazebo_pallet_picking.png "Gazebo view of the pallet picking."
