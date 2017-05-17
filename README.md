@@ -119,8 +119,10 @@ Two goal target poses is loaded from a file, one which is the approximate pickup
 `$ rosservice call /robot1/next_task`
 
 The alignement of the pallets is done using a sdf based tracker - due to the camera monting the images are up-side down in the visualization.
+
 ![alt text][sdf_pallet_model]
 ![alt text][sdf_pallet_aligned]
+
 
 [sdf_pallet_model]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_model.png "SDF model of an EUR-pallet"
 [sdf_pallet_aligned]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_aligned.png "The aligned pallet"
