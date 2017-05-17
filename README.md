@@ -71,7 +71,7 @@ This should bring up the gazebo simulation GUI and RViz.
 
 In order to navigate to a pose in the environment, select the "2D Nav Goal" button on the task bar in RViz![alt text][rviz_task_bar] and point/click in the map where the vehicle should drive. First orunav_motion_planner (a lattice-based motion planner) generates an initial path (green) which then are optimized using orunav_path_smoother which then are executed automatically by the orunav_mpc tracking controller. This is how it typically should look like.![alt text][rviz_single_truck_run]
 
-[gazebo_single_truck]: https://github.com/OrebroUniversity/navigation_oru-release/docs/figs/gazebo_single_truck.png "Gazebo simulation of the AASS basement with a single forklift"
+[gazebo_single_truck]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/gazebo_single_truck.png "Gazebo simulation of the AASS basement with a single forklift"
 [rviz_single_truck]: https://github.com/OrebroUniversity/navigation_oru-release/docs/figs/rviz_single_truck.png "RViz visualization of the AASS basement with a single forklift"
 [rviz_task_bar]: https://github.com/OrebroUniversity/navigation_oru-release/docs/figs/rviz_task_bar.png "RViz task bar"
 [rviz_single_truck_run]: https://github.com/OrebroUniversity/navigation_oru-release/docs/figs/single_truck_run.png "RViz visualization of a sample run"
