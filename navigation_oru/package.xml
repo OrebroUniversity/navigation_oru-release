@@ -44,7 +44,7 @@
   <run_depend>orunav_mpc</run_depend>
   <run_depend>orunav_vehicle_execution</run_depend>
   <run_depend>orunav_pallet_detection_sdf</run_depend>
-  <run_depend>gazebo_plugin_oru</run_depend>
+  <run_depend>gazebo_plugins_oru</run_depend>
 
   <export>
     <metapackage/>
