@@ -71,7 +71,7 @@ target_link_libraries(path_pool_get_path_service
 ## Install ##
 #############
 
-install(TARGETS graph_astar wef2path path_pool_get_path
+install(TARGETS graph_astar wef2path path_pool_get_path_service
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
