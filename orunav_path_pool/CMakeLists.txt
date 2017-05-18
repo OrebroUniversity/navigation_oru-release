@@ -66,3 +66,17 @@ add_dependencies(path_pool_get_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(path_pool_get_path_service
    ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${TinyXML_LIBRARIES} graph_astar
 )
+
+#############
+## Install ##
+#############
+
+install(TARGETS graph_astar wef2path path_pool_get_path
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )

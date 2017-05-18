@@ -54,8 +54,8 @@ endif (SW_ENABLE_DEBUG)
 
 set (CMAKE_SKIP_ASSEMBLY_SOURCE_RULES ON)
 set (CMAKE_SKIP_PREPROCESSED_SOURCE_RULES ON)
-set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_RULE_MESSAGES OFF CACHE BOOL "")
 
@@ -71,6 +71,13 @@ include_directories(${SW_CONTROLLER_SRC_DIR})
 ####################################
 # Other parameters
 ####################################
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES orunav_mpc
+#  CATKIN_DEPENDS other_catkin_pkg
+#  DEPENDS system_lib
+)
 
 if ((SW_BUILD_SIMULATION) AND (SW_ENABLE_NAVSERVER_READER))
     message (FATAL_ERROR "Connection to Navserver cannot be used in simulation.")
@@ -165,3 +172,12 @@ endif (NOT SW_BUILD_SIMULATION)
 # ROS requires the latest C++ standard to compile without warnings. Disable some of them explicitly.
 set_target_properties(${SW_CONTROLLER} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros -Wno-long-long")
 
+#############
+## Install ##
+#############
+
+install(TARGETS ${SW_CONTROLLER}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )

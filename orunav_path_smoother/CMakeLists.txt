@@ -128,3 +128,16 @@ target_link_libraries(robotTarget_publisher_test
   orunav_path_smoother
 )
 
+#############
+## Install ##
+#############
+
+install(TARGETS orunav_path_smoother smoothed_path_service smoothed_straight_path_service view_path
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )

@@ -59,3 +59,17 @@ target_link_libraries(deltatvec_service
    -lboost_program_options -lboost_serialization
    )
 
+#############
+## Install ##
+#############
+
+install(TARGETS deltatvec_service
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )
+

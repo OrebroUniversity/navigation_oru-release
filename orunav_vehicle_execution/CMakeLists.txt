@@ -97,3 +97,13 @@ target_link_libraries(send_abort_task
    -lboost_program_options
  )
 
+
+#############
+## Install ##
+#############
+
+install(TARGETS orunav_vehicle_execution_node point_n_click_target_client send_brake_command vehicle_execution_debug_client vehicle_execution_client point_n_click_target_publisher send_abort_task
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
