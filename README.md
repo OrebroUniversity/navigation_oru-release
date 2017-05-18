@@ -97,12 +97,12 @@ This will bring up the gazebo simulation GUI and RViz. There we have an empty en
 Similar to the single truck example you can utilize the task bar to select where each truch should drive. Note that the coordination is not in place yet and you can easily make the trucks to collide. To set which truck should go where use one of the "2D Nav Goal" buttons (there are three of them, the first will trigger the first vehicle, the second the second vehicle and so on).
 ![alt text][rviz_multiple_trucks_run].
 
-[rviz_multiple_trucks_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/multiple_trucks_run.png "RViz visualization of a sample run with three vehicles"
+[rviz_multiple_trucks_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_multiple_trucks_run.png "RViz visualization of a sample run with three vehicles"
 
 
-#### Pallet picking from an semi-unknown pose
+#### Pallet picking from an semi-known pose
 
-This is some old stuff that haven't been used and is not really robust in the current state. The idea here is to pickup a pallet at a semi-known pose.To bring up the simulation / visualization run:
+This is based on some old stuff that haven't been used for a while and is not really robust in the current state. The idea here is to pickup a pallet at a semi-known pose. To bring up the simulation / visualization run:
 
 `$ roslaunch orunav_launch click_n_pick.launch`
 
