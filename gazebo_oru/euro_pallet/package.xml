@@ -10,9 +10,11 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>resource_retriever</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+
   <run_depend>roscpp</run_depend>
   <run_depend>resource_retriever</run_depend>
-
+  <run_depend>visualization_msgs</run_depend>
   <export>
 
   </export>

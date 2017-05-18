@@ -6,6 +6,7 @@ add_definitions(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   resource_retriever
+  visualization_msgs
 )
 
 catkin_package(
