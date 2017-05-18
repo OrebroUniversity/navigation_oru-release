@@ -59,3 +59,17 @@ target_link_libraries(polygon2_test
   ${catkin_LIBRARIES}
   -lboost_serialization
   )
+
+#############
+## Install ##
+#############
+
+install(TARGETS orunav_geometry
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )

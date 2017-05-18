@@ -10,3 +10,10 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+#############
+## Install ##
+#############
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)

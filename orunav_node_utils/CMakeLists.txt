@@ -32,3 +32,10 @@ target_link_libraries(robot_target_handler_test
   ${catkin_LIBRARIES}
 )
 
+#############
+## Install ##
+#############
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)

@@ -178,3 +178,17 @@ target_link_libraries(create_heuristic
 #  orunav_motion_planner 
 ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
+#############
+## Install ##
+#############
+
+install(TARGETS get_path_service get_path_client primitives_pruning create_heuristic
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)

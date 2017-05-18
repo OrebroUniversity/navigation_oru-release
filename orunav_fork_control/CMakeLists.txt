@@ -46,3 +46,13 @@ target_link_libraries(fork_control_sim_node ${catkin_LIBRARIES})
 add_executable(fork_control_client src/fork_control_client_main.cpp)
 target_link_libraries(fork_control_client ${catkin_LIBRARIES}
   ${Boost_LIBRARIES})
+
+#############
+## Install ##
+#############
+
+install(TARGETS fork_control_sim_node fork_control_client
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

@@ -36,3 +36,11 @@ include_directories(include
   ${Eigen_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   )
+
+#############
+## Install ##
+#############
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)

@@ -119,3 +119,11 @@ include_directories(
 
 add_executable(message_test test/message_test.cpp)
 add_dependencies(message_test orunav_msgs_generate_messages_cpp)
+
+#############
+## Install ##
+#############
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )

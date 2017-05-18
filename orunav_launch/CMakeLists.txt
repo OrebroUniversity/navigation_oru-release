@@ -13,3 +13,10 @@ catkin_package(
 ###########
 ## Build ##
 ###########
+
+install(FILES
+   launch/click_n_pick.launch  
+   launch/multiple_trucks.launch
+   launch/single_truck.launch
+   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

@@ -45,12 +45,6 @@ target_link_libraries(serialization_test -lboost_serialization)
 ## Install ##
 #############
 
-install(TARGETS random_test serialization_test
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-       )
-
 install(DIRECTORY include/${PROJECT_NAME}/
 	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
        )
