@@ -22,7 +22,7 @@
   <build_depend>orunav_rviz</build_depend>
   <build_depend>orunav_conversions</build_depend>
   <build_depend>orunav_node_utils</build_depend>
-  <build_depend>orunav_trajectory_procesor</build_depend>
+  <build_depend>orunav_trajectory_processor</build_depend>
   <build_depend>orunav_constraint_extract</build_depend>
   <build_depend>laser_geometry</build_depend>
 
@@ -37,7 +37,7 @@
   <run_depend>orunav_rviz</run_depend>
   <run_depend>orunav_conversions</run_depend>
   <run_depend>orunav_node_utils</run_depend>
-  <run_depend>orunav_trajectory_procesor</run_depend>
+  <run_depend>orunav_trajectory_processor</run_depend>
   <run_depend>orunav_constraint_extract</run_depend>
   <run_depend>laser_geometry</run_depend>
 
