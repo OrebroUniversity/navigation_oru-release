@@ -15,11 +15,12 @@ else()
 endif()
 
 find_package(TinyXML REQUIRED)
+
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_generic
 #  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+#  DEPENDS Eigen3 Boost TinyXML
 )
 
 ###########
@@ -39,3 +40,17 @@ target_link_libraries(random_test)
 
 add_executable(serialization_test test/serialization_test.cc)
 target_link_libraries(serialization_test -lboost_serialization)
+
+#############
+## Install ##
+#############
+
+install(TARGETS ${PROJECT_NAME}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )
