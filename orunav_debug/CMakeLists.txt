@@ -49,3 +49,13 @@ target_link_libraries(control_log_parser
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+#############
+## Install ##
+#############
+
+install(TARGETS control_log_parser
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )

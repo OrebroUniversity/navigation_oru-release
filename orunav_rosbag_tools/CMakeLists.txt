@@ -52,3 +52,13 @@ add_executable(odo_odometer src/odo_odometer_main.cpp)
 target_link_libraries(odo_odometer
    ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
+#############
+## Install ##
+#############
+
+install(TARGETS get_vector_stat odo_odometer
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )

@@ -29,7 +29,7 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES orunav_constraint_extract
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp orunav_generic
 #  DEPENDS system_lib
 )
@@ -45,11 +45,11 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_library(orunav_constraint_extract
+add_library(${PROJECT_NAME}
   src/grid_map.cpp
   src/model_only.cpp
   )
-add_dependencies(orunav_constraint_extract ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 add_executable(polygonconstraint_service src/polygonconstraint_service.cpp)
 add_dependencies(polygonconstraint_service ${catkin_EXPORTED_TARGETS})
@@ -91,3 +91,18 @@ add_dependencies(polygonfootprint_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(polygonfootprint_client
   ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
+
+#############
+## Install ##
+#############
+
+install(TARGETS ${PROJECT_NAME} polygonconstraint_service polygonfootprint_service polygonfootprint_client
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+       )

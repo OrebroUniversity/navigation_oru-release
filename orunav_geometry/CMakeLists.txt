@@ -19,7 +19,7 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES orunav_geometry
+  LIBRARIES ${PROJECT_NAME}
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -64,7 +64,7 @@ target_link_libraries(polygon2_test
 ## Install ##
 #############
 
-install(TARGETS orunav_geometry
+install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
