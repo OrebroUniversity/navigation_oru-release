@@ -15,11 +15,7 @@ catkin_package(
 ## Build ##
 ###########
 
-install(FILES
-   config/citi1.cfg
-   config/citi1_simulation.cfg
-   config/citi2_simulation.cfg
-   config/citi3_simulation.cfg
-   config/global.cfg
+install(DIRECTORY
+   config
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

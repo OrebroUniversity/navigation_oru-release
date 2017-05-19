@@ -34,7 +34,7 @@ find_package(PCL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES orunav_pallet_detection_sdf
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
@@ -74,3 +74,13 @@ add_dependencies(object_est_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(object_est_client
    ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
+#############
+## Install ##
+#############
+
+install(TARGETS camera_pose_calib_node euro_pallet_sdf_node object_est_client
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+       )

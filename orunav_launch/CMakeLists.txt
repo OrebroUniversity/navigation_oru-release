@@ -10,13 +10,11 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-###########
-## Build ##
-###########
+#############
+## Install ##
+#############
 
-install(FILES
-   launch/click_n_pick.launch  
-   launch/multiple_trucks.launch
-   launch/single_truck.launch
+install(DIRECTORY
+   launch
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
