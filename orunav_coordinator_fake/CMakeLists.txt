@@ -11,7 +11,6 @@ find_package(catkin REQUIRED
   orunav_rviz
   orunav_conversions
   orunav_geometry
-  orunav_node_utils
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread program_options)
