@@ -28,3 +28,13 @@ target_link_libraries(debug_marker
   ${catkin_LIBRARIES}
 )
 
+#############
+## Install ##
+#############
+
+install(DIRECTORY
+  launch 
+  urdf
+  meshes
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
