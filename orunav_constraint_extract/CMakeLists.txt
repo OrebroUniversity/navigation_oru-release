@@ -103,6 +103,8 @@ install(TARGETS ${PROJECT_NAME} polygonconstraint_service polygonfootprint_servi
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
        )
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY
+        include/${PROJECT_NAME}/
+	tables
 	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
        )

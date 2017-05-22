@@ -189,6 +189,9 @@ install(TARGETS get_path_service get_path_client primitives_pruning create_heuri
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY
+  include/${PROJECT_NAME}/
+  LookupTables
+  Primitives
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
