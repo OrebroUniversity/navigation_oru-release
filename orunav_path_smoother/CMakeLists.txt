@@ -25,6 +25,17 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(catkin REQUIRED)
 find_package(ACADO REQUIRED)
+if(NOT ACADO_FOUND)
+  message(FATAL_ERROR " ACADO *not* found")
+endif()
+
+# Added own variable containing the full path to the library.
+#set(ACADO_SHARED_LIBRARY_WITH_PATH  ${ACADO_LIBRARY_DIRS}/${ACADO_SHARED_LIBRARIES})
+#message("ACADO_SHARED_LIBRARY_WITH_PATH : " ${ACADO_SHARED_LIBRARY_WITH_PATH})
+set(ACADO_LFLAGS -L${ACADO_LIBRARY_DIRS} -l${ACADO_SHARED_LIBRARIES})
+message("  - ACADO_LFLAGS : " ${ACADO_LFLAGS})
+
+
 find_package(Boost REQUIRED COMPONENTS system program_options)
 
 find_package(Eigen3)
@@ -62,21 +73,19 @@ add_library(orunav_path_smoother
 )
 add_dependencies(orunav_path_smoother ${catkin_EXPORTED_TARGETS})
 
-
 add_executable(acado_test test/acado_test.cc)
 target_link_libraries(acado_test
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES} 
   ${Boost_LIBRARIES}
+  ${ACADO_LFLAGS}
 )
 
 add_executable(smoothed_path_service src/smoothed_path_service.cpp)
 add_dependencies(smoothed_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(smoothed_path_service
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES}
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
   orunav_path_smoother
 )
 
@@ -84,9 +93,8 @@ add_executable(smoothed_straight_path_service src/smoothed_straight_path_service
 add_dependencies(smoothed_straight_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(smoothed_straight_path_service
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES}
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
   orunav_path_smoother
 )
 
@@ -94,9 +102,8 @@ add_executable(path_smoother_spatial_test test/path_smoother_spatial_test.cpp)
 add_dependencies(path_smoother_spatial_test ${catkin_EXPORTED_TARGETS})
 target_link_libraries(path_smoother_spatial_test
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES}
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
   orunav_path_smoother
 )
 
@@ -104,7 +111,6 @@ add_executable(view_path src/view_path_main.cpp)
 add_dependencies(view_path ${catkin_EXPORTED_TARGETS})
 target_link_libraries(view_path
   ${catkin_LIBRARIES} 
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
   orunav_path_smoother
 )
@@ -113,18 +119,16 @@ add_executable(iran_simple_path_smoother_spatial_test test/iran_simple_path_smoo
 add_dependencies(iran_simple_path_smoother_spatial_test ${catkin_EXPORTED_TARGETS})
 target_link_libraries(iran_simple_path_smoother_spatial_test
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES}
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
   orunav_path_smoother
 )
 
 add_executable(robotTarget_publisher_test test/robotTarget_publisher_test.cpp)
 target_link_libraries(robotTarget_publisher_test
   ${catkin_LIBRARIES} 
-  ${ACADO_SHARED_LIBRARIES}
-  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
   orunav_path_smoother
 )
 
