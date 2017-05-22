@@ -191,7 +191,11 @@ install(TARGETS get_path_service get_path_client primitives_pruning create_heuri
 
 install(DIRECTORY
   include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+install(DIRECTORY
   LookupTables
   Primitives
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
