@@ -68,13 +68,22 @@ set (SW_CONFIG_FILE "${SW_CONTROLLER_SRC_DIR}/config.h")
 
 include_directories(${SW_CONTROLLER_SRC_DIR})
 
+###############################################################################
+# Params orginating from qpOASES (now build as a library within this package)
+###############################################################################
+
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE}")
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE}")
+add_definitions(-D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__)
+
 ####################################
 # Other parameters
 ####################################
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES orunav_mpc
+#  LIBRARIES ${SW_QP_SOLVER}
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -85,11 +94,15 @@ endif ()
 
 
 # qpOASES
-add_subdirectory ("${PROJECT_SOURCE_DIR}/${SW_QP_SOLVER}/")
+#add_subdirectory ("${PROJECT_SOURCE_DIR}/${SW_QP_SOLVER}/")
 include_directories ("${PROJECT_SOURCE_DIR}/${SW_QP_SOLVER}/include/")
 
-include_directories(${EIGEN3_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+# compile qpOASES libraries (instead of add_subdirectory) - this in order to be able to install the qpOASES.so in the isolated install.
+FILE(GLOB SW_QP_SOLVER_SRC ${SW_QP_SOLVER}/src/*.cpp)
+ADD_LIBRARY(${SW_QP_SOLVER} ${SW_QP_SOLVER_SRC})
 
+
+include_directories(${EIGEN3_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 # Search for canlib - only needed when running on the real plattform.
 if (NOT SW_BUILD_SIMULATION)
@@ -176,8 +189,8 @@ set_target_properties(${SW_CONTROLLER} PROPERTIES COMPILE_FLAGS "-Wno-variadic-m
 ## Install ##
 #############
 
-install(TARGETS ${SW_CONTROLLER} #${SW_FUNCGEN_LIB_NAME} # ${SW_QP_SOLVER} #libqpOASES.so
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-       )
+install(TARGETS ${SW_CONTROLLER} ${SW_QP_SOLVER}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
