@@ -3,7 +3,6 @@ project(orunav_constraint_extract)
 
 set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   cmake_modules
   roscpp
   std_msgs

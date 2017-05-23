@@ -9,7 +9,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmake/Modules/")
 #endif()
 
 find_package(catkin REQUIRED COMPONENTS
-  message_generation 
   cmake_modules
   roscpp
   std_msgs
@@ -30,8 +29,6 @@ if(NOT ACADO_FOUND)
 endif()
 
 # Added own variable containing the full path to the library.
-#set(ACADO_SHARED_LIBRARY_WITH_PATH  ${ACADO_LIBRARY_DIRS}/${ACADO_SHARED_LIBRARIES})
-#message("ACADO_SHARED_LIBRARY_WITH_PATH : " ${ACADO_SHARED_LIBRARY_WITH_PATH})
 set(ACADO_LFLAGS -L${ACADO_LIBRARY_DIRS} -l${ACADO_SHARED_LIBRARIES})
 message("  - ACADO_LFLAGS : " ${ACADO_LFLAGS})
 

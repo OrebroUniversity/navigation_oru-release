@@ -12,8 +12,13 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <build_depend>angles</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>boost</build_depend>
+  
   <run_depend>angles</run_depend>
-
+  <run_depend>eigen</run_depend>
+  <run_depend>boost</run_depend>
+  
 
   <export>
     <cpp cflags="-I${prefix}/include" />

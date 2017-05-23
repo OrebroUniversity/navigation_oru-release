@@ -7,7 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   nav_msgs
-  cv_bridge
   orunav_msgs
   orunav_generic
   orunav_rviz

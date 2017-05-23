@@ -4,7 +4,6 @@ add_definitions(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
-  message_generation 
   gazebo_msgs 
   roscpp 
   rospy 

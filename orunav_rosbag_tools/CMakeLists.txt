@@ -7,10 +7,11 @@ find_package(catkin REQUIRED
   eigen_conversions
   roscpp
   rosconsole
-  tf
   rosbag
+  tf
   tf_conversions
-  pcl_ros pcl_conversions
+  pcl_ros 
+  pcl_conversions
   )
 find_package(Boost REQUIRED COMPONENTS program_options)
 

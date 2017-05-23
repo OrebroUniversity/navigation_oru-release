@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.3)
 project(orunav_node_utils)
 
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   cmake_modules
   roscpp
   orunav_msgs

@@ -41,9 +41,11 @@ include_directories(
 )
 
 add_executable(fork_control_sim_node src/fork_control_sim_main.cpp)
+add_dependencies(fork_control_sim_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(fork_control_sim_node ${catkin_LIBRARIES})
 
 add_executable(fork_control_client src/fork_control_client_main.cpp)
+add_dependencies(fork_control_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(fork_control_client ${catkin_LIBRARIES}
   ${Boost_LIBRARIES})
 

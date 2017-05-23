@@ -17,6 +17,8 @@
   <build_depend>orunav_conversions</build_depend>
   <build_depend>orunav_geometry</build_depend>
   <build_depend>orunav_node_utils</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>boost</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>orunav_msgs</run_depend>
@@ -25,6 +27,8 @@
   <run_depend>orunav_conversions</run_depend>
   <run_depend>orunav_geometry</run_depend>
   <run_depend>orunav_node_utils</run_depend>
+  <run_depend>eigen</run_depend>
+  <run_depend>boost</run_depend>
 
   <export>
   </export>
