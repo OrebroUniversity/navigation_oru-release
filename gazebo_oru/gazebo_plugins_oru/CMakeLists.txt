@@ -63,3 +63,20 @@ target_link_libraries(gazebo_ros_tippingbody_lifter ${GAZEBO_LIBRARIES} ${Boost_
 
 add_library(gazebo_ros_jacks src/gazebo_ros_jacks.cpp)
 target_link_libraries(gazebo_ros_jacks ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+
+#############
+## Install ##
+#############
+
+install(TARGETS 
+  gazebo_ros_steer_drive
+  gazebo_ros_tram_drive
+  gazebo_ros_ackermann_steer_drive
+  gazebo_ros_ackermann_dual_steer_drive
+  gazebo_ros_fork_lifter
+  gazebo_ros_tippingbody_lifter
+  gazebo_ros_jacks
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )

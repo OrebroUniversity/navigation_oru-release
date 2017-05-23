@@ -18,6 +18,7 @@ catkin_package(
 install(DIRECTORY
    launch
    maps
+   worlds
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
