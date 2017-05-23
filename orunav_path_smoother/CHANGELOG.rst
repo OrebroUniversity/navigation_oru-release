@@ -2,8 +2,8 @@
 Changelog for package orunav_path_smoother
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-05-23)
+------------------
 * Fixed LFLAGS for the ACADO library.
 * added acado as dependency
 * Added install section.

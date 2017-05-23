@@ -2,8 +2,8 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-05-23)
+------------------
 * Added install section.
 * Fixed install targets.
 * Added install section.

@@ -2,8 +2,8 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-05-23)
+------------------
 * Added installed / updated targets.
 * Fixed install params.
 * Cleanup, fixing names removing un-used files.

@@ -2,8 +2,8 @@
 Changelog for package orunav_coordinator_fake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-05-23)
+------------------
 * Updated required pkgs.
 * Updated catkin install.
 * Updated catkin flag.

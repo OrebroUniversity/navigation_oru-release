@@ -2,8 +2,8 @@
 Changelog for package orunav_path_pool
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-05-23)
+------------------
 * Updated install targets.
 * Added install section.
 * Updated maintainer entry.
