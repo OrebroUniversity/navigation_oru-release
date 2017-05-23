@@ -10,6 +10,17 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+##################################
+## Update the GAZEBO_MODEL_PATH ##
+##################################
+
+if(CMAKE_HOST_UNIX)
+  catkin_add_env_hooks(90.gazebo_models_oru SHELLS sh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+else()
+  message(FATAL_ERROR "Only UNIX builds supported.")
+#  catkin_add_env_hooks(90.gazebo_models_oru SHELLS bat DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+endif()
+
 #############
 ## Install ##
 #############
