@@ -2,8 +2,8 @@
 Changelog for package orunav_debug
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2017-05-25)
+------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Updated default params.
 * Fixed dependencies.
