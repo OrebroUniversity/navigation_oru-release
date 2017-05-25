@@ -2,6 +2,12 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Added dependencies.
+* Contributors: Henrik Andreasson
+
 0.0.1 (2017-05-23)
 ------------------
 * qpOASIS is built by add_library instead of add_directory.

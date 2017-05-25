@@ -2,6 +2,9 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.1 (2017-05-23)
 ------------------
 * Fixed install section.
