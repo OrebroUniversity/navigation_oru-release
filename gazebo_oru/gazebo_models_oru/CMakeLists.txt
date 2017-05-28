@@ -26,7 +26,6 @@ endif()
 #############
 
 install(DIRECTORY
-  aass_lab
-  basement
+  models
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
