@@ -14,13 +14,11 @@ else()
   set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 endif()
 
-find_package(TinyXML REQUIRED)
-
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_generic
 #  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS Eigen3 Boost TinyXML
+#  DEPENDS Eigen3 Boost
 )
 
 ###########
