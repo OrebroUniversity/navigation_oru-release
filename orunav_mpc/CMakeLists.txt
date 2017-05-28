@@ -169,6 +169,7 @@ else (SW_BUILD_SIMULATION)
 endif (SW_BUILD_SIMULATION)
 
 add_executable (${SW_CONTROLLER} ${SW_CONTROLLER_SRC} ${SW_CONTROLLER_SRC_DIR}/snowWhite.cpp)
+add_dependencies (${SW_CONTROLLER} ${catkin_EXPORTED_TARGETS})
 
 if (SW_BUILD_SIMULATION)
   target_link_libraries (${SW_CONTROLLER} ${SW_QP_SOLVER} ${SW_FUNCGEN_LIB_NAME} m pthread ${catkin_LIBRARIES})
