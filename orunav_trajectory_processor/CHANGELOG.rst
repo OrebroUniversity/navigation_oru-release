@@ -2,6 +2,9 @@
 Changelog for package orunav_trajectory_processor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.2 (2017-05-25)
 ------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
