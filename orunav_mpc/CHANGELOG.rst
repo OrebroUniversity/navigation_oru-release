@@ -2,6 +2,11 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2017-06-07)
+------------------
+* Added dependency on orunav_msgs.
+* Contributors: Henrik Andreasson
+
 0.0.2 (2017-05-25)
 ------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

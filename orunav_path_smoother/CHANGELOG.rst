@@ -2,6 +2,9 @@
 Changelog for package orunav_path_smoother
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2017-06-07)
+------------------
+
 0.0.2 (2017-05-25)
 ------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
