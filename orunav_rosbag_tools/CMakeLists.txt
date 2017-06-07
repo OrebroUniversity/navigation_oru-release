@@ -3,6 +3,7 @@ project(orunav_rosbag_tools)
 
 find_package(catkin REQUIRED
   cmake_modules
+  nav_msgs
   orunav_generic
   eigen_conversions
   roscpp

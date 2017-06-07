@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_conversions
   orunav_geometry
   orunav_node_utils
+  tf
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread program_options)
@@ -28,7 +29,7 @@ endif()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES orunav_debug
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
 #  DEPENDS system_lib
 )
 

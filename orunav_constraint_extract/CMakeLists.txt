@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_rviz
   orunav_conversions
   orunav_geometry
+  tf
 )
 
 find_package(Boost REQUIRED COMPONENTS program_options serialization) # thread signals system
@@ -29,7 +30,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp orunav_generic
+  CATKIN_DEPENDS roscpp orunav_rviz orunav_conversions orunav_geometry
 #  DEPENDS system_lib
 )
 

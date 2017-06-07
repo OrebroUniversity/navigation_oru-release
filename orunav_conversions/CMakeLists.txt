@@ -6,7 +6,7 @@ find_package(catkin REQUIRED orunav_msgs)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_conversions
- CATKIN_DEPENDS orunav_msgs
+ CATKIN_DEPENDS orunav_msgs tf
 #  DEPENDS system_lib
 )
 

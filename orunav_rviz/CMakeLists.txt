@@ -5,6 +5,8 @@ find_package(catkin REQUIRED
   cmake_modules
   orunav_generic
   orunav_conversions
+  tf
+  visualization_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS program_options)
@@ -23,7 +25,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_rviz
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS tf visualization_msgs
 #  DEPENDS system_lib
 )
 

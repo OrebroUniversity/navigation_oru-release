@@ -18,6 +18,7 @@
   <build_depend>orunav_generic</build_depend>
   <build_depend>orunav_rviz</build_depend>
   <build_depend>orunav_conversions</build_depend>
+  <build_depend>orunav_geometry</build_depend>
   <build_depend>cv_bridge</build_depend>
   <build_depend>tf_conversions</build_depend>
   <build_depend>pcl_ros</build_depend>
@@ -31,6 +32,7 @@
   <run_depend>orunav_generic</run_depend>
   <run_depend>orunav_rviz</run_depend>
   <run_depend>orunav_conversions</run_depend>
+  <run_depend>orunav_geometry</run_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>tf_conversions</run_depend>
   <run_depend>pcl_ros</run_depend>

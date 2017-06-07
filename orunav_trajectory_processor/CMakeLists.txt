@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_rviz
   orunav_conversions
   orunav_geometry
+  tf
 )
 
 find_package(Eigen3)
@@ -30,7 +31,7 @@ find_package(Boost REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_trajectory_processor
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
 #  DEPENDS system_lib
 )
 

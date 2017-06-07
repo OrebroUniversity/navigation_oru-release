@@ -34,7 +34,7 @@ find_package(Boost REQUIRED COMPONENTS system program_options thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES orunav_motion_planner
-  CATKIN_DEPENDS roscpp std_msgs cv_bridge
+  CATKIN_DEPENDS roscpp std_msgs cv_bridge orunav_rviz orunav_conversions
 #  DEPENDS system_lib
 )
 

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
   orunav_rviz
   orunav_conversions
   orunav_geometry
+  visualization_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread program_options)

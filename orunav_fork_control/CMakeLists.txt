@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_msgs
   orunav_generic
   orunav_rviz
+  visualization_msgs
 )
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system thread program_options)
@@ -25,7 +26,7 @@ endif()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES orunav_fork_control
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS orunav_generic orunav_rviz roscpp
 #  DEPENDS system_lib
 )
 

@@ -14,10 +14,14 @@
   <build_depend>orunav_conversions</build_depend>
   <build_depend>orunav_generic</build_depend>
   <build_depend>eigen</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>visualization_msgs</build_depend>
 
   <run_depend>orunav_conversions</run_depend>
   <run_depend>orunav_generic</run_depend>
   <run_depend>eigen</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>visualization_msgs</run_depend>
   
   <export>
     <cpp cflags="-I${prefix}/include" />
