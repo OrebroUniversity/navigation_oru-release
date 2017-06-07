@@ -2,8 +2,8 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2017-06-07)
+------------------
 * Updated the GAZEBO_MODEL_PATH, to also work with the devel/source.bash.
 * Contributors: Henrik Andreasson
 

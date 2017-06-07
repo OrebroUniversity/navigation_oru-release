@@ -2,8 +2,8 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2017-06-07)
+------------------
 * Removed unused TinyXML dependency.
 * Contributors: Henrik Andreasson
 
