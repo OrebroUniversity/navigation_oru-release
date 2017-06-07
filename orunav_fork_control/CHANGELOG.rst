@@ -2,8 +2,8 @@
 Changelog for package orunav_fork_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2017-06-07)
+------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Updated dependencies.

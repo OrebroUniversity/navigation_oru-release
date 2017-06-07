@@ -2,8 +2,8 @@
 Changelog for package orunav_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2017-06-07)
+------------------
 * Fixed type_id factory to get the right geometry model of the robot.
 * Contributors: Henrik Andreasson
 
