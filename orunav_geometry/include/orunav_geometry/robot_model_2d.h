@@ -210,6 +210,32 @@ namespace orunav_geometry {
     Polygon bound;
   };
 
+  // TODO, the numbering orignates from the constraint extractor - could be made a bit more fancy :-).
+  class RobotModelTypeFactory {
+  public:
+    RobotModel2dInterface* getModel(int type_id) {
+      switch (type_id) {
+      case 1:
+	return &model1;
+      case 2:
+	return &model2;
+      case 3:
+	return &model3;
+      case 4:
+	return &model4;
+      case 5:
+	return &model5;
+      default:
+	return &model1;
+      }
+    }
+  private:
+    orunav_geometry::RobotModel2dSnowWhite model1;
+    orunav_geometry::RobotModel2dCiTiTruck model2;
+    orunav_geometry::RobotModel2dOneSquareMeter model3;
+    orunav_geometry::RobotModel2dPitViper model4;
+    orunav_geometry::RobotModel2dXa15 model5;
+  };
 
   class RobotModel2dWithState : public orunav_generic::Point2dContainerInterface, public orunav_generic::Point2dCollisionCheckInterface {
   public:

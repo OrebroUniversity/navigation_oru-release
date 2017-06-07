@@ -244,28 +244,8 @@ int main(int argc, char **argv)
     }
 
 
-  orunav_geometry::RobotModel2dInterface* model = 0x0;
-  switch (model_type) {
-      
-  case 1:
-      model = new orunav_geometry::RobotModel2dSnowWhite();
-      break;
-  case 2:
-      model = new orunav_geometry::RobotModel2dCiTiTruck();
-      break;
-  case 3:
-      model = new orunav_geometry::RobotModel2dOneSquareMeter();
-      break;
-    case 4:
-      model = new orunav_geometry::RobotModel2dPitViper();
-      break;
-    case 5:
-      model = new orunav_geometry::RobotModel2dXa15();
-      break;
-  default:
-      model = new orunav_geometry::RobotModel2dSnowWhite();
-      break;
-  };
+  orunav_geometry::RobotModelTypeFactory model_type_factory;
+  orunav_geometry::RobotModel2dInterface* model = model_type_factory.getModel(model_type);
   
   orunav_geometry::RobotModel2dWithState robot(*model);
   orunav_generic::RobotInternalState2d s;
