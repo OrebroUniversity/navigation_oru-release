@@ -2,6 +2,9 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.3 (2017-06-07)
 ------------------
 * Added dependency on orunav_msgs.
