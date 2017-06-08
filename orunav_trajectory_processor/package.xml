@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_trajectory_processor</name>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <description>The orunav_trajectory_processor package</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
