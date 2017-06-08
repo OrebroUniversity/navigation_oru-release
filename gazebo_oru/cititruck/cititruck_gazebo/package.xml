@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>cititruck_gazebo</name>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <description>The cititruck_gazebo package</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>

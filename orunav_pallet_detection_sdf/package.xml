@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_pallet_detection_sdf</name>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <description>The orunav_pallet_detection_sdf package, based on the SDF implementation by Daniel Canelhas</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
