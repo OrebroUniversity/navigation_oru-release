@@ -2,6 +2,9 @@
 Changelog for package orunav_node_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.7 (2017-06-08)
 ------------------
 

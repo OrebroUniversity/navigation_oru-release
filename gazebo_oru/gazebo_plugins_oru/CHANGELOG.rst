@@ -2,6 +2,9 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.7 (2017-06-08)
 ------------------
 
