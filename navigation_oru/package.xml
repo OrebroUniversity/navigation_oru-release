@@ -19,9 +19,15 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
+  <run_depend>map_server</run_depend>
+
   <run_depend>cititruck_description</run_depend>
   <run_depend>cititruck_gazebo</run_depend>
+  <run_depend>cititruck_teleop</run_depend>
+  <run_depend>euro_pallet</run_depend>
   <run_depend>gazebo_worlds_oru</run_depend>
+  <run_depend>gazebo_plugins_oru</run_depend>
+  <run_depend>gazebo_models_oru</run_depend>
   <run_depend>orunav_generic</run_depend>
   <run_depend>orunav_launch</run_depend>
   <run_depend>orunav_params</run_depend>
@@ -30,7 +36,6 @@
   <run_depend>orunav_geometry</run_depend>
   <run_depend>orunav_rviz</run_depend>
   <run_depend>orunav_node_utils</run_depend>
-  <run_depend>euro_pallet</run_depend>
   <run_depend>orunav_constraint_extract</run_depend>
   <run_depend>orunav_debug</run_depend>
   <run_depend>orunav_fork_control</run_depend>
@@ -39,12 +44,10 @@
   <run_depend>orunav_trajectory_processor</run_depend>
   <run_depend>orunav_path_smoother</run_depend>
   <run_depend>orunav_motion_planner</run_depend>
-  <run_depend>cititruck_teleop</run_depend>
   <run_depend>orunav_coordinator_fake</run_depend>
   <run_depend>orunav_mpc</run_depend>
   <run_depend>orunav_vehicle_execution</run_depend>
   <run_depend>orunav_pallet_detection_sdf</run_depend>
-  <run_depend>gazebo_plugins_oru</run_depend>
 
   <export>
     <metapackage/>
