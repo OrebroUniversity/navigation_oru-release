@@ -2,6 +2,9 @@
 Changelog for package orunav_constraint_extract
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.5 (2017-06-07)
 ------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

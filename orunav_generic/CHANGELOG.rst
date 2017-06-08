@@ -2,6 +2,9 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.5 (2017-06-07)
 ------------------
 
