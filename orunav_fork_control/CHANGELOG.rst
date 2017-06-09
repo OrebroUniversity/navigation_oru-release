@@ -2,6 +2,9 @@
 Changelog for package orunav_fork_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.8 (2017-06-08)
 ------------------
 

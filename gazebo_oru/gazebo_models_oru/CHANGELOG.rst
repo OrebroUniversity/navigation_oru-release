@@ -2,6 +2,9 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.8 (2017-06-08)
 ------------------
 

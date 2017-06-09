@@ -2,6 +2,9 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.8 (2017-06-08)
 ------------------
 

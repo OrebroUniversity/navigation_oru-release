@@ -2,6 +2,9 @@
 Changelog for package orunav_path_pool
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.8 (2017-06-08)
 ------------------
 
