@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>cititruck_teleop</name>
-  <version>0.0.8</version>
+  <version>0.0.9</version>
   <description>The cititruck_teleop package</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
