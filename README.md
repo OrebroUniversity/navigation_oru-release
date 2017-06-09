@@ -44,6 +44,8 @@ You need to build this package from source.
 
 `$ sudo make install`
 
+`$ sudo ldconfig`
+
 (feel free to remove the ACADOtoolkit tree now)
 
 
@@ -65,7 +67,7 @@ NOTE: this should now be encoded directly into the devel/setup.bash script.
 
 Update the GAZEBO_MODEL_PATH variable, add the following to your ~/.bashrc file:
 
-`export GAZEBO_MODEL_PATH=/home/<your user name>/catkin_ws/src/navigation_oru/gazebo_oru/gazebo_models_oru/models:$GAZEBO_MODEL_PATH`
+`export GAZEBO_MODEL_PATH=/home/<your_user_name>/catkin_ws/src/navigation_oru/gazebo_oru/gazebo_models_oru/models:$GAZEBO_MODEL_PATH`
 
 This is needed inorder to be able to load the different environements (otherwise you get "no namepace found" messages and an empty world).
 
