@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
   std_msgs
+  std_srvs
   nav_msgs
   orunav_msgs
   orunav_generic
