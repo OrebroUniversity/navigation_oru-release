@@ -2,6 +2,11 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix to get it to build on binaries for indigo.
+* Contributors: Henrik Andreasson
+
 0.0.9 (2017-06-09)
 ------------------
 

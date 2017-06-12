@@ -2,6 +2,9 @@
 Changelog for package orunav_path_smoother
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.9 (2017-06-09)
 ------------------
 

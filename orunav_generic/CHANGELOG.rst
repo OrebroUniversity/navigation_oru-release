@@ -2,6 +2,11 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Found race condistion.
+* Contributors: Henrik Andreasson
+
 0.0.9 (2017-06-09)
 ------------------
 
