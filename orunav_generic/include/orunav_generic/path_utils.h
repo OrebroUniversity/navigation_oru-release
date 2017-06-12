@@ -180,7 +180,7 @@ bool getIdxFromEndMinDistance(const PathInterface &path, const double &minDist, 
   size_t second_req_idx = req_path_points[req_path_points.size()-2];
 
   idx = path.sizePath()-2;
-  while (idx >= second_req_idx) {
+  while (idx >= second_req_idx && idx >= 0) {
     usedDistance = getPathDistanceBetweenIndexes(path, idx, last_idx);
     if (usedDistance > minDist) {
       return true;
