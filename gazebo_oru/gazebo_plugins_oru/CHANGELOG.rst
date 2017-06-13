@@ -2,8 +2,8 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2017-06-13)
+------------------
 * changed to gazebo8
 * Contributors: Marc Hanheide
 
