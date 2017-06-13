@@ -37,7 +37,8 @@ bool getPolygonFootPrintCallback(orunav_msgs::GetPolygonFootPrint::Request  &req
   std::vector<int> startPoints;
   std::vector<int> endPoints;
 
-  orunav_geometry::RobotModel2dPitViper model_pitviper;
+  orunav_geometry::RobotModelTypeFactory model_type_factory;
+  orunav_geometry::RobotModel2dInterface* model = model_type_factory.getModel(req.target.type_id);
   orunav_generic::RobotInternalState2d internal_state2d;
 
   int acc = 0;
@@ -46,7 +47,7 @@ bool getPolygonFootPrintCallback(orunav_msgs::GetPolygonFootPrint::Request  &req
     // Compute the footprint for each path snippet.
     // TODO - check how the index should be keept (if needed).
     constraint_extract::PolygonConstraint constraint;
-    orunav_geometry::Polygon sweep_area = constraint_extract::computeSweepArea(paths[i], model_pitviper, internal_state2d);
+    orunav_geometry::Polygon sweep_area = constraint_extract::computeSweepArea(paths[i], *model, internal_state2d);
 
     sweep_area.convexHull();
 

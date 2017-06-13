@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_debug</name>
-  <version>0.0.0</version>
+  <version>0.0.10</version>
   <description>The orunav_debug package</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
@@ -17,6 +17,9 @@
   <build_depend>orunav_conversions</build_depend>
   <build_depend>orunav_geometry</build_depend>
   <build_depend>orunav_node_utils</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>boost</build_depend>
+  <build_depend>tf</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>orunav_msgs</run_depend>
@@ -25,6 +28,9 @@
   <run_depend>orunav_conversions</run_depend>
   <run_depend>orunav_geometry</run_depend>
   <run_depend>orunav_node_utils</run_depend>
+  <run_depend>eigen</run_depend>
+  <run_depend>boost</run_depend>
+  <run_depend>tf</run_depend>
 
   <export>
   </export>

@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   nav_msgs
   orunav_msgs
+  visualization_msgs
   orunav_generic
   orunav_rviz
   orunav_conversions
@@ -32,7 +33,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O3")
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES orunav_path_pool
-#  CATKIN_DEPENDS TinyXML
+  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry roscpp
 #  DEPENDS system_lib
 )
 

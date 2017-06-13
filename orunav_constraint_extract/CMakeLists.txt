@@ -3,7 +3,6 @@ project(orunav_constraint_extract)
 
 set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   cmake_modules
   roscpp
   std_msgs
@@ -13,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_rviz
   orunav_conversions
   orunav_geometry
+  tf
 )
 
 find_package(Boost REQUIRED COMPONENTS program_options serialization) # thread signals system
@@ -30,7 +30,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp orunav_generic
+  CATKIN_DEPENDS roscpp orunav_rviz orunav_conversions orunav_geometry
 #  DEPENDS system_lib
 )
 
@@ -98,11 +98,18 @@ target_link_libraries(polygonfootprint_client
 #############
 
 install(TARGETS ${PROJECT_NAME} polygonconstraint_service polygonfootprint_service polygonfootprint_client
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-       )
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-       )
+install(DIRECTORY
+  include/${PROJECT_NAME}/
+  tables
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  )
+
+install(DIRECTORY
+  tables
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  )

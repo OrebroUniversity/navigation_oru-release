@@ -75,7 +75,7 @@
   </node>
 
     <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node">
-      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/citi1_sim_background.dat"/>
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/backgrounds/citi1_sim_background.dat"/>
       <param name="Dmax" value="0.2"/>
       <param name="visualize" value="true"/>
       <param name="visualize_sdf" value="true"/>

@@ -34,7 +34,7 @@ find_package(Boost REQUIRED COMPONENTS system program_options thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES orunav_motion_planner
-  CATKIN_DEPENDS roscpp std_msgs cv_bridge
+  CATKIN_DEPENDS roscpp std_msgs cv_bridge orunav_rviz orunav_conversions
 #  DEPENDS system_lib
 )
 
@@ -189,6 +189,13 @@ install(TARGETS get_path_service get_path_client primitives_pruning create_heuri
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY
+  include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+install(DIRECTORY
+  LookupTables
+  Primitives
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

@@ -3,7 +3,6 @@ project(orunav_pallet_detection_sdf)
 
 set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   cmake_modules
   roscpp
   std_msgs
@@ -36,7 +35,7 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES orunav_pallet_detection_sdf
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
 #  DEPENDS system_lib
 )
 
@@ -80,7 +79,12 @@ target_link_libraries(object_est_client
 #############
 
 install(TARGETS camera_pose_calib_node euro_pallet_sdf_node object_est_client
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-       )
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+
+install(DIRECTORY
+  backgrounds
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  )

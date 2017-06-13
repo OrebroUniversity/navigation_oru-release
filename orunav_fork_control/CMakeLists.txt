@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_msgs
   orunav_generic
   orunav_rviz
+  visualization_msgs
 )
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system thread program_options)
@@ -25,7 +26,7 @@ endif()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES orunav_fork_control
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS orunav_generic orunav_rviz roscpp
 #  DEPENDS system_lib
 )
 
@@ -41,9 +42,11 @@ include_directories(
 )
 
 add_executable(fork_control_sim_node src/fork_control_sim_main.cpp)
+add_dependencies(fork_control_sim_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(fork_control_sim_node ${catkin_LIBRARIES})
 
 add_executable(fork_control_client src/fork_control_client_main.cpp)
+add_dependencies(fork_control_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(fork_control_client ${catkin_LIBRARIES}
   ${Boost_LIBRARIES})
 
@@ -55,4 +58,9 @@ install(TARGETS fork_control_sim_node fork_control_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY
+   launch
+   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

@@ -6,8 +6,8 @@ find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
   std_msgs
+  std_srvs
   nav_msgs
-  cv_bridge
   orunav_msgs
   orunav_generic
   orunav_rviz
@@ -107,3 +107,8 @@ install(TARGETS orunav_vehicle_execution_node point_n_click_target_client send_b
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
        )
+
+install(DIRECTORY
+  targets
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

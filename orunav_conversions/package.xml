@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_conversions</name>
-  <version>0.0.0</version>
+  <version>0.0.10</version>
   <description>The orunav_conversions package</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
@@ -10,7 +10,9 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <build_depend>orunav_msgs</build_depend>
+  <build_depend>tf</build_depend>
   <run_depend>orunav_msgs</run_depend>
+  <run_depend>tf</run_depend>
 
 
   <export>

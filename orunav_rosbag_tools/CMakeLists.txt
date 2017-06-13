@@ -3,14 +3,16 @@ project(orunav_rosbag_tools)
 
 find_package(catkin REQUIRED
   cmake_modules
+  nav_msgs
   orunav_generic
   eigen_conversions
   roscpp
   rosconsole
-  tf
   rosbag
+  tf
   tf_conversions
-  pcl_ros pcl_conversions
+  pcl_ros 
+  pcl_conversions
   )
 find_package(Boost REQUIRED COMPONENTS program_options)
 
