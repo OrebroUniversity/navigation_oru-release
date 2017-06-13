@@ -2,6 +2,9 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.10 (2017-06-12)
 -------------------
 

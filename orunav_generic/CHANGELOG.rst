@@ -2,6 +2,9 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.10 (2017-06-12)
 -------------------
 * Found race condistion.
