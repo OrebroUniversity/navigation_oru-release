@@ -2,6 +2,9 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.0 (2017-06-13)
 ------------------
 * changed to gazebo8
