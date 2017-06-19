@@ -2,6 +2,12 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert "changed to gazebo8"
+  This reverts commit 3ab9b3f35bdabdff87abd911a6b9f208883179e9.
+* Contributors: Marc Hanheide
+
 0.1.1 (2017-06-13)
 ------------------
 
