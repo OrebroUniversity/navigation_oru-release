@@ -12,20 +12,20 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend> 
-  <build_depend>gazebo8</build_depend>
-  <build_depend>gazebo8_msgs</build_depend>
-  <build_depend>gazebo8_plugins</build_depend>
-  <build_depend>gazebo8_ros</build_depend>
+  <build_depend>gazebo</build_depend>
+  <build_depend>gazebo_msgs</build_depend>
+  <build_depend>gazebo_plugins</build_depend>
+  <build_depend>gazebo_ros</build_depend>
   <build_depend>orunav_generic</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>boost</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend> 
-  <run_depend>gazebo8</run_depend>
-  <run_depend>gazebo8_msgs</run_depend>
-  <run_depend>gazebo8_plugins</run_depend>
-  <run_depend>gazebo8_ros</run_depend>
+  <run_depend>gazebo</run_depend>
+  <run_depend>gazebo_msgs</run_depend>
+  <run_depend>gazebo_plugins</run_depend>
+  <run_depend>gazebo_ros</run_depend>
   <run_depend>orunav_generic</run_depend>
   <run_depend>eigen</run_depend>
   <run_depend>boost</run_depend>
