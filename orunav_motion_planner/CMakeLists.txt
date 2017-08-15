@@ -49,35 +49,6 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-# add_library(orunav_motion_planner
-#   src/ARAStarPathPlanner.cpp
-#   src/AStar.cpp
-#   src/AStarPathPlanner.cpp
-#   src/CarConfiguration.cpp
-#   src/CarModel.cpp
-#   src/CollisionDetector.cpp
-#   src/Configuration.cpp
-#   src/DiscWorldVisualizer.cpp
-#   src/LHDConfiguration.cpp
-#   src/LHDModel.cpp
-#   src/MapGenerators.cpp
-#   src/ModelUtilities.cpp
-#   src/MotionPrimitiveData.cpp
-#   src/MotionPrimitiveSelector.cpp
-#   src/PathFinder.cpp
-#   src/PathNode.cpp
-#   src/UnicycleConfiguration.cpp
-#   src/UnicycleModel.cpp
-#   src/Utils.cpp
-#   src/VehicleMission.cpp
-#   src/VehicleModel.cpp
-#   src/World.cpp
-#   src/WorldOccupancyMap.cpp
-#   src/WorldParameters.cpp
-#   )
-# add_dependencies(orunav_motion_planner ${catkin_EXPORTED_TARGETS})
-
-
 ## Declare a cpp executable
 add_executable(get_path_service src/get_path_service.cpp
   src/ARAStarPathPlanner.cpp
@@ -91,7 +62,6 @@ add_executable(get_path_service src/get_path_service.cpp
   src/LHDConfiguration.cpp
   src/LHDModel.cpp
   src/MapGenerators.cpp
-  src/ModelUtilities.cpp
   src/MotionPrimitiveData.cpp
   src/MotionPrimitiveSelector.cpp
   src/PathFinder.cpp
@@ -117,73 +87,11 @@ target_link_libraries(get_path_client
   ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 
-add_executable(primitives_pruning src/primitives_pruning_main.cpp
-  src/ARAStarPathPlanner.cpp
-  src/AStar.cpp
-  src/AStarPathPlanner.cpp
-  src/CarConfiguration.cpp
-  src/CarModel.cpp
-  src/CollisionDetector.cpp
-  src/Configuration.cpp
-  src/DiscWorldVisualizer.cpp
-  src/LHDConfiguration.cpp
-  src/LHDModel.cpp
-  src/MapGenerators.cpp
-  src/ModelUtilities.cpp
-  src/MotionPrimitiveData.cpp
-  src/MotionPrimitiveSelector.cpp
-  src/PathFinder.cpp
-  src/PathNode.cpp
-  src/UnicycleConfiguration.cpp
-  src/UnicycleModel.cpp
-  src/Utils.cpp
-  src/VehicleMission.cpp
-  src/VehicleModel.cpp
-  src/World.cpp
-  src/WorldOccupancyMap.cpp
-  src/WorldParameters.cpp
-)
-target_link_libraries(primitives_pruning
-#  orunav_motion_planner 
-${catkin_LIBRARIES} ${Boost_LIBRARIES}
-)
-
-add_executable(create_heuristic src/create_heuristic_main.cpp
-  src/ARAStarPathPlanner.cpp
-  src/AStar.cpp
-  src/AStarPathPlanner.cpp
-  src/CarConfiguration.cpp
-  src/CarModel.cpp
-  src/CollisionDetector.cpp
-  src/Configuration.cpp
-  src/DiscWorldVisualizer.cpp
-  src/LHDConfiguration.cpp
-  src/LHDModel.cpp
-  src/MapGenerators.cpp
-  src/ModelUtilities.cpp
-  src/MotionPrimitiveData.cpp
-  src/MotionPrimitiveSelector.cpp
-  src/PathFinder.cpp
-  src/PathNode.cpp
-  src/UnicycleConfiguration.cpp
-  src/UnicycleModel.cpp
-  src/Utils.cpp
-  src/VehicleMission.cpp
-  src/VehicleModel.cpp
-  src/World.cpp
-  src/WorldOccupancyMap.cpp
-  src/WorldParameters.cpp
-)
-target_link_libraries(create_heuristic
-#  orunav_motion_planner 
-${catkin_LIBRARIES} ${Boost_LIBRARIES}
-)
-
 #############
 ## Install ##
 #############
 
-install(TARGETS get_path_service get_path_client primitives_pruning create_heuristic
+install(TARGETS get_path_service get_path_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
