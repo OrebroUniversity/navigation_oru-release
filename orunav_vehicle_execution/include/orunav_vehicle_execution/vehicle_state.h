@@ -381,7 +381,7 @@ public:
       return false;
     
     // Can only send it if the vehicle is in waiting state or in active state
-    if (controllerState_ == WAITING || controllerState_ == ACTIVE)
+    if (controllerState_ == WAITING || controllerState_ == ACTIVE || controllerState_ == AT_CRITICAL_POINT)
       return true;
 
     return false;
