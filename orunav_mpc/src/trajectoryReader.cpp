@@ -74,10 +74,10 @@ threadReturn trajectoryReader::readLoop(threadData *thread_data)
             {
                 if (ros::Time::now() >= start_time + ros::Duration(SW_START_TIME_ALLOWED_ERROR_SEC))
                 {
-                    thdata->status.set(SW_PROCESS_STATUS_FAIL);
+                    //thdata->status.set(SW_PROCESS_STATUS_FAIL);
                     ROS_WARN("Failed to start tracking at the specified time.");
                 }
-                else
+                //else
                 {
                     // Active list - currently not used.
                     is_active = true; ////// <<<< -------
