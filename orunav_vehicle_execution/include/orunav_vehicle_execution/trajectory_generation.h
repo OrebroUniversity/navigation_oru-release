@@ -79,11 +79,14 @@ std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunk
 }
 
 // Vehicle is driving.
-std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunksCASE2(const VehicleState &vs, const TrajectoryProcessor::Params &params, const unsigned int &chunkIdx, unsigned int &pathIdx, double &pathChunkDistance, bool &valid) {
+std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunksCASE2(const VehicleState &vs, const TrajectoryProcessor::Params &params, const unsigned int &chunkIdx, unsigned int &pathIdx, double &pathChunkDistance, bool &valid, bool useCts) {
 
   valid = true;
   orunav_generic::Path path = vs.getPath();
-  orunav_generic::CoordinatedTimes cts = vs.getCoordinatedTimes();
+  orunav_generic::CoordinatedTimes cts;
+  if (useCts) {
+    cts = vs.getCoordinatedTimes();
+  }
 
   const orunav_generic::TrajectoryChunks& current_chunks = vs.getTrajectoryChunksRef();
 
