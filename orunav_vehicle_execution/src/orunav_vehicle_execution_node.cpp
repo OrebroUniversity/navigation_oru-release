@@ -888,7 +888,7 @@ public:
   {
     // Check the current state of the vehicle
     ROS_INFO("[KMOVehicleExecutionNode] RID:%d [%d] - received executeTask (update:%d)", robot_id_, req.task.target.robot_id, (int)req.task.update);
-    ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - critical point (:%d)", robot_id_, (int)req.task.criticalPoint);
+    ROS_INFO("[KMOVehicleExecutionNode] RID:%d - next critical point (-1 == there is none) (:%d)", robot_id_, (int)req.task.criticalPoint);
     //    ROS_ERROR_STREAM("task.cts : " << req.task.cts);
 
     if (!vehicle_state_.isWaiting() && !req.task.update) {
@@ -1748,7 +1748,7 @@ public:
             ROS_INFO_STREAM("[KMOVehicleExecution] - will drive in slowdown mode - ignoring CTs");
             vehicle_state_.clearCoordinatedTimes();
             bool valid = false;
-            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_slowdown_params_, chunk_idx, path_idx, path_chunk_distance, valid);
+            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_slowdown_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
             if (!valid) {
               continue;
             }
@@ -1756,7 +1756,7 @@ public:
           }
           else {
             bool valid;
-            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid);
+            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
             if (!valid) {
               continue;
             }
@@ -1830,7 +1830,7 @@ public:
       
       ros::Time start_time;
       double start_time_d = vehicle_state_.getCoordinatedStartTime();
-      if (start_time_d < 0) {
+      if (start_time_d < 0 && use_ct_) {
         start_time = ros::Time::now() + ros::Duration(0.5);
         ROS_WARN("[KMOVehicleExecutionNode] - start time is not coordinated");
       }
