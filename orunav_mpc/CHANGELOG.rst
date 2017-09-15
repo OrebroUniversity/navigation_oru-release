@@ -2,8 +2,8 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2017-09-15)
+------------------
 * Removed start time checks.
 * Contributors: Henrik Andreasson
 

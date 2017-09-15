@@ -2,8 +2,8 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2017-09-15)
+------------------
 * Added new environment model.
 * Contributors: Henrik Andreasson
 

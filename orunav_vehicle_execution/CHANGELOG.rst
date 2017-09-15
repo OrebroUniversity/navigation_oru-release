@@ -2,8 +2,8 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2017-09-15)
+------------------
 * Use ct check fix.
 * Added AT_CRICITAL_POINT as a valid start point.
 * Fixed use_ct\_ bug.
