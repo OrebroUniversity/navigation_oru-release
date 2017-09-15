@@ -2,6 +2,9 @@
 Changelog for package orunav_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.1 (2017-06-13)
 ------------------
 

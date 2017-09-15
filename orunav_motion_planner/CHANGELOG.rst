@@ -2,6 +2,11 @@
 Changelog for package orunav_motion_planner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added LICENSE and cleanup.
+* Contributors: Henrik Andreasson
+
 0.1.1 (2017-06-13)
 ------------------
 

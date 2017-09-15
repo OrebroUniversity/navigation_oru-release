@@ -2,6 +2,9 @@
 Changelog for package orunav_trajectory_processor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.1 (2017-06-13)
 ------------------
 
