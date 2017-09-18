@@ -23,6 +23,10 @@
     <param name="use_ct" value="false" />
   </node>
 
+  <!-- load hardware interface and controller configurations -->
+  <rosparam command="load" file="$(find vito_description)/config/vito_controllers_iliad.yaml"/>
+  <rosparam command="load" file="$(find vito_description)/config/hardware_interfaces.yaml"/>
+		
   <!-- ALL ROBOT SPECIFIC TASKS -->
 
   <group ns="robot1">
@@ -78,20 +82,9 @@
     <param name="max_acc" value="0.1" />
   </node>
 
-  <!-- MANIPULATORS SPECIFIC TASKS -->
-	<group if="$(arg use_manipulator)">
-		<group ns="manipulator">
-		<param name="tf_prefix" value="manipulator" />
-	
-		
-
-		</group>
-	</group>
-  </group>
-
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
 
-  <arg name="use_joint_state_publisher" default="false"/>
+  <arg name="use_joint_state_publisher" default="true"/>
 
 		<!-- configure whether the real hardware is enabled or not -->
 		<arg name="left_arm_enabled" default="false"/>
@@ -103,21 +96,11 @@
 			<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
 			<param name="use_gui" value="false"/>
 			<!-- listens to each part -->
-			<rosparam param="source_list">[/left_arm/joint_states,/left_hand/joint_states,/right_arm/joint_states,/head/joint_states]</rosparam>
-			<!-- [/left_arm/joint_states,/left_hand/joint_states,/right_arm/joint_states,/right_hand/joint_states,/head/joint_states]-->
+			<rosparam param="source_list">[/robot1/joint_states,/left_arm/joint_states,/right_arm/joint_states]</rosparam>
 			</node>
 		</group>
 
-		<param name="publish_frequency" value="100"/>
-		<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
-		</node>
-
-
-		<!-- load hardware interface and controller configurations -->
-		<rosparam command="load" file="$(find vito_description)/config/vito_controllers_iliad.yaml"/>
-		<rosparam command="load" file="$(find vito_description)/config/hardware_interfaces.yaml"/>
-
-			<group ns="left_arm">
+			<group ns="/left_arm">
 			<group if="$(arg left_arm_enabled)">
 				<!--add a copy of the robot description within the name space -->
 				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
@@ -133,11 +116,12 @@
 			</group>
 
 			<!-- load the controllers in current namespace -->
-			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller stiffness_trajectory_controller damping_trajectory_controller add_torque_trajectory_controller"/>
-			<node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_impedance_controller" />
+			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
+			<!-- stiffness_trajectory_controller damping_trajectory_controller add_torque_trajectory_controller"/>-->
+			<!--<node name="controller_stopper" pkg="controller_manager" type="spawner" args="- -stopped joint_impedance_controller" /> -->
 			</group>
 
-			<group ns="right_hand">
+			<group ns="/right_hand">
 			<group if="$(arg right_hand_enabled)">
 				<!--add a copy of the robot description within the name space -->
 				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
@@ -154,7 +138,7 @@
 			</group>
 			</group>
 
-			<group ns="right_arm">
+			<group ns="/right_arm">
 			<group if="$(arg right_arm_enabled)">
 				<!--add a copy of the robot description within the name space -->
 				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
@@ -170,7 +154,9 @@
 			</group>
 
 			<!-- load the controllers in current namespace -->
-			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller stiffness_trajectory_controller damping_trajectory_controller add_torque_trajectory_controller"/>
-			<node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_impedance_controller" />
+			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
+			<!--stiffness_trajectory_controller damping_trajectory_controller add_torque_trajectory_controller"/>-->
+			<!--<node name="controller_stopper" pkg="controller_manager" type="spawner" args="- -stopped joint_impedance_controller" /> -->
 			</group>
+	</group>
 </launch>
