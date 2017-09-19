@@ -2,8 +2,8 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2017-09-19)
+------------------
 * Merge pull request `#3 <https://github.com/OrebroUniversity/navigation_oru-release/issues/3>`_ from batman177/master
   Add LS2000 laser scanner to ILIAD cititruck etc.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

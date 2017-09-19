@@ -2,8 +2,8 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2017-09-19)
+------------------
 * Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
 * merge
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

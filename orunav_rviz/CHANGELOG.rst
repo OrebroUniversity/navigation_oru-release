@@ -2,8 +2,8 @@
 Changelog for package orunav_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2017-09-19)
+------------------
 * merge
 * Contributors: Martin Magnusson
 

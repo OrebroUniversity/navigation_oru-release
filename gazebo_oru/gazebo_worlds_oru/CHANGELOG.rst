@@ -2,8 +2,8 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2017-09-19)
+------------------
 * changed world. Doors added
 * THE GAZEBO GUI SHOULD BE TURNED ON TODORll! :'(
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
