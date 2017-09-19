@@ -11,7 +11,7 @@
   <gazebo>
     <plugin name="steer_drive_controller" filename="libgazebo_ros_steer_drive.so">
       <alwaysOn>true</alwaysOn>
-      <updateRate>1000</updateRate>
+      <updateRate>100</updateRate>
       <steerJoint>base2steer_joint</steerJoint>
       <driveJoint>steer2sd_wheel_joint</driveJoint>
       <fixedWheelLeftJoint>base2fixed_left_wheel_joint</fixedWheelLeftJoint>
