@@ -587,22 +587,22 @@
         </inertia>
       </inertial>
       <visual name='Wall_27_Visual'>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.1 0.15 2.5</size>
+            <size>10.1 0.15 2.0</size>
           </box>
         </geometry>
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/Grey</name>
+            <name>Gazebo/FlatBlack</name>
           </script>
           <ambient>1 1 1 1</ambient>
           <shader type='vertex'>
             <normal_map>__default__</normal_map>
           </shader>
-          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
           <specular>0.01 0.01 0.01 1</specular>
           <emissive>0 0 0 1</emissive>
         </material>
@@ -615,10 +615,10 @@
       <collision name='Wall_27_Collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.1 0.15 2.5</size>
+            <size>10.1 0.15 2.0</size>
           </box>
         </geometry>
         <surface>
@@ -687,22 +687,22 @@
         </inertia>
       </inertial>
       <visual name='Wall_27_Visual'>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.2 0.15 2.5</size>
+            <size>10.2 0.15 2.0</size>
           </box>
         </geometry>
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/Grey</name>
+            <name>Gazebo/FlatBlack</name>
           </script>
           <ambient>1 1 1 1</ambient>
           <shader type='vertex'>
             <normal_map>__default__</normal_map>
           </shader>
-          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
           <specular>0.01 0.01 0.01 1</specular>
           <emissive>0 0 0 1</emissive>
         </material>
@@ -715,10 +715,10 @@
       <collision name='Wall_27_Collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.05 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.2 0.15 2.5</size>
+            <size>10.2 0.15 2.0</size>
           </box>
         </geometry>
         <surface>
@@ -787,22 +787,22 @@
         </inertia>
       </inertial>
       <visual name='Wall_27_Visual'>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.1 0.15 2.5</size>
+            <size>10.1 0.15 2.0</size>
           </box>
         </geometry>
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/Grey</name>
+            <name>Gazebo/FlatBlack</name>
           </script>
           <ambient>1 1 1 1</ambient>
           <shader type='vertex'>
             <normal_map>__default__</normal_map>
           </shader>
-          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
           <specular>0.01 0.01 0.01 1</specular>
           <emissive>0 0 0 1</emissive>
         </material>
@@ -815,10 +815,10 @@
       <collision name='Wall_27_Collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
-        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <pose frame=''>0 0 1.0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10.1 0.15 2.5</size>
+            <size>10.1 0.15 2.0</size>
           </box>
         </geometry>
         <surface>
