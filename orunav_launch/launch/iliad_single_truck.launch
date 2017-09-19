@@ -79,6 +79,6 @@
 
   </group>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/iliad_cititruck.rviz"/>
 
 </launch>
