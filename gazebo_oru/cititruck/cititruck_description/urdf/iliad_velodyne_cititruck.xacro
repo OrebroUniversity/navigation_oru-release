@@ -2,6 +2,7 @@
 
 <robot name="cititruck" xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <xacro:arg name="tf_prefix" default="robot_xacro_default"/>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo" />
   <!-- Import Rviz colors -->
@@ -26,6 +27,10 @@
       <parent link="base_footprint"/>
     </joint>
 
+    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+    <VLP-16 parent="base_link" prefix="$(arg tf_prefix)" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
+      <origin xyz="0.8 0 0.95" rpy="0 0 0" />
+    </VLP-16>
   <!-- Base Link -->
   <link name="base_link">
     <inertial>
