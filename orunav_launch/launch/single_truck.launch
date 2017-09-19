@@ -84,6 +84,7 @@
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
 
+  <group if="$(arg use_manipulator)">
   <arg name="use_joint_state_publisher" default="true"/>
 
 		<!-- configure whether the real hardware is enabled or not -->
@@ -158,5 +159,6 @@
 			<!--stiffness_trajectory_controller damping_trajectory_controller add_torque_trajectory_controller"/>-->
 			<!--<node name="controller_stopper" pkg="controller_manager" type="spawner" args="- -stopped joint_impedance_controller" /> -->
 			</group>
+	    </group>
 	</group>
 </launch>
