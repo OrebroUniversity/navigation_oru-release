@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="ns" default="robot1" />
   <include file="$(find gazebo_worlds_oru)/launch/ncfm_world.launch"/>
