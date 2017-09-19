@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-<arg name="robot_pose_x" default="5.029"/>
-<arg name="robot_pose_y" default="13.538"/>
+<arg name="robot_pose_x" default="4.0"/>
+<arg name="robot_pose_y" default="4.0"/>
 <arg name="robot_pose_z" default="0"/>
 <arg name="robot_pose_roll" default="0"/>
 <arg name="robot_pose_pitch" default="0"/>

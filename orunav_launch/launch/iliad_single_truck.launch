@@ -7,7 +7,8 @@
  <include file="$(find cititruck_gazebo)/launch/cititruck_ncfm.launch">
      <arg name="tf_prefix" value="$(arg prefix)"/>
 </include>
-  <include file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch"/>
+  <!--include file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch"/-->
+  <include file="$(find gazebo_worlds_oru)/launch/empty_map_server.launch"/>
   <!--include file="$(find orunav_mpc)/launch/citi1_simulation.launch"/-->
 
   <node pkg="orunav_vehicle_execution" type="point_n_click_target_client" name="point_n_click_target_client_citi1" output="screen">
