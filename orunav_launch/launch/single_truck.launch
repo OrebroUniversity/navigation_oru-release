@@ -89,7 +89,7 @@
 
 		<!-- configure whether the real hardware is enabled or not -->
 		<arg name="left_arm_enabled" default="false"/>
-		<arg name="left_hand_enabled" default="false"/>
+		<arg name="velvet_tray_enabled" default="false"/>
 		<arg name="right_arm_enabled" default="false"/>
 		<arg name="right_hand_enabled" default="false"/>
 
@@ -101,6 +101,12 @@
 			</node>
 		</group>
 
+			<group ns="/velvet_tray">
+			<group if="$(arg velvet_tray_enabled)">
+			<!-- TODO -->
+			</group>
+			</group>
+			
 			<group ns="/left_arm">
 			<group if="$(arg left_arm_enabled)">
 				<!--add a copy of the robot description within the name space -->
