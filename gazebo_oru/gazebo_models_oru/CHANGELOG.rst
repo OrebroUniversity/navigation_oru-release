@@ -2,6 +2,15 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
+* merge
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* new map
+* added launchfile
+* Contributors: Bruce Wayne, Daniel Adolfsson, Martin Magnusson, tsv
+
 0.2.0 (2017-09-15)
 ------------------
 * Added new environment model.

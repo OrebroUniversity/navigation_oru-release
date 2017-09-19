@@ -2,6 +2,11 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* merge
+* Contributors: Martin Magnusson
+
 0.2.0 (2017-09-15)
 ------------------
 

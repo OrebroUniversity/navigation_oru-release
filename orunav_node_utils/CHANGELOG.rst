@@ -2,6 +2,11 @@
 Changelog for package orunav_node_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* merge
+* Contributors: Martin Magnusson
+
 0.2.0 (2017-09-15)
 ------------------
 
