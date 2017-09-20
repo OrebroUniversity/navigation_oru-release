@@ -174,12 +174,6 @@ public:
       state_ = TASK_FAILED;
       return;
     }
-    if (startOperation_ == LOAD_ITEM) {
-    }
-    if (startOperation_ == UNLOAD_ITEM) {
-    }
-    if (startOperation_ == UNWRAP_PALLET) {
-    }
   }
 
 
@@ -238,12 +232,6 @@ public:
         load = true;
         return;
       }
-    }
-    if (goalOperation_ == LOAD_ITEM) {
-    }
-    if (goalOperation_ == UNLOAD_ITEM) {
-    }
-    if (goalOperation_ == UNWRAP_PALLET) {
     }
 
   }
@@ -393,6 +381,158 @@ public:
     }
   }
 
+  /**
+   * Manipulator code
+   */
+    void handleStartManipulatorOperation(bool &completedTarget, bool &moveArms, bool &load) {
+    if (startOperation_ == NO_OPERATION) {
+      //      controllerState_ = WAITING;
+      ROS_INFO("SET STATE TO DRIVING!!!!");
+      state_ = DRIVING;
+      if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
+        // Cannot start driving if the support legs is active.
+        state_ = TASK_FAILED;
+      }
+      return;
+    }  
+
+    // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
+    //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
+    //           - if operation is ACTIVATE_SUPPORT_LEGS   -> now allowed (if only one operation should be sent we should instead provide it as a goal operation (with an empty path).
+    if (startOperation_ == LOAD) {
+      if (forkState_ == FORK_POSITION_HIGH) {
+        //	controllerState_ = WAITING;
+        state_ = DRIVING;
+	carryingLoad_ = true;
+	return;
+      }
+      else {
+        state_ = PERFORMING_START_OPERATION;
+	moveArms = true;
+	load = true;
+	return;
+      }
+    }
+    if (startOperation_ == UNLOAD) {
+      if (forkState_ == FORK_POSITION_LOW) {
+        //	controllerState_ = WAITING;
+        state_ = DRIVING;
+	carryingLoad_ = false;
+	return;
+      }
+      else {
+        state_ = PERFORMING_START_OPERATION;
+	moveArms = true;
+	load = false;
+	return;
+      }
+    }
+    if (startOperation_ == ACTIVATE_SUPPORT_LEGS) {
+      ROS_ERROR("Cannot active support legs as start operation");
+      //      controllerState_ = WAITING;
+      state_ = TASK_FAILED;
+      return;
+    }
+    if (startOperation_ == LOAD_ITEM) {
+    }
+    if (startOperation_ == UNLOAD_ITEM) {
+    }
+    if (startOperation_ == UNWRAP_PALLET) {
+    }
+  }
+
+
+  void handleGoalManipulatorOperation(bool &completedTarget, bool &moveArms, bool &load) {
+    if (goalOperation_ == NO_OPERATION) {
+      state_ = WAITING_FOR_TASK;
+      //      controllerState_ = WAITING;
+      completedTarget = true;
+      return;
+    }
+
+    // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
+    //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
+    //           - if operation is ACTIVATE_SUPPORT_LEGS   -> the forks state should be at FORK_POSITION_SUPPORT_LEGS to continue
+    if (goalOperation_ == LOAD) {
+      if (forkState_ == FORK_POSITION_HIGH) {
+        state_ = WAITING_FOR_TASK;
+        //	controllerState_ = WAITING;
+	completedTarget = true;
+	carryingLoad_ = true;
+	return;
+      }
+      else {
+        state_ = PERFORMING_GOAL_OPERATION;
+	moveArms = true;
+	load = true;
+	return;
+      }
+    }
+    if (goalOperation_ == UNLOAD) {
+      if (forkState_ == FORK_POSITION_LOW || !this->isCarryingLoad()) {
+        state_ = WAITING_FOR_TASK;
+        //        controllerState_ = WAITING;
+        completedTarget = true;
+	carryingLoad_ = false;
+	return;
+      }
+      else {
+        state_ = PERFORMING_GOAL_OPERATION;
+	moveArms = true;
+	load = false;
+	return;
+      }
+    }
+    if (goalOperation_ == ACTIVATE_SUPPORT_LEGS) {
+      if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
+        state_ = WAITING_FOR_TASK;
+        //        controllerState_ = WAITING;
+        completedTarget = true;
+        carryingLoad_ = true;
+        return;
+      }
+      else {
+        state_ = PERFORMING_GOAL_OPERATION;
+        moveArms = true;
+        load = true;
+        return;
+      }
+    }
+    if (goalOperation_ == LOAD_ITEM) {
+    }
+    if (goalOperation_ == UNLOAD_ITEM) {
+    }
+    if (goalOperation_ == UNWRAP_PALLET) {
+    }
+
+  }
+
+  void update(const orunav_msgs::ManipulatorReportConstPtr &msg, bool &completedTarget, bool &moveArms, bool &load, OperationState &operation) {
+    
+    moveArms = false;
+    load = true;
+    completedTarget = false;
+    
+    manipulatorState_ = static_cast<ManipulatorState>(msg->status);
+
+    // Is the task ok to continue?
+    if (taskFailed()) {
+      return;
+    }
+
+    // Process the start operation (if any)
+    if (state_ == PERFORMING_START_OPERATION) {
+      handleStartManipulatorOperation(completedTarget, moveArms, load);
+      operation = startOperation_;
+    }
+    
+    // Process the goal operation if (any)
+    if (state_ == PERFORMING_GOAL_OPERATION) { 
+      handleGoalManipulatorOperation(completedTarget, moveArms, load);
+      operation = goalOperation_;
+    } 
+  }
+  
   bool canSendTrajectory() const {
     // Only allowed if the vehicle is not in driving state
     if (!state_ == DRIVING)

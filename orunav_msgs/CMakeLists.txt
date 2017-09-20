@@ -62,6 +62,11 @@ add_message_files(
    GeoFence.msg
    DrillTarget.msg
    DrillTargetArray.msg
+   ManipulatorCommand.msg
+   ManipulatorLoadHandling.msg
+   ManipulatorReport.msg
+   ManipulatorState.msg
+   Item.msg
 )
 
 ## Generate services in the 'srv' folder

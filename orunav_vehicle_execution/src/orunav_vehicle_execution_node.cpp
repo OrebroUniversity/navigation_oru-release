@@ -39,6 +39,10 @@
 #include <orunav_msgs/VectorMap.h>
 #include <orunav_msgs/GeoFence.h>
 
+#include <orunav_msgs/ManipulatorReport.h>
+#include <orunav_msgs/ManipulatorCommand.h>
+
+
 #include <orunav_constraint_extract/polygon_constraint.h> // Only used for visualization.
 #include <orunav_constraint_extract/conversions.h>
 #include <orunav_constraint_extract/grid_map.h>
@@ -1472,6 +1476,42 @@ public:
     
   }
 
+    void process_manipulator_report(const orunav_msgs::ManipulatorReportConstPtr &msg) {
+
+//     last_process_fork_report_time_ = ros::Time::now();
+//     bool completed_target, move_forks, load;
+//     VehicleState::OperationState operation;
+//     inputs_mutex_.lock();
+//     vehicle_state_.update(msg, completed_target, move_forks, load, operation);
+//     if (completed_target) {
+//       if (vehicle_state_.getDockingFailed()) {
+//         // TODO
+//         ROS_INFO("DOCKING FAILED!");
+//       }
+//       vehicle_state_.setDocking(false);
+//       vehicle_state_.clearTrajectoryChunks();
+//       vehicle_state_.clearCurrentPath();
+//     }
+//     inputs_mutex_.unlock();
+//     if (move_forks) {
+//       ROS_INFO("[KMOVehicleExecutionNode] %s - moving forks", orunav_node_utils::getIDsString(target_handler_.getLastProcessedID()).c_str());
+//       orunav_msgs::ForkCommand cmd;
+//       cmd.robot_id = robot_id_;
+//       
+//       if (operation == VehicleState::LOAD) {
+//         cmd.state.position_z = 0.1;
+//       }
+//       else if (operation == VehicleState::ACTIVATE_SUPPORT_LEGS) {
+//         cmd.state.position_z = -0.1;
+//       }
+//       else {
+//         cmd.state.position_z = 0.0;
+//       }
+//       forkcommand_pub_.publish(cmd);
+//     }
+
+  }
+  
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
       // Turn on the load detection
       orunav_msgs::ObjectPoseEstimation srv;
