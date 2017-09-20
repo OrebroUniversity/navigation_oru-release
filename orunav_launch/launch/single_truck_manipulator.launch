@@ -101,7 +101,7 @@
 		    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
 		    <param name="use_gui" value="false"/>
 		    <!-- listens to each part -->
-		    <rosparam param="source_list">[/$(arg robot_name)/joint_states,/left_arm/joint_states,/right_arm/joint_states]</rosparam>
+		    <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states,/left_arm/joint_states,/right_arm/joint_states]</rosparam>
 		    </node>
 	    </group>
 
