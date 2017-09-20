@@ -636,8 +636,8 @@ public:
   }
   
   std::string getDebugString() const {
-    if(hasManipulator())
-      return std::string("[VehicleState] : ") + getStr() + std::string("\n[ControllerState] : ") + getStrController() + std::string("\n[ForkState] : ") + getStrFork() + std::string("\n[ManipulatorState] : ") + getStrManipulator();
+//     if(hasManipulator())
+//       return std::string("[VehicleState] : ") + getStr() + std::string("\n[ControllerState] : ") + getStrController() + std::string("\n[ForkState] : ") + getStrFork() + std::string("\n[ManipulatorState] : ") + getStrManipulator();
     return std::string("[VehicleState] : ") + getStr() + std::string("\n[ControllerState] : ") + getStrController() + std::string("\n[ForkState] : ") + getStrFork();
   }
 
