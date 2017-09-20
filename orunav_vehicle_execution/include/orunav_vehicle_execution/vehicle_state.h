@@ -6,13 +6,20 @@ class VehicleState {
 public:
   enum State { WAITING_FOR_TASK = 1, PERFORMING_START_OPERATION, DRIVING, PERFORMING_GOAL_OPERATION, TASK_FAILED, WAITING_FOR_TASK_INTERNAL, DRIVING_SLOWDOWN, AT_CRITICAL_POINT };
   enum ControllerState { WAITING, ACTIVE, BRAKE, FINALIZING, ERROR, UNKNOWN, WAITING_TRAJECTORY_SENT, BRAKE_SENT };
-  enum OperationState { NO_OPERATION = 1, UNLOAD, LOAD, LOAD_DETECT, ACTIVATE_SUPPORT_LEGS, LOAD_DETECT_ACTIVE };
+  enum OperationState { NO_OPERATION = 1, UNLOAD, LOAD, LOAD_DETECT, ACTIVATE_SUPPORT_LEGS, LOAD_DETECT_ACTIVE, LOAD_ITEM, UNLOAD_ITEM, UNWRAP_PALLET };
   enum ForkState { FORK_POSITION_UNKNOWN = 1, FORK_POSITION_LOW, FORK_POSITION_HIGH, FORK_POSITION_SUPPORT_LEGS, FORK_MOVING_UP, FORK_MOVING_DOWN, FORK_FAILURE };
 
   enum PerceptionState { PERCEPTION_INACTIVE = 1, PERCEPTION_ACTIVE = 2 };
+  
+  /**
+   * MANIPULATOR_NOT_AVAILABLE:	starting state when robot has no arms
+   * MANIPULATOR_NO_OPERATION:	starting state when robot has arms on it
+    */
+  enum ManipulatorState { MANIPULATOR_NOT_AVAILABLE, MANIPULATOR_NO_OPERATION, MANIPULATOR_HOMING, MANIPULATOR_LOAD_OBJECT, MANIPULATOR_UNLOAD_OBJECT, MANIPULATOR_UNWRAPPING, MANIPULATOR_FAILURE };
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1;
+    manipulatorState_ = MANIPULATOR_NOT_AVAILABLE; setManipulator(false); // by default let's keep things as they were without manipulator
 }
   
   void update(const orunav_msgs::Task &msg) {
@@ -167,7 +174,12 @@ public:
       state_ = TASK_FAILED;
       return;
     }
-    
+    if (startOperation_ == LOAD_ITEM) {
+    }
+    if (startOperation_ == UNLOAD_ITEM) {
+    }
+    if (startOperation_ == UNWRAP_PALLET) {
+    }
   }
 
 
@@ -226,6 +238,12 @@ public:
         load = true;
         return;
       }
+    }
+    if (goalOperation_ == LOAD_ITEM) {
+    }
+    if (goalOperation_ == UNLOAD_ITEM) {
+    }
+    if (goalOperation_ == UNWRAP_PALLET) {
     }
 
   }
@@ -618,6 +636,8 @@ public:
   }
   
   std::string getDebugString() const {
+    if(hasManipulator())
+      return std::string("[VehicleState] : ") + getStr() + std::string("\n[ControllerState] : ") + getStrController() + std::string("\n[ForkState] : ") + getStrFork() + std::string("\n[ManipulatorState] : ") + getStrManipulator();
     return std::string("[VehicleState] : ") + getStr() + std::string("\n[ControllerState] : ") + getStrController() + std::string("\n[ForkState] : ") + getStrFork();
   }
 
@@ -870,6 +890,28 @@ public:
     return std::string("unknown(!)");
   }
 
+  std::string getStrManipulator() const {
+    switch (manipulatorState_) {
+      case MANIPULATOR_NOT_AVAILABLE:
+        return std::string("MANIPULATOR_NOT_AVAILABLE");
+      case MANIPULATOR_NO_OPERATION:
+        return std::string("MANIPULATOR_NO_OPERATION");
+      case MANIPULATOR_HOMING:
+        return std::string("MANIPULATOR_HOMING");
+      case MANIPULATOR_LOAD_OBJECT:
+        return std::string("MANIPULATOR_LOAD_OBJECT");
+      case MANIPULATOR_UNLOAD_OBJECT:
+        return std::string("MANIPULATOR_UNLOAD_OBJECT");
+      case MANIPULATOR_UNWRAPPING:
+        return std::string("MANIPULATOR_UNWRAPPING");
+      case MANIPULATOR_FAILURE:
+        return std::string("MANIPULATOR_FAILURE");
+      default:
+        break;
+    }
+    return std::string("unknown(!)");
+  }
+  
   int getEarliestPathIdxToConnect() {
     if (this->getCurrentTrajectoryChunkIdx() < 0)
       return -1;
@@ -970,6 +1012,14 @@ public:
     timeStep_ = ts;
   }
 
+  bool hasManipulator() {
+    return hasManipulator_;
+  }
+  
+  void setManipulator(bool hm) {
+    hasManipulator_ = hm;
+  }
+  
 private:
 
   State state_;
@@ -978,6 +1028,8 @@ private:
   OperationState startOperation_;
   OperationState goalOperation_;
   PerceptionState perceptionState_;
+  ManipulatorState manipulatorState_;
+  bool hasManipulator_;
   int controller_status_; // Current controller state / status.
   int prev_controller_status_; // Previous controller state / status. Used to trigger state transitions.
   orunav_generic::TrajectoryChunks trajectoryChunks_;
