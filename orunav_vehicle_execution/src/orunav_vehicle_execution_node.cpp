@@ -109,6 +109,8 @@ private:
   ros::Publisher marker_pub_;
   ros::Publisher report_pub_;
 
+  ros::Publisher manipulatorcommand_pub_;
+  
   ros::Subscriber laserscan_sub_;
   ros::Subscriber laserscan2_sub_;
   
@@ -118,6 +120,8 @@ private:
   ros::Subscriber map_sub_;
   ros::Subscriber pallet_poses_sub_;
 
+  ros::Subscriber manipulator_report_sub_;
+  
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
   boost::condition_variable cond_;
@@ -157,6 +161,9 @@ private:
   bool use_forks_;
   std::string model_name_;
 
+  // Manipulator settings
+  bool use_manipulator_;
+  
   // Internal flags
   bool b_shutdown_;
 
@@ -236,6 +243,8 @@ public:
     paramHandle.param<double>("time_to_meter_factor", time_to_meter_factor_, 0.02);
     paramHandle.param<double>("max_tracking_error", max_tracking_error_, 100.);
 
+    paramHandle.param<bool>("use_manipulator", use_manipulator_, false);
+
     paramHandle.param<bool>("use_vector_map_and_geofence", use_vector_map_and_geofence_, false);
     
     paramHandle.param<bool>("traj_debug", traj_params_.debug, true);
@@ -294,11 +303,15 @@ public:
     command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
     forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
     report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
+    manipulatorcommand_pub_ = nh_.advertise<orunav_msgs::ManipulatorCommand>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/command"), 1);
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
     control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
       fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
+    }
+    if (use_manipulator_) {
+      manipulator_report_sub_ = nh_.subscribe<orunav_msgs::ManipulatorReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_manipulator_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
     pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
@@ -1479,6 +1492,13 @@ public:
 
     void process_manipulator_report(const orunav_msgs::ManipulatorReportConstPtr &msg) {
 
+      bool moveArms = false;
+      
+      if(moveArms) {
+	orunav_msgs::ManipulatorCommand cmd;
+	
+	manipulatorcommand_pub_.publish(cmd);
+      }
 //     last_process_fork_report_time_ = ros::Time::now();
 //     bool completed_target, move_forks, load;
 //     VehicleState::OperationState operation;
