@@ -11,7 +11,7 @@
   <gazebo>
     <plugin name="steer_drive_controller" filename="libgazebo_ros_steer_drive.so">
       <alwaysOn>true</alwaysOn>
-      <updateRate>1000</updateRate>
+      <updateRate>100</updateRate>
       <steerJoint>base2steer_joint</steerJoint>
       <driveJoint>steer2sd_wheel_joint</driveJoint>
       <fixedWheelLeftJoint>base2fixed_left_wheel_joint</fixedWheelLeftJoint>
@@ -55,9 +55,9 @@
     </plugin>
   </gazebo>
 
-  <!-- sick laser -->
-  <gazebo reference="laser_link">
-    <sensor type="gpu_ray" name="laser_sensor">
+  <!-- SICK safety laser -->
+  <gazebo reference="safety_laser_link">
+    <sensor type="gpu_ray" name="safety_laser_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
       <update_rate>40</update_rate>
@@ -86,8 +86,45 @@
         </noise>
       </ray>
       <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
-        <topicName>laser_scan</topicName>
-        <frameName>laser_link</frameName>
+        <topicName>safety_laser</topicName>
+        <frameName>safety_laser_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- navigation laser (LS2000) -->
+  <gazebo reference="nav_laser_link">
+    <sensor type="gpu_ray" name="nav_laser_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>16</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>630</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.1415926</min_angle>
+            <max_angle>3.1415926</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>20.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
+        <topicName>nav_laser</topicName>
+        <frameName>nav_laser_link</frameName>
       </plugin>
     </sensor>
   </gazebo>

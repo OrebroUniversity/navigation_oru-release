@@ -2,6 +2,11 @@
 Changelog for package orunav_pallet_detection_sdf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2017-09-19)
+------------------
+* merge
+* Contributors: Martin Magnusson
+
 0.2.0 (2017-09-15)
 ------------------
 

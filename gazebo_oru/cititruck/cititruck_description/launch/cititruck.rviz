@@ -15,6 +15,7 @@ Panels:
         - /TF1/Tree1
         - /Marker2
         - /Odometry2
+        - /PointCloud21
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -121,6 +122,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: robot1
@@ -135,16 +146,14 @@ Visualization Manager:
       Name: Map
       Topic: /map
       Unreliable: false
+      Use Timestamp: false
       Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /visualization_marker
       Name: Marker
       Namespaces:
-        goal_pose2d: true
-        path_smoother_new_path: true
-        path_subsampled: true
-        start_pose2d: true
+        {}
       Queue Size: 1000
       Value: true
     - Class: rviz/TF
@@ -180,6 +189,10 @@ Visualization Manager:
           Value: true
         robot1/steer_link:
           Value: true
+        robot1/velodyne:
+          Value: true
+        robot1/velodyne_base_link:
+          Value: true
         world:
           Value: true
       Marker Scale: 1
@@ -210,6 +223,9 @@ Visualization Manager:
               robot1/steer_link:
                 robot1/sd_wheel_link:
                   {}
+              robot1/velodyne_base_link:
+                robot1/velodyne:
+                  {}
           robot1/odom_enc:
             {}
       Update Interval: 0
@@ -219,18 +235,11 @@ Visualization Manager:
       Marker Topic: /robot1/visualization_marker
       Name: Marker
       Namespaces:
-        chunks: true
         chunks_dt: true
         chunks_idx0: true
         critical_point: true
-        current_path_idx: true
-        current_path_subsampled: true
-        current_path_subsampled_sw: true
-        docking_path_idx: true
         driven_ct: true
         driven_traj: true
-        earliest_connect_path_idx: true
-        path_points1: true
         position: true
         robot_id_str: true
         state_str: true
@@ -238,13 +247,37 @@ Visualization Manager:
       Value: true
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
-      Color: 255; 25; 0
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
       Enabled: false
       Keep: 100
-      Length: 1
       Name: Odometry
       Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.300000012
+        Head Radius: 0.100000001
+        Shaft Length: 1
+        Shaft Radius: 0.0500000007
+        Value: Arrow
       Topic: /robot1/odom_enc
+      Unreliable: false
       Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -261,9 +294,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0
+      Max Intensity: -999999
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: 999999
       Name: LaserScan
       Position Transformer: XYZ
       Queue Size: 10
@@ -278,14 +311,68 @@ Visualization Manager:
       Value: true
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
-      Color: 85; 170; 0
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
       Enabled: false
       Keep: 100
-      Length: 1
       Name: Odometry
       Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.300000012
+        Head Radius: 0.100000001
+        Shaft Length: 1
+        Shaft Radius: 0.0500000007
+        Value: Arrow
       Topic: /robot1/odom
+      Unreliable: false
       Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 2.50039291
+        Min Value: -0.00696289539
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 7.36387948e-37
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.0299999993
+      Style: Flat Squares
+      Topic: /velodyne_points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -310,24 +397,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.9785366
+      Distance: 12.0522938
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 8.04787922
-        Y: 8.92967033
-        Z: -1.4220103
+        X: 5.32010269
+        Y: 13.4442644
+        Z: 0.406666577
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.944800138
+      Pitch: 0.549800336
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.56355381
+      Yaw: 1.78852761
     Saved: ~
 Window Geometry:
   Displays:
