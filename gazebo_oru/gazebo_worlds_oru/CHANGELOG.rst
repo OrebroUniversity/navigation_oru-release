@@ -2,6 +2,19 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2017-09-19)
+------------------
+* changed world. Doors added
+* THE GAZEBO GUI SHOULD BE TURNED ON TODORll! :'(
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
+* merge
+* Updated empty map to work in NCFM use case (shift origin)
+* decreased frequency for odometry
+* added launchfile for illiad single truck
+* added launchfile
+* Contributors: Bruce Wayne, Daniel Adolfsson, Martin Magnusson, tsv
+
 0.2.0 (2017-09-15)
 ------------------
 

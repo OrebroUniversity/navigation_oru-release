@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_manipulator" default="false"/>
+  
+  <arg name="robot_name" value="robot1"/>
+	
+  <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
+  <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
+
+  <include file="$(find cititruck_gazebo)/launch/cititruck_manipulator.launch">
+      <arg name="robot_pose_x" value="5.029"/> 
+      <arg name="robot_pose_y" value="13.538"/>
+      <arg name="robot_pose_yaw" value="0"/>
+      <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
+
+  <include file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch"/>
+  <!--include file="$(find orunav_mpc)/launch/citi1_simulation.launch"/-->
+
+  <node pkg="orunav_vehicle_execution" type="point_n_click_target_client" name="point_n_click_target_client_citi1" output="screen">
+    <param name="load_operation" value="false" />
+    <rosparam param="robot_ids">[1]</rosparam>
+    <param name="multiple_vehicles" value="true" />
+  </node>
+
+  <node pkg="orunav_coordinator_fake" type="coordinator_fake_node" name="coordinator_fake_node" output="screen">
+    <param name="multiple_vehicles" value="true" />
+    <param name="use_ct" value="false" />
+  </node>
+
+  <!-- load hardware interface and controller configurations -->
+  <rosparam command="load" file="$(find vito_description)/config/vito_controllers_iliad.yaml"/>
+  <rosparam command="load" file="$(find vito_description)/config/hardware_interfaces.yaml"/>
+		
+  <!-- ALL ROBOT SPECIFIC TASKS -->
+
+  <group ns="$(arg robot_name)">
+  <param name="tf_prefix" value="$(arg robot_name)" />
+
+  <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
+        <param name="robot_id" value="1" />
+  </node>
+  <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+
+  <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
+    <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
+    <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
+    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" />
+    <param name="min_incr_path_dist" value="0.2" />
+    <param name="visualize" value="true" />
+  </node>
+
+  <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
+    <param name="load_type" value="1" />
+    <param name="model_type" value="2" />
+    <param name="visualize" value="false" />
+    <param name="save_constraints_and_path" value="true" />
+    <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
+    <param name="visualize_outer_constraints" value="false" />
+    <param name="visualize_only_invalid" value="false" />
+    <param name="skip_overlap" value="true" />
+    <param name="save_lookuptables" value="false" />
+  </node>
+
+  <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
+    <param name="visualize" value="true" />
+    <param name="visualize_deep" value="false" />
+    <param name="wheel_base" value="1.190" />
+    <param name="minimize_phi_and_dist" value="true" />
+    <param name="init_controls" value="true" />
+    <param name="use_th_constraints" value="true" />
+    <param name="use_xy_constraints" value="true" />
+    <param name="phi_min" value="-1.0" /> <!-- -0.9 -->
+    <param name="phi_max" value="1.0" />  <!-- 0.9 -->
+    <param name="reassign_constraints" value="true" />
+    <param name="reassign_iters" value="1" />
+    <param name="reassign_min_distance" value="0.1" />
+  </node>
+
+  <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node_citi1" output="screen">
+    <param name="visualize" value="true" />
+    <param name="max_tracking_error" value="-1." />
+    <param name="use_forks" value="true" />
+
+    <param name="max_vel" value="0.3" />
+    <param name="max_rotational_vel" value="0.3" />
+    <param name="max_acc" value="0.1" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
+
+  <arg name="use_joint_state_publisher" default="true"/>
+
+	    <!-- configure whether the real hardware is enabled or not -->
+	    <arg name="left_arm_enabled" default="false"/>
+	    <arg name="velvet_tray_enabled" default="false"/>
+	    <arg name="right_arm_enabled" default="false"/>
+	    <arg name="right_hand_enabled" default="false"/>
+
+	    <group if="$(arg use_joint_state_publisher)">
+		    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		    <param name="use_gui" value="false"/>
+		    <!-- listens to each part -->
+		    <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states,/left_arm/joint_states,/right_arm/joint_states]</rosparam>
+		    </node>
+	    </group>
+
+	    <group ns="/velvet_tray">
+	    <group if="$(arg velvet_tray_enabled)">
+	    <!-- TODO -->
+	    </group>
+	    </group>
+	    
+	    <group ns="/left_arm">
+	    <group if="$(arg left_arm_enabled)">
+		    <!--add a copy of the robot description within the name space -->
+		    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
+
+		    <rosparam command="load" file="$(find vito_description)/config/left_arm_names.yaml" />
+
+		    <include file="$(find lwr_hw)/launch/lwr_hw.launch">
+		    <arg name="port" value="49948"/>
+		    <arg name="ip" value="192.168.0.20"/>
+		    <arg name="name" value="left_arm"/>
+		    </include>
+		    <!-- perhaps it is worth remapping joint states -->
+	    </group>
+
+	    <!-- load the controllers in current namespace -->
+	    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller CLIK_controller"/>
+	    <node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_trajectory_controller" />
+	    </group>
+
+	    <group ns="/right_hand">
+	    <group if="$(arg right_hand_enabled)">
+		    <!--add a copy of the robot description within the name space -->
+		    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
+
+		    <rosparam command="load" file="$(find vito_description)/config/right_hand_names.yaml" />
+
+		    <include file="$(find soft_hand_ros_control)/launch/soft_hand_hw.launch">
+		    <arg name="use_deafult_joint_names" value="false"/>
+		    <arg name="hand_id" value="21"/>
+		    </include>
+
+		    <!-- load the controllers in current namespace -->
+		    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
+	    </group>
+	    </group>
+
+	    <group ns="/right_arm">
+	    <group if="$(arg right_arm_enabled)">
+		    <!--add a copy of the robot description within the name space -->
+		    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
+
+		    <rosparam command="load" file="$(find vito_description)/config/right_arm_names.yaml" />
+
+		    <include file="$(find lwr_hw)/launch/lwr_hw.launch">
+		    <arg name="port" value="49939"/>
+		    <arg name="ip" value="192.168.0.10"/>
+		    <arg name="name" value="right_arm"/>
+		    </include>
+		    <!-- perhaps it is worth remapping joint states -->
+	    </group>
+
+	    <!-- load the controllers in current namespace -->
+	    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller CLIK_controller"/>
+	    <node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_trajectory_controller" />
+	    </group>
+    </group>
+</launch>

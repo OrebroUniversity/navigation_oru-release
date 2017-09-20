@@ -405,7 +405,7 @@
     <origin xyz="0 0 0.0" rpy="0 0 0"/>
   </xacro:soft_hand>-->
   <xacro:soft_hand parent="right_arm_7_link" name="right_hand" left="false" withAdaptiveTransmission="false" useMimicTag="true">
-    <origin xyz="0 0 0.0" rpy="0 0 3.14159"/>
+    <origin xyz="0 0 0.0" rpy="0 0 0"/>
   </xacro:soft_hand>
 
   <link name="ft_surface">

@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="use_manipulator" default="false"/>
-	
+
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
-	  
 
-  <include file="$(find cititruck_gazebo)/launch/cititruck_basement.launch">
-	<arg name="use_manipulator" value="$(arg use_manipulator)"/>
-  </include>
+  <include file="$(find cititruck_gazebo)/launch/cititruck_basement.launch"/>
   <include file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch"/>
   <!--include file="$(find orunav_mpc)/launch/citi1_simulation.launch"/-->
 
@@ -20,13 +16,9 @@
 
   <node pkg="orunav_coordinator_fake" type="coordinator_fake_node" name="coordinator_fake_node" output="screen">
     <param name="multiple_vehicles" value="true" />
-    <param name="use_ct" value="false" />
+    <param name="use_ct" value="false" />  
   </node>
 
-  <!-- load hardware interface and controller configurations -->
-  <rosparam command="load" file="$(find vito_description)/config/vito_controllers_iliad.yaml"/>
-  <rosparam command="load" file="$(find vito_description)/config/hardware_interfaces.yaml"/>
-		
   <!-- ALL ROBOT SPECIFIC TASKS -->
 
   <group ns="robot1">
@@ -37,10 +29,10 @@
   </node>
   <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
 
-  <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
+  <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">		
     <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
     <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
-    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" />
+    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
     <param name="min_incr_path_dist" value="0.2" />
     <param name="visualize" value="true" />
   </node>
@@ -55,7 +47,7 @@
     <param name="visualize_only_invalid" value="false" />
     <param name="skip_overlap" value="true" />
     <param name="save_lookuptables" value="false" />
-  </node>
+  </node>  
 
   <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
     <param name="visualize" value="true" />
@@ -70,7 +62,7 @@
     <param name="reassign_constraints" value="true" />
     <param name="reassign_iters" value="1" />
     <param name="reassign_min_distance" value="0.1" />
-  </node>
+  </node>  
 
   <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node_citi1" output="screen">
     <param name="visualize" value="true" />
@@ -82,87 +74,8 @@
     <param name="max_acc" value="0.1" />
   </node>
 
+  </group>
+
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
 
-  <group if="$(arg use_manipulator)">
-  <arg name="use_joint_state_publisher" default="true"/>
-
-		<!-- configure whether the real hardware is enabled or not -->
-		<arg name="left_arm_enabled" default="false"/>
-		<arg name="velvet_tray_enabled" default="false"/>
-		<arg name="right_arm_enabled" default="false"/>
-		<arg name="right_hand_enabled" default="false"/>
-
-		<group if="$(arg use_joint_state_publisher)">
-			<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-			<param name="use_gui" value="false"/>
-			<!-- listens to each part -->
-			<rosparam param="source_list">[/robot1/joint_states,/left_arm/joint_states,/right_arm/joint_states]</rosparam>
-			</node>
-		</group>
-
-			<group ns="/velvet_tray">
-			<group if="$(arg velvet_tray_enabled)">
-			<!-- TODO -->
-			</group>
-			</group>
-			
-			<group ns="/left_arm">
-			<group if="$(arg left_arm_enabled)">
-				<!--add a copy of the robot description within the name space -->
-				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
-
-				<rosparam command="load" file="$(find vito_description)/config/left_arm_names.yaml" />
-
-				<include file="$(find lwr_hw)/launch/lwr_hw.launch">
-				<arg name="port" value="49948"/>
-				<arg name="ip" value="192.168.0.20"/>
-				<arg name="name" value="left_arm"/>
-				</include>
-				<!-- perhaps it is worth remapping joint states -->
-			</group>
-
-			<!-- load the controllers in current namespace -->
-			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller CLIK_controller"/>
-			<node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_trajectory_controller" />
-			</group>
-
-			<group ns="/right_hand">
-			<group if="$(arg right_hand_enabled)">
-				<!--add a copy of the robot description within the name space -->
-				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
-
-				<rosparam command="load" file="$(find vito_description)/config/right_hand_names.yaml" />
-
-				<include file="$(find soft_hand_ros_control)/launch/soft_hand_hw.launch">
-				<arg name="use_deafult_joint_names" value="false"/>
-				<arg name="hand_id" value="21"/>
-				</include>
-
-				<!-- load the controllers in current namespace -->
-				<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller joint_trajectory_controller"/>
-			</group>
-			</group>
-
-			<group ns="/right_arm">
-			<group if="$(arg right_arm_enabled)">
-				<!--add a copy of the robot description within the name space -->
-				<param name="robot_description" command="$(find xacro)/xacro --inorder $(find vito_description)/robot/vito.urdf.xacro use_mimic_tag:=true"/>
-
-				<rosparam command="load" file="$(find vito_description)/config/right_arm_names.yaml" />
-
-				<include file="$(find lwr_hw)/launch/lwr_hw.launch">
-				<arg name="port" value="49939"/>
-				<arg name="ip" value="192.168.0.10"/>
-				<arg name="name" value="right_arm"/>
-				</include>
-				<!-- perhaps it is worth remapping joint states -->
-			</group>
-
-			<!-- load the controllers in current namespace -->
-			<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller CLIK_controller"/>
-			<node name="controller_stopper" pkg="controller_manager" type="spawner" args="--stopped joint_trajectory_controller" />
-			</group>
-	    </group>
-	</group>
 </launch>
