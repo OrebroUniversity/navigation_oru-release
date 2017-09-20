@@ -409,6 +409,7 @@ public:
   
   void publish_report(const ros::TimerEvent &event) {
     orunav_msgs::RobotReport msg = vehicle_state_.getReport();
+    msg.robot_id = robot_id_;
     report_pub_.publish(msg);
   }
 
