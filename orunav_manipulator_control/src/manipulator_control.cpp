@@ -5,7 +5,7 @@
 
 manipulatorControl::manipulatorControl()
 {
-    report_timer = nh.createTimer(ros::Duration(0.1),&manipulatorControl::publish_reports,this);
+    report_timer = nh.createTimer(ros::Duration(0.1),&manipulatorControl::publish_report,this);
     report_pub = nh.advertise<orunav_msgs::ManipulatorReport>("manipulator/report", 1000);
 
     cmd_pub_right = nh.advertise<lwr_controllers::PoseRPY>("/right_arm/CLIK_controller/command",1);

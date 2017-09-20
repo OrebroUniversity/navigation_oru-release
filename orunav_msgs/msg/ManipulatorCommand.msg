@@ -2,7 +2,7 @@
 int32 robot_id
 
 # Command
-int32 cmd;
+int32 cmd
 
 int32 MANIPULATOR_LOAD_ITEM_START = 1
 
