@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf_conversions
   roslib
+  lwr_controllers
 )
 
 catkin_package(
