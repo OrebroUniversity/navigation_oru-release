@@ -7,6 +7,7 @@
 #include <map>
 #include <orunav_msgs/ManipulatorReport.h>
 #include <orunav_msgs/ManipulatorCommand.h>
+#include <mutex>
 
 class manipulatorControl
 {
@@ -18,6 +19,12 @@ public:
 
 private:
     ros::NodeHandle nh;
+
+    ros::Timer report_timer;
+    std::mutex report_mutex;
+    void publish_report(const ros::TimerEvent& event);
+    ros::Publisher report_pub;
+
     ros::Publisher cmd_pub_left;
     ros::Publisher cmd_pub_right;
 
@@ -29,6 +36,7 @@ private:
     void send_target();
     
     orunav_msgs::ManipulatorCommand last_cmd;
+    orunav_msgs::ManipulatorReport current_report;
     
     void from_ManipulatorCommand_to_PoseRPY(const orunav_msgs::ManipulatorCommand& in, lwr_controllers::PoseRPY out);
 };

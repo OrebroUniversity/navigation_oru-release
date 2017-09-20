@@ -5,10 +5,21 @@
 
 manipulatorControl::manipulatorControl()
 {
+    report_timer = nh.createTimer(ros::Duration(0.1),&manipulatorControl::publish_report,this);
+    report_pub = nh.advertise<orunav_msgs::ManipulatorReport>("manipulator/report", 1000);
+
     cmd_pub_right = nh.advertise<lwr_controllers::PoseRPY>("/right_arm/CLIK_controller/command",1);
     cmd_pub_left  = nh.advertise<lwr_controllers::PoseRPY>("/left_arm/CLIK_controller/command",1);
     
     command_sub = nh.subscribe<orunav_msgs::ManipulatorCommand>("manipulator/command",0,&manipulatorControl::process_manipulator_command,this);
+}
+
+void manipulatorControl::publish_report(const ros::TimerEvent& event)
+{
+    report_mutex.lock();
+    current_report.stamp = ros::Time::now();
+    report_pub.publish(current_report);
+    report_mutex.unlock();
 }
 
 void manipulatorControl::from_ManipulatorCommand_to_PoseRPY(const orunav_msgs::ManipulatorCommand& in, lwr_controllers::PoseRPY out)
@@ -72,6 +83,8 @@ void manipulatorControl::send_target()
 
     cmd_pub_left.publish(veltet_tray_pose);
     cmd_pub_right.publish(right_hand_pose);
+
+    //TODO update report
 
     ROS_INFO_STREAM(">> " << "Sent Target: TODO");
 }
