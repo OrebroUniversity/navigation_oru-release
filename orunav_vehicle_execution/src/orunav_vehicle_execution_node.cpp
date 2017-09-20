@@ -1492,9 +1492,16 @@ public:
 
     void process_manipulator_report(const orunav_msgs::ManipulatorReportConstPtr &msg) {
 
-      bool moveArms = false;
+      bool completed_target = false;
+      bool move_arms = false;
+      bool load; // ?
+      VehicleState::OperationState operation;
       
-      if(moveArms) {
+      vehicle_state_.update(msg,completed_target, move_arms, load, operation);
+
+      // TODO
+      
+      if(move_arms) {
 	orunav_msgs::ManipulatorCommand cmd;
 	
 	manipulatorcommand_pub_.publish(cmd);
