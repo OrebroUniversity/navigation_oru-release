@@ -2,4 +2,4 @@
 int32 robot_id
 
 # Commanded state
-ForkState state
+ManipulatorState state

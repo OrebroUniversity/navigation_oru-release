@@ -4,28 +4,31 @@ int32 robot_id
 
 time stamp
 
-# Forks are in unknown position
-int32 FORK_POSITION_UNKNOWN = 1
-# Forks are in 'low' position - we can move in below a pallet from here
-int32 FORK_POSITION_LOW = 2
-# Forks are in a 'high' postion - we can drive holding a pallet.
-int32 FORK_POSITION_HIGH = 3
-# Forks can be lowered to be used as support legs (for the arm)
-int32 FORK_POSITION_SUPPORT_LEGS = 4
-
-# Moving up
-int32 FORK_MOVING_UP = 5
-# Moving down
-int32 FORK_MOVING_DOWN = 6
-# Failure
-int32 FORK_FAILURE = 7
-
 # Status of the fork controller.
 int32 status
 
 #####################
 
 # The current state
-ForkState state
+ManipulatorState state
 
 #####################
+
+# Manipulator is not mounted on the vehicle, or not operational
+int32 MANIPULATOR_NOT_AVAILABLE = 1
+
+# Manipulator is idle
+int32 MANIPULATOR_NO_OPERATION = 2
+# Manipulator going to homing position
+int32 MANIPULATOR_HOMING = 3
+
+# Manipulator performing loading of an item
+int32 MANIPULATOR_LOAD_OBJECT = 4
+# Manipulator performing unloading of an item
+int32 MANIPULATOR_UNLOAD_OBJECT = 5
+
+# Manipulator performing unwrapping of pallet
+int32 MANIPULATOR_UNWRAPPING = 6
+
+# Manipulator has undergone some failure
+int32 MANIPULATOR_FAILURE = 7

@@ -4,10 +4,10 @@
 int32 robot_id
 
 # Estimated state of the forks - the height
-ForkState state
+ManipulatorState state
 
-# What type of load 
-Load load
+# What type of item
+Item item
 
 #############################
 # Relative pose of the load - this is to be able to unload the cargo more accuractly. 
