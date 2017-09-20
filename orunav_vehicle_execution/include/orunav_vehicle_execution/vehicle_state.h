@@ -6,7 +6,7 @@ class VehicleState {
 public:
   enum State { WAITING_FOR_TASK = 1, PERFORMING_START_OPERATION, DRIVING, PERFORMING_GOAL_OPERATION, TASK_FAILED, WAITING_FOR_TASK_INTERNAL, DRIVING_SLOWDOWN, AT_CRITICAL_POINT };
   enum ControllerState { WAITING, ACTIVE, BRAKE, FINALIZING, ERROR, UNKNOWN, WAITING_TRAJECTORY_SENT, BRAKE_SENT };
-  enum OperationState { NO_OPERATION = 1, UNLOAD, LOAD, LOAD_DETECT, ACTIVATE_SUPPORT_LEGS, LOAD_DETECT_ACTIVE, LOAD_ITEM, UNLOAD_ITEM, UNWRAP_PALLET };
+  enum OperationState { NO_OPERATION = 1, UNLOAD, LOAD, LOAD_DETECT, ACTIVATE_SUPPORT_LEGS, LOAD_DETECT_ACTIVE, MANIPULATOR_LOAD_ITEM_START, MANIPULATOR_LOAD_ITEM_DONE, MANIPULATOR_UNLOAD_ITEM_START, MANIPULATOR_UNLOAD_ITEM_DONE, MANIPULATOR_UNWRAP_PALLET_START, MANIPULATOR_UNWRAP_PALLET_DONE, MANIPULATOR_GOTO_IDLE_START, MANIPULATOR_GOTO_IDLE_DONE, MANIPULATOR_GOTO_HOME_START, MANIPULATOR_GOTO_HOME_DONE };
   enum ForkState { FORK_POSITION_UNKNOWN = 1, FORK_POSITION_LOW, FORK_POSITION_HIGH, FORK_POSITION_SUPPORT_LEGS, FORK_MOVING_UP, FORK_MOVING_DOWN, FORK_FAILURE };
 
   enum PerceptionState { PERCEPTION_INACTIVE = 1, PERCEPTION_ACTIVE = 2 };
@@ -15,7 +15,7 @@ public:
    * MANIPULATOR_NOT_AVAILABLE:	starting state when robot has no arms
    * MANIPULATOR_NO_OPERATION:	starting state when robot has arms on it
     */
-  enum ManipulatorState { MANIPULATOR_NOT_AVAILABLE, MANIPULATOR_NO_OPERATION, MANIPULATOR_HOMING, MANIPULATOR_LOAD_OBJECT, MANIPULATOR_UNLOAD_OBJECT, MANIPULATOR_UNWRAPPING, MANIPULATOR_FAILURE };
+  enum ManipulatorState { MANIPULATOR_NOT_AVAILABLE, MANIPULATOR_IDLE, MANIPULATOR_HOMING, MANIPULATOR_LOADING_ITEM, MANIPULATOR_FULL, MANIPULATOR_UNLOADING_ITEM, MANIPULATOR_UNWRAPPING, MANIPULATOR_FAILURE};
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1;
@@ -386,58 +386,54 @@ public:
    */
     void handleStartManipulatorOperation(bool &completedTarget, bool &moveArms, bool &load) {
     if (startOperation_ == NO_OPERATION) {
-      //      controllerState_ = WAITING;
-      ROS_INFO("SET STATE TO DRIVING!!!!");
-      state_ = DRIVING;
-      if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
-        // Cannot start driving if the support legs is active.
-        state_ = TASK_FAILED;
+      ROS_INFO("MANIPULATOR: DO NOTHING");
+      if (manipulatorState_ == MANIPULATOR_FAILURE) {
+	// Cannot start moving the manipulator if there is  a fail on the object
+	state_ = TASK_FAILED;
       }
       return;
-    }  
+    }
 
-    // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
-    //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
-    //           - if operation is ACTIVATE_SUPPORT_LEGS   -> now allowed (if only one operation should be sent we should instead provide it as a goal operation (with an empty path).
-    if (startOperation_ == LOAD) {
-      if (forkState_ == FORK_POSITION_HIGH) {
-        //	controllerState_ = WAITING;
-        state_ = DRIVING;
-	carryingLoad_ = true;
-	return;
-      }
-      else {
+    // Scenarios - simple state machine
+    // Load item if the robot is idle
+    if (startOperation_ == MANIPULATOR_LOAD_ITEM_START) {
+      if (manipulatorState_ == MANIPULATOR_IDLE) {
         state_ = PERFORMING_START_OPERATION;
+	manipulatorState_ = MANIPULATOR_LOADING_ITEM;
 	moveArms = true;
 	load = true;
 	return;
       }
     }
-    if (startOperation_ == UNLOAD) {
-      if (forkState_ == FORK_POSITION_LOW) {
-        //	controllerState_ = WAITING;
-        state_ = DRIVING;
-	carryingLoad_ = false;
-	return;
-      }
-      else {
+    // Unload item if the robot is full, meaning it has an object in its hands
+    if (startOperation_ == MANIPULATOR_UNLOAD_ITEM_START) {
+      if (manipulatorState_ == MANIPULATOR_FULL) {
         state_ = PERFORMING_START_OPERATION;
+	manipulatorState_ = MANIPULATOR_UNLOADING_ITEM;
 	moveArms = true;
 	load = false;
 	return;
       }
     }
-    if (startOperation_ == ACTIVATE_SUPPORT_LEGS) {
-      ROS_ERROR("Cannot active support legs as start operation");
-      //      controllerState_ = WAITING;
-      state_ = TASK_FAILED;
-      return;
+    // Unwrap pallet if the robot is in idle
+    if (startOperation_ == MANIPULATOR_UNWRAP_PALLET_START) {
+      if (manipulatorState_ == MANIPULATOR_IDLE) {
+        state_ = PERFORMING_START_OPERATION;
+	manipulatorState_ = MANIPULATOR_UNWRAPPING;
+	moveArms = true;
+	load = false;
+	return;
+      }
     }
-    if (startOperation_ == LOAD_ITEM) {
-    }
-    if (startOperation_ == UNLOAD_ITEM) {
-    }
-    if (startOperation_ == UNWRAP_PALLET) {
+    // Homing robot if it is idle
+    if (startOperation_ == MANIPULATOR_GOTO_HOME_START) {
+      if (manipulatorState_ == MANIPULATOR_IDLE) {
+        state_ = PERFORMING_START_OPERATION;
+	manipulatorState_ = MANIPULATOR_HOMING;
+	moveArms = true;
+	load = false;
+	return;
+      }
     }
   }
 
@@ -450,59 +446,89 @@ public:
       return;
     }
 
-    // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
-    //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
-    //           - if operation is ACTIVATE_SUPPORT_LEGS   -> the forks state should be at FORK_POSITION_SUPPORT_LEGS to continue
-    if (goalOperation_ == LOAD) {
-      if (forkState_ == FORK_POSITION_HIGH) {
-        state_ = WAITING_FOR_TASK;
-        //	controllerState_ = WAITING;
-	completedTarget = true;
-	carryingLoad_ = true;
-	return;
-      }
-      else {
+//     // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
+//     //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
+//     //           - if operation is ACTIVATE_SUPPORT_LEGS   -> the forks state should be at FORK_POSITION_SUPPORT_LEGS to continue
+//     if (goalOperation_ == LOAD) {
+//       if (forkState_ == FORK_POSITION_HIGH) {
+//         state_ = WAITING_FOR_TASK;
+//         //	controllerState_ = WAITING;
+// 	completedTarget = true;
+// 	carryingLoad_ = true;
+// 	return;
+//       }
+//       else {
+//         state_ = PERFORMING_GOAL_OPERATION;
+// 	moveArms = true;
+// 	load = true;
+// 	return;
+//       }
+//     }
+//     if (goalOperation_ == UNLOAD) {
+//       if (forkState_ == FORK_POSITION_LOW || !this->isCarryingLoad()) {
+//         state_ = WAITING_FOR_TASK;
+//         //        controllerState_ = WAITING;
+//         completedTarget = true;
+// 	carryingLoad_ = false;
+// 	return;
+//       }
+//       else {
+//         state_ = PERFORMING_GOAL_OPERATION;
+// 	moveArms = true;
+// 	load = false;
+// 	return;
+//       }
+//     }
+//     if (goalOperation_ == ACTIVATE_SUPPORT_LEGS) {
+//       if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
+//         state_ = WAITING_FOR_TASK;
+//         //        controllerState_ = WAITING;
+//         completedTarget = true;
+//         carryingLoad_ = true;
+//         return;
+//       }
+//       else {
+//         state_ = PERFORMING_GOAL_OPERATION;
+//         moveArms = true;
+//         load = true;
+//         return;
+//       }
+//     }
+    if (goalOperation_ == MANIPULATOR_LOAD_ITEM_DONE) {
+      if (manipulatorState_ == MANIPULATOR_LOADING_ITEM) {
         state_ = PERFORMING_GOAL_OPERATION;
+	manipulatorState_ = MANIPULATOR_FULL;
 	moveArms = true;
 	load = true;
 	return;
       }
     }
-    if (goalOperation_ == UNLOAD) {
-      if (forkState_ == FORK_POSITION_LOW || !this->isCarryingLoad()) {
-        state_ = WAITING_FOR_TASK;
-        //        controllerState_ = WAITING;
-        completedTarget = true;
-	carryingLoad_ = false;
-	return;
-      }
-      else {
+    if (goalOperation_ == MANIPULATOR_UNLOAD_ITEM_DONE) {
+      if (manipulatorState_ == MANIPULATOR_UNLOADING_ITEM) {
         state_ = PERFORMING_GOAL_OPERATION;
+	manipulatorState_ = MANIPULATOR_IDLE;
 	moveArms = true;
 	load = false;
 	return;
       }
     }
-    if (goalOperation_ == ACTIVATE_SUPPORT_LEGS) {
-      if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
-        state_ = WAITING_FOR_TASK;
-        //        controllerState_ = WAITING;
-        completedTarget = true;
-        carryingLoad_ = true;
-        return;
-      }
-      else {
+    if (goalOperation_ == MANIPULATOR_UNWRAP_PALLET_DONE) {
+      if (manipulatorState_ == MANIPULATOR_UNWRAPPING) {
         state_ = PERFORMING_GOAL_OPERATION;
-        moveArms = true;
-        load = true;
-        return;
+	manipulatorState_ = MANIPULATOR_IDLE;
+	moveArms = true;
+	load = false;
+	return;
       }
     }
-    if (goalOperation_ == LOAD_ITEM) {
-    }
-    if (goalOperation_ == UNLOAD_ITEM) {
-    }
-    if (goalOperation_ == UNWRAP_PALLET) {
+    if (goalOperation_ == MANIPULATOR_GOTO_HOME_DONE) {
+      if (manipulatorState_ == MANIPULATOR_HOMING) {
+        state_ = PERFORMING_GOAL_OPERATION;
+	manipulatorState_ = MANIPULATOR_IDLE;
+	moveArms = true;
+	load = false;
+	return;
+      }
     }
 
   }
@@ -1034,14 +1060,16 @@ public:
     switch (manipulatorState_) {
       case MANIPULATOR_NOT_AVAILABLE:
         return std::string("MANIPULATOR_NOT_AVAILABLE");
-      case MANIPULATOR_NO_OPERATION:
-        return std::string("MANIPULATOR_NO_OPERATION");
+      case MANIPULATOR_IDLE:
+        return std::string("MANIPULATOR_IDLE");
       case MANIPULATOR_HOMING:
         return std::string("MANIPULATOR_HOMING");
-      case MANIPULATOR_LOAD_OBJECT:
-        return std::string("MANIPULATOR_LOAD_OBJECT");
-      case MANIPULATOR_UNLOAD_OBJECT:
-        return std::string("MANIPULATOR_UNLOAD_OBJECT");
+      case MANIPULATOR_LOADING_ITEM:
+        return std::string("MANIPULATOR_LOADING_ITEM");
+      case MANIPULATOR_FULL:
+        return std::string("MANIPULATOR_FULL");
+      case MANIPULATOR_UNLOADING_ITEM:
+        return std::string("MANIPULATOR_UNLOADING_ITEM");
       case MANIPULATOR_UNWRAPPING:
         return std::string("MANIPULATOR_UNWRAPPING");
       case MANIPULATOR_FAILURE:
