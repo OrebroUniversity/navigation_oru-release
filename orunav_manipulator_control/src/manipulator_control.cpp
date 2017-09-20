@@ -1,5 +1,4 @@
 #include "orunav_manipulator_control/manipulator_control.h"
-#include <kdl/frames.hpp>
 #include <tf_conversions/tf_kdl.h>
 #include <string>
 
@@ -22,16 +21,40 @@ void manipulatorControl::publish_report(const ros::TimerEvent& event)
     report_mutex.unlock();
 }
 
-void manipulatorControl::from_ManipulatorCommand_to_PoseRPY(const orunav_msgs::ManipulatorCommand& in, lwr_controllers::PoseRPY out)
+void manipulatorControl::from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out)
 {
-    //TODO
+//TODO
+}
+
+void manipulatorControl::from_ManipulatorCommand_to_KDLFrame(const orunav_msgs::ManipulatorCommand& in, KDL::Frame& out)
+{
+//TODO
 }
 
 void manipulatorControl::process_manipulator_command(const orunav_msgs::ManipulatorCommand::ConstPtr& msg)
 {
-    //TODO
-
-    send_target();
+    switch(msg->cmd)
+    {
+	case orunav_msgs::ManipulatorCommand::MANIPULATOR_LOAD:
+	    ROS_WARN("command to be implemented");
+	    break;
+	case orunav_msgs::ManipulatorCommand::MANIPULATOR_UNLOAD:
+	    ROS_INFO_STREAM(">> " << "Sent Command: UNLOAD");
+	    send_target();
+	    break;
+	case orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP:
+	    ROS_WARN("command to be implemented");
+	    break;
+	case orunav_msgs::ManipulatorCommand::MANIPULATOR_GOTO_IDLE:
+	    ROS_WARN("command to be implemented");
+	    break;
+	case orunav_msgs::ManipulatorCommand::MANIPULATOR_GOTO_HOME:
+	    ROS_WARN("command to be implemented");
+	    break;
+	default:
+	    ROS_ERROR_STREAM(msg->cmd << " is not a valid command...");
+	    break;
+    }
 }
 
 void manipulatorControl::send_target()
@@ -40,7 +63,7 @@ void manipulatorControl::send_target()
     std::string right_hand_link = "/robot1/right_hand_palm_link";
     std::string veltet_tray_link = "/robot1/gripper_link";
 
-    KDL::Frame pallet_T_base;
+    KDL::Frame pallet_T_base; //NOTE supposing a fixed pallet notation
     pallet_T_base = KDL::Frame::Identity();
     pallet_T_base.p.x(1.0);
     pallet_T_base.p.z(-0.2);
@@ -49,6 +72,8 @@ void manipulatorControl::send_target()
     tf::StampedTransform base_TF_velvet_tray;
     KDL::Frame base_T_right_hand;
     KDL::Frame base_T_velvet_tray;
+    KDL::Frame base_T_right_hand_desired;
+    KDL::Frame base_T_velvet_tray_desired;
     std::string err_msg;
 
     //HACK ros::Duration(ros::DURATION_MAX) since otherwise it uses simulation time...
@@ -75,18 +100,22 @@ void manipulatorControl::send_target()
 	return;
     }
 
-    lwr_controllers::PoseRPY right_hand_pose;
-    lwr_controllers::PoseRPY veltet_tray_pose;
+    lwr_controllers::PoseRPY right_hand_cmd;
+    lwr_controllers::PoseRPY veltet_tray_cmd;
 
-    from_ManipulatorCommand_to_PoseRPY(last_cmd,right_hand_pose);
-    from_ManipulatorCommand_to_PoseRPY(last_cmd,veltet_tray_pose);
+    KDL::Frame pallet_T_object;
+    from_ManipulatorCommand_to_KDLFrame(last_cmd,pallet_T_object);
 
-    cmd_pub_left.publish(veltet_tray_pose);
-    cmd_pub_right.publish(right_hand_pose);
+    base_T_right_hand_desired  = (pallet_T_base.Inverse()) * pallet_T_object;
+    base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;;
+    
+    from_KDLFrame_to_PoseRPY(base_T_right_hand_desired,right_hand_cmd);
+    from_KDLFrame_to_PoseRPY(base_T_velvet_tray_desired,veltet_tray_cmd);
+
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
 
     //TODO update report
-
-    ROS_INFO_STREAM(">> " << "Sent Target: TODO");
 }
 
 manipulatorControl::~manipulatorControl()
