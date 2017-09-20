@@ -1,15 +1,9 @@
 <launch>
-  <arg name="use_manipulator" default="false"/>
-  
+
   <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch"/>
 
-  <group unless="$(arg use_manipulator)">
-	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck.xacro'" />
-  </group>
-  <group if="$(arg use_manipulator)">
-	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck_manipulator.xacro'" />
-  </group>
-  
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck.xacro'" />
+
   <group ns="robot1">
     <param name="tf_prefix" value="robot1" />
     <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
@@ -17,7 +11,6 @@
       <arg name="robot_pose_y" value="13.538"/>
       <arg name="robot_pose_yaw" default="0"/>
       <arg name="robot_name" value="robot1" />
-      <arg name="use_manipulator" value="$(arg use_manipulator)" />
     </include>
   </group>
   <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
