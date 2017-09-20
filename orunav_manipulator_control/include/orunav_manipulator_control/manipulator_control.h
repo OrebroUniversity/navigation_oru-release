@@ -8,14 +8,13 @@
 #include <orunav_msgs/ManipulatorReport.h>
 #include <orunav_msgs/ManipulatorCommand.h>
 #include <mutex>
+#include <kdl/frames.hpp>
 
 class manipulatorControl
 {
 public:
     manipulatorControl();
     ~manipulatorControl();
-
-    void move();
 
 private:
     ros::NodeHandle nh;
@@ -38,7 +37,8 @@ private:
     orunav_msgs::ManipulatorCommand last_cmd;
     orunav_msgs::ManipulatorReport current_report;
     
-    void from_ManipulatorCommand_to_PoseRPY(const orunav_msgs::ManipulatorCommand& in, lwr_controllers::PoseRPY out);
+    void from_ManipulatorCommand_to_KDLFrame(const orunav_msgs::ManipulatorCommand& in, KDL::Frame& out);
+    void from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out);
 };
 
 #endif
