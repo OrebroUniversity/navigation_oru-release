@@ -41,6 +41,7 @@
         <param name="robot_id" value="1" />
   </node>
   <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+  <include file="$(find orunav_manipulator_control)/launch/manipulator_control.launch" />
 
   <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
     <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
@@ -82,6 +83,8 @@
     <param name="max_tracking_error" value="-1." />
     <param name="use_forks" value="true" />
 
+    <param name="use_manipulator" value="true" />
+    
     <param name="max_vel" value="0.3" />
     <param name="max_rotational_vel" value="0.3" />
     <param name="max_acc" value="0.1" />
