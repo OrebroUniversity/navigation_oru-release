@@ -17,7 +17,7 @@
 
       <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo 
 	    -J $(arg robot_name)::left_arm_a1_joint 1.57 -J $(arg robot_name)::left_arm_a2_joint 0.5 -J $(arg robot_name)::left_arm_a3_joint -1.0 -J $(arg robot_name)::left_arm_a5_joint -0.5 -J $(arg robot_name)::left_arm_a6_joint -1.57 
-	    -J $(arg robot_name)::right_arm_a1_joint -0.5 -J $(arg robot_name)::right_arm_a2_joint 1.0 -J $(arg robot_name)::right_arm_a3_joint -0.5"
+	    -J $(arg robot_name)::right_arm_a1_joint 0.12 -J $(arg robot_name)::right_arm_a2_joint 1.13 -J $(arg robot_name)::right_arm_a3_joint -0.7 -J $(arg robot_name)::right_arm_a4_joint -1.85 -J $(arg robot_name)::right_arm_e1_joint -1.6"
 	    respawn="false" output="screen" />
 
       <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
