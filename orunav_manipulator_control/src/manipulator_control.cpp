@@ -25,25 +25,51 @@ void manipulatorControl::publish_report(const ros::TimerEvent& event)
 
 void manipulatorControl::from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out)
 {
-//     from_KDLVector_to_PoseRPY_position(in.p,out.position);
-//     from_KDLRotation_to_PoseRPY_rotation(in.M,out.orientation);
+    from_KDLVector_to_PoseRPY_position(in.p,out.position);
+    from_KDLRotation_to_PoseRPY_rotation(in.M,out.orientation);
 }
 
 void manipulatorControl::from_KDLVector_to_PoseRPY_position(const KDL::Vector& in, lwr_controllers::PoseRPY::_position_type& out)
 {
-//     out.x = in.x();
-//     out.y = in.y();
-//     out.z = in.z();
+    out.x = in.x();
+    out.y = in.y();
+    out.z = in.z();
 }
 
 void manipulatorControl::from_KDLRotation_to_PoseRPY_rotation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out)
 {
-//     in.GetRPY(out.roll,out.pitch,out.yaw);
+    in.GetRPY(out.roll,out.pitch,out.yaw);
 }
 
-void manipulatorControl::extract_unload_pose_from_ManipulatorCommand(const orunav_msgs::ManipulatorCommand::ConstPtr& in, KDL::Frame& out)
+void manipulatorControl::from_IliadItem_to_KDLFrame(const geometry_msgs::Point& in, const int32_t rotation_type, KDL::Frame& out)
 {
-//     tf::poseMsgToKDL(in->item_pose,out);
+    out.p.x(in.x);
+    out.p.y(in.y);
+    out.p.z(in.z);
+
+    double roll=0.0;
+    double pitch=0.0;
+    double yaw=0.0;
+
+    switch(rotation_type) //TODO
+    {
+	case orunav_msgs::IliadItem::NONE:
+	break;
+	case orunav_msgs::IliadItem::X:
+	break;
+	case orunav_msgs::IliadItem::Y:
+	break;
+	case orunav_msgs::IliadItem::Z:
+	break;
+	case orunav_msgs::IliadItem::XZ:
+	break;
+	case orunav_msgs::IliadItem::ZX:
+	break;
+	default:
+	break;
+    }
+
+    out.M = KDL::Rotation::RPY(roll,pitch,yaw);
 }
 
 void manipulatorControl::process_manipulator_command(const orunav_msgs::ManipulatorCommand::ConstPtr& msg)
@@ -113,26 +139,25 @@ void manipulatorControl::update_ee_transformations(KDL::Frame& base_T_right_hand
 
 void manipulatorControl::perform_pick_items(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
 {
-    //TODO for sugli item
-    int total_item = 5; //NOTE temporary
-    
-    for(int i=0;i<total_item;i++)
+    int i=0;
+    for(auto item:cmd->item_list.items)
     {
 	update_report(orunav_msgs::ManipulatorReport::LOADING_ITEM,i);
       
-	load_item();
-	
+	load_item(item);
+
 	update_report(orunav_msgs::ManipulatorReport::UNLOADING_ITEM,i);
-	
-	unload_item();
+
+	unload_item(item);
+
+	i++;
     }
 }
 
-void manipulatorControl::load_item() /*TODO object location*/
+void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
 {
-    //NOTE here we should have information from perception
-
-    KDL::Frame pallet_T_base; //supposing a fixed pallet position
+    //NOTE supposing a fixed pallet position w.r.t. the robot
+    KDL::Frame pallet_T_base;
     pallet_T_base = KDL::Frame::Identity();
     pallet_T_base.p.x(1.0);
     pallet_T_base.p.z(-0.4);
@@ -149,7 +174,7 @@ void manipulatorControl::load_item() /*TODO object location*/
 
     KDL::Frame pallet_T_object;
     
-    //supposing the loading pose come from perception
+    //NOTE here we should have information from perception
     pallet_T_object = KDL::Frame::Identity();
     pallet_T_object.p.x(0.1);
 
@@ -161,7 +186,19 @@ void manipulatorControl::load_item() /*TODO object location*/
     from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
     from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
-    right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1; //to simulate object size
+    
+    //to simulate object size
+    if(item.name=="Hallonsoppa")
+    {
+	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+	right_hand_cmd.orientation.pitch = right_hand_cmd.orientation.pitch + M_PI/2.0;
+    }
+    
+    if(item.name=="Jacky")
+    {
+	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+    }
+    
     from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
 
     cmd_pub_right.publish(right_hand_cmd);
@@ -181,7 +218,7 @@ void manipulatorControl::load_item() /*TODO object location*/
     cmd_pub_left.publish(veltet_tray_cmd);
 }
 
-void manipulatorControl::unload_item() /*TODO object location*/
+void manipulatorControl::unload_item(const orunav_msgs::IliadItem& item)
 {
     //NOTE here the unload pose comes from the vehicle execution
 
@@ -201,7 +238,7 @@ void manipulatorControl::unload_item() /*TODO object location*/
     lwr_controllers::PoseRPY veltet_tray_cmd;
 
     KDL::Frame pallet_T_object;
-//     extract_unload_pose_from_ManipulatorCommand(cmd,pallet_T_object);
+    from_IliadItem_to_KDLFrame(item.position,item.rotation_type,pallet_T_object);
 
     base_T_right_hand_desired  = (pallet_T_base.Inverse()) * pallet_T_object;
     base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;
@@ -210,8 +247,19 @@ void manipulatorControl::unload_item() /*TODO object location*/
     from_KDLRotation_to_PoseRPY_rotation(base_T_right_hand.M,right_hand_cmd.orientation);
     from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
+    //to simulate object size
+    if(item.name=="Hallonsoppa")
+    {
+	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+	right_hand_cmd.orientation.pitch = right_hand_cmd.orientation.pitch + M_PI/2.0;
+    }
+    
+    if(item.name=="Jacky")
+    {
+	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+    }
+    
     from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
-    right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1; //to simulate object size
     from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
 
     cmd_pub_right.publish(right_hand_cmd);

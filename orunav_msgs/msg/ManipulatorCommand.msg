@@ -11,4 +11,4 @@ int32 UNWRAP = 2
 int32 NO_OPERATION = 3
 
 # item list
-# TODO
+IliadItemArray item_list

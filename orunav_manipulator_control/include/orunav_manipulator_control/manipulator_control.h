@@ -7,6 +7,7 @@
 #include <map>
 #include <orunav_msgs/ManipulatorReport.h>
 #include <orunav_msgs/ManipulatorCommand.h>
+#include <orunav_msgs/IliadItemArray.h>
 #include <mutex>
 #include <kdl/frames.hpp>
 
@@ -35,8 +36,8 @@ private:
     void update_ee_transformations(KDL::Frame& base_T_right_hand, KDL::Frame& base_T_velvet_tray);
 
     void perform_pick_items(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
-    void load_item();
-    void unload_item();
+    void load_item(const orunav_msgs::IliadItem& item);
+    void unload_item(const orunav_msgs::IliadItem& item);
     void perform_unwrap();
     
     void go_to_homing_position();
@@ -46,7 +47,7 @@ private:
     
     orunav_msgs::ManipulatorReport current_report;
     
-    void extract_unload_pose_from_ManipulatorCommand(const orunav_msgs::ManipulatorCommand::ConstPtr& in, KDL::Frame& out);
+    void from_IliadItem_to_KDLFrame(const geometry_msgs::Point& in, const int32_t rotation_type, KDL::Frame& out);    
     void from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out);
     void from_KDLVector_to_PoseRPY_position(const KDL::Vector& in, lwr_controllers::PoseRPY::_position_type& out);
     void from_KDLRotation_to_PoseRPY_rotation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out);
