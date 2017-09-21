@@ -201,7 +201,7 @@ void manipulatorControl::unload_item() /*TODO object location*/
     lwr_controllers::PoseRPY veltet_tray_cmd;
 
     KDL::Frame pallet_T_object;
-    extract_unload_pose_from_ManipulatorCommand(cmd,pallet_T_object);
+//     extract_unload_pose_from_ManipulatorCommand(cmd,pallet_T_object);
 
     base_T_right_hand_desired  = (pallet_T_base.Inverse()) * pallet_T_object;
     base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;
