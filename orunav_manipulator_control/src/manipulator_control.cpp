@@ -85,6 +85,7 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
 	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: PICK_ITEMS");
 	    perform_pick_items(msg);
 	    go_to_homing_position();
+	    go_to_emergency(); //NOTE to ensure stop
 	    update_report(orunav_msgs::ManipulatorReport::IDLE);
 	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: PICK_ITEMS");
 	    break;
@@ -92,6 +93,7 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
 	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: UNWRAP");
 	    perform_unwrap();
 	    go_to_homing_position();
+	    go_to_emergency(); //NOTE to ensure stop
 	    update_report(orunav_msgs::ManipulatorReport::IDLE);
 	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: UNWRAP");
 	    break;
@@ -213,12 +215,6 @@ void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
 	ros::spinOnce();
 	usleep(10);
     }
-    
-    //stopping arms
-    right_hand_cmd.id=-1;
-    veltet_tray_cmd.id=-1;
-    cmd_pub_right.publish(right_hand_cmd);
-    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::unload_item(const orunav_msgs::IliadItem& item)
@@ -271,12 +267,6 @@ void manipulatorControl::unload_item(const orunav_msgs::IliadItem& item)
 	ros::spinOnce();
 	usleep(10);
     }
-
-    //stopping arms
-    right_hand_cmd.id=-1;
-    veltet_tray_cmd.id=-1;
-    cmd_pub_right.publish(right_hand_cmd);
-    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::perform_unwrap()
@@ -341,12 +331,6 @@ void manipulatorControl::perform_unwrap()
 	ros::spinOnce();
 	usleep(10);
     }
-
-    //stopping arms
-    right_hand_cmd.id=-1;
-    veltet_tray_cmd.id=-1;
-    cmd_pub_right.publish(right_hand_cmd);
-    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::go_to_homing_position()
@@ -366,12 +350,6 @@ void manipulatorControl::go_to_homing_position()
 	ros::spinOnce();
 	usleep(10);
     }
-
-    //stopping arms
-    right_hand_cmd.id=-1;
-    veltet_tray_cmd.id=-1;
-    cmd_pub_right.publish(right_hand_cmd);
-    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::go_to_emergency()
