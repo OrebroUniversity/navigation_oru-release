@@ -2565,7 +2565,7 @@
       </link>
       <pose frame=''>5.19811 -4.14187 0 0 -0 0</pose>
     </model>
-    <model name='person_standing'>
+    <model name='person_standing_0'>
       <link name='link'>
         <inertial>
           <pose frame=''>0 -0.1 0.95 0 -0 0</pose>
@@ -2635,7 +2635,7 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame=''>2.62183 0.88819 0 0 -0 0</pose>
+      <pose frame=''>-4.07215 -3.70531 0 0 -0 0</pose>
     </model>
     <model name='person_walking'>
       <link name='link'>
@@ -2899,78 +2899,6 @@
         <kinematic>0</kinematic>
       </link>
       <pose frame=''>0.136104 4.34384 0 0 -0 0</pose>
-    </model>
-    <model name='person_standing_0'>
-      <link name='link'>
-        <inertial>
-          <pose frame=''>0 -0.1 0.95 0 -0 0</pose>
-          <mass>80</mass>
-          <inertia>
-            <ixx>24.88</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>25.73</iyy>
-            <iyz>0</iyz>
-            <izz>2.48</izz>
-          </inertia>
-        </inertial>
-        <collision name='bottom'>
-          <pose frame=''>0 -0.1 0.01 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.35 0.02</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <collision name='person'>
-          <pose frame=''>0 0 0.02 0.04 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://person_standing/meshes/standing.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <pose frame=''>0 0 0.02 0.04 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://person_standing/meshes/standing.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose frame=''>-4.07215 -3.70531 0 0 -0 0</pose>
     </model>
     <model name='cabinet'>
       <static>1</static>
@@ -3622,6 +3550,189 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+    <model name='person_standing_1'>
+      <link name='link'>
+        <inertial>
+          <pose frame=''>0 -0.1 0.95 0 -0 0</pose>
+          <mass>80</mass>
+          <inertia>
+            <ixx>24.88</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>25.73</iyy>
+            <iyz>0</iyz>
+            <izz>2.48</izz>
+          </inertia>
+        </inertial>
+        <collision name='bottom'>
+          <pose frame=''>0 -0.1 0.01 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>0.5 0.35 0.02</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <collision name='person'>
+          <pose frame=''>0 0 0.02 0.04 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://person_standing/meshes/standing.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <pose frame=''>0 0 0.02 0.04 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://person_standing/meshes/standing.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-3.70389 0.198852 0 0 -0 0</pose>
+    </model>
+
+
+    <!-- Actors -->
+    <actor name="actor3">
+        <skin>
+          <filename>talk_b.dae</filename>
+          <scale>1.05</scale>
+        </skin>
+        <pose>0 0 0 0 0 3.14</pose>
+        <animation name="talking">
+          <filename>talk_b.dae</filename>
+        </animation>
+        <script>
+          <loop>true</loop>
+          <auto_start>true</auto_start>
+          <trajectory id="0" type="talking">
+            <waypoint>
+              <time>0</time>
+              <pose>0.5 0.6 0 0 0 0</pose>
+            </waypoint>
+            <waypoint>
+              <time>20</time>
+              <pose>0.5 0.6 0 0 0 0</pose>
+            </waypoint>
+          </trajectory>
+        </script>
+    </actor>
+
+    <actor name="actor2">
+        <skin>
+          <filename>talk_a.dae</filename>
+          <scale>1.05</scale>
+        </skin>
+        <pose>0 0 0 0 0 3.14</pose>
+        <animation name="talking">
+          <filename>talk_a.dae</filename>
+        </animation>
+        <script>
+          <loop>true</loop>
+          <auto_start>true</auto_start>
+          <trajectory id="0" type="talking">
+            <waypoint>
+              <time>0</time>
+              <pose>0.3 -0.7 0 0 0 0</pose>
+            </waypoint>
+            <waypoint>
+              <time>20</time>
+              <pose>0.3 -0.7 0 0 0 0</pose>
+            </waypoint>
+          </trajectory>
+        </script>
+    </actor>
+
+    <actor name="actor1">
+        <skin>
+          <filename>walk.dae</filename>
+          <scale>1.05</scale>
+        </skin>
+        <pose>0 2 0 0 0 -1.57</pose>
+        <animation name="walking">
+          <filename>walk.dae</filename>
+          <interpolate_x>true</interpolate_x>
+        </animation>
+        <script>
+          <!--<delay_start>10.0</delay_start>-->
+          <loop>true</loop>
+          <auto_start>true</auto_start>
+          <trajectory id="0" type="walking">
+            <waypoint>
+              <time>0</time>
+              <pose>0 2 0 0 0 -1.57</pose>
+            </waypoint>
+            <waypoint>
+              <time>2</time>
+              <pose>-2 0 0 0 0 -1.57</pose>
+            </waypoint>
+            <waypoint>
+              <time>5</time>
+              <pose>-2 -5 0 0 0 -1.57</pose>
+            </waypoint>
+            <waypoint>
+              <time>7</time>
+              <pose>-1.5 -5 0 0 0 0</pose>
+            </waypoint>
+            <waypoint>
+              <time>11</time>
+              <pose>3 -5 0 0 0 0</pose>
+            </waypoint>
+            <waypoint>
+              <time>12</time>
+              <pose>3.5 -4.5 0 0 0 1.57</pose>
+            </waypoint>
+            <waypoint>
+              <time>17.5</time>
+              <pose>3 2 0 0 0 1.57</pose>
+            </waypoint>
+            <waypoint>
+              <time>18.5</time>
+              <pose>2.5 2 0 0 0 -3.14</pose>
+            </waypoint>
+            <waypoint>
+              <time>20.0</time>
+              <pose>0.5 2 0 0 0 -3.14</pose>
+            </waypoint>
+          </trajectory>
+        </script>
+    </actor>
+
+
+
+
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type='adiabatic'/>
@@ -3991,16 +4102,6 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='person_standing'>
-        <pose frame=''>2.62198 0.888192 0 0 -1e-06 -0.001511</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>2.62198 0.888192 0 0 -1e-06 -0.001511</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>2.20626 1.53122 1.51012 1.46826 0.857534 -3.07534</acceleration>
-          <wrench>176.501 122.497 120.81 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='person_standing_0'>
         <pose frame=''>-4.07234 -3.70531 0 1e-06 -1e-06 0.0019</pose>
         <scale>1 1 1</scale>
@@ -4011,6 +4112,16 @@
           <wrench>173.814 121.709 109.343 0 -0 0</wrench>
         </link>
       </model>
+      <model name='person_standing_1'>
+        <pose frame=''>-3.70389 0.198852 0 0 -0 1</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose frame=''>-3.70389 0.198852 0 0 -0 1</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+     </model>
       <model name='person_walking'>
         <pose frame=''>-19.2849 1.66224 0 -1e-06 1e-06 -0.001395</pose>
         <scale>1 1 1</scale>
