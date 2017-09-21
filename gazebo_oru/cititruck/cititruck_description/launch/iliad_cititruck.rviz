@@ -10,6 +10,9 @@ Panels:
         - /TF1/Frames1
         - /TF1/Tree1
         - /Marker2
+        - /Human Awareness1/Groundtruth TrackedPersons1
+        - /Human Awareness1/Groundtruth TrackedPersons1/Style1
+        - /Human Awareness1/Groundtruth TrackedPersons1/History as line1
       Splitter Ratio: 0.659217894
     Tree Height: 775
   - Class: rviz/Selection
@@ -182,8 +185,6 @@ Visualization Manager:
           Value: false
         robot1/right_fork:
           Value: false
-        robot1/robot1/kinect_link:
-          Value: false
         robot1/safety_laser_link:
           Value: true
         robot1/sd_wheel_link:
@@ -217,8 +218,7 @@ Visualization Manager:
               robot1/fixed_right_wheel_link:
                 {}
               robot1/kinect_link:
-                robot1/robot1/kinect_link:
-                  {}
+                {}
               robot1/nav_laser_link:
                 {}
               robot1/safety_laser_link:
@@ -328,13 +328,14 @@ Visualization Manager:
       Color: 109; 109; 109
       Color Transformer: FlatColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 7.36387948e-37
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: Velodyne
+      Plane: Omnidirectional
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -345,7 +346,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -365,6 +366,7 @@ Visualization Manager:
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: Nav laser
+      Plane: Omnidirectional
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -395,6 +397,7 @@ Visualization Manager:
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: Safety laser
+      Plane: Omnidirectional
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -406,6 +409,53 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/Group
+      Displays:
+        - Alpha: 1
+          Class: spencer_tracking_rviz_plugin/TrackedPersons
+          Color: 130; 130; 130
+          Color map offset: 0
+          Color transform: Constant color
+          Delete after no. cycles: 100
+          Enabled: true
+          Excluded person IDs: ""
+          Font color: 255; 255; 255
+          Font color style: Same color
+          Font scale: 1.29999995
+          History as line:
+            Line width: 0.0199999996
+            Value: true
+          History size: 100
+          Included person IDs: ""
+          Min. history point distance: 0.400000006
+          Missed alpha: 0.5
+          Name: Groundtruth TrackedPersons
+          Occlusion alpha: 0.300000012
+          Render covariances:
+            Line width: 0.100000001
+            Value: false
+          Render detection IDs: false
+          Render history: true
+          Render person visual: true
+          Render track IDs: true
+          Render track state: false
+          Render velocities: true
+          Show DELETED tracks: false
+          Show MATCHED tracks: true
+          Show MISSED tracks: true
+          Show OCCLUDED tracks: true
+          Style:
+            Line width: 0.00999999978
+            Scaling factor: 1
+            Value: Person meshes
+          Topic: /groundtruth/tracked_persons
+          Unreliable: false
+          Value: true
+          Z offset:
+            Use Z position from message: false
+            Value: 0
+      Enabled: true
+      Name: Human Awareness
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -430,25 +480,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 13.7241154
+      Distance: 13.86271
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.941472888
-        Y: -3.31427431
-        Z: 1.63979542
+        X: -1.39851284
+        Y: -2.35969734
+        Z: -0.0664787069
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.904796958
+      Pitch: 1.29479659
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.77289724
+      Yaw: 4.71788216
     Saved: ~
 Window Geometry:
   Displays:
