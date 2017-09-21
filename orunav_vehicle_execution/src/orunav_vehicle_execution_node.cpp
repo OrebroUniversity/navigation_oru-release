@@ -1521,12 +1521,15 @@ public:
 	
 	if (vehicle_operation == VehicleState::UNWRAP_PALLET) {
 	  cmd.cmd = orunav_msgs::ManipulatorCommand::UNWRAP;
-	  
+	  ROS_INFO("Sending UNWRAP_PALLET command");
 	} else if (vehicle_operation == VehicleState::PICK_ITEMS) {
 	  cmd.cmd = orunav_msgs::ManipulatorCommand::PICK_ITEMS;
 	  cmd.item_list = item_list;
+	  ROS_INFO("Sending PICK_ITEMS command");
+	  ROS_INFO_STREAM("Picking item " << static_cast<int>(msg->item_id)  << " of " << item_list.items.size());
 	} else {
 	  cmd.cmd = orunav_msgs::ManipulatorCommand::NO_OPERATION;
+	  ROS_INFO("Sending NO_OPERATION command");
 	}
 // 	// DONE discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
 // 	if (manipulator_operation == VehicleState::MANIPULATOR_LOAD_ITEM_START) {
