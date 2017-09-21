@@ -17,10 +17,9 @@ public:
   enum ManipulatorOperationState { MANIPULATOR_LOAD_ITEM_START, MANIPULATOR_LOAD_ITEM_DONE, MANIPULATOR_UNLOAD_ITEM_START, MANIPULATOR_UNLOAD_ITEM_DONE, MANIPULATOR_UNWRAP_PALLET_START, MANIPULATOR_UNWRAP_PALLET_DONE, MANIPULATOR_GOTO_IDLE_START, MANIPULATOR_GOTO_IDLE_DONE, MANIPULATOR_GOTO_HOME_START, MANIPULATOR_GOTO_HOME_DONE };
   /**
    * States in the state machine of the manipulator
-   * MANIPULATOR_NOT_AVAILABLE:	starting state when robot has no arms
-   * MANIPULATOR_NO_OPERATION:	starting state when robot has arms on it
+   * See orunav_msgs::ManipulatorReport for the definition
     */
-  enum ManipulatorState { NOT_AVAILABLE, IDLE, LOADING_ITEM, UNLOADING_ITEM, UNWRAP_PHASE_1, UNWRAP_PHASE_2, HOMING, FAILURE};
+  enum ManipulatorState { NOT_AVAILABLE=1, IDLE, LOADING_ITEM, UNLOADING_ITEM, UNWRAP_PHASE_1, UNWRAP_PHASE_2, HOMING, FAILURE};
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1;
