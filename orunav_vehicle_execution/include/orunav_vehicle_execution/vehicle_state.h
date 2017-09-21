@@ -500,12 +500,13 @@ public:
     // Process the start operation (shoudln't happen here)
     if (state_ == PERFORMING_START_OPERATION) {
       ROS_ERROR("PERFORMING_START_OPERATION??? Shouldn't happen here!");
+      abort();
       vehicle_operation = startOperation_;
     }
     
     // Process the goal operation if (any)
-    if (state_ == PERFORMING_GOAL_OPERATION) { 
-      ROS_INFO("PERFORMING_GOAL_OPERATION");
+    if (state_ == PERFORMING_GOAL_OPERATION) {
+      ROS_WARN("Manipulator: PERFORMING_GOAL_OPERATION");
       handleGoalManipulatorOperation(completedTarget, moveArms,item_list);
       vehicle_operation = goalOperation_;
     } 
