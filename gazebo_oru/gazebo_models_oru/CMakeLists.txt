@@ -29,3 +29,9 @@ install(DIRECTORY
   models
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+
+install(PROGRAMS
+  scripts/delete_humans_from_gazebo.py
+  scripts/download_all_gazebo_org_models.sh
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
