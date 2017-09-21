@@ -1,12 +1,19 @@
 <?xml version="1.0"?>
 <launch>
-<arg name="prefix" default="robot1" />
+  <arg name="prefix" default="robot1"/>
+  <arg name="coordination" default="true"/>
+  <arg name="human_perception" default="false"/>
+
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
 
+  <!-- LOAD WORLD -->
+  <include file="$(find gazebo_worlds_oru)/launch/ncfm_world.launch"/>
+
  <include file="$(find cititruck_gazebo)/launch/cititruck_ncfm.launch">
      <arg name="tf_prefix" value="$(arg prefix)"/>
-</include>
+  </include>
+
   <!--include file="$(find gazebo_worlds_oru)/launch/empty_map_server.launch"/-->
   <include file="$(find gazebo_worlds_oru)/launch/ncfm_map_server.launch"/>
   <!--include file="$(find orunav_mpc)/launch/citi1_simulation.launch"/-->
@@ -17,10 +24,41 @@
     <param name="multiple_vehicles" value="true" />
   </node>
 
-  <node pkg="orunav_coordinator_fake" type="coordinator_fake_node" name="coordinator_fake_node" output="screen">
-    <param name="multiple_vehicles" value="true" />
-    <param name="use_ct" value="false" />  
-  </node>
+  <!-- COORDINATION -->
+  <group if="$(arg coordination)"> 
+    <node name="coordinator" pkg="coordination_oru_ros" type="coordinator" args="se.oru.coordination.coordinator.ros_coordinator.ncfm.NCFMDemoMS1MainNode" output="screen">
+      <rosparam param="robot_ids">[1]</rosparam>
+      <param name="footprint_rear_left_x" value="-0.2" />
+      <param name="footprint_rear_left_y" value="0.3" />
+      <param name="footprint_rear_right_x" value="-0.2" />
+      <param name="footprint_rear_right_y" value="-0.3" />
+      <param name="footprint_front_left_x" value="1.9" />
+      <param name="footprint_front_left_y" value="0.3" />
+      <param name="footprint_front_right_x" value="1.9" />
+      <param name="footprint_front_right_y" value="-0.3" />
+      <param name="control_period" value="1000" />
+      <param name="temporal_resolution" value="1000.0" />
+      <param name="forward_model_max_accel" value="0.1" />
+      <param name="forward_model_max_vel" value="0.3" />
+      <!--param name="missions_file" value="$(find coordination_oru_ros)/missions/NCFMScenarioMS1Missions.xml" /-->
+    </node>
+  </group>
+
+  <group unless="$(arg coordination)">
+    <node pkg="orunav_coordinator_fake" type="coordinator_fake_node" name="coordinator_fake_node" output="screen">
+      <param name="multiple_vehicles" value="true" />
+      <param name="use_ct" value="false" />  
+    </node>
+  </group>
+
+  <!-- HUMAN PERCEPTION MASTER -->
+  <group if="$(arg human_perception)">
+    <include file="$(find iliad_human_perception_launch)/launch/master.launch">
+      <!-- Publish groundtruth tracked persons from Gazebo -->
+      <arg name="simulation" value="true"/>
+    </include>
+  </group>
+
 
   <!-- ALL ROBOT SPECIFIC TASKS -->
 
