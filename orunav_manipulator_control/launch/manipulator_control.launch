@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="orunav_manipulator_control" type="manipulator_control_client" name="manipulator_control_client" output="screen">
+    <node pkg="orunav_manipulator_control" type="manipulator_control" name="manipulator_control_client" output="screen">
 	      <param name="visualize" value="true" />
     </node>
 </launch>
