@@ -164,6 +164,12 @@ void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand::Con
 	ros::spinOnce();
 	usleep(10);
     }
+    
+    //stopping arms
+    right_hand_cmd.id=-1;
+    veltet_tray_cmd.id=-1;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
@@ -208,6 +214,12 @@ void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::C
 	ros::spinOnce();
 	usleep(10);
     }
+
+    //stopping arms
+    right_hand_cmd.id=-1;
+    veltet_tray_cmd.id=-1;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::perform_unwrap(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
