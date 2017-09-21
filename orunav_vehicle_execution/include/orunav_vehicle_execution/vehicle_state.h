@@ -25,6 +25,8 @@ public:
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1;
   setManipulator(false); // by default let's keep things as they were without manipulator
+      state_ = PERFORMING_START_OPERATION; // DEBUGGING
+    startManipulatorOperation_ = MANIPULATOR_UNWRAP_PALLET_START;
 }
   
   void update(const orunav_msgs::Task &msg) {
@@ -452,7 +454,7 @@ public:
   }
 
 
-  void handleGoalManipulatorOperation(bool &completedTarget, bool &moveArms, bool &load) {
+  void handleGoalManipulatorOperation(bool &completedTarget, bool &moveArms) {
     // TODO check state machine consistency with control module
     if (goalManipulatorOperation_ == MANIPULATOR_GOTO_IDLE_DONE) {
       state_ = WAITING_FOR_TASK;
@@ -514,7 +516,7 @@ public:
         state_ = PERFORMING_GOAL_OPERATION;
 	manipulatorState_ = MANIPULATOR_FULL;
 	moveArms = true;
-	load = true;
+// 	load = true;
 	completedTarget = true;
 	return;
       }
@@ -524,7 +526,7 @@ public:
         state_ = PERFORMING_GOAL_OPERATION;
 	manipulatorState_ = MANIPULATOR_IDLE;
 	moveArms = true;
-	load = false;
+// 	load = false;
 	completedTarget = true;
 	return;
       }
@@ -534,7 +536,7 @@ public:
         state_ = PERFORMING_GOAL_OPERATION;
 	manipulatorState_ = MANIPULATOR_IDLE;
 	moveArms = true;
-	load = false;
+// 	load = false;
 	return;
       }
     }
@@ -543,23 +545,27 @@ public:
         state_ = PERFORMING_GOAL_OPERATION;
 	manipulatorState_ = MANIPULATOR_IDLE;
 	moveArms = true;
-	load = false;
+// 	load = false;
 	return;
       }
     }
 
   }
 
-  void update(const orunav_msgs::ManipulatorReportConstPtr &msg, bool &completedTarget, bool &moveArms, bool &load,
+  void update(const orunav_msgs::ManipulatorReportConstPtr &msg, bool &completedTarget, bool &moveArms,
 	      OperationState &vehicle_operation, ManipulatorOperationState &manipulator_operation) {
     
     moveArms = false;
-    load = true;
+
     completedTarget = false;
     
-    manipulatorState_ = static_cast<ManipulatorState>(msg->status);
+//     manipulatorState_ = static_cast<ManipulatorState>(msg->status);
 
-    ROS_INFO_STREAM("ManipulatorOperationState : " << getStrManipulatorOperation());
+//     state_ = PERFORMING_START_OPERATION; // DEBUGGING
+//     startManipulatorOperation_ = MANIPULATOR_UNWRAP_PALLET_START;
+    
+    ROS_INFO_STREAM("StartManipulatorOperationState : " << getStrStartManipulatorOperation());
+    ROS_INFO_STREAM("GoalManipulatorOperationState : " << getStrGoalManipulatorOperation());
     ROS_INFO_STREAM("ManipulatorState : " << getStrManipulatorStatus());
     
     // Is the task ok to continue?
@@ -569,13 +575,14 @@ public:
 
     // Process the start operation (if any)
     if (state_ == PERFORMING_START_OPERATION) {
-      handleStartManipulatorOperation(completedTarget, moveArms, load);
+      ROS_ERROR("PERFORMING_START_OPERATION??? Shouldn't happen here!");
       vehicle_operation = startOperation_;
     }
     
     // Process the goal operation if (any)
     if (state_ == PERFORMING_GOAL_OPERATION) { 
-      handleGoalManipulatorOperation(completedTarget, moveArms, load);
+      ROS_INFO("PERFORMING_GOAL_OPERATION???");
+      handleGoalManipulatorOperation(completedTarget, moveArms);
       vehicle_operation = goalOperation_;
     } 
   }
@@ -1082,24 +1089,56 @@ public:
     return std::string("unknown(!)");
   }
 
-  std::string getStrManipulatorOperation() const {
-    switch (manipulatorState_) {
-      case MANIPULATOR_NOT_AVAILABLE:
-        return std::string("MANIPULATOR_NOT_AVAILABLE");
-      case MANIPULATOR_IDLE:
-        return std::string("MANIPULATOR_IDLE");
-      case MANIPULATOR_HOMING:
-        return std::string("MANIPULATOR_HOMING");
-      case MANIPULATOR_LOADING_ITEM:
-        return std::string("MANIPULATOR_LOADING_ITEM");
-      case MANIPULATOR_FULL:
-        return std::string("MANIPULATOR_FULL");
-      case MANIPULATOR_UNLOADING_ITEM:
-        return std::string("MANIPULATOR_UNLOADING_ITEM");
-      case MANIPULATOR_UNWRAPPING:
-        return std::string("MANIPULATOR_UNWRAPPING");
-      case MANIPULATOR_FAILURE:
-        return std::string("MANIPULATOR_FAILURE");
+  std::string getStrStartManipulatorOperation() const {
+    switch (startManipulatorOperation_) {
+      case MANIPULATOR_LOAD_ITEM_START:
+        return std::string("MANIPULATOR_LOAD_ITEM_START");
+      case MANIPULATOR_LOAD_ITEM_DONE:
+        return std::string("MANIPULATOR_LOAD_ITEM_DONE");
+      case MANIPULATOR_UNLOAD_ITEM_START:
+        return std::string("MANIPULATOR_UNLOAD_ITEM_START");
+      case MANIPULATOR_UNLOAD_ITEM_DONE:
+        return std::string("MANIPULATOR_UNLOAD_ITEM_DONE");
+      case MANIPULATOR_UNWRAP_PALLET_START:
+        return std::string("MANIPULATOR_UNWRAP_PALLET_START");
+      case MANIPULATOR_UNWRAP_PALLET_DONE:
+        return std::string("MANIPULATOR_UNWRAP_PALLET_DONE");
+      case MANIPULATOR_GOTO_IDLE_START:
+        return std::string("MANIPULATOR_GOTO_IDLE_START");
+      case MANIPULATOR_GOTO_IDLE_DONE:
+        return std::string("MANIPULATOR_GOTO_IDLE_DONE");
+      case MANIPULATOR_GOTO_HOME_START:
+        return std::string("MANIPULATOR_GOTO_HOME_START");
+      case MANIPULATOR_GOTO_HOME_DONE:
+        return std::string("MANIPULATOR_GOTO_HOME_DONE");
+      default:
+        break;
+    }
+    return std::string("unknown(!)");
+  }
+
+  std::string getStrGoalManipulatorOperation() const {
+    switch (goalManipulatorOperation_) {
+      case MANIPULATOR_LOAD_ITEM_START:
+        return std::string("MANIPULATOR_LOAD_ITEM_START");
+      case MANIPULATOR_LOAD_ITEM_DONE:
+        return std::string("MANIPULATOR_LOAD_ITEM_DONE");
+      case MANIPULATOR_UNLOAD_ITEM_START:
+        return std::string("MANIPULATOR_UNLOAD_ITEM_START");
+      case MANIPULATOR_UNLOAD_ITEM_DONE:
+        return std::string("MANIPULATOR_UNLOAD_ITEM_DONE");
+      case MANIPULATOR_UNWRAP_PALLET_START:
+        return std::string("MANIPULATOR_UNWRAP_PALLET_START");
+      case MANIPULATOR_UNWRAP_PALLET_DONE:
+        return std::string("MANIPULATOR_UNWRAP_PALLET_DONE");
+      case MANIPULATOR_GOTO_IDLE_START:
+        return std::string("MANIPULATOR_GOTO_IDLE_START");
+      case MANIPULATOR_GOTO_IDLE_DONE:
+        return std::string("MANIPULATOR_GOTO_IDLE_DONE");
+      case MANIPULATOR_GOTO_HOME_START:
+        return std::string("MANIPULATOR_GOTO_HOME_START");
+      case MANIPULATOR_GOTO_HOME_DONE:
+        return std::string("MANIPULATOR_GOTO_HOME_DONE");
       default:
         break;
     }
@@ -1235,6 +1274,11 @@ public:
   }
   
   void setManipulator(bool hm) {
+    if(hm) {
+      manipulatorState_ = MANIPULATOR_IDLE;
+    } else {
+      manipulatorState_ = MANIPULATOR_NOT_AVAILABLE;
+    }
     hasManipulator_ = hm;
   }
   

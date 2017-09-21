@@ -1497,81 +1497,51 @@ public:
       ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: Entering process_manipulator_report");
       bool completed_target = false;
       bool move_arms = false;
-      bool load; // ?
+
       VehicleState::ManipulatorOperationState manipulator_operation;
       VehicleState::OperationState vehicle_operation;
-      
+
       ROS_INFO("Processing ManipulatorReport");
-      vehicle_state_.update(msg,completed_target, move_arms, load,
+      inputs_mutex_.lock();
+      vehicle_state_.update(msg,completed_target, move_arms,
 			    vehicle_operation, manipulator_operation);
 
-      // TODO
-      
       if(completed_target) {
 	ROS_INFO("Achieved something here!");
-	if(load) {
-	  ROS_INFO("Item loaded.");
-	} else {
-	  ROS_INFO("Item dropped or pallet unwrapped."); // TODO separate?
-	}
       }
-      
+      inputs_mutex_.unlock();
       if(move_arms) {
-	ROS_INFO("About to move arms!");
-	
+	ROS_INFO("[KMOVehicleExecutionNode] %s - moving arms", orunav_node_utils::getIDsString(target_handler_.getLastProcessedID()).c_str());	
 	orunav_msgs::ManipulatorCommand cmd;
 	
 	// setup command
 	cmd.robot_id = robot_id_;
 	
-	// TODO discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
-	if (manipulator_operation == VehicleState::MANIPULATOR_LOAD_ITEM_START) {
-	  ROS_INFO("Sending LOAD_ITEM command");
-	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_LOAD;
-	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNLOAD_ITEM_START) { 
-	  ROS_INFO("Sending UNLOAD_ITEM command");
-	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNLOAD;
-	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNWRAP_PALLET_START) {
-	  ROS_INFO("Sending UNWRAP_PALLET command");
-	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP;
+	if (vehicle_operation == VehicleState::UNWRAP_PALLET) {
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::UNWRAP;
+	  
+	} else if (vehicle_operation == VehicleState::PICK_ITEMS) {
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::PICK_ITEMS;
+	  
 	} else {
-	  ROS_INFO("Command not recognized!");
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::NO_OPERATION;
 	}
+// 	// TODO discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
+// 	if (manipulator_operation == VehicleState::MANIPULATOR_LOAD_ITEM_START) {
+// 	  ROS_INFO("Sending LOAD_ITEM command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_LOAD;
+// 	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNLOAD_ITEM_START) { 
+// 	  ROS_INFO("Sending UNLOAD_ITEM command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNLOAD;
+// 	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNWRAP_PALLET_START) {
+// 	  ROS_INFO("Sending UNWRAP_PALLET command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP;
+// 	} else {
+// 	  ROS_INFO("Command not recognized!");
+// 	}
 	manipulatorcommand_pub_.publish(cmd);
       }
       ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: Quitting process_manipulator_report");
-//     last_process_fork_report_time_ = ros::Time::now();
-//     bool completed_target, move_forks, load;
-//     VehicleState::OperationState operation;
-//     inputs_mutex_.lock();
-//     vehicle_state_.update(msg, completed_target, move_forks, load, operation);
-//     if (completed_target) {
-//       if (vehicle_state_.getDockingFailed()) {
-//         // TODO
-//         ROS_INFO("DOCKING FAILED!");
-//       }
-//       vehicle_state_.setDocking(false);
-//       vehicle_state_.clearTrajectoryChunks();
-//       vehicle_state_.clearCurrentPath();
-//     }
-//     inputs_mutex_.unlock();
-//     if (move_forks) {
-//       ROS_INFO("[KMOVehicleExecutionNode] %s - moving forks", orunav_node_utils::getIDsString(target_handler_.getLastProcessedID()).c_str());
-//       orunav_msgs::ForkCommand cmd;
-//       cmd.robot_id = robot_id_;
-//       
-//       if (operation == VehicleState::LOAD) {
-//         cmd.state.position_z = 0.1;
-//       }
-//       else if (operation == VehicleState::ACTIVATE_SUPPORT_LEGS) {
-//         cmd.state.position_z = -0.1;
-//       }
-//       else {
-//         cmd.state.position_z = 0.0;
-//       }
-//       forkcommand_pub_.publish(cmd);
-//     }
-
   }
   
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
