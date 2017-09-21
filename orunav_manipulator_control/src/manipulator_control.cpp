@@ -167,7 +167,7 @@ void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
     KDL::Frame pallet_T_base;
     pallet_T_base = KDL::Frame::Identity();
     pallet_T_base.p.x(1.2);
-    pallet_T_base.p.z(-0.4);
+    pallet_T_base.p.z(-0.5);
 
     KDL::Frame base_T_right_hand_desired;
     KDL::Frame base_T_velvet_tray_desired;

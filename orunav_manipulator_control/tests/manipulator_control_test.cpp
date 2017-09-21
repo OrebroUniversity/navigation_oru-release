@@ -42,34 +42,46 @@ int main(int argc, char **argv)
     }
 
     orunav_msgs::IliadItem item;
-  
+
+//     item.name="Hallonsoppa";
+//     item.position.x=0;
+//     item.position.y=-30;
+//     item.position.z=-10;
+//     item.rotation_type=0;
+//     cmd.item_list.items.push_back(item);
+// 
 //     item.name="Hallonsoppa";
 //     item.position.x=0;
 //     item.position.y=0;
-//     item.position.z=-30;
+//     item.position.z=-10;
 //     item.rotation_type=0;
-// 
 //     cmd.item_list.items.push_back(item);
 //     
 //     item.name="Hallonsoppa";
 //     item.position.x=0;
 //     item.position.y=30;
-//     item.position.z=-30;
+//     item.position.z=-10;
 //     item.rotation_type=0;
 //     cmd.item_list.items.push_back(item);
     
     item.name="Jacky";
     item.position.x=0;
-    item.position.y=0;
-    item.position.z=0;
+    item.position.y=-30;
+    item.position.z=10;
     item.rotation_type=0;
+    cmd.item_list.items.push_back(item);
 
+    item.name="Jacky";
+    item.position.x=0;
+    item.position.y=0;
+    item.position.z=10;
+    item.rotation_type=0;
     cmd.item_list.items.push_back(item);
     
     item.name="Jacky";
     item.position.x=0;
     item.position.y=30;
-    item.position.z=0;
+    item.position.z=10;
     item.rotation_type=0;
     cmd.item_list.items.push_back(item);
     
