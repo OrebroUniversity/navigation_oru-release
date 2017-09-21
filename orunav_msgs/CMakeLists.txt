@@ -62,6 +62,8 @@ add_message_files(
    GeoFence.msg
    DrillTarget.msg
    DrillTargetArray.msg
+   IliadItem.msg
+   IliadItemArray.msg
 )
 
 ## Generate services in the 'srv' folder
