@@ -63,10 +63,10 @@ add_message_files(
    DrillTarget.msg
    DrillTargetArray.msg
    ManipulatorCommand.msg
-   ManipulatorLoadHandling.msg
+   IliadItem.msg
+   IliadItemArray.msg
    ManipulatorReport.msg
    ManipulatorState.msg
-   Item.msg
 )
 
 ## Generate services in the 'srv' folder
