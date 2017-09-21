@@ -24,7 +24,7 @@ public:
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1;
-    manipulatorState_ = MANIPULATOR_NOT_AVAILABLE; setManipulator(false); // by default let's keep things as they were without manipulator
+  setManipulator(false); // by default let's keep things as they were without manipulator
 }
   
   void update(const orunav_msgs::Task &msg) {

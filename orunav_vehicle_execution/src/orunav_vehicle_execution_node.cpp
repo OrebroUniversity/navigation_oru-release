@@ -244,6 +244,7 @@ public:
     paramHandle.param<double>("max_tracking_error", max_tracking_error_, 100.);
 
     paramHandle.param<bool>("use_manipulator", use_manipulator_, false);
+    vehicle_state_.setManipulator(use_manipulator_);
 
     paramHandle.param<bool>("use_vector_map_and_geofence", use_vector_map_and_geofence_, false);
     
@@ -303,14 +304,16 @@ public:
     command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
     forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
     report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
-    manipulatorcommand_pub_ = nh_.advertise<orunav_msgs::ManipulatorCommand>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/command"), 1);
+    if(vehicle_state_.hasManipulator()) {
+      manipulatorcommand_pub_ = nh_.advertise<orunav_msgs::ManipulatorCommand>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/command"), 1);
+    }
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
     control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
       fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
     }
-    if (use_manipulator_) {
+    if (vehicle_state_.hasManipulator()) {
       manipulator_report_sub_ = nh_.subscribe<orunav_msgs::ManipulatorReport>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/report"), 10, &KMOVehicleExecutionNode::process_manipulator_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
