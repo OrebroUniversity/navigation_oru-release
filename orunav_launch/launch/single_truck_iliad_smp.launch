@@ -34,9 +34,6 @@
   <rosparam file="$(find iliad_smp)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
   <rosparam file="$(find iliad_smp)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
   <node pkg="iliad_smp" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
-    <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
-    <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
-    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
     <param name="min_incr_path_dist" value="0.2" />
     <param name="visualize" value="true" />
   </node>

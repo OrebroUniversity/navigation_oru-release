@@ -9,10 +9,6 @@
 <arg name="robot_pose_yaw" default="0"/>
 <arg name="tf_prefix" default="robot1"/>
 
-
-<!-- Load world -->
-<include file="$(find gazebo_worlds_oru)/launch/ncfm_world.launch"/>
-
 <group ns="$(arg tf_prefix)">
     <!-- Run xacro -->
     <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/iliad_velodyne_cititruck.xacro' tf_prefix:=$(arg tf_prefix)"/>
@@ -27,6 +23,6 @@
 
 
 <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
-<node pkg="tf" type="static_transform_publisher" name="kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" />
+<!--node pkg="tf" type="static_transform_publisher" name="kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" /-->
 
 </launch>
