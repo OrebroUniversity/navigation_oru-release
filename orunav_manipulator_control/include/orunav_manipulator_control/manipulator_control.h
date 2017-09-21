@@ -38,7 +38,7 @@ private:
     void perform_homing(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
     void perform_idle(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
 
-    void update_report();
+    void update_report(const int32_t& new_status);
     
     orunav_msgs::ManipulatorReport current_report;
     

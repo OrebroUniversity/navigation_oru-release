@@ -4,7 +4,9 @@
 
 manipulatorControl::manipulatorControl()
 {
-    report_timer = nh.createTimer(ros::Duration(0.1),&manipulatorControl::publish_report,this);
+    current_report.status = orunav_msgs::ManipulatorReport::MANIPULATOR_GOTO_IDLE_DONE;
+
+    report_timer = nh.createTimer(ros::Duration(ros::Rate(10)),&manipulatorControl::publish_report,this);
     report_pub = nh.advertise<orunav_msgs::ManipulatorReport>("manipulator/report", 1000);
 
     cmd_pub_right = nh.advertise<lwr_controllers::PoseRPY>("/right_arm/CLIK_controller/command",1);
@@ -39,7 +41,7 @@ void manipulatorControl::from_KDLRotation_to_PoseRPY_roation(const KDL::Rotation
     in.GetRPY(out.roll,out.pitch,out.yaw);
 }
 
-void manipulatorControl::extract_unload_pose_from_ManipulatorCommand(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& in, KDL::Frame& out)
+void manipulatorControl::extract_unload_pose_from_ManipulatorCommand(const orunav_msgs::ManipulatorCommand::ConstPtr& in, KDL::Frame& out)
 {
     tf::poseMsgToKDL(in->item_pose,out);
 }
@@ -53,8 +55,11 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
 	    perform_load(msg);
 	    break;
 	case orunav_msgs::ManipulatorCommand::MANIPULATOR_UNLOAD:
-	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> " << "Sent Command: UNLOAD");
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: UNLOAD");
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_UNLOAD_ITEM_START);
 	    perform_unload(msg);
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_UNLOAD_ITEM_DONE);
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: UNLOAD");
 	    break;
 	case orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP:
 	    ROS_WARN("[MANIPULATOR CONTROL] command to be implemented");
@@ -72,16 +77,14 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
 	    ROS_ERROR_STREAM("[MANIPULATOR CONTROL] "<<msg->cmd << " is not a valid command...");
 	    break;
     }
-    
-    update_report();
 }
 
-void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
+void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
     //TODO
 }
 
-void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
+void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
     std::string base_link = "/robot1/vito_anchor";
     std::string right_hand_link = "/robot1/right_hand_palm_link";
@@ -143,8 +146,15 @@ void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand_< 
     cmd_pub_right.publish(right_hand_cmd);
     cmd_pub_left.publish(veltet_tray_cmd);
     
-    sleep(20);
+    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> unloading item...");
     
+    ros::Time start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
+
     // going back to initial position
     
     from_KDLFrame_to_PoseRPY(base_T_right_hand,right_hand_cmd);
@@ -152,26 +162,37 @@ void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand_< 
 
     cmd_pub_left.publish(veltet_tray_cmd);
     cmd_pub_right.publish(right_hand_cmd);
+    
+    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> going to initial position...");
+
+    start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
 }
 
-void manipulatorControl::perform_unwrap(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
+void manipulatorControl::perform_unwrap(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
     //TODO
 }
 
-void manipulatorControl::perform_homing(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
+void manipulatorControl::perform_homing(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
     //TODO
 }
 
-void manipulatorControl::perform_idle(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
+void manipulatorControl::perform_idle(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
     //TODO
 }
 
-void manipulatorControl::update_report()
+void manipulatorControl::update_report(const int32_t& new_status)
 {
-    //TODO
+    report_mutex.lock();
+    current_report.status = new_status;
+    report_mutex.unlock();
 }
 
 manipulatorControl::~manipulatorControl()
