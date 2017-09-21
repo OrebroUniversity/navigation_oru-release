@@ -39,6 +39,10 @@ add_executable(manipulator_control_test tests/manipulator_control_test.cpp)
 add_dependencies(manipulator_control_test ${catkin_EXPORTED_TARGETS})
 target_link_libraries(manipulator_control_test ${catkin_LIBRARIES})
 
+add_executable(manipulator_control_status_parser tests/manipulator_control_status_parser.cpp)
+add_dependencies(manipulator_control_status_parser ${catkin_EXPORTED_TARGETS})
+target_link_libraries(manipulator_control_status_parser ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
