@@ -1500,11 +1500,13 @@ public:
 
       VehicleState::ManipulatorOperationState manipulator_operation;
       VehicleState::OperationState vehicle_operation;
+      
+      orunav_msgs::IliadItemArray item_list;
 
       ROS_INFO("Processing ManipulatorReport");
       inputs_mutex_.lock();
       vehicle_state_.update(msg,completed_target, move_arms,
-			    vehicle_operation, manipulator_operation);
+			    vehicle_operation, manipulator_operation, item_list);
 
       if(completed_target) {
 	ROS_INFO("Achieved something here!");
@@ -1522,11 +1524,11 @@ public:
 	  
 	} else if (vehicle_operation == VehicleState::PICK_ITEMS) {
 	  cmd.cmd = orunav_msgs::ManipulatorCommand::PICK_ITEMS;
-	  
+	  cmd.item_list = item_list;
 	} else {
 	  cmd.cmd = orunav_msgs::ManipulatorCommand::NO_OPERATION;
 	}
-// 	// TODO discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
+// 	// DONE discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
 // 	if (manipulator_operation == VehicleState::MANIPULATOR_LOAD_ITEM_START) {
 // 	  ROS_INFO("Sending LOAD_ITEM command");
 // 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_LOAD;
