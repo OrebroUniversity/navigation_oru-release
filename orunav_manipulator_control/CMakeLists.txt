@@ -12,8 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf_conversions
   roslib
-  lwr_controllers
 )
+
+find_package(catkin COMPONENTS lwr_controllers)
+
+if(${lwr_controllers_FOUND})
 
 catkin_package(
   CATKIN_DEPENDS roscpp roslib
@@ -50,3 +53,5 @@ install(DIRECTORY
    launch resources
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+
+endif()
