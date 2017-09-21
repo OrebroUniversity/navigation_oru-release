@@ -277,7 +277,7 @@ void manipulatorControl::perform_unwrap(const orunav_msgs::ManipulatorCommand::C
     ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> unwrapping pallet...");
     
     ros::Time start = ros::Time::now();
-    while(ros::Time::now() - start < ros::Duration(3,0))
+    while(ros::Time::now() - start < ros::Duration(2,0))
     {
 	ros::spinOnce();
 	usleep(10);
