@@ -16,3 +16,6 @@ int32 MANIPULATOR_GOTO_HOME = 5
 
 # Commanded state
 ManipulatorState state
+
+# pose for unloading
+geometry_msgs/Pose item_pose
