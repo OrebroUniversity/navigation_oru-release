@@ -34,13 +34,15 @@ private:
 
     void update_ee_transformations(KDL::Frame& base_T_right_hand, KDL::Frame& base_T_velvet_tray);
 
-    void perform_unload(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
-    void perform_load(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
-    void perform_unwrap(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
-    void perform_homing(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
-    void perform_idle(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
+    void perform_pick_items(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
+    void load_item();
+    void unload_item();
+    void perform_unwrap();
+    
+    void go_to_homing_position();
+    void go_to_emergency();
 
-    void update_report(const int32_t& new_status);
+    void update_report(const int32_t& new_status, const int32_t& item_id=-1);
     
     orunav_msgs::ManipulatorReport current_report;
     
