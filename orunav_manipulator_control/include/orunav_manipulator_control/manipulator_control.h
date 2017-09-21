@@ -47,7 +47,7 @@ private:
     void extract_unload_pose_from_ManipulatorCommand(const orunav_msgs::ManipulatorCommand::ConstPtr& in, KDL::Frame& out);
     void from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out);
     void from_KDLVector_to_PoseRPY_position(const KDL::Vector& in, lwr_controllers::PoseRPY::_position_type& out);
-    void from_KDLRotation_to_PoseRPY_roation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out);
+    void from_KDLRotation_to_PoseRPY_rotation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out);
 };
 
 #endif

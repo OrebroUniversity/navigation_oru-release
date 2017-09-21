@@ -26,7 +26,7 @@ void manipulatorControl::publish_report(const ros::TimerEvent& event)
 void manipulatorControl::from_KDLFrame_to_PoseRPY(const KDL::Frame& in, lwr_controllers::PoseRPY& out)
 {
     from_KDLVector_to_PoseRPY_position(in.p,out.position);
-    from_KDLRotation_to_PoseRPY_roation(in.M,out.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(in.M,out.orientation);
 }
 
 void manipulatorControl::from_KDLVector_to_PoseRPY_position(const KDL::Vector& in, lwr_controllers::PoseRPY::_position_type& out)
@@ -36,7 +36,7 @@ void manipulatorControl::from_KDLVector_to_PoseRPY_position(const KDL::Vector& i
     out.z = in.z();
 }
 
-void manipulatorControl::from_KDLRotation_to_PoseRPY_roation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out)
+void manipulatorControl::from_KDLRotation_to_PoseRPY_rotation(const KDL::Rotation& in, lwr_controllers::PoseRPY::_orientation_type& out)
 {
     in.GetRPY(out.roll,out.pitch,out.yaw);
 }
@@ -65,16 +65,25 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
 	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: UNLOAD");
 	    break;
 	case orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP:
-	    ROS_WARN("[MANIPULATOR CONTROL] command to be implemented");
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: UNWRAP");
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_UNWRAP_PALLET_START);
 	    perform_unwrap(msg);
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_UNWRAP_PALLET_DONE);
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: UNWRAP");
 	    break;
 	case orunav_msgs::ManipulatorCommand::MANIPULATOR_GOTO_IDLE:
-	    ROS_WARN("[MANIPULATOR CONTROL] command to be implemented");
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: IDLE");
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_GOTO_IDLE_START);
 	    perform_idle(msg);
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_GOTO_IDLE_DONE);
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: IDLE");
 	    break;
 	case orunav_msgs::ManipulatorCommand::MANIPULATOR_GOTO_HOME:
-	    ROS_WARN("[MANIPULATOR CONTROL] command to be implemented");
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Sent Command: HOME");
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_GOTO_HOME_START);
 	    perform_homing(msg);
+	    update_report(orunav_msgs::ManipulatorReport::MANIPULATOR_GOTO_HOME_DONE);
+	    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> Done Command: HOME");
 	    break;
 	default:
 	    ROS_ERROR_STREAM("[MANIPULATOR CONTROL] "<<msg->cmd << " is not a valid command...");
@@ -121,7 +130,7 @@ void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand::Con
 {
     //NOTE here we should have information from perception
 
-    KDL::Frame pallet_T_base; //NOTE supposing a fixed pallet position
+    KDL::Frame pallet_T_base; //supposing a fixed pallet position
     pallet_T_base = KDL::Frame::Identity();
     pallet_T_base.p.x(1.0);
     pallet_T_base.p.z(-0.4);
@@ -146,8 +155,8 @@ void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand::Con
     base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;;
     
     // for now we maintain the same orientation as the starting pose
-    from_KDLRotation_to_PoseRPY_roation(base_T_right_hand.M,right_hand_cmd.orientation);
-    from_KDLRotation_to_PoseRPY_roation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(base_T_right_hand.M,right_hand_cmd.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
     from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
     right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1; //to simulate object size
@@ -174,7 +183,9 @@ void manipulatorControl::perform_load(const orunav_msgs::ManipulatorCommand::Con
 
 void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
-    KDL::Frame pallet_T_base; //NOTE supposing a fixed pallet position
+    //NOTE here the unload pose comes from the vehicle execution
+
+    KDL::Frame pallet_T_base; //supposing a fixed pallet position
     pallet_T_base = KDL::Frame::Identity();
     pallet_T_base.p.x(1.0);
     pallet_T_base.p.z(-0.2);
@@ -196,8 +207,8 @@ void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::C
     base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;;
     
     // for now we maintain the same orientation as the starting pose
-    from_KDLRotation_to_PoseRPY_roation(base_T_right_hand.M,right_hand_cmd.orientation);
-    from_KDLRotation_to_PoseRPY_roation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(base_T_right_hand.M,right_hand_cmd.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
     from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
     right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1; //to simulate object size
@@ -224,17 +235,110 @@ void manipulatorControl::perform_unload(const orunav_msgs::ManipulatorCommand::C
 
 void manipulatorControl::perform_unwrap(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
-    //TODO
+    //NOTE here we should have information from perception
+
+    KDL::Frame pallet_T_base; //supposing a fixed pallet position
+    pallet_T_base = KDL::Frame::Identity();
+    pallet_T_base.p.x(1.0);
+    pallet_T_base.p.z(-0.4);
+    
+    KDL::Frame base_T_right_hand;
+    KDL::Frame base_T_velvet_tray;
+    KDL::Frame base_T_right_hand_desired;
+    KDL::Frame base_T_velvet_tray_desired;
+
+    update_ee_transformations(base_T_right_hand,base_T_velvet_tray);
+
+    lwr_controllers::PoseRPY right_hand_cmd;
+    lwr_controllers::PoseRPY veltet_tray_cmd;
+
+    KDL::Frame pallet_T_object;
+    
+    //supposing the loading pose come from perception
+    pallet_T_object = KDL::Frame::Identity();
+
+    base_T_right_hand_desired  = (pallet_T_base.Inverse()) * pallet_T_object;
+    base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;;
+    
+    // for now we maintain the same orientation as the starting pose
+    from_KDLRotation_to_PoseRPY_rotation(base_T_right_hand.M,right_hand_cmd.orientation);
+    from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
+    
+    from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
+    right_hand_cmd.position.z = right_hand_cmd.position.z + 0.3;
+    right_hand_cmd.position.y = right_hand_cmd.position.y + 0.3;
+
+    from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
+    veltet_tray_cmd.position.y = veltet_tray_cmd.position.y - 0.6;
+
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
+    
+    ROS_INFO_STREAM("[MANIPULATOR CONTROL] >> unwrapping pallet...");
+    
+    ros::Time start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(3,0))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
+    
+    right_hand_cmd.position.z = right_hand_cmd.position.z - 0.6;
+
+    cmd_pub_right.publish(right_hand_cmd);
+    
+    start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
+
+    //stopping arms
+    right_hand_cmd.id=-1;
+    veltet_tray_cmd.id=-1;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::perform_homing(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
-    //TODO
+    lwr_controllers::PoseRPY right_hand_cmd;
+    lwr_controllers::PoseRPY veltet_tray_cmd;
+    right_hand_cmd.id=-2;
+    veltet_tray_cmd.id=-2;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
+    
+    ros::Time start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
+
+    //stopping arms
+    right_hand_cmd.id=-1;
+    veltet_tray_cmd.id=-1;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
 }
 
 void manipulatorControl::perform_idle(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd)
 {
-    //TODO
+    lwr_controllers::PoseRPY right_hand_cmd;
+    lwr_controllers::PoseRPY veltet_tray_cmd;
+    right_hand_cmd.id=-1;
+    veltet_tray_cmd.id=-1;
+    cmd_pub_right.publish(right_hand_cmd);
+    cmd_pub_left.publish(veltet_tray_cmd);
+    
+    ros::Time start = ros::Time::now();
+    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    {
+	ros::spinOnce();
+	usleep(10);
+    }
 }
 
 void manipulatorControl::update_report(const int32_t& new_status)
