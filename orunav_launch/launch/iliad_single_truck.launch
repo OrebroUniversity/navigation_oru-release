@@ -2,11 +2,12 @@
 <launch>
   <arg name="prefix" default="robot1"/>
   <arg name="coordination" default="true"/>
+  <arg name="human_perception" default="false"/>
 
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
 
-  <!-- Load world -->
+  <!-- LOAD WORLD -->
   <include file="$(find gazebo_worlds_oru)/launch/ncfm_world.launch"/>
 
  <include file="$(find cititruck_gazebo)/launch/cititruck_ncfm.launch">
@@ -23,6 +24,7 @@
     <param name="multiple_vehicles" value="true" />
   </node>
 
+  <!-- COORDINATION -->
   <group if="$(arg coordination)"> 
     <node name="coordinator" pkg="coordination_oru_ros" type="coordinator" args="se.oru.coordination.coordinator.ros_coordinator.ncfm.NCFMDemoMS1MainNode" output="screen">
       <rosparam param="robot_ids">[1]</rosparam>
@@ -47,6 +49,14 @@
       <param name="multiple_vehicles" value="true" />
       <param name="use_ct" value="false" />  
     </node>
+  </group>
+
+  <!-- HUMAN PERCEPTION MASTER -->
+  <group if="$(arg human_perception)">
+    <include file="$(find iliad_human_perception_launch)/launch/master.launch">
+      <!-- Publish groundtruth tracked persons from Gazebo -->
+      <arg name="simulation" value="true"/>
+    </include>
   </group>
 
 
