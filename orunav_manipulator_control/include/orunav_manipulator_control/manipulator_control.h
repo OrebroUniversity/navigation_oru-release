@@ -32,6 +32,8 @@ private:
 
     tf::TransformListener listener;
 
+    void update_ee_transformations(KDL::Frame& base_T_right_hand, KDL::Frame& base_T_velvet_tray);
+
     void perform_unload(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
     void perform_load(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
     void perform_unwrap(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
