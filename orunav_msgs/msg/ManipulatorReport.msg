@@ -7,6 +7,7 @@ time stamp
 # Status of the fork controller.
 int32 status
 int32 item_id
+string item_name
 
 #####################
 
