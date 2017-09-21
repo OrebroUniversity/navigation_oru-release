@@ -328,7 +328,7 @@ Visualization Manager:
       Color: 109; 109; 109
       Color Transformer: FlatColor
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 7.36387948e-37
@@ -342,11 +342,11 @@ Visualization Manager:
       Size (Pixels): 4
       Size (m): 0.0299999993
       Style: Points
-      Topic: /velodyne_points
+      Topic: /robot1/velodyne_points
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -480,25 +480,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 13.86271
+      Distance: 16.8921738
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -1.39851284
-        Y: -2.35969734
-        Z: -0.0664787069
+        X: -2.89701152
+        Y: -1.46665609
+        Z: 0.280849427
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.29479659
+      Pitch: 1.23479664
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.71788216
+      Yaw: 4.72288227
     Saved: ~
 Window Geometry:
   Displays:
