@@ -41,11 +41,16 @@ void manipulatorControl::from_KDLRotation_to_PoseRPY_rotation(const KDL::Rotatio
     in.GetRPY(out.roll,out.pitch,out.yaw);
 }
 
+double cm2m(const double& cms)
+{
+    return cms/100.0;
+}
+
 void manipulatorControl::from_IliadItem_to_KDLFrame(const geometry_msgs::Point& in, const int32_t rotation_type, KDL::Frame& out)
 {
-    out.p.x(in.x);
-    out.p.y(in.y);
-    out.p.z(in.z);
+    out.p.x(cm2m(in.x));
+    out.p.y(cm2m(in.y));
+    out.p.z(cm2m(in.z));
 
     double roll=0.0;
     double pitch=0.0;
@@ -102,7 +107,7 @@ void manipulatorControl::process_manipulator_command(const orunav_msgs::Manipula
     }
 }
 
-void manipulatorControl::update_ee_transformations(KDL::Frame& base_T_right_hand, KDL::Frame& base_T_velvet_tray)
+void manipulatorControl::update_ee_transformations()
 {
     std::string base_link = "/robot1/vito_anchor";
     std::string right_hand_link = "/robot1/right_hand_palm_link";
@@ -139,14 +144,16 @@ void manipulatorControl::update_ee_transformations(KDL::Frame& base_T_right_hand
 
 void manipulatorControl::perform_pick_items(const orunav_msgs::ManipulatorCommand_< std::allocator< void > >::ConstPtr& cmd)
 {
+    update_ee_transformations();
+
     int i=0;
     for(auto item:cmd->item_list.items)
     {
-	update_report(orunav_msgs::ManipulatorReport::LOADING_ITEM,i);
+	update_report(orunav_msgs::ManipulatorReport::LOADING_ITEM,i,item.name);
       
 	load_item(item);
 
-	update_report(orunav_msgs::ManipulatorReport::UNLOADING_ITEM,i);
+	update_report(orunav_msgs::ManipulatorReport::UNLOADING_ITEM,i,item.name);
 
 	unload_item(item);
 
@@ -159,15 +166,11 @@ void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
     //NOTE supposing a fixed pallet position w.r.t. the robot
     KDL::Frame pallet_T_base;
     pallet_T_base = KDL::Frame::Identity();
-    pallet_T_base.p.x(1.0);
+    pallet_T_base.p.x(1.2);
     pallet_T_base.p.z(-0.4);
-    
-    KDL::Frame base_T_right_hand;
-    KDL::Frame base_T_velvet_tray;
+
     KDL::Frame base_T_right_hand_desired;
     KDL::Frame base_T_velvet_tray_desired;
-
-    update_ee_transformations(base_T_right_hand,base_T_velvet_tray);
 
     lwr_controllers::PoseRPY right_hand_cmd;
     lwr_controllers::PoseRPY veltet_tray_cmd;
@@ -176,7 +179,6 @@ void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
     
     //NOTE here we should have information from perception
     pallet_T_object = KDL::Frame::Identity();
-    pallet_T_object.p.x(0.1);
 
     base_T_right_hand_desired  = (pallet_T_base.Inverse()) * pallet_T_object;
     base_T_velvet_tray_desired = (pallet_T_base.Inverse()) * pallet_T_object;
@@ -186,26 +188,27 @@ void manipulatorControl::load_item(const orunav_msgs::IliadItem& item)
     from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
     from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
+    from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
     
     //to simulate object size
     if(item.name=="Hallonsoppa")
     {
-	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
-	right_hand_cmd.orientation.pitch = right_hand_cmd.orientation.pitch + M_PI/2.0;
+	right_hand_cmd.position.z = veltet_tray_cmd.position.z + 0.2;
+	right_hand_cmd.position.x = veltet_tray_cmd.position.x - 0.3;
+	right_hand_cmd.orientation.pitch = M_PI/4.0;
     }
     
     if(item.name=="Jacky")
     {
-	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+	right_hand_cmd.position.z = veltet_tray_cmd.position.z + 0.2;
     }
     
-    from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
 
     cmd_pub_right.publish(right_hand_cmd);
     cmd_pub_left.publish(veltet_tray_cmd);
 
     ros::Time start = ros::Time::now();
-    while(ros::Time::now() - start < ros::Duration(1,500000000))
+    while(ros::Time::now() - start < ros::Duration(2,0))
     {
 	ros::spinOnce();
 	usleep(10);
@@ -227,12 +230,8 @@ void manipulatorControl::unload_item(const orunav_msgs::IliadItem& item)
     pallet_T_base.p.x(1.0);
     pallet_T_base.p.z(-0.2);
 
-    KDL::Frame base_T_right_hand;
-    KDL::Frame base_T_velvet_tray;
     KDL::Frame base_T_right_hand_desired;
     KDL::Frame base_T_velvet_tray_desired;
-
-    update_ee_transformations(base_T_right_hand,base_T_velvet_tray);
 
     lwr_controllers::PoseRPY right_hand_cmd;
     lwr_controllers::PoseRPY veltet_tray_cmd;
@@ -247,20 +246,21 @@ void manipulatorControl::unload_item(const orunav_msgs::IliadItem& item)
     from_KDLRotation_to_PoseRPY_rotation(base_T_right_hand.M,right_hand_cmd.orientation);
     from_KDLRotation_to_PoseRPY_rotation(base_T_velvet_tray.M,veltet_tray_cmd.orientation);
     
+    from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
+    from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
+
     //to simulate object size
     if(item.name=="Hallonsoppa")
     {
-	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
-	right_hand_cmd.orientation.pitch = right_hand_cmd.orientation.pitch + M_PI/2.0;
+	right_hand_cmd.position.z = veltet_tray_cmd.position.z + 0.2;
+	right_hand_cmd.position.x = veltet_tray_cmd.position.x - 0.3;
+	right_hand_cmd.orientation.pitch = M_PI/4.0;
     }
     
     if(item.name=="Jacky")
     {
-	right_hand_cmd.position.z = right_hand_cmd.position.z + 0.1;
+	right_hand_cmd.position.z = veltet_tray_cmd.position.z + 0.2;
     }
-    
-    from_KDLVector_to_PoseRPY_position(base_T_right_hand_desired.p,right_hand_cmd.position);
-    from_KDLVector_to_PoseRPY_position(base_T_velvet_tray_desired.p,veltet_tray_cmd.position);
 
     cmd_pub_right.publish(right_hand_cmd);
     cmd_pub_left.publish(veltet_tray_cmd);
@@ -293,7 +293,7 @@ void manipulatorControl::perform_unwrap()
     KDL::Frame base_T_right_hand_desired;
     KDL::Frame base_T_velvet_tray_desired;
 
-    update_ee_transformations(base_T_right_hand,base_T_velvet_tray);
+    update_ee_transformations();
 
     lwr_controllers::PoseRPY right_hand_cmd;
     lwr_controllers::PoseRPY veltet_tray_cmd;
@@ -384,11 +384,12 @@ void manipulatorControl::go_to_emergency()
     cmd_pub_left.publish(veltet_tray_cmd);
 }
 
-void manipulatorControl::update_report(const int32_t& new_status, const int32_t& item_id)
+void manipulatorControl::update_report(const int32_t& new_status, const int32_t& item_id, const std::string& item_name)
 {
     report_mutex.lock();
     current_report.status = new_status;
     current_report.item_id = item_id;
+    current_report.item_name = item_name;
     report_mutex.unlock();
 }
 

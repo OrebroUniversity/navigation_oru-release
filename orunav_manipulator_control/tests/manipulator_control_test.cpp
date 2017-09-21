@@ -1,13 +1,22 @@
-#include <iostream>
-#include <cstdlib>
-#include <string>
 #include <ros/ros.h>
-#include <ros/package.h>
-#include <tinyxml.h>
+#include "orunav_msgs/ManipulatorCommand.h"
+#include "orunav_msgs/ManipulatorReport.h"
+#include "orunav_msgs/IliadItemArray.h"
 
-double cm_to_m(double cm)
+std::string str_status;
+
+void report_callback(const orunav_msgs::ManipulatorReportConstPtr& report)
 {
-    return cm/100.0;
+    if(report->status==orunav_msgs::ManipulatorReport::NOT_AVAILABLE) str_status="NOT_AVAILABLE";
+    if(report->status==orunav_msgs::ManipulatorReport::IDLE) str_status="IDLE";
+    if(report->status==orunav_msgs::ManipulatorReport::LOADING_ITEM) str_status="LOADING_ITEM (" + std::to_string(report->item_id) + ") - " + report->item_name;
+    if(report->status==orunav_msgs::ManipulatorReport::UNLOADING_ITEM) str_status="UNLOADING_ITEM (" + std::to_string(report->item_id) + ") - " + report->item_name;
+    if(report->status==orunav_msgs::ManipulatorReport::UNWRAP_PHASE_1) str_status="UNWRAP_PHASE_1";
+    if(report->status==orunav_msgs::ManipulatorReport::UNWRAP_PHASE_2) str_status="UNWRAP_PHASE_2";
+    if(report->status==orunav_msgs::ManipulatorReport::HOMING) str_status="HOMING";
+    if(report->status==orunav_msgs::ManipulatorReport::FAILURE) str_status="FAILURE";
+
+    std::cout<<"status: "<<str_status<<std::endl;
 }
 
 int main(int argc, char **argv)
@@ -16,62 +25,63 @@ int main(int argc, char **argv)
     {
 	ros::init(argc,argv,"manipulator_control_test");
     }
+  
+    ros::NodeHandle nh;
+    ros::Publisher pub = nh.advertise<orunav_msgs::ManipulatorCommand>("/robot1/manipulator/command",10);
+    ros::Subscriber sub = nh.subscribe("/robot1/manipulator/report",10,&report_callback);
     
-    ROS_INFO("This is a test for the manipulator control");
+    orunav_msgs::ManipulatorCommand cmd;
     
-    std::string filename = ros::package::getPath("orunav_manipulator_control")+"/resources/output.xml";
-    
-    TiXmlDocument doc(filename);
-    bool loadOkay = doc.LoadFile();
-    if (!loadOkay)
+    cmd.robot_id = 1;
+    cmd.cmd = 1;
+
+    while(str_status!="IDLE")
     {
-        ROS_ERROR_STREAM("Failed to load file "<<filename);
-	abort();
-    }
-    else
-    {
-	std::cout<<">> Loaded: "<<filename<< std::endl <<std::endl;
-    }
-    
-    if (doc.Type()!=TiXmlNode::TINYXML_DOCUMENT)
-    {
-        ROS_ERROR_STREAM("Not a TinyXML!");
-        abort();
+	ros::spinOnce();
+	usleep(10);
     }
 
-    TiXmlElement* boxes=doc.FirstChildElement("boxes");
-    if (boxes==NULL || boxes->Type()!=TiXmlNode::TINYXML_ELEMENT)
-    {
-        ROS_ERROR_STREAM("Could not find element boxes into file "<<filename);
-	abort();
-    }
-    else
-    {
-	TiXmlElement* box=boxes->FirstChildElement("box");
+    orunav_msgs::IliadItem item;
+  
+//     item.name="Hallonsoppa";
+//     item.position.x=0;
+//     item.position.y=0;
+//     item.position.z=-30;
+//     item.rotation_type=0;
+// 
+//     cmd.item_list.items.push_back(item);
+//     
+//     item.name="Hallonsoppa";
+//     item.position.x=0;
+//     item.position.y=30;
+//     item.position.z=-30;
+//     item.rotation_type=0;
+//     cmd.item_list.items.push_back(item);
+    
+    item.name="Jacky";
+    item.position.x=0;
+    item.position.y=0;
+    item.position.z=0;
+    item.rotation_type=0;
 
-	std::cout<<"Boxes:"<<std::endl;
-	
-	while(box)
-	{
-	    std::cout<<"|"<<std::endl;
-	    std::cout<<"| - Box:"<<std::endl;
-	    std::cout<<"| - - sequenceNumber: "<<std::stoi(box->FirstChildElement("sequenceNumber")->GetText())<<std::endl;
-	    std::cout<<"| - - item: "<<box->FirstChildElement("item")->GetText()<<std::endl;
-	    std::cout<<"| - - x: "<<cm_to_m(std::stod(box->FirstChildElement("x")->GetText()))<<std::endl;
-	    std::cout<<"| - - y: "<<cm_to_m(std::stod(box->FirstChildElement("y")->GetText()))<<std::endl;
-	    std::cout<<"| - - z: "<<cm_to_m(std::stod(box->FirstChildElement("z")->GetText()))<<std::endl;
-	    std::cout<<"| - - width: "<<cm_to_m(std::stod(box->FirstChildElement("width")->GetText()))<<std::endl;
-	    std::cout<<"| - - length: "<<cm_to_m(std::stod(box->FirstChildElement("length")->GetText()))<<std::endl;
-	    std::cout<<"| - - height: "<<cm_to_m(std::stod(box->FirstChildElement("height")->GetText()))<<std::endl;
-	    std::cout<<"| - - cylinderFlag: "<<((box->FirstChildElement("cylinderFlag")->GetText()=="true")?1:0)<<std::endl;
+    cmd.item_list.items.push_back(item);
+    
+    item.name="Jacky";
+    item.position.x=0;
+    item.position.y=30;
+    item.position.z=0;
+    item.rotation_type=0;
+    cmd.item_list.items.push_back(item);
+    
+    pub.publish(cmd);
 
-	    box = box->NextSiblingElement("box");
-	}
-	
-	std::cout<<std::endl;
+    while(str_status!="IDLE")
+    {
+	ros::spinOnce();
+	usleep(10);
     }
     
-    std::cout<<std::endl;
-    
+    ros::spin();
+
     return 0;
 }

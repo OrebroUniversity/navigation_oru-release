@@ -33,7 +33,9 @@ private:
 
     tf::TransformListener listener;
 
-    void update_ee_transformations(KDL::Frame& base_T_right_hand, KDL::Frame& base_T_velvet_tray);
+    void update_ee_transformations();
+    KDL::Frame base_T_right_hand;
+    KDL::Frame base_T_velvet_tray;
 
     void perform_pick_items(const orunav_msgs::ManipulatorCommand::ConstPtr& cmd);
     void load_item(const orunav_msgs::IliadItem& item);
@@ -43,7 +45,7 @@ private:
     void go_to_homing_position();
     void go_to_emergency();
 
-    void update_report(const int32_t& new_status, const int32_t& item_id=-1);
+    void update_report(const int32_t& new_status, const int32_t& item_id=-1, const std::string& item_name="");
     
     orunav_msgs::ManipulatorReport current_report;
     
