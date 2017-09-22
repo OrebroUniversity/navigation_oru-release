@@ -48,7 +48,7 @@ target_link_libraries(manipulator_control_status_parser ${catkin_LIBRARIES})
 ## Install ##
 #############
 
-install(TARGETS manipulator_control manipulator_control_test
+install(TARGETS manipulator_control manipulator_control_test manipulator_control_status_parser
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
