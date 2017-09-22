@@ -3,6 +3,10 @@ project(orunav_manipulator_control)
 
 add_definitions(-std=c++11)
 
+find_package(catkin COMPONENTS lwr_controllers)
+
+if(${lwr_controllers_FOUND})
+
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
@@ -12,11 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf_conversions
   roslib
+  lwr_controllers
 )
-
-find_package(catkin COMPONENTS lwr_controllers)
-
-if(${lwr_controllers_FOUND})
 
 catkin_package(
   CATKIN_DEPENDS roscpp roslib
@@ -51,11 +52,6 @@ install(TARGETS manipulator_control manipulator_control_test
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-install(DIRECTORY
-   launch resources
-   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 endif()
