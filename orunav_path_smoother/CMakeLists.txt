@@ -47,9 +47,9 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_path_smoother
-  CATKIN_DEPENDS roscpp orunav_generic orunav_constraint_extract orunav_trajectory_processor orunav_rviz orunav_msgs
-#  DEPENDS system_lib
+  LIBRARIES orunav_path_smoother
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry orunav_trajectory_processor orunav_constraint_extract
+  DEPENDS ACADO Boost
 )
 
 ###########

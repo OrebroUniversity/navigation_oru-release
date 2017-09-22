@@ -105,10 +105,6 @@ generate_messages(
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_msgs
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
 ###########

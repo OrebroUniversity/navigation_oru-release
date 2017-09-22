@@ -28,10 +28,10 @@ else()
 endif()
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp orunav_rviz orunav_conversions orunav_geometry
-#  DEPENDS system_lib
+  INCLUDE_DIRS include ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}
+  LIBRARIES ${PROJECT_NAME} ${Boost_LIBRARIES}
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry tf
+  DEPENDS Boost
 )
 
 ###########

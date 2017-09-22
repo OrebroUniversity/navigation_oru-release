@@ -24,9 +24,8 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_rviz
-  CATKIN_DEPENDS tf visualization_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS  orunav_generic orunav_conversions tf visualization_msgs
+  DEPENDS Boost
 )
 
 ###########

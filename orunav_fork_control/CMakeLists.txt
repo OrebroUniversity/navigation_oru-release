@@ -24,9 +24,7 @@ endif()
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_fork_control
-  CATKIN_DEPENDS orunav_generic orunav_rviz roscpp
+  CATKIN_DEPENDS roscpp std_msgs orunav_msgs orunav_generic orunav_rviz visualization_msgs
 #  DEPENDS system_lib
 )
 

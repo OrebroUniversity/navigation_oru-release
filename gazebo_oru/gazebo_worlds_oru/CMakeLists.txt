@@ -5,10 +5,6 @@ find_package(catkin REQUIRED)
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES gazebo_worlds_oru
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
 #############

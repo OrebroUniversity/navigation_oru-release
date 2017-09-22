@@ -20,8 +20,8 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  CATKIN_DEPENDS orunav_generic angles
+  DEPENDS Boost
 )
 
 ###########

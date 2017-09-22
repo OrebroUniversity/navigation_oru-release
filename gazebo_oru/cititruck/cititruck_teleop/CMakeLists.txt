@@ -4,10 +4,7 @@ project(cititruck_teleop)
 find_package(catkin REQUIRED roscpp tf)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES cititruck_teleop
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+   CATKIN_DEPENDS roscpp tf
 )
 
 ###########
