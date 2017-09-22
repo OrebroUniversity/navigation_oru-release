@@ -2,7 +2,7 @@
 <launch>
   <arg name="robotid" default="1"/>
   <arg name="prefix" default="robot1"/>
-  <arg name="velodyne_in_costmap" default="true"/>
+  <arg name="velodyne_in_costmap" default="false"/>
 
   <group ns="$(arg prefix)">
     <param name="tf_prefix" value="$(arg prefix)" />
