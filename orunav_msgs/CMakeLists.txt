@@ -62,6 +62,8 @@ add_message_files(
    GeoFence.msg
    DrillTarget.msg
    DrillTargetArray.msg
+   IliadItem.msg
+   IliadItemArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -103,10 +105,6 @@ generate_messages(
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_msgs
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
 ###########

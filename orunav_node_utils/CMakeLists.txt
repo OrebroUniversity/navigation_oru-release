@@ -11,9 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_node_utils
-  CATKIN_DEPENDS orunav_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp orunav_msgs orunav_generic orunav_rviz
 )
 
 ###########

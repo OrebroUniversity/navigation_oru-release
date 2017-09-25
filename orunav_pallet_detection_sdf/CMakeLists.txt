@@ -33,10 +33,9 @@ find_package(PCL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_pallet_detection_sdf
-  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry cv_bridge tf_conversions pcl_ros
+  DEPENDS OpenCV PCL Boost
 )
 
 ###########

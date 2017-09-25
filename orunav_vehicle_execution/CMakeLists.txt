@@ -33,10 +33,9 @@ else()
 endif()
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_vehicle_execution
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp std_msgs std_srvs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry orunav_node_utils orunav_trajectory_processor orunav_constraint_extract tf laser_geometry
+  DEPENDS Boost
 )
 
 ###########

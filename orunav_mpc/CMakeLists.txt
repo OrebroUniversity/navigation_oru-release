@@ -82,10 +82,8 @@ add_definitions(-D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__)
 ####################################
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ${SW_QP_SOLVER}
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  CATKIN_DEPENDS orunav_msgs orunav_generic roscpp sensor_msgs std_msgs nav_msgs tf
+  DEPENDS Boost
 )
 
 if ((SW_BUILD_SIMULATION) AND (SW_ENABLE_NAVSERVER_READER))
