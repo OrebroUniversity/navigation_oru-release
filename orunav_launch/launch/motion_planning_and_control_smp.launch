@@ -3,6 +3,7 @@
   <arg name="robotid" default="1"/>
   <arg name="prefix" default="robot1"/>
   <arg name="velodyne_in_costmap" default="false"/>
+  <arg name="avoid_smoothing" default="true"/>
 
   <group ns="$(arg prefix)">
     <param name="tf_prefix" value="$(arg prefix)" />
@@ -56,6 +57,7 @@
       <param name="reassign_constraints" value="true" />
       <param name="reassign_iters" value="1" />
       <param name="reassign_min_distance" value="0.1" />
+      <param name="do_nothing" value="$(arg avoid_smoothing)"/>
     </node>
 
     <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node" output="screen">
