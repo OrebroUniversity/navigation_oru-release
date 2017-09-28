@@ -59,7 +59,9 @@
       <param name="max_steering_range_smoothed_path" value="1.5" />
       <param name="min_docking_distance" value="0.1" />
       <param name="use_ct" value="false"/>
-      </node>
+
+      <param name="use_update_task_service" value="false"/>
+    </node>
     
   </group>
 </launch>
