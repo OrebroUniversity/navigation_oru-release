@@ -758,9 +758,7 @@ public:
 
   std::string getDebugStringExtended() const {
     if(hasManipulator()) {
-      return getDebugString() + std::string("\n[ControlStatus] : ") + getControllerStatusStr(controller_status_) + std::string("\n[StartOperation] : ") + getStrOperation(startOperation_)  + std::string("\n[GoalOperation] : ") + getStrOperation(goalOperation_) +
-      std::string("\n[ManipulatorState] : ")
-      + getStrManipulatorStatus();
+      return getDebugString() + std::string("\n[ControlStatus] : ") + getControllerStatusStr(controller_status_) + std::string("\n[StartOperation] : ") + getStrOperation(startOperation_)  + std::string("\n[GoalOperation] : ") + getStrOperation(goalOperation_);
     }
     return getDebugString() + std::string("\n[ControlStatus] : ") + getControllerStatusStr(controller_status_) + std::string("\n[StartOperation] : ") + getStrOperation(startOperation_)  + std::string("\n[GoalOperation] : ") + getStrOperation(goalOperation_);
   }
