@@ -1,11 +1,21 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- TF prefix of robot -->
   <arg name="prefix" default="robot1"/>
-  <arg name="coordination" default="true"/>
 
+  <!-- Enable/disable sensor simulation -->
+  <arg name="velodyne" default="false"/> <!-- requires velodyne_simulator -->
+  <arg name="kinect2"  default="false"/> <!-- requires kinect2_description -->
+  <arg name="kinect1"  default="false"/> <!-- deprecated (only used for pallet detection?) -->
+
+  <!-- Enable/disable software components -->
+  <arg name="coordination" default="true"/>
   <arg name="human_perception" default="false"/>
+
+  <!-- Delete humans from scene? -->
   <arg name="delete_humans" default="true" unless="$(arg human_perception)"/>
   <arg name="delete_humans" default="false" if="$(arg human_perception)"/>
+
 
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
@@ -15,6 +25,9 @@
 
  <include file="$(find cititruck_gazebo)/launch/cititruck_ncfm.launch">
      <arg name="tf_prefix" value="$(arg prefix)"/>
+     <arg name="velodyne" value="$(arg velodyne)"/>
+     <arg name="kinect2" value="$(arg kinect2)"/>
+     <arg name="kinect1" value="$(arg kinect1)"/>
   </include>
 
   <!--include file="$(find gazebo_worlds_oru)/launch/empty_map_server.launch"/-->
