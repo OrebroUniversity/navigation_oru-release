@@ -783,7 +783,14 @@ public:
         return std::string("LOAD_DETECT");
       case ACTIVATE_SUPPORT_LEGS:
         return std::string("ACTIVATE_SUPPORT_LEGS");
+      case LOAD_DETECT_ACTIVE:
+	return std::string("LOAD_DETECT_ACTIVE");
+      case PICK_ITEMS:
+	return std::string("PICK_ITEMS");
+      case UNWRAP_PALLET:
+	return std::string("UNWRAP_PALLET");
       default:
+	ROS_ERROR("vehicle_state.h/getStrOperation error");
         assert(false);
         break;
         return std::string("unknown(!)");
