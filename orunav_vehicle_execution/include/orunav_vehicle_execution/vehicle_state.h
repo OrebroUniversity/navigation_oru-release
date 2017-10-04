@@ -27,8 +27,12 @@ public:
 }
   
   void update(const orunav_msgs::Task &msg) {
+            ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: update(Task)");
+
     startOperation_ = static_cast<OperationState>(msg.target.start_op.operation);
     goalOperation_ = static_cast<OperationState>(msg.target.goal_op.operation);
+    
+    
     
     if (state_ == TASK_FAILED) {
       // Ok, got new task
@@ -42,6 +46,19 @@ public:
     // Clear all state flags for docking.
     //isDocking_ = false;
     dockingFailed_ = false;
+    
+    ROS_INFO_STREAM("goalOperation received: " << goalOperation_);
+    if(goalOperation_ == PICK_ITEMS || goalOperation_ == UNWRAP_PALLET) {
+      ROS_ERROR("Received manipulation task");
+      if(hasManipulator())
+      {
+	ROS_WARN("[ORUNAV_VEHICLE_EXECUTION]: Received manipulation task. Can do it.");
+      }
+      else
+      {
+	ROS_WARN("[ORUNAV_VEHICLE_EXECUTION]: Received manipulation task for a vehicle without manipulator. Will fake it.");
+      }
+    }
   }
 
   void activateTask() {
@@ -182,6 +199,8 @@ public:
 
 
   void handleGoalOperation(bool &completedTarget, bool &moveForks, bool &load) {
+    	ROS_WARN("[VehicleManipulator]: Handling GoalOperation");
+
     if (goalOperation_ == NO_OPERATION) {
       state_ = WAITING_FOR_TASK;
       //      controllerState_ = WAITING;
@@ -235,6 +254,44 @@ public:
         moveForks = true;
         load = true;
         return;
+      }
+    }
+    
+    if (goalOperation_ == LOAD_DETECT_ACTIVE) {
+      // TODO
+      state_ = WAITING_FOR_TASK;
+      ROS_WARN("Unhandled goal operation: LOAD_DETECT_ACTIVE");
+    }
+    if (goalOperation_ == PICK_ITEMS) {
+      if (hasManipulator()) {
+	ROS_WARN("[VehicleManipulator]: Handling PICK_ITEMS with Manipulator");
+      } else {
+	ROS_WARN("[VehicleManipulator]: Handling PICK_ITEMS without Manipulator");
+	state_ = WAITING_FOR_TASK;
+	ROS_INFO_STREAM(getStrManipulatorStatus().c_str());
+	state_ = PERFORMING_GOAL_OPERATION;
+	completedTarget = true;
+// 	moveArms = true;
+	// read item list and send it back
+	item_list_ = task_.target.goal_op.itemlist;
+	for (int i=0; item_list_.items.size(); i++) {
+	  ROS_INFO_STREAM(item_list_.items[i].name);
+	}
+	moveForks = false;
+	// send PICK command
+	
+      }
+    }
+    if (goalOperation_ == UNWRAP_PALLET) {
+      if (hasManipulator()) {
+	ROS_WARN("[VehicleManipulator]: Handling PICK_ITEMS with Manipulator");
+      } else {
+	ROS_WARN("[VehicleManipulator]: Handling UNWRAP_PALLET without Manipulator");
+	state_ = PERFORMING_GOAL_OPERATION;
+	completedTarget = true;
+	moveForks = false;
+	// send unwrap command
+	
       }
     }
 
@@ -453,6 +510,23 @@ public:
 
 
   void handleGoalManipulatorOperation(bool &completedTarget, bool &moveArms, orunav_msgs::IliadItemArray &item_list) {
+    ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: handleGoalManipulatorOperation()");
+    // ### The following logic is when the task is commanded by manipulator_control_test
+    if (manipulatorState_ == LOADING_ITEM || 
+	manipulatorState_ == UNLOADING_ITEM ||
+	manipulatorState_ == UNWRAP_PHASE_1 ||
+	manipulatorState_ == UNWRAP_PHASE_2 ||
+	manipulatorState_ == HOMING) {
+      state_ = PERFORMING_GOAL_OPERATION;
+    }
+    if (manipulatorState_ == FAILURE) {
+      state_ = WAITING_FOR_TASK;
+    }
+    if (manipulatorState_ == IDLE) {
+      state_ = WAITING_FOR_TASK;
+    }
+    
+    // ### The following logic is when the task is commanded by coordination_oru
     // do nothing
     if (goalOperation_ == NO_OPERATION) {
       state_ = WAITING_FOR_TASK;
@@ -462,11 +536,15 @@ public:
     }
     // pick
     if (goalOperation_ == PICK_ITEMS) {
+      ROS_INFO_STREAM(getStrManipulatorStatus().c_str());
       state_ = PERFORMING_GOAL_OPERATION;
       completedTarget = false;
       moveArms = true;
       // read item list and send it back
       item_list = task_.target.goal_op.itemlist;
+      for (int i=0; item_list.items.size(); i++) {
+	ROS_INFO_STREAM(item_list.items[i].name);
+      }
     }
     // unwrap
     if (goalOperation_ == UNWRAP_PALLET) {
@@ -479,7 +557,8 @@ public:
 
   void update(const orunav_msgs::ManipulatorReportConstPtr &msg, bool &completedTarget, bool &moveArms,
 	      OperationState &vehicle_operation, ManipulatorOperationState &manipulator_operation, orunav_msgs::IliadItemArray &item_list) {
-    
+    ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: update(Manipulator)");
+
     moveArms = false;
     completedTarget = false;
     
@@ -1200,6 +1279,8 @@ private:
   PerceptionState perceptionState_;
   ManipulatorState manipulatorState_;
   ManipulatorOperationState goalManipulatorOperation_;
+  orunav_msgs::IliadItemArray item_list_;
+
   bool hasManipulator_;
   int controller_status_; // Current controller state / status.
   int prev_controller_status_; // Previous controller state / status. Used to trigger state transitions.

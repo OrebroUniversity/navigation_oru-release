@@ -305,6 +305,7 @@ public:
     forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
     report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
     if(vehicle_state_.hasManipulator()) {
+      ROS_WARN("Advertising publisher on /manipulator/command");
       manipulatorcommand_pub_ = nh_.advertise<orunav_msgs::ManipulatorCommand>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/command"), 1);
     }
     // Subscribers
@@ -314,6 +315,7 @@ public:
       fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
     }
     if (vehicle_state_.hasManipulator()) {
+      ROS_WARN("Subscribing to publisher on /manipulator/command");
       manipulator_report_sub_ = nh_.subscribe<orunav_msgs::ManipulatorReport>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/report"), 10, &KMOVehicleExecutionNode::process_manipulator_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
