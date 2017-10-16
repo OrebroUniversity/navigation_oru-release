@@ -2,6 +2,7 @@
 <launch>	
   <arg name="robotid" default="1"/>
   <arg name="prefix" default="robot1"/>
+  <arg name="use_safetyregions" default="false"/>
   <group ns="$(arg prefix)">
     <param name="tf_prefix" value="$(arg prefix)" />
     
@@ -61,7 +62,12 @@
       <param name="use_ct" value="false"/>
 
       <param name="use_update_task_service" value="false"/>
-    </node>
+
+      <param name="use_safetyregions" value="$(arg use_safetyregions)"/>
+      <param name="safety_laser_topic" value="/nav_laser"/>
+      <param name="slowdown_drivingslow_lookahead_time" value="20"/>
+      <param name="max_slowdown_vel" value="0.1"/>
+     </node>
     
   </group>
 </launch>
