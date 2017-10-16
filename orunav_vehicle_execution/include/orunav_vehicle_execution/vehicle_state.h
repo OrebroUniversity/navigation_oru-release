@@ -12,7 +12,7 @@ public:
   enum PerceptionState { PERCEPTION_INACTIVE = 1, PERCEPTION_ACTIVE = 2 };
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
-    activeTask_.criticalPoint = -1;
+    activeTask_.criticalPoint = -1; slowdownCounter_ = 0;
 }
   
   void update(const orunav_msgs::Task &msg) {
@@ -376,12 +376,8 @@ public:
   }
 
   bool canSendTrajectory() const {
-    // Only allowed if the vehicle is not in driving state
-    if (!state_ == DRIVING)
-      return false;
-    
     // Can only send it if the vehicle is in waiting state or in active state
-    if (controllerState_ == WAITING || controllerState_ == ACTIVE || controllerState_ == AT_CRITICAL_POINT)
+    if (controllerState_ == WAITING || controllerState_ == ACTIVE)
       return true;
 
     return false;
@@ -402,11 +398,15 @@ public:
   bool setDrivingSlowdown(bool slowdown) {
     if (slowdown && state_ == DRIVING) {
       state_ = DRIVING_SLOWDOWN;
+      slowdownCounter_ = 0;
       return true;
     }
     if (!slowdown && state_ == DRIVING_SLOWDOWN) {
-      state_ = DRIVING;
-      return true;
+      slowdownCounter_++;
+      if (slowdownCounter_ > 3) { // The counter is to avoid influence of "jitter" in the readings
+        state_ = DRIVING;
+        return true;
+      }
     }
     return false;
   }
@@ -1015,4 +1015,5 @@ private:
   bool brakeReasonCTS_;
 
   double timeStep_;
+  int slowdownCounter_;
 };
