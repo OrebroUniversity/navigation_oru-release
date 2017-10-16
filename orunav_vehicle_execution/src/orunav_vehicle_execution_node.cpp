@@ -251,7 +251,7 @@ public:
     traj_params_.debugPrefix = std::string("ct_traj_gen/");
 
     traj_slowdown_params_ = traj_params_;
-    traj_slowdown_params_.maxVel = 0.05;
+    paramHandle.param<double>("max_slowdown_vel", traj_slowdown_params_.maxVel, 0.1);
 
     paramHandle.param<double>("min_docking_distance", min_docking_distance_, 1.0);
     paramHandle.param<double>("max_docking_distance", max_docking_distance_, 1.3);
@@ -1411,12 +1411,14 @@ public:
       return;
     }
 
-    sensor_msgs::PointCloud cloud;
+    sensor_msgs::PointCloud cloud, cloud_ebrake, cloud_slowdown, cloud_ignore;
     laser_projection_.transformLaserScanToPointCloud("/world",*msg,
                                               cloud,tf_listener_);
  
-    
-    drawPointCloud(cloud, "laserscan_cloud", 0, 0, 0.1, marker_pub_);
+    cloud_ebrake.header = cloud.header;
+    cloud_slowdown.header = cloud.header;
+    cloud_ignore.header = cloud.header;
+    drawPointCloud(cloud, "laserscan_cloud", 0, 1, 0.05, marker_pub_);
 
     if (!vehicle_state_.isDriving()) {
       return;
@@ -1424,25 +1426,43 @@ public:
     
     bool slowdown = false;
     bool sendbrake = false;
-    for (size_t i = 70; i < cloud.points.size()-70; i++) {
-      
+    //for (size_t i = 70; i < cloud.points.size()-70; i++) {  // Self occlusion - real truck.
+    for (size_t i = 0; i < cloud.points.size(); i++) {
+      // Self occlusion, for simulation using the nav laser, don't fully get why they have to be this wide the ignore area but otherwise it will detect the frame!
+      if (i >= 205 && i <= 240) {
+        cloud_ignore.points.push_back(cloud.points[i]);
+        continue;
+      }
+      if (i >= 390 && i <= 425) {
+        cloud_ignore.points.push_back(cloud.points[i]);
+        continue;
+      }
       if (current_global_ebrake_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
                                            cloud.points[i].y))) {
-	ROS_INFO_STREAM("e-brake area collision point " << i);
+        ROS_INFO_STREAM("e-brake area collision point " << i);
+        cloud_ebrake.points.push_back(cloud.points[i]);
         sendbrake = true;
+        continue;
+
       }
       if (current_global_slowdown_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
                                            cloud.points[i].y))) {
-	ROS_INFO_STREAM("slowdown collision point " << i);
+        //ROS_INFO_STREAM("slowdown collision point " << i);
+        cloud_slowdown.points.push_back(cloud.points[i]);
         slowdown = true;
       }
     }
     
+    drawPointCloud(cloud_slowdown, "laserscan_cloud_slowdown", 0, 2, 0.1, marker_pub_);
+    drawPointCloud(cloud_ebrake, "laserscan_cloud_ebrake", 0, 0, 0.1, marker_pub_);
+    drawPointCloud(cloud_ignore, "laserscan_cloud_ignore", 0, 0, 0.15, marker_pub_);
+
     if (sendbrake) {
+      ROS_INFO_STREAM("Sending BRAKE - laser reading in e-brake zone detected");
       if (!vehicle_state_.isBraking()) {
         sendBrakeCommand();
-        return;
       }
+      return;
     }
     if (!slowdown) {
       if (vehicle_state_.isBraking()) {
