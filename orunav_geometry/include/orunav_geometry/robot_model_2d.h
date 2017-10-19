@@ -210,6 +210,22 @@ namespace orunav_geometry {
     Polygon bound;
   };
 
+  class RobotModel2dHRP: public RobotModel2dInterface {
+  public:
+    RobotModel2dHRP() {
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165, 0.25));
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165, -0.25));
+      bound.points.push_back(Eigen::Vector2d(-0.165, -0.25));
+      bound.points.push_back(Eigen::Vector2d(-0.165, 0.25));
+    }
+    virtual const Polygon& getBoundingRegion(const orunav_generic::RobotInternalState2d &s) const {
+      // Hardcoded values only - this really is only a square
+      return bound;
+    }
+  private:
+    Polygon bound;
+  };
+
   // TODO, the numbering orignates from the constraint extractor - could be made a bit more fancy :-).
   class RobotModelTypeFactory {
   public:
@@ -225,6 +241,8 @@ namespace orunav_geometry {
 	return &model4;
       case 5:
 	return &model5;
+      case 6:
+  return &model6;
       default:
 	return &model1;
       }
@@ -235,6 +253,7 @@ namespace orunav_geometry {
     orunav_geometry::RobotModel2dOneSquareMeter model3;
     orunav_geometry::RobotModel2dPitViper model4;
     orunav_geometry::RobotModel2dXa15 model5;
+    orunav_geometry::RobotModel2dHRP model6;
   };
 
   class RobotModel2dWithState : public orunav_generic::Point2dContainerInterface, public orunav_generic::Point2dCollisionCheckInterface {
