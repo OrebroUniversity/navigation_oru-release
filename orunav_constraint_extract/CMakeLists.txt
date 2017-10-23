@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(Boost REQUIRED COMPONENTS program_options serialization) # thread signals system
+find_package(Boost REQUIRED COMPONENTS program_options serialization filesystem) # thread signals system
 
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
