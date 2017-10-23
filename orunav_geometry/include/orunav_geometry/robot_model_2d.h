@@ -213,10 +213,14 @@ namespace orunav_geometry {
   class RobotModel2dHRP: public RobotModel2dInterface {
   public:
     RobotModel2dHRP() {
-      bound.points.push_back(Eigen::Vector2d(0.65-0.165, 0.25));
-      bound.points.push_back(Eigen::Vector2d(0.65-0.165, -0.25));
-      bound.points.push_back(Eigen::Vector2d(-0.165, -0.25));
-      bound.points.push_back(Eigen::Vector2d(-0.165, 0.25));
+//      bound.points.push_back(Eigen::Vector2d(0.65-0.165, 0.25));
+//      bound.points.push_back(Eigen::Vector2d(0.65-0.165, -0.25));
+//      bound.points.push_back(Eigen::Vector2d(-0.165, -0.25));
+//      bound.points.push_back(Eigen::Vector2d(-0.165, 0.25));
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165-0.1, 0.25-0.1));
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165-0.1, -0.25+0.1));
+      bound.points.push_back(Eigen::Vector2d(-0.165+0.1, -0.25+0.1));
+      bound.points.push_back(Eigen::Vector2d(-0.165+0.1, 0.25-0.1));
     }
     virtual const Polygon& getBoundingRegion(const orunav_generic::RobotInternalState2d &s) const {
       // Hardcoded values only - this really is only a square
