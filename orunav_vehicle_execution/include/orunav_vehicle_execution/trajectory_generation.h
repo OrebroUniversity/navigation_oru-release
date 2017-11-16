@@ -28,6 +28,7 @@ std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunk
 // Vehicle stopped and trajectory not completed (recover after a break)
 std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunksCASE1(VehicleState &vs, const TrajectoryProcessor::Params &params, unsigned int &pathIdx, bool useCts) {
 
+  std::pair<unsigned int, orunav_generic::TrajectoryChunks> ret;
   orunav_generic::Path path = vs.getPath();
 
   // Cannot assume that the path is exactly the same as previous.
@@ -66,12 +67,15 @@ std::pair<unsigned int, orunav_generic::TrajectoryChunks> computeTrajectoryChunk
     path = truncatePath(path, res[iter].first);
   }
 
+  // Check that the path is still valid...
+  if (path.sizePath() < 3) {
+    return ret;
+  }
   TrajectoryProcessorNaiveCT gen;
   gen.addPathInterface(path);
   gen.setParams(params);
   orunav_generic::Trajectory traj = gen.getTrajectory();
 
-  std::pair<unsigned int, orunav_generic::TrajectoryChunks> ret;
   ret.first = 0;
   ret.second = splitToTrajectoryChunks(traj, 10);
   

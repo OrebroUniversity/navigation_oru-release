@@ -322,11 +322,11 @@ public:
       }
     }
      
-    //call worker thread 
-    client_thread_ = boost::thread(boost::bind(&KMOVehicleExecutionNode::run,this));
-
     valid_map_ = false;
     b_shutdown_ = false;
+
+    //call worker thread
+    client_thread_ = boost::thread(boost::bind(&KMOVehicleExecutionNode::run,this));
   }
 
   KMOVehicleExecutionNode() {
@@ -1616,9 +1616,11 @@ public:
     inputs_mutex_.lock();
     vehicle_state_.appendTrajectoryChunks(chunks_data.first, chunks_data.second);
     vehicle_state_.saveCurrentTrajectoryChunks("current_chunks.txt");
+    saveTrajectoryChunksTextFile(chunks_data.second, "chunks_data_to_be_added.txt");
     // Make sure that the ones that are in vehicle state are the ones that are sent to the controller....
     orunav_generic::TrajectoryChunks chunks = vehicle_state_.getTrajectoryChunks();
-    ROS_INFO("[KMOVehicleExecutionNode] - appended chuks, size : %lu", chunks.size());
+    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - appended chunks, index: " << chunks_data.first);
+    ROS_INFO("[KMOVehicleExecutionNode] - appended chunks, size : %lu", chunks.size());
     inputs_mutex_.unlock();
 
     // -----------------------------------------------------------------
@@ -1733,6 +1735,10 @@ public:
         unsigned int path_idx;
         vehicle_state_.setPath(path);
         chunks_data = computeTrajectoryChunksCASE1(vehicle_state_, traj_params_, path_idx, use_ct_);
+        if (chunks_data.second.empty()) {
+          ROS_WARN_STREAM("[KMOVehicleExecutionNode] CASE1 - couldn't compute trajectory, path size is to small... (path idx : " << path_idx << ", crit point : " << vehicle_state_.getCriticalPointIdx() << ")");
+          continue;
+        }
         vehicle_state_.setCurrentPathIdx(path_idx);
 	
         // Important the chunks will need to be re-indexed from 0.
