@@ -2,6 +2,11 @@
 Changelog for package orunav_node_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson
+
 0.2.1 (2017-09-19)
 ------------------
 * merge

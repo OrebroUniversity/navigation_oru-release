@@ -2,6 +2,9 @@
 Changelog for package navigation_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.1 (2017-09-19)
 ------------------
 * merge
