@@ -2,8 +2,8 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
 * Delete human agents from NCFM scene if human_perception is set to false (as per default)
 * Add textured ground plane; remove refs to robot1 in NCFM world

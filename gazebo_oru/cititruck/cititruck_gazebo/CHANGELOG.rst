@@ -2,8 +2,8 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Modified placement of trucks in aass basement gazebo sim
 * Changed start poses.
 * Add Kinect v2 simulation. In iliad_single_truck.launch, add options for enabling/disabling simulation of Kinect v1, v2 and Velodyne sensors.

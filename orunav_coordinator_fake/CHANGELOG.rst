@@ -2,8 +2,8 @@
 Changelog for package orunav_coordinator_fake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
 * Contributors: Henrik Andreasson
 

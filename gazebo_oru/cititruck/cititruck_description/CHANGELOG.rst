@@ -2,8 +2,8 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Made the navigation laser and safety laser to have the same FOV to get the raytracing to work correctly (using ray_gpu + a NVIDIA card).
 * Added rviz cfg for ncfm example with three trucks
 * Add Kinect v2 simulation. In iliad_single_truck.launch, add options for enabling/disabling simulation of Kinect v1, v2 and Velodyne sensors.

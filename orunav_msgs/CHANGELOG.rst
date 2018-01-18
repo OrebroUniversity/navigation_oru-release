@@ -2,8 +2,8 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
 * Synced RobotReport flags with vehicle_execution code
 * Added missing state in Operation

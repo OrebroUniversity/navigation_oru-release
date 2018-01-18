@@ -2,8 +2,8 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Safetyregions flag added, with additional params.
 * Added brake release option to motion_planning_and_control_smp.launch
 * Added brake release option to motion_planning_and_control.launch

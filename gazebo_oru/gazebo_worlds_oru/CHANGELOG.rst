@@ -2,8 +2,8 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2018-01-18)
+------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
 * Added separate map server launch for old map
 * new maps
