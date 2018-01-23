@@ -2,6 +2,20 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Made the navigation laser and safety laser to have the same FOV to get the raytracing to work correctly (using ray_gpu + a NVIDIA card).
+* Added rviz cfg for ncfm example with three trucks
+* Add Kinect v2 simulation. In iliad_single_truck.launch, add options for enabling/disabling simulation of Kinect v1, v2 and Velodyne sensors.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* showing the costmap_2D visualization, adding the possibility to read the velodyne point clouds into the smp motion planner
+* Add option to enable human perception in iliad_single_truck.launch. Fix Velodyne ns in Rviz.
+* Updated Rviz config to include groundtruth tracked persons
+* Refactored launch and config files to better handle multiple truck launches
+* added a map for simulation
+* Fix size and position of empty map for NCFM; disable Velodyne visualization
+* Contributors: Bruce Wayne, Federico Pecora, Henrik Andreasson, Palmieri Luigi (CR/AEG) VM, tsv
+
 0.2.1 (2017-09-19)
 ------------------
 * Merge pull request `#3 <https://github.com/OrebroUniversity/navigation_oru-release/issues/3>`_ from batman177/master

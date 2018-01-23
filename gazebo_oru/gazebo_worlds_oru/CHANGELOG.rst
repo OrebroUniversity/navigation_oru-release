@@ -2,6 +2,21 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Added separate map server launch for old map
+* new maps
+* new maps
+* new map
+* small manual tweak to the map
+* added a map for simulation
+* Adding animated humans to NCFM world
+* Fix size and position of empty map for NCFM; disable Velodyne visualization
+* Add textured ground plane; remove refs to robot1 in NCFM world
+* NCFM world updated, added doors and obstacles
+* Contributors: Bruce Wayne, Federico Pecora, Henrik Andreasson, tsv
+
 0.2.1 (2017-09-19)
 ------------------
 * changed world. Doors added

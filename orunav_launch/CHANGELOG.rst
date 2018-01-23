@@ -2,6 +2,24 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Safetyregions flag added, with additional params.
+* Added brake release option to motion_planning_and_control_smp.launch
+* Added brake release option to motion_planning_and_control.launch
+* Add Kinect v2 simulation. In iliad_single_truck.launch, add options for enabling/disabling simulation of Kinect v1, v2 and Velodyne sensors.
+* adding param to avoid smoothin step when using smp
+* Updated DEPENDS and CATKIN_DEPENDS.
+* having velodyne param set to false as default value
+* showing the costmap_2D visualization, adding the possibility to read the velodyne point clouds into the smp motion planner
+* Refactored launch files
+* Delete human agents from NCFM scene if human_perception is set to false (as per default)
+* Add option to enable human perception in iliad_single_truck.launch. Fix Velodyne ns in Rviz.
+* Make coordination_oru_ros optional (launch via iliad_single_truck.launch coordination:=false)
+* Refactored launch and config files to better handle multiple truck launches
+* added a map for simulation
+* Contributors: Bruce Wayne, Federico Pecora, Henrik Andreasson, Palmieri Luigi (CR/AEG) VM, Palmieri Luigi (CR/AER), tsv
+
 0.2.1 (2017-09-19)
 ------------------
 * Merge pull request `#3 <https://github.com/OrebroUniversity/navigation_oru-release/issues/3>`_ from batman177/master

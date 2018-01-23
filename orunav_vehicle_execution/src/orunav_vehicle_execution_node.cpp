@@ -215,6 +215,8 @@ private:
 
   bool use_update_task_service_;
   bool start_driving_after_recover_;
+
+  bool real_cititruck_;
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle) 
   {
@@ -280,7 +282,8 @@ public:
     paramHandle.param<bool>("visualize_sweep_and_constraints", visualize_sweep_and_constraints_, false);
     paramHandle.param<bool>("use_update_task_service", use_update_task_service_, true);
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
-
+    paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
+    
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
@@ -1393,7 +1396,7 @@ public:
 
   // Only valid if only one laser scaner is used.
   void process_laserscan(const sensor_msgs::LaserScanConstPtr &msg) {
-    
+
     if (!use_safetyregions_)
       return;
 
@@ -1423,19 +1426,29 @@ public:
     if (!vehicle_state_.isDriving()) {
       return;
     }
-    
+
     bool slowdown = false;
     bool sendbrake = false;
-    //for (size_t i = 70; i < cloud.points.size()-70; i++) {  // Self occlusion - real truck.
-    for (size_t i = 0; i < cloud.points.size(); i++) {
+
+    int start_idx = 0;
+    int stop_idx = 0;
+    if (real_cititruck_) {
+      start_idx = 70;
+      stop_idx = 70;
+    }
+    
+    for (size_t i = start_idx; i < cloud.points.size()-stop_idx; i++) {
       // Self occlusion, for simulation using the nav laser, don't fully get why they have to be this wide the ignore area but otherwise it will detect the frame!
-      if (i >= 205 && i <= 240) {
+      if (!real_cititruck_) 
+      {
+	if (i >= 205 && i <= 240) {
         cloud_ignore.points.push_back(cloud.points[i]);
         continue;
       }
       if (i >= 390 && i <= 425) {
         cloud_ignore.points.push_back(cloud.points[i]);
         continue;
+      }
       }
       if (current_global_ebrake_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
                                            cloud.points[i].y))) {

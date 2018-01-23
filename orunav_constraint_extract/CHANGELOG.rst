@@ -2,6 +2,12 @@
 Changelog for package orunav_constraint_extract
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Added function to automatically create the model file if non-exsiting.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson
+
 0.2.1 (2017-09-19)
 ------------------
 * merge
