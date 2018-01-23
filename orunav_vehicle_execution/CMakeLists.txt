@@ -96,6 +96,12 @@ target_link_libraries(send_abort_task
    -lboost_program_options
  )
 
+add_executable(laser_filter src/laser_filter_main.cpp)
+add_dependencies(laser_filter ${catkin_EXPORTED_TARGETS})
+target_link_libraries(laser_filter
+   ${catkin_LIBRARIES}
+   -lboost_program_options
+ )
 
 #############
 ## Install ##
