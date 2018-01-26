@@ -1861,7 +1861,6 @@ public:
       }
       
       //-----------------------------------------------------------------
-
       vehicle_state_.activateTask();
 
       // Add a check whether to brake due to slow speeds.
@@ -1869,9 +1868,11 @@ public:
       
       ros::Time start_time;
       double start_time_d = vehicle_state_.getCoordinatedStartTime();
-      if (start_time_d < 0 && use_ct_) {
+      if (start_time_d < 0) {
         start_time = ros::Time::now() + ros::Duration(0.5);
-        ROS_WARN("[KMOVehicleExecutionNode] - start time is not coordinated");
+        if (use_ct_) {
+          ROS_WARN("[KMOVehicleExecutionNode] - start time is not coordinated");
+        }
       }
       else {
         start_time = ros::Time(start_time_d);
@@ -1881,7 +1882,6 @@ public:
       if (!vehicle_state_.isActive()) {
         sendActivateStartTimeCommand(start_time);
       }
-    
     } // while
 
     ROS_ERROR("[KMOVehicleExecutionNode] trajectory update thread - died(!) : %s", vehicle_state_.getDebugString().c_str());
