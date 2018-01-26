@@ -24,7 +24,7 @@
       <steerTorque>1000</steerTorque>
       <driveTorque>1000</driveTorque>
 
-      <commandTopic>controller/cmd_vel</commandTopic>
+      <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>/world</odometryFrame>
       <robotBaseFrame>base_footprint</robotBaseFrame>

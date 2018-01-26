@@ -202,8 +202,8 @@ class swParameters
 
 #ifdef SW_BUILD_SIMULATION
 	    std::ostringstream os;
-	    //	    os << "/robot" << robot_id << "/cmd_vel";
-	    os << "cmd_vel";
+      os << "/robot" << robot_id << "/cmd_vel";
+      //os << "cmd_vel";
 	    topic_simulation_command = os.str();
 	    //	    topic_simulation_command = "cmd_vel";
             topic_simulation_sensor = "/gazebo/link_states";
