@@ -4,6 +4,8 @@ int32 robot_id
 
 time stamp
 
+# Forks are in known position given by the height value (default, what is below is focused if forks heights are not available -> the citi trucks)
+int32 FORK_POSITION_KNOWN = 0
 # Forks are in unknown position
 int32 FORK_POSITION_UNKNOWN = 1
 # Forks are in 'low' position - we can move in below a pallet from here
