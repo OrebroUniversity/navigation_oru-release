@@ -2,6 +2,29 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Delete human agents from NCFM scene if human_perception is set to false (as per default)
+* Add textured ground plane; remove refs to robot1 in NCFM world
+* NCFM world updated, added doors and obstacles
+* Make cage smaller in height, different color
+* Contributors: Bruce Wayne, Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
+* merge
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* new map
+* added launchfile
+* Contributors: Bruce Wayne, Daniel Adolfsson, Martin Magnusson, tsv
+
+0.2.0 (2017-09-15)
+------------------
+* Added new environment model.
+* Contributors: Henrik Andreasson
+
 0.1.1 (2017-06-13)
 ------------------
 

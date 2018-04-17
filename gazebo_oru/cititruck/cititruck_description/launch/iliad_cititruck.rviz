@@ -1,0 +1,748 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Grid1
+        - /Grid1/Offset1
+        - /TF1/Frames1
+        - /TF1/Tree1
+        - /Kinect v21
+        - /Human Awareness1
+        - /Human Awareness1/Groundtruth TrackedPersons1/Style1
+        - /Human Awareness1/Groundtruth TrackedPersons1/History as line1
+      Splitter Ratio: 0.659217894
+    Tree Height: 775
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.588679016
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: Nav laser
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.0299999993
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: -10
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 50
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_fork:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fixed_left_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fixed_right_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        kinect2_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        kinect2_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        kinect2_rgb_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        left_fork:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        nav_laser_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_fork:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        safety_laser_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sd_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        steer_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot1/robot_description
+      TF Prefix: robot1
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 0.0700000003
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualization_marker
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 1000
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        map:
+          Value: true
+        robot1/base_footprint:
+          Value: true
+        robot1/base_fork:
+          Value: false
+        robot1/base_link:
+          Value: false
+        robot1/fixed_left_wheel_link:
+          Value: false
+        robot1/fixed_right_wheel_link:
+          Value: false
+        robot1/kinect2_depth_optical_frame:
+          Value: true
+        robot1/kinect2_link:
+          Value: true
+        robot1/kinect2_rgb_optical_frame:
+          Value: true
+        robot1/left_fork:
+          Value: false
+        robot1/nav_laser_link:
+          Value: true
+        robot1/odom_enc:
+          Value: false
+        robot1/right_fork:
+          Value: false
+        robot1/safety_laser_link:
+          Value: true
+        robot1/sd_wheel_link:
+          Value: false
+        robot1/steer_link:
+          Value: false
+        robot1/velodyne:
+          Value: true
+        robot1/velodyne_base_link:
+          Value: false
+        world:
+          Value: false
+      Marker Scale: 0.800000012
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        world:
+          map:
+            {}
+          robot1/base_footprint:
+            robot1/base_link:
+              robot1/base_fork:
+                robot1/left_fork:
+                  {}
+                robot1/right_fork:
+                  {}
+              robot1/fixed_left_wheel_link:
+                {}
+              robot1/fixed_right_wheel_link:
+                {}
+              robot1/kinect2_link:
+                robot1/kinect2_depth_optical_frame:
+                  {}
+                robot1/kinect2_rgb_optical_frame:
+                  {}
+              robot1/nav_laser_link:
+                {}
+              robot1/safety_laser_link:
+                {}
+              robot1/steer_link:
+                robot1/sd_wheel_link:
+                  {}
+              robot1/velodyne_base_link:
+                robot1/velodyne:
+                  {}
+          robot1/odom_enc:
+            {}
+      Update Interval: 0
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /robot1/visualization_marker
+      Name: Marker
+      Namespaces:
+        chunks: true
+        chunks_dt: true
+        chunks_idx0: true
+        critical_point: true
+        current_path_idx: true
+        current_path_subsampled: true
+        current_path_subsampled_sw: true
+        docking_path_idx: true
+        driven_ct: true
+        driven_traj: true
+        earliest_connect_path_idx: true
+        goal_pose2d: true
+        path_points1: true
+        path_smoother_new_path: true
+        path_subsampled: true
+        position: true
+        robot_id_str: true
+        start_pose2d: true
+        state_str: true
+      Queue Size: 1000
+      Value: true
+    - Angle Tolerance: 0.100000001
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: false
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.300000012
+        Head Radius: 0.100000001
+        Shaft Length: 1
+        Shaft Radius: 0.0500000007
+        Value: Arrow
+      Topic: /robot1/odom_enc
+      Unreliable: false
+      Value: false
+    - Angle Tolerance: 0.100000001
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: false
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.300000012
+        Head Radius: 0.100000001
+        Shaft Length: 1
+        Shaft Radius: 0.0500000007
+        Value: Arrow
+      Topic: /robot1/odom
+      Unreliable: false
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 2.50039291
+        Min Value: -0.00696289539
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 109; 109; 109
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 7.36387948e-37
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Velodyne
+      Plane: Omnidirectional
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 4
+      Size (m): 0.0299999993
+      Style: Points
+      Topic: /robot1/velodyne_points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 85; 170; 255
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 0
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Nav laser
+      Plane: Omnidirectional
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.00999999978
+      Style: Points
+      Topic: /robot1/nav_laser
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 0
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 0
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Safety laser
+      Plane: Omnidirectional
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.00999999978
+      Style: Points
+      Topic: /robot1/safety_laser
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz/Group
+      Displays:
+        - Class: jsk_rviz_plugin/CameraInfo
+          Enabled: true
+          Image Topic: ""
+          Name: Kinect v2 frustum
+          Topic: /robot1/kinect2/depth/camera_info
+          Unreliable: false
+          Value: true
+          alpha: 0.5
+          color: 85; 255; 255
+          edge color: 247; 247; 247
+          far clip: 8
+          not show side polygons: true
+          show edges: true
+          show polygons: false
+          use image: false
+        - Class: rviz/Image
+          Enabled: true
+          Image Topic: /robot1/kinect2/hd/image_color_rect
+          Max Value: 1
+          Median window: 5
+          Min Value: 0
+          Name: Kinect v2 image
+          Normalize Range: true
+          Queue Size: 2
+          Transport Hint: raw
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: intensity
+          Class: rviz/PointCloud2
+          Color: 255; 255; 255
+          Color Transformer: RGB8
+          Decay Time: 0
+          Enabled: true
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 4096
+          Min Color: 0; 0; 0
+          Min Intensity: 0
+          Name: Kinect v2 points
+          Plane: Omnidirectional
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 3
+          Size (m): 0.00999999978
+          Style: Flat Squares
+          Topic: /robot1/kinect2/sd/points
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: true
+      Enabled: false
+      Name: Kinect v2
+    - Class: rviz/Group
+      Displays:
+        - Alpha: 1
+          Class: spencer_tracking_rviz_plugin/TrackedPersons
+          Color: 130; 130; 130
+          Color map offset: 0
+          Color transform: Constant color
+          Delete after no. cycles: 100
+          Enabled: true
+          Excluded person IDs: ""
+          Font color: 255; 255; 255
+          Font color style: Same color
+          Font scale: 1.29999995
+          History as line:
+            Line width: 0.0199999996
+            Value: true
+          History size: 100
+          Included person IDs: ""
+          Min. history point distance: 0.400000006
+          Missed alpha: 0.5
+          Name: Groundtruth TrackedPersons
+          Occlusion alpha: 0.300000012
+          Render covariances:
+            Line width: 0.100000001
+            Value: false
+          Render detection IDs: false
+          Render history: true
+          Render person visual: true
+          Render track IDs: true
+          Render track state: false
+          Render velocities: true
+          Show DELETED tracks: false
+          Show MATCHED tracks: true
+          Show MISSED tracks: true
+          Show OCCLUDED tracks: true
+          Style:
+            Line width: 0.00999999978
+            Scaling factor: 1
+            Value: Person meshes
+          Topic: /groundtruth/tracked_persons
+          Unreliable: false
+          Value: true
+          Z offset:
+            Use Z position from message: false
+            Value: 0
+        - Alpha: 1
+          Class: spencer_tracking_rviz_plugin/TrackedPersons
+          Color: 130; 130; 130
+          Color map offset: 0
+          Color transform: Rainbow
+          Delete after no. cycles: 100
+          Enabled: true
+          Excluded person IDs: ""
+          Font color: 255; 255; 255
+          Font color style: Same color
+          Font scale: 1.5
+          History as line:
+            Line width: 0.0500000007
+            Value: true
+          History size: 100
+          Included person IDs: ""
+          Min. history point distance: 0.400000006
+          Missed alpha: 0.5
+          Name: TrackedPersons
+          Occlusion alpha: 0.300000012
+          Render covariances:
+            Line width: 0.0500000007
+            Value: true
+          Render detection IDs: false
+          Render history: true
+          Render person visual: true
+          Render track IDs: true
+          Render track state: true
+          Render velocities: true
+          Show DELETED tracks: false
+          Show MATCHED tracks: true
+          Show MISSED tracks: true
+          Show OCCLUDED tracks: true
+          Style:
+            Line width: 0.0500000007
+            Scaling factor: 1
+            Value: Bounding boxes
+          Topic: /robot1/tracked_persons
+          Unreliable: false
+          Value: true
+          Z offset:
+            Use Z position from message: false
+            Value: 0
+        - Alpha: 1
+          Class: spencer_tracking_rviz_plugin/DetectedPersons
+          Color: 255; 85; 0
+          Color map offset: 0
+          Color transform: Constant color
+          Enabled: true
+          Excluded person IDs: ""
+          Font color: 255; 255; 255
+          Font color style: Same color
+          Font scale: 1.5
+          Included person IDs: ""
+          Low-confidence alpha: 0.5
+          Low-confidence threshold: 0.5
+          Name: DetectedPersons
+          Render confidences: true
+          Render covariances:
+            Line width: 0.100000001
+            Value: false
+          Render detection IDs: false
+          Render modality text: false
+          Render orientation arrows: true
+          Style:
+            Line width: 0.0500000007
+            Scaling factor: 1
+            Value: Crosshairs
+          Text spacing: 1
+          Topic: /robot1/detected_persons
+          Unreliable: false
+          Value: true
+          Z offset:
+            Use Z position from message: false
+            Value: 0
+        - Alpha: 1
+          Class: spencer_tracking_rviz_plugin/DetectedPersons
+          Color: 130; 130; 130
+          Color map offset: 0
+          Color transform: Rainbow
+          Enabled: false
+          Excluded person IDs: ""
+          Font color: 255; 255; 255
+          Font color style: Same color
+          Font scale: 2
+          Included person IDs: ""
+          Low-confidence alpha: 0.300000012
+          Low-confidence threshold: 0.5
+          Name: DetectedPersons High Recall
+          Render confidences: false
+          Render covariances:
+            Line width: 0.100000001
+            Value: false
+          Render detection IDs: false
+          Render modality text: false
+          Render orientation arrows: true
+          Style:
+            Line width: 0.0500000007
+            Scaling factor: 1
+            Value: Cylinders
+          Text spacing: 1
+          Topic: /spencer/perception_internal/detected_persons/laser_front_high_recall
+          Unreliable: false
+          Value: false
+          Z offset:
+            Use Z position from message: false
+            Value: 0
+        - Alpha: 1
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: intensity
+          Class: rviz/PointCloud2
+          Color: 255; 255; 255
+          Color Transformer: RGB8
+          Decay Time: 0
+          Enabled: false
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 4096
+          Min Color: 0; 0; 0
+          Min Intensity: 0
+          Name: Laser segmentation
+          Plane: Omnidirectional
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 8
+          Size (m): 0.00999999978
+          Style: Points
+          Topic: /spencer/perception_internal/people_detection/laser_front/laser_segmentation_cloud
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: false
+      Enabled: true
+      Name: Human Awareness
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /robot1/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 12.6028414
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.0599999987
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: -2.5029223
+        Y: -0.186951727
+        Z: 2.61860895
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.00999999978
+      Pitch: 1.02479708
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 0.289664209
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: true
+  Height: 1056
+  Hide Left Dock: true
+  Hide Right Dock: true
+  Kinect v2 image:
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd00000004000000000000033700000396fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000002800000396000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000002de000000160000000000000000fb0000001e004b0069006e00650063007400200076003200200069006d00610067006500000001da000001e40000001600ffffff000000010000010f00000396fc0200000004fb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000000280000013d0000006400fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000028000000a30000000000000000fb0000000a00560069006500770073000000016b00000253000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f0000003efc0100000002fb0000000800540069006d006501000000000000073f0000030000fffffffb0000000800540069006d006501000000000000045000000000000000000000073f0000039600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: true
+  Views:
+    collapsed: true
+  Width: 1855
+  X: 65
+  Y: 24

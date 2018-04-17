@@ -2,6 +2,21 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* merge
+* Contributors: Martin Magnusson
+
+0.2.0 (2017-09-15)
+------------------
+* Removed start time checks.
+* Contributors: Henrik Andreasson
+
 0.1.1 (2017-06-13)
 ------------------
 

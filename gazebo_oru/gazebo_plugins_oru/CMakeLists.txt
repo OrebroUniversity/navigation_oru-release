@@ -25,9 +25,8 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES gazebo_plugins_oru
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp rospy orunav_generic
+  DEPENDS Boost
 )
 
 ###########

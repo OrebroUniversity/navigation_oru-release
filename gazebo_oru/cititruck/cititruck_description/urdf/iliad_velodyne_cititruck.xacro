@@ -1,0 +1,420 @@
+<?xml version="1.0"?>
+<robot name="cititruck" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:arg name="tf_prefix" default="robot_xacro_default"/>
+    <xacro:arg name="velodyne" default="false"/>
+    <xacro:arg name="kinect2" default="false"/>
+    <xacro:arg name="kinect1" default="false"/> <!-- deprecated -->
+    
+    <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+    <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>
+
+    <!-- Import Rviz colors -->
+    <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro"/>
+
+    <xacro:property name="forks_pidP" value="2000"/>
+    <xacro:property name="forks_pidI" value="0"/>
+    <xacro:property name="forks_pidD" value="10"/>
+    <xacro:property name="forks_low" value="0.08"/>
+    <xacro:property name="forks_high" value="0.2"/>
+    <xacro:property name="forks_maxeffort" value="1000"/>
+
+    <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack dedpends on this frame and KDL needs a root link without any intertia -->
+    <link name="base_footprint"/>
+    <joint name="base_footprint_joint" type="fixed">
+        <origin xyz="0 0 0.050" rpy="0 0 0"/>
+        <child link="base_link"/>
+        <parent link="base_footprint"/>
+    </joint>
+
+    <!-- Base Link -->
+    <link name="base_link">
+        <inertial>
+            <mass value="20"/>
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+            <origin/>
+        </inertial>
+        <collision>
+            <origin xyz="0.8 0 0.1" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.4 0.55 0.005"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0.8 0 0.4" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.4 0.55 0.75"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+
+        <!-- Top shelf -->
+        <visual>
+            <origin xyz="0.8 0 1.1" rpy="0 0 0" />
+            <geometry>
+                <box size="0.4 0.55 0.03" />
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <visual>
+            <origin xyz="0.985 0.26 0.9" rpy="0 0 0" />
+            <geometry>
+                <box size="0.03 0.03 0.4" />
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <visual>
+            <origin xyz="0.985 -0.26 0.9" rpy="0 0 0" />
+            <geometry>
+                <box size="0.03 0.03 0.4" />
+            </geometry>
+            <material name="red"/>
+        </visual>
+    
+    </link>
+
+
+    <!-- Forks -->
+
+    <link name="left_fork">
+        <inertial>
+            <mass value="1"/>
+            <origin xyz="0 0 0.0"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.8 0.1 0.01"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.8 0.1 0.01"/>
+            </geometry>
+            <contact_coefficients kd="10.0" kp="10.0" mu="1"/>
+        </collision>
+    </link>
+
+    <link name="right_fork">
+        <inertial>
+            <mass value="1"/>
+            <origin xyz="0 0 0.0"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.8 0.1 0.01"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.8 0.1 0.01"/>
+            </geometry>
+            <contact_coefficients kd="10.0" kp="10.0" mu="1"/>
+        </collision>
+    </link>
+
+    <link name="base_fork">
+        <inertial>
+            <mass value="0.1"/>
+            <origin xyz="0 0 0.0"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+    </link>
+
+    <!-- static joint connect the single prismatic joint with the forks... -->
+    <joint name="left_fork_joint" type="fixed">
+        <origin xyz="0 0.205 0.0" rpy="0 0 0"/>
+        <child link="left_fork"/>
+        <parent link="base_fork"/>
+    </joint>
+    <joint name="right_fork_joint" type="fixed">
+        <origin xyz="0 -0.205 0.0" rpy="0 0 0"/>
+        <child link="right_fork"/>
+        <parent link="base_fork"/>
+    </joint>
+    <joint name="fork_joint" type="prismatic">
+        <origin xyz="0.18 0.0 0.0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="base_fork"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000" lower="-1" upper="1" velocity="100"/>
+    </joint>
+
+
+    <!-- Steering -->
+
+    <!--
+    <transmission name="fork_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="fork_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="fork_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+    -->
+
+    <link name="steer_link">
+        <inertial>
+            <mass value="0.01"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            <origin/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.1 0.1 0.1"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+    </link>
+
+    <link name="sd_wheel_link">
+        <inertial>
+            <mass value="10"/>
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+            <origin/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.08" length=".04"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.08" length=".04"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base2steer_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="steer_link"/>
+        <limit effort="10000.0" lower="-1.57" upper="1.57" velocity="100"/>
+        <origin xyz="1.190 0 0.04" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+
+    <!--
+    <transmission name="base2steer_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="base2steer_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="base2steer_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+    -->
+
+    <joint name="steer2sd_wheel_joint" type="continuous">
+        <parent link="steer_link"/>
+        <child link="sd_wheel_link"/>
+        <limit effort="10000.0" velocity="100"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!--
+    <transmission name="steer2sd_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="steer2sd_wheel_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="steer2sd_wheel_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+    -->
+
+    <link name="fixed_left_wheel_link">
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+            <origin/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length=".08"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length=".08"/>
+            </geometry>
+            <!-- <contact_coefficients mu="100" kp="10.0" kd="0.1"/>-->
+        </collision>
+    </link>
+
+    <joint name="base2fixed_left_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="fixed_left_wheel_link"/>
+        <origin xyz="0 0.205 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+
+    <link name="fixed_right_wheel_link">
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+            <origin/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length=".08"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length=".08"/>
+            </geometry>
+            <!-- <contact_coefficients mu="100" kp="10.0" kd="0.1"/>-->
+        </collision>
+    </link>
+
+    <joint name="base2fixed_right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="fixed_right_wheel_link"/>
+        <origin xyz="0 -0.205 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+
+    <!-- SENSORS START HERE -->
+
+    <!-- SICK laser -->
+    <link name="safety_laser_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.1 0.1 0.1"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://cititruck_description/meshes/sick_s300_laser.dae"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <mass value="1e-5"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+        </inertial>
+    </link>
+
+    <joint name="safety_laser_joint" type="fixed">
+        <axis xyz="0 1 0"/>
+        <origin xyz="1.4 0 0.02" rpy="3.14159 0 0"/>
+        <parent link="base_link"/>
+        <child link="safety_laser_link"/>
+    </joint>
+
+
+    <!-- LS2000 navigation/localization laser -->
+    <link name="nav_laser_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.1 0.1 0.1"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://cititruck_description/meshes/ls2000_laser.dae" scale="2 2 2"/>
+            </geometry>
+        </visual>
+
+        <inertial>
+            <mass value="1e-5" />
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+        </inertial>
+    </link>
+
+    <joint name="nav_laser_joint" type="fixed">
+        <origin xyz="0.8 0 0.85" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="nav_laser_link"/>
+    </joint>
+
+
+    <!-- Velodyne VLP16 -->
+    <xacro:if value="$(arg velodyne)">
+      <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+      <VLP-16 parent="base_link" prefix="$(arg tf_prefix)" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
+          <origin xyz="0.8 0 0.95" rpy="0 0 0" />
+      </VLP-16>
+    </xacro:if>
+
+
+    <!-- Kinect v2 -->
+    <xacro:if value="$(arg kinect2)">
+      <xacro:include filename="$(find kinect2_description)/urdf/kinect2/kinect2.xacro"/>
+      <kinect2_sensor parent="base_link" prefix="$(arg tf_prefix)" name="kinect2" cam_px="0.65" cam_py="0" cam_pz="1.15" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
+    </xacro:if>
+
+    <!-- Old Kinect (deprecated, only used for pallet detection?) -->
+    <xacro:if value="$(arg kinect1)">
+      <link name="kinect_link">
+          <collision>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <box size="0.1 0.1 0.1"/>
+              </geometry>
+          </collision>
+          <visual>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <box size="0.001 0.001 0.001"/>
+              </geometry>
+          </visual>
+          <inertial>
+              <mass value="1e-5"/>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+          </inertial>
+      </link>
+
+      <joint name="kinect_joint" type="fixed">
+          <axis xyz="0 1 0"/>
+          <origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
+          <!--        <origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/>-->
+          <parent link="base_link"/>
+          <child link="kinect_link"/>
+      </joint>
+    </xacro:if>
+
+</robot>

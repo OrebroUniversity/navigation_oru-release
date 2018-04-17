@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robotid" default="1"/>
+  <arg name="prefix" default="robot1"/>
+  <arg name="velodyne_in_costmap" default="false"/>
+  <arg name="avoid_smoothing" default="true"/>
+
+  <group ns="$(arg prefix)">
+    <param name="tf_prefix" value="$(arg prefix)" />
+
+    <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
+      <param name="robot_id" value="$(arg robotid)" />
+    </node>
+    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+
+    <rosparam file="$(find iliad_smp)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
+    <rosparam file="$(find iliad_smp)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
+    <group if="$(arg velodyne_in_costmap)">
+      <rosparam param="plugins" ns="generate_path_iliad/iliad_smp_costmap/">
+        - {name: static_map, type: "costmap_2d::StaticLayer"}
+        - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+      </rosparam>
+
+      <rosparam param="obstacle_layer" ns="generate_path_iliad/iliad_smp_costmap/" subst_value="True">
+        observation_sources: velodyne_sensor
+        velodyne_sensor: {data_type: PointCloud2, sensor_frame: velodyne, topic: /$(arg prefix)/velodyne_points/, marking: true, clearing: true, max_obstacle_height: 1.3, min_obstacle_height: 0.075, obstacle_range: 10.0, raytrace_range: 10.5}
+      </rosparam>
+    </group>
+
+    <node pkg="iliad_smp" type="generate_path_iliad" name="generate_path_iliad" output="screen">
+      <param name="min_incr_path_dist" value="0.2" />
+      <param name="visualize" value="true" />
+    </node>
+
+    <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
+      <param name="load_type" value="1" />
+      <param name="model_type" value="2" />
+      <param name="visualize" value="false" />
+      <param name="save_constraints_and_path" value="true" />
+      <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
+      <param name="visualize_outer_constraints" value="false" />
+      <param name="visualize_only_invalid" value="false" />
+      <param name="skip_overlap" value="true" />
+      <param name="save_lookuptables" value="false" />
+    </node>
+
+    <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
+      <param name="visualize" value="true" />
+      <param name="visualize_deep" value="false" />
+      <param name="wheel_base" value="1.190" />
+      <param name="minimize_phi_and_dist" value="true" />
+      <param name="init_controls" value="true" />
+      <param name="use_th_constraints" value="true" />
+      <param name="use_xy_constraints" value="true" />
+      <param name="phi_min" value="-1.0" /> <!-- -0.9 -->
+      <param name="phi_max" value="1.0" />  <!-- 0.9 -->
+      <param name="reassign_constraints" value="true" />
+      <param name="reassign_iters" value="1" />
+      <param name="reassign_min_distance" value="0.1" />
+      <param name="do_nothing" value="$(arg avoid_smoothing)"/>
+    </node>
+
+    <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node" output="screen">
+      <param name="robot_id" value="$(arg robotid)" />
+      <param name="visualize" value="true" />
+      <param name="max_tracking_error" value="-1." />
+      <param name="use_forks" value="true" />
+
+      <param name="max_vel" value="0.5" />
+      <param name="max_rotational_vel" value="0.3" />
+      <param name="max_acc" value="0.3" />
+      <param name="max_steering_angle_vel" value="0.6"/>
+
+      <param name="max_steering_range_smoothed_path" value="1.5" />
+      <param name="min_docking_distance" value="0.1" />
+      <param name="use_ct" value="false"/>
+
+      <param name="use_update_task_service" value="false"/>
+    </node>
+
+  </group>
+</launch>

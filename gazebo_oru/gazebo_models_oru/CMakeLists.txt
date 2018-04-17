@@ -4,10 +4,6 @@ project(gazebo_models_oru)
 find_package(catkin REQUIRED)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES gazebo_models_oru
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
 ##################################
@@ -28,4 +24,10 @@ endif()
 install(DIRECTORY
   models
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(PROGRAMS
+  scripts/delete_humans_from_gazebo.py
+  scripts/download_all_gazebo_org_models.sh
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

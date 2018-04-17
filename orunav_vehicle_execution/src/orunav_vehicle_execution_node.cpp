@@ -215,6 +215,8 @@ private:
 
   bool use_update_task_service_;
   bool start_driving_after_recover_;
+
+  bool real_cititruck_;
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle) 
   {
@@ -251,7 +253,7 @@ public:
     traj_params_.debugPrefix = std::string("ct_traj_gen/");
 
     traj_slowdown_params_ = traj_params_;
-    traj_slowdown_params_.maxVel = 0.05;
+    paramHandle.param<double>("max_slowdown_vel", traj_slowdown_params_.maxVel, 0.1);
 
     paramHandle.param<double>("min_docking_distance", min_docking_distance_, 1.0);
     paramHandle.param<double>("max_docking_distance", max_docking_distance_, 1.3);
@@ -280,7 +282,8 @@ public:
     paramHandle.param<bool>("visualize_sweep_and_constraints", visualize_sweep_and_constraints_, false);
     paramHandle.param<bool>("use_update_task_service", use_update_task_service_, true);
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
-
+    paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
+    
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
@@ -322,11 +325,11 @@ public:
       }
     }
      
-    //call worker thread 
-    client_thread_ = boost::thread(boost::bind(&KMOVehicleExecutionNode::run,this));
-
     valid_map_ = false;
     b_shutdown_ = false;
+
+    //call worker thread
+    client_thread_ = boost::thread(boost::bind(&KMOVehicleExecutionNode::run,this));
   }
 
   KMOVehicleExecutionNode() {
@@ -888,7 +891,7 @@ public:
   {
     // Check the current state of the vehicle
     ROS_INFO("[KMOVehicleExecutionNode] RID:%d [%d] - received executeTask (update:%d)", robot_id_, req.task.target.robot_id, (int)req.task.update);
-    ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - critical point (:%d)", robot_id_, (int)req.task.criticalPoint);
+    ROS_INFO("[KMOVehicleExecutionNode] RID:%d - next critical point (-1 == there is none) (:%d)", robot_id_, (int)req.task.criticalPoint);
     //    ROS_ERROR_STREAM("task.cts : " << req.task.cts);
 
     if (!vehicle_state_.isWaiting() && !req.task.update) {
@@ -1393,7 +1396,7 @@ public:
 
   // Only valid if only one laser scaner is used.
   void process_laserscan(const sensor_msgs::LaserScanConstPtr &msg) {
-    
+
     if (!use_safetyregions_)
       return;
 
@@ -1411,38 +1414,68 @@ public:
       return;
     }
 
-    sensor_msgs::PointCloud cloud;
+    sensor_msgs::PointCloud cloud, cloud_ebrake, cloud_slowdown, cloud_ignore;
     laser_projection_.transformLaserScanToPointCloud("/world",*msg,
                                               cloud,tf_listener_);
  
-    
-    drawPointCloud(cloud, "laserscan_cloud", 0, 0, 0.1, marker_pub_);
+    cloud_ebrake.header = cloud.header;
+    cloud_slowdown.header = cloud.header;
+    cloud_ignore.header = cloud.header;
+    drawPointCloud(cloud, "laserscan_cloud", 0, 1, 0.05, marker_pub_);
 
     if (!vehicle_state_.isDriving()) {
       return;
     }
-    
+
     bool slowdown = false;
     bool sendbrake = false;
-    for (size_t i = 70; i < cloud.points.size()-70; i++) {
-      
+
+    int start_idx = 0;
+    int stop_idx = 0;
+    if (real_cititruck_) {
+      start_idx = 70;
+      stop_idx = 70;
+    }
+    
+    for (size_t i = start_idx; i < cloud.points.size()-stop_idx; i++) {
+      // Self occlusion, for simulation using the nav laser, don't fully get why they have to be this wide the ignore area but otherwise it will detect the frame!
+      if (!real_cititruck_) 
+      {
+	if (i >= 205 && i <= 240) {
+        cloud_ignore.points.push_back(cloud.points[i]);
+        continue;
+      }
+      if (i >= 390 && i <= 425) {
+        cloud_ignore.points.push_back(cloud.points[i]);
+        continue;
+      }
+      }
       if (current_global_ebrake_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
                                            cloud.points[i].y))) {
-	ROS_INFO_STREAM("e-brake area collision point " << i);
+        ROS_INFO_STREAM("e-brake area collision point " << i);
+        cloud_ebrake.points.push_back(cloud.points[i]);
         sendbrake = true;
+        continue;
+
       }
       if (current_global_slowdown_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
                                            cloud.points[i].y))) {
-	ROS_INFO_STREAM("slowdown collision point " << i);
+        //ROS_INFO_STREAM("slowdown collision point " << i);
+        cloud_slowdown.points.push_back(cloud.points[i]);
         slowdown = true;
       }
     }
     
+    drawPointCloud(cloud_slowdown, "laserscan_cloud_slowdown", 0, 2, 0.1, marker_pub_);
+    drawPointCloud(cloud_ebrake, "laserscan_cloud_ebrake", 0, 0, 0.1, marker_pub_);
+    drawPointCloud(cloud_ignore, "laserscan_cloud_ignore", 0, 0, 0.15, marker_pub_);
+
     if (sendbrake) {
+      ROS_INFO_STREAM("Sending BRAKE - laser reading in e-brake zone detected");
       if (!vehicle_state_.isBraking()) {
         sendBrakeCommand();
-        return;
       }
+      return;
     }
     if (!slowdown) {
       if (vehicle_state_.isBraking()) {
@@ -1596,9 +1629,11 @@ public:
     inputs_mutex_.lock();
     vehicle_state_.appendTrajectoryChunks(chunks_data.first, chunks_data.second);
     vehicle_state_.saveCurrentTrajectoryChunks("current_chunks.txt");
+    saveTrajectoryChunksTextFile(chunks_data.second, "chunks_data_to_be_added.txt");
     // Make sure that the ones that are in vehicle state are the ones that are sent to the controller....
     orunav_generic::TrajectoryChunks chunks = vehicle_state_.getTrajectoryChunks();
-    ROS_INFO("[KMOVehicleExecutionNode] - appended chuks, size : %lu", chunks.size());
+    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - appended chunks, index: " << chunks_data.first);
+    ROS_INFO("[KMOVehicleExecutionNode] - appended chunks, size : %lu", chunks.size());
     inputs_mutex_.unlock();
 
     // -----------------------------------------------------------------
@@ -1713,6 +1748,10 @@ public:
         unsigned int path_idx;
         vehicle_state_.setPath(path);
         chunks_data = computeTrajectoryChunksCASE1(vehicle_state_, traj_params_, path_idx, use_ct_);
+        if (chunks_data.second.empty()) {
+          ROS_WARN_STREAM("[KMOVehicleExecutionNode] CASE1 - couldn't compute trajectory, path size is to small... (path idx : " << path_idx << ", crit point : " << vehicle_state_.getCriticalPointIdx() << ")");
+          continue;
+        }
         vehicle_state_.setCurrentPathIdx(path_idx);
 	
         // Important the chunks will need to be re-indexed from 0.
@@ -1748,7 +1787,7 @@ public:
             ROS_INFO_STREAM("[KMOVehicleExecution] - will drive in slowdown mode - ignoring CTs");
             vehicle_state_.clearCoordinatedTimes();
             bool valid = false;
-            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_slowdown_params_, chunk_idx, path_idx, path_chunk_distance, valid);
+            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_slowdown_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
             if (!valid) {
               continue;
             }
@@ -1756,7 +1795,7 @@ public:
           }
           else {
             bool valid;
-            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid);
+            chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
             if (!valid) {
               continue;
             }
@@ -1822,7 +1861,6 @@ public:
       }
       
       //-----------------------------------------------------------------
-
       vehicle_state_.activateTask();
 
       // Add a check whether to brake due to slow speeds.
@@ -1832,7 +1870,9 @@ public:
       double start_time_d = vehicle_state_.getCoordinatedStartTime();
       if (start_time_d < 0) {
         start_time = ros::Time::now() + ros::Duration(0.5);
-        ROS_WARN("[KMOVehicleExecutionNode] - start time is not coordinated");
+        if (use_ct_) {
+          ROS_WARN("[KMOVehicleExecutionNode] - start time is not coordinated");
+        }
       }
       else {
         start_time = ros::Time(start_time_d);
@@ -1842,7 +1882,6 @@ public:
       if (!vehicle_state_.isActive()) {
         sendActivateStartTimeCommand(start_time);
       }
-    
     } // while
 
     ROS_ERROR("[KMOVehicleExecutionNode] trajectory update thread - died(!) : %s", vehicle_state_.getDebugString().c_str());

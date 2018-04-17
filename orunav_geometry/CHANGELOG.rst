@@ -2,6 +2,21 @@
 Changelog for package orunav_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated the hrp size.
+* Added HRP plattform.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* merge
+* Contributors: Martin Magnusson
+
+0.2.0 (2017-09-15)
+------------------
+
 0.1.1 (2017-06-13)
 ------------------
 

@@ -4,10 +4,6 @@ project(orunav_params)
 find_package(catkin REQUIRED)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_params
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
 

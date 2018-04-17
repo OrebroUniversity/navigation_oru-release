@@ -2,6 +2,22 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Synced RobotReport flags with vehicle_execution code
+* Added missing state in Operation
+* Added IliadItem and IliadItemArray messages, and augmented Operation message
+* Contributors: Federico Pecora, Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* merge
+* Contributors: Martin Magnusson
+
+0.2.0 (2017-09-15)
+------------------
+
 0.1.1 (2017-06-13)
 ------------------
 

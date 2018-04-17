@@ -26,10 +26,8 @@ else()
 endif()
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_coordinator_fake
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry visualization_msgs
+  DEPENDS Boost
 )
 
 include_directories(

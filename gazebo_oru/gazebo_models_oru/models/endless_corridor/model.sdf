@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="endless_corridor">
+    <static>true</static>
+    <pose>0 0 0 0 0 0</pose>
+    <link name="endless_corridor_structure">
+      <collision name="endless_corridor_collision">
+        <geometry>
+          <mesh>
+            <uri>model://endless_corridor/meshes/endless_corridor.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://endless_corridor/meshes/endless_corridor.dae</uri>
+          </mesh>
+        </geometry>
+        <cast_shadows>false</cast_shadows>
+      </visual>
+    </link>
+  </model>
+</sdf>

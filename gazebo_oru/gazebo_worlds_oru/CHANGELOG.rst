@@ -2,6 +2,37 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Added separate map server launch for old map
+* new maps
+* new maps
+* new map
+* small manual tweak to the map
+* added a map for simulation
+* Adding animated humans to NCFM world
+* Fix size and position of empty map for NCFM; disable Velodyne visualization
+* Add textured ground plane; remove refs to robot1 in NCFM world
+* NCFM world updated, added doors and obstacles
+* Contributors: Bruce Wayne, Federico Pecora, Henrik Andreasson, tsv
+
+0.2.1 (2017-09-19)
+------------------
+* changed world. Doors added
+* THE GAZEBO GUI SHOULD BE TURNED ON TODORll! :'(
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
+* merge
+* Updated empty map to work in NCFM use case (shift origin)
+* decreased frequency for odometry
+* added launchfile for illiad single truck
+* added launchfile
+* Contributors: Bruce Wayne, Daniel Adolfsson, Martin Magnusson, tsv
+
+0.2.0 (2017-09-15)
+------------------
+
 0.1.1 (2017-06-13)
 ------------------
 

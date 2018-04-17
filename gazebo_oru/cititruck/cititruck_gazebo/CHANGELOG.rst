@@ -2,6 +2,32 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Modified placement of trucks in aass basement gazebo sim
+* Changed start poses.
+* Add Kinect v2 simulation. In iliad_single_truck.launch, add options for enabling/disabling simulation of Kinect v1, v2 and Velodyne sensors.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Refactored launch and config files to better handle multiple truck launches
+* Contributors: Bruce Wayne, Federico Pecora, Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* Merge pull request `#3 <https://github.com/OrebroUniversity/navigation_oru-release/issues/3>`_ from batman177/master
+  Add LS2000 laser scanner to ILIAD cititruck etc.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Add LS2000 laser scanner; update Rviz config; fix robot initial position
+* moved truck to a more drivable place, added an empty map to allow more movement
+* merge
+* Merge branch 'master' of github.com:OrebroUniversity/navigation_oru-release
+* decreased frequency for odometry
+* fixed some of namespace problems
+* added launchfile for illiad single truck
+* Contributors: Bruce Wayne, Daniel Adolfsson, Martin Magnusson, dan11003, tsv
+
+0.2.0 (2017-09-15)
+------------------
+
 0.1.1 (2017-06-13)
 ------------------
 

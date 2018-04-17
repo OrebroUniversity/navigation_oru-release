@@ -2,6 +2,27 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* Updated collision handling for the real trucks.
+* Fixed truncation path bug in case1 trajectory computation.
+* Visualization added of the brake zones..., for now some hardcoded parameters of the simulated navigation laser.
+* Cleaned up, added hysteresis in changing DRIVE DRIVE_SLOWDOWN transitions.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson
+
+0.2.1 (2017-09-19)
+------------------
+* merge
+* Contributors: Martin Magnusson
+
+0.2.0 (2017-09-15)
+------------------
+* Use ct check fix.
+* Added AT_CRICITAL_POINT as a valid start point.
+* Fixed use_ct\_ bug.
+* Contributors: Henrik Andreasson
+
 0.1.1 (2017-06-13)
 ------------------
 
