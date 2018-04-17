@@ -129,6 +129,14 @@ target_link_libraries(robotTarget_publisher_test
   orunav_path_smoother
 )
 
+add_executable(split_index_test test/split_index_test.cpp)
+target_link_libraries(split_index_test
+  ${catkin_LIBRARIES} 
+  ${Boost_LIBRARIES} 
+  ${ACADO_LFLAGS}
+  orunav_path_smoother
+)
+
 #############
 ## Install ##
 #############
