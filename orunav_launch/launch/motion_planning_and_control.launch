@@ -44,6 +44,9 @@
       <param name="reassign_constraints" value="true" />
       <param name="reassign_iters" value="1" />
       <param name="reassign_min_distance" value="0.1" />
+      <param name="use_incremental" value="true" />
+      <param name="incr_max_nb_points" value="30" />
+      <param name="incr_nb_points_discard" value="10" />
     </node>  
 
     <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node" output="screen">
