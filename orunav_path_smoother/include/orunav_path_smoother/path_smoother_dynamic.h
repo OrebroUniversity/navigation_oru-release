@@ -9,6 +9,125 @@
 #include <orunav_trajectory_processor/trajectory_processor_naive.h>
 #include <orunav_constraint_extract/polygon_constraint.h>
 
+//! Helper class to divide trajectories into subsections.
+class SplitIndex
+{
+ public:
+  class Params
+  {
+  public:
+    Params()
+      {
+	max_nb_points = 10;
+	nb_points_discard = 5;
+      }
+    int max_nb_points;
+    int nb_points_discard;
+    bool valid() {
+      if (max_nb_points > nb_points_discard)
+	return true;
+      return false;
+    }
+    friend std::ostream& operator<<(std::ostream &os, const SplitIndex::Params &obj)
+      {
+	os << "\nmax_nb_points     : " << obj.max_nb_points;
+	os << "\nnb_points_discard : " << obj.nb_points_discard;
+	return os;
+      }
+
+  };
+  
+ SplitIndex(Params &params, const orunav_generic::Trajectory &traj) : _traj(traj) {
+
+    assert(params.valid());
+    _params = params;
+    bool done = false;
+    int start = 0;
+    int size = traj.sizeTrajectory();
+    while (!done) {
+      
+      int stop = start + _params.max_nb_points;
+      if (stop >= size) {
+	stop = size;
+	done = true;
+      }
+      _indexes.push_back(this->getIncrementVec(start, stop));
+
+      start += _params.max_nb_points - _params.nb_points_discard - 1;
+    }
+  }
+  
+  std::vector<int> getIncrementVec(int start, int stop) const {
+    std::vector<int> ret;
+    for (int i = start; i < stop; i++) {
+      ret.push_back(i);
+    }
+    return ret;
+  }
+
+  std::vector<orunav_generic::Trajectory> getTrajectories(const orunav_generic::Trajectory &traj) const {
+    std::vector<orunav_generic::Trajectory> ret;
+    for (int i = 0; i < _indexes.size(); i++) {
+      ret.push_back(orunav_generic::selectTrajectoryIndexes(traj, _indexes[i]));
+    }
+    return ret;
+  }
+
+  std::vector<constraint_extract::PolygonConstraintsVec> getConstraintsVec(const constraint_extract::PolygonConstraintsVec &cons) const {
+    std::vector<constraint_extract::PolygonConstraintsVec> ret;
+    for (int i = 0; i < _indexes.size(); i++) {
+      ret.push_back(selectConstraintsVecIndexes(cons, _indexes[i]));
+    }
+    return ret;
+  }
+
+  void setTrajectory(int idx, const orunav_generic::Trajectory &traj) {
+    bool last_entry = (idx == _indexes.size()-1);
+    int stop = _indexes[idx].size();
+    if (!last_entry) {
+      stop = _indexes[idx].size()  - _params.nb_points_discard;
+    }
+
+    int offset = _indexes[idx][0];
+    for (int i = 0; i < stop; i++) { 
+      
+      //      _traj.addTrajectoryPoint(traj.getPose2d(i), traj.getSteeringAngle(i), traj.getDriveVel(i), traj.getSteeringVel(i));
+      _traj.setPose2d(traj.getPose2d(i), offset+i);
+      _traj.setSteeringAngle(traj.getSteeringAngle(i), offset+i);
+      _traj.setDriveVel(traj.getDriveVel(i), offset+i);
+      _traj.setSteeringVel(traj.getSteeringVel(i), offset+i);
+    }
+  }
+
+  orunav_generic::Trajectory getTrajectory(int idx) const {
+    return orunav_generic::selectTrajectoryIndexes(this->_traj, _indexes[idx]);
+  }
+
+  orunav_generic::Trajectory getTrajectory() const {
+    return _traj;
+  }
+
+  void printDebug() const {
+    for (int i = 0; i < _indexes.size(); i++) {
+      std::cout << "\n[vec:" << i << "]" << std::endl;
+      for (int j = 0; j < _indexes[i].size(); j++) {
+	std::cout << "(" << _indexes[i][j] << ")" << std::flush;
+      }
+    }
+    std::cout << std::endl;
+  }
+
+  int size() const {
+    return _indexes.size();
+  }
+
+ private:
+  std::vector<std::vector<int> > _indexes;
+  orunav_generic::Trajectory _traj;
+  Params _params;
+};
+
+
 class PathSmootherDynamic : public PathSmootherInterface
 {
  public:
@@ -47,6 +166,9 @@ class PathSmootherDynamic : public PathSmootherInterface
 	weight_steering_control = 1.;
 	use_multiple_shooting = true;
 	use_condensing = true;
+	use_incremental = true;
+	incr_max_nb_points = 20;
+	incr_nb_points_discard = 5;
       }
     double v_min;
     double v_max;
@@ -78,6 +200,9 @@ class PathSmootherDynamic : public PathSmootherInterface
     double weight_steering_control;
     bool use_multiple_shooting;
     bool use_condensing;
+    bool use_incremental;
+    int incr_max_nb_points;
+    int incr_nb_points_discard;
 
     friend std::ostream& operator<<(std::ostream &os, const PathSmootherDynamic::Params &obj)
       {
@@ -111,6 +236,9 @@ class PathSmootherDynamic : public PathSmootherInterface
 	os << "\nweight_steer_ctrl : " << obj.weight_steering_control;
 	os << "\nuse_multiple_s... : " << obj.use_multiple_shooting;
 	os << "\nuse_condensing    : " << obj.use_condensing;
+	os << "\nuse_incremental   : " << obj.use_incremental;
+	os << "\nincr_max_nb_points: " << obj.incr_max_nb_points;
+	os << "\nincr_nb_points_dis: " << obj.incr_nb_points_discard;
 	return os;
       }
 
@@ -150,103 +278,12 @@ class PathSmootherDynamic : public PathSmootherInterface
 
   }
 
-  orunav_generic::Path smooth(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
-//const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
+  // All ACADO calls goes here.
+  orunav_generic::Trajectory smooth_(const orunav_generic::Trajectory &traj, const constraint_extract::PolygonConstraintsVec &constraints, double dt, double start_time, double stop_time, bool use_pose_constraints)
     {
       // Always always...
       ACADO_clearStaticCounters();
 
-      bool use_pose_constraints = (constraints.size() ==  path_orig.sizePath()); // Cannot subsample the path etc. from now on.
-
-      std::cout << "PATH SMOOTHER : constraints.size() : " << constraints.size() << std::endl;
-      std::cout << "PATH SMOOTHER : path_orig.sizePath() : " << path_orig.sizePath() << std::endl;
-
-      if (use_pose_constraints) {
-	std::cout << "----- will use spatial constraints -----" << std::endl;
-      }
-
-      // Use the traj processor to get a reasonable estimate of the T.
-      double T = 0.;
-      orunav_generic::Trajectory traj_gen;
-      {
-	TrajectoryProcessorNaive gen;
-	TrajectoryProcessor::Params p;
-	p.maxVel = 0.5;
-	p.maxAcc = 0.2;
-	p.wheelBaseX = params.wheel_base;
-	gen.setParams(p);
-	gen.addPathInterface(path_orig);
-	traj_gen = gen.getTrajectory(); 
-	T = orunav_generic::getTotalTime(gen);
-      }
-      // Get the min / max time from the trajectory
-      
-      std::cout << "--------- Estimated total time T : " << T << " -----------" << std::endl;
-      unsigned int orig_size = path_orig.sizePath();
-      int skip_points = orig_size / params.max_nb_opt_points - 1;
-      if (skip_points < 0)
-	skip_points = 0;
-      double dt = 0.06 * (1 + skip_points);
-      orunav_generic::Path path;
-      if (params.even_point_dist) {
-	double min_dist = orunav_generic::getTotalDistance(path_orig) / params.max_nb_opt_points;
-	if (min_dist < params.min_dist)
-	  min_dist = params.min_dist;
-	path = orunav_generic::minIncrDistancePath(path_orig, min_dist);
-      }
-      else {
-	path = orunav_generic::subSamplePath(path_orig, skip_points);
-      }
-      if (params.use_total_time) {
-	dt = T / path.sizePath(); 
-      }
-
-      if (use_pose_constraints) {
-	path = path_orig;
-      }
-
-      std::cout << "Used dt : " << dt << std::endl;
-
-      //orunav_generic::removeThNormalization(path);
-      orunav_generic::Trajectory traj = orunav_generic::convertPathToTrajectoryWithoutModel(path, dt);
-      assert(orunav_generic::validPath(traj, M_PI));
-      if (orunav_generic::validPath(traj, M_PI))
-        std::cerr << "Non-normalized path(!) - should never happen" << std::endl;
-      orunav_generic::removeThNormalization(traj);
-      assert(orunav_generic::validPath(traj, M_PI));
-      
-      double start_time = 0.0;
-      unsigned int size = traj.sizeTrajectory();
-      double stop_time = (size - 1)*dt;
-      
-      if (params.update_v_w_bounds) {
-	PathSmootherDynamic::Params params_orig = params;
-	if (params.init_controls || params.get_speed) {
-	  orunav_generic::getMinMaxVelocities(traj, params.v_min, params.v_max, params.w_min, params.w_max);
-	}
-	else {
-	  // Using the generated trajectory (from the traj processsor)
-	  orunav_generic::getMinMaxVelocities(traj_gen, params.v_min, params.v_max, params.w_min, params.w_max);
-	}
-	// This is used to smooth a straight path which otherwise will have a w_min = w_max = 0.
-	if (params.keep_w_bounds) {
-	  params.w_min = params_orig.w_min;
-	  params.w_max = params_orig.w_max;
-	}
-	std::cout << "------ Updated v/w params : -------- " << params << std::endl;
-      }
-     
-      // Make sure to normalize the start and end pose - this is done by updating the start and end trajectory state, this should be done after the velocities are computed.
-      traj.setPose2d(start.getPose2d(), 0);
-      traj.setSteeringAngle(start.getSteeringAngle(), 0);
-      traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
-      traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
-
-      std::cout << "updating the start and end pose : " << std::endl;
-      assert(orunav_generic::validPath(traj, M_PI));
-      orunav_generic::removeThNormalization(traj); // Force the start point and end point to not be normalized.
-      assert(orunav_generic::validPath(traj, M_PI));
-      
       std::cout << "Setting up constraints -- start" << std::endl;
 
       ACADO::VariablesGrid q_init = convertPathToACADOStateVariableGrid(traj, 0.0, dt);
@@ -443,8 +480,143 @@ class PathSmootherDynamic : public PathSmootherInterface
 	window3.plot();
       }
 
-      return convertACADOStateVariableGridToPath(states);
+      //      return convertACADOStateVariableGridToPath(states);
+            return convertACADOStateControlVariableGridToTrajectory(states, controls);
+      }
+
+
+
+  orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
+//const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
+    {
+      // Always always...
+      //     ACADO_clearStaticCounters();
+
+      bool use_pose_constraints = (constraints.size() ==  path_orig.sizePath()); // Cannot subsample the path etc. from now on.
+
+      std::cout << "PATH SMOOTHER : constraints.size() : " << constraints.size() << std::endl;
+      std::cout << "PATH SMOOTHER : path_orig.sizePath() : " << path_orig.sizePath() << std::endl;
+
+      if (use_pose_constraints) {
+	std::cout << "----- will use spatial constraints -----" << std::endl;
+      }
+
+      // Use the traj processor to get a reasonable estimate of the T.
+      double T = 0.;
+      orunav_generic::Trajectory traj_gen;
+      {
+	TrajectoryProcessorNaive gen;
+	TrajectoryProcessor::Params p;
+	p.maxVel = 0.5;
+	p.maxAcc = 0.2;
+	p.wheelBaseX = params.wheel_base;
+	gen.setParams(p);
+	gen.addPathInterface(path_orig);
+	traj_gen = gen.getTrajectory(); 
+	T = orunav_generic::getTotalTime(gen);
+      }
+      // Get the min / max time from the trajectory
+      
+      std::cout << "--------- Estimated total time T : " << T << " -----------" << std::endl;
+      unsigned int orig_size = path_orig.sizePath();
+      int skip_points = orig_size / params.max_nb_opt_points - 1;
+      if (skip_points < 0)
+	skip_points = 0;
+      double dt = 0.06 * (1 + skip_points);
+      orunav_generic::Path path;
+      if (params.even_point_dist) {
+	double min_dist = orunav_generic::getTotalDistance(path_orig) / params.max_nb_opt_points;
+	if (min_dist < params.min_dist)
+	  min_dist = params.min_dist;
+	path = orunav_generic::minIncrDistancePath(path_orig, min_dist);
+      }
+      else {
+	path = orunav_generic::subSamplePath(path_orig, skip_points);
+      }
+      if (params.use_total_time) {
+	dt = T / path.sizePath(); 
+      }
+
+      if (use_pose_constraints) {
+	path = path_orig;
+      }
+
+      std::cout << "Used dt : " << dt << std::endl;
+
+      //orunav_generic::removeThNormalization(path);
+      orunav_generic::Trajectory traj = orunav_generic::convertPathToTrajectoryWithoutModel(path, dt);
+      assert(orunav_generic::validPath(traj, M_PI));
+      if (orunav_generic::validPath(traj, M_PI))
+        std::cerr << "Non-normalized path(!) - should never happen" << std::endl;
+      orunav_generic::removeThNormalization(traj);
+      assert(orunav_generic::validPath(traj, M_PI));
+      
+      double start_time = 0.0;
+      unsigned int size = traj.sizeTrajectory();
+      double stop_time = (size - 1)*dt;
+      
+      if (params.update_v_w_bounds) {
+	PathSmootherDynamic::Params params_orig = params;
+	if (params.init_controls || params.get_speed) {
+	  orunav_generic::getMinMaxVelocities(traj, params.v_min, params.v_max, params.w_min, params.w_max);
+	}
+	else {
+	  // Using the generated trajectory (from the traj processsor)
+	  orunav_generic::getMinMaxVelocities(traj_gen, params.v_min, params.v_max, params.w_min, params.w_max);
+	}
+	// This is used to smooth a straight path which otherwise will have a w_min = w_max = 0.
+	if (params.keep_w_bounds) {
+	  params.w_min = params_orig.w_min;
+	  params.w_max = params_orig.w_max;
+	}
+	std::cout << "------ Updated v/w params : -------- " << params << std::endl;
+      }
+     
+      // Make sure to normalize the start and end pose - this is done by updating the start and end trajectory state, this should be done after the velocities are computed.
+      traj.setPose2d(start.getPose2d(), 0);
+      traj.setSteeringAngle(start.getSteeringAngle(), 0);
+      traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
+      traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
+
+      std::cout << "updating the start and end pose : " << std::endl;
+      assert(orunav_generic::validPath(traj, M_PI));
+      orunav_generic::removeThNormalization(traj); // Force the start point and end point to not be normalized.
+      assert(orunav_generic::validPath(traj, M_PI));
+      
+      if (!params.use_incremental)
+      {
+	return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
+      }
+
+      // Run the iterative approach
+      // Keep the start and goal fixed (as previous) but divide the section to chunks and optimize over the cunks. The start of the next chunk is located in the previous chunk.
+      SplitIndex::Params si_params;
+      si_params.max_nb_points =  params.incr_max_nb_points;
+      si_params.nb_points_discard = params.incr_nb_points_discard;
+      int nb_points_discard;
+
+      SplitIndex si(si_params, traj);
+
+      std::vector<constraint_extract::PolygonConstraintsVec> constraints_vec = si.getConstraintsVec(constraints);
+
+      for (int i = 0; i < si.size(); i++) { 
+	orunav_generic::Trajectory t = si.getTrajectory(i);
+	stop_time = dt * t.sizeTrajectory()-1;
+	std::cout << "stop_time : " << stop_time << std::endl;
+	std::cout << "================================================" << std::endl;
+	std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
+	std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
+ 	orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); 
+	std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
+	si.setTrajectory(i, ts);
+      }
+      return si.getTrajectory();
     }
+
+  orunav_generic::Path smooth(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints) {
+    orunav_generic::Path p(smoothTraj(path_orig, start, goal, constraints));
+    return p;
+  }
 
   orunav_generic::Path smooth(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal) {
     constraint_extract::PolygonConstraintsVec constraints;

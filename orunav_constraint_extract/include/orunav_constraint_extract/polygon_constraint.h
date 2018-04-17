@@ -227,6 +227,15 @@ namespace constraint_extract {
     virtual size_t sizePose2d() const { return this->size(); }
   };
 
+  PolygonConstraintsVec selectConstraintsVecIndexes(const PolygonConstraintsVec &cons,
+				   const std::vector<int> &indexes) {
+    PolygonConstraintsVec ret;
+    for (int i = 0; i < indexes.size(); i++) {
+      ret.push_back(cons[indexes[i]]);
+    }
+    return ret;
+  }
+
   class PolygonConstraintsLookup {
   public:
     class Params {
