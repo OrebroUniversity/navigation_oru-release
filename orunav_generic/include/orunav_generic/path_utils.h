@@ -438,7 +438,7 @@ orunav_generic::Path selectPathIntervall(const orunav_generic::PathInterface &pa
 orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &traj,
 						     size_t startIdx,
 						     size_t stopIdx) {
-  assert(stopIdx <= path.sizePath());
+  assert(stopIdx <= traj.sizePath());
   assert(startIdx < stopIdx);
   orunav_generic::Trajectory ret;
   for (size_t i = startIdx; i < stopIdx; i++) {
@@ -450,8 +450,6 @@ orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &t
 
 orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterface &traj,
 						    std::vector<int> indexes) {
-  assert(stopIdx <= traj.sizeTrajectory());
-  assert(startIdx < stopIdx);
   orunav_generic::Trajectory ret;
   for (size_t i = 0; i < indexes.size(); i++) {
     ret.addTrajectoryPoint(traj.getPose2d(indexes[i]),traj.getSteeringAngle(indexes[i]), traj.getDriveVel(indexes[i]), traj.getSteeringVel(indexes[i]));
