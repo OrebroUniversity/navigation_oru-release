@@ -129,7 +129,11 @@ void GazeboRosAckermannDualSteerDrive::Load ( physics::ModelPtr _parent, sdf::El
     // Initialize update rate stuff
     if ( this->update_rate_ > 0.0 ) this->update_period_ = 1.0 / this->update_rate_;
     else this->update_period_ = 0.0;
+#if GAZEBO_MAJOR_VERSION >= 8
+    last_actuator_update_ = parent->GetWorld()->SimTime();
+#else
     last_actuator_update_ = parent->GetWorld()->GetSimTime();
+#endif
 
     // Initialize velocity stuff
     alive_ = true;
@@ -187,7 +191,11 @@ void GazeboRosAckermannDualSteerDrive::publishWheelJointState()
     joint_state_.effort.resize ( joints.size() );
     for ( std::size_t i = 0; i < joints.size(); i++ ) {
         joint_state_.name[i] = joints[i]->GetName();
-        joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+#if GAZEBO_MAJOR_VERSION >= 8
+	joint_state_.position[i] = joints[i]->Position ( 0 );
+#else
+	joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+#endif
         joint_state_.velocity[i] = joints[i]->GetVelocity ( 0 );
         joint_state_.effort[i] = joints[i]->GetForce ( 0 );
     }
@@ -214,10 +222,14 @@ void GazeboRosAckermannDualSteerDrive::publishWheelTF()
         std::string frame = gazebo_ros_->resolveTF ( joints[i]->GetName() );
         std::string parent_frame = gazebo_ros_->resolveTF ( joints[i]->GetParent()->GetName() );
 
-        math::Pose pose = joints[i]->GetChild()->GetRelativePose();
-
-        tf::Quaternion qt ( pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w );
-        tf::Vector3 vt ( pose.pos.x, pose.pos.y, pose.pos.z );
+#if GAZEBO_MAJOR_VERSION >= 8
+	ignition::math::Pose3d pose = joints[i]->GetChild()->RelativePose();
+#else
+        ignition::math::Pose3d pose = joints[i]->GetChild()->GetRelativePose().Ign();
+#endif
+   
+	tf::Quaternion qt ( pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W() );
+	tf::Vector3 vt ( pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z() );
 
         tf::Transform transform ( qt, vt );
         transform_broadcaster_->sendTransform ( tf::StampedTransform ( transform, current_time, parent_frame, frame ) );
@@ -228,7 +240,11 @@ void GazeboRosAckermannDualSteerDrive::publishWheelTF()
 void GazeboRosAckermannDualSteerDrive::UpdateChild()
 {
     if ( odom_source_ == ENCODER ) UpdateOdometryEncoder();
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
     double seconds_since_last_update = ( current_time - last_actuator_update_ ).Double();
     if ( seconds_since_last_update > update_period_ ) {
 
@@ -250,7 +266,11 @@ void GazeboRosAckermannDualSteerDrive::UpdateChild()
 
 inline void jointPositionPDControl(physics::JointPtr joint,
                                    double target, double kp, double kd) {
-  double current = joint->GetAngle(0).Radian();
+#if GAZEBO_MAJOR_VERSION >= 8
+    double current = joint->Position(0);
+#else
+    double current = joint->GetAngle(0).Radian();
+#endif
   double v = kp * (target - current) - kd * joint->GetVelocity(0);
   // ROS_INFO_STREAM("current : " << current << " target : " << target << " output v : " << v);
 #if GAZEBO_MAJOR_VERSION > 2
@@ -272,9 +292,16 @@ void GazeboRosAckermannDualSteerDrive::motorController ( double target_speed, do
 #else
   joint_front_steer_->SetVelocity ( 0, target_front_steering_speed );
   joint_rear_steer_->SetVelocity ( 0, target_rear_steering_speed );
-#endif  
+#endif
+
+#if GAZEBO_MAJOR_VERSION >= 8
+  double steering1_angle = joint_front_steer_->Position(0);
+  double steering2_angle = joint_rear_steer_->Position(0);
+#else
   double steering1_angle = joint_front_steer_->GetAngle(0).Radian();
   double steering2_angle = joint_rear_steer_->GetAngle(0).Radian();
+#endif
+
   double steering1_angle_velocity = joint_front_steer_->GetVelocity(0);
   double steering2_angle_velocity = joint_rear_steer_->GetVelocity(0);
   
@@ -346,12 +373,21 @@ void GazeboRosAckermannDualSteerDrive::QueueThread()
 void GazeboRosAckermannDualSteerDrive::UpdateOdometryEncoder()
 {
   // This is currently based on old code with a combined steer and drive wheel (e.g. snowwhite / cititruck)
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
     double step_time = ( current_time - last_odom_update_ ).Double();
     last_odom_update_ = current_time;
 
+#if GAZEBO_MAJOR_VERSION >= 8
+    double odom_alpha = (joint_wheel_fl_steer_->Position(0) +
+                         joint_wheel_fr_steer_->Position(0)) * 0.5;
+#else
     double odom_alpha = (joint_wheel_fl_steer_->GetAngle(0).Radian() +
                          joint_wheel_fr_steer_->GetAngle(0).Radian()) * 0.5;
+#endif
 
     // Distance travelled (this is utilizing only the front wheels...)
     double drive_dist = step_time * wheel_diameter_ / 2 * 
@@ -424,9 +460,13 @@ void GazeboRosAckermannDualSteerDrive::publishOdometry ( double step_time )
     }
     if ( odom_source_ == WORLD ) {
         // getting data form gazebo world
-        math::Pose pose = parent->GetWorldPose();
-        qt = tf::Quaternion ( pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w );
-        vt = tf::Vector3 ( pose.pos.x, pose.pos.y, pose.pos.z );
+#if GAZEBO_MAJOR_VERSION >= 8
+        ignition::math::Pose3d pose = parent->WorldPose();
+#else
+        ignition::math::Pose3d pose = parent->GetWorldPose().Ign();
+#endif
+	qt = tf::Quaternion ( pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W() );
+	vt = tf::Vector3 ( pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z() );
 
         odom_.pose.pose.position.x = vt.x();
         odom_.pose.pose.position.y = vt.y();
@@ -438,14 +478,19 @@ void GazeboRosAckermannDualSteerDrive::publishOdometry ( double step_time )
         odom_.pose.pose.orientation.w = qt.w();
 
         // get velocity in /odom frame
-        math::Vector3 linear;
-        linear = parent->GetWorldLinearVel();
-        odom_.twist.twist.angular.z = parent->GetWorldAngularVel().z;
+	ignition::math::Vector3d linear;
+#if GAZEBO_MAJOR_VERSION >= 8
+	linear = parent->WorldLinearVel();
+	odom_.twist.twist.angular.z = parent->WorldAngularVel().Z();
+#else
+	linear = parent->GetWorldLinearVel().Ign();
+        odom_.twist.twist.angular.z = parent->GetWorldAngularVel().Ign().Z();
+#endif
 
         // convert velocity to child_frame_id (aka base_footprint)
-        float yaw = pose.rot.GetYaw();
-        odom_.twist.twist.linear.x = cosf ( yaw ) * linear.x + sinf ( yaw ) * linear.y;
-        odom_.twist.twist.linear.y = cosf ( yaw ) * linear.y - sinf ( yaw ) * linear.x;
+        float yaw = pose.Rot().Yaw();
+	odom_.twist.twist.linear.x = cosf ( yaw ) * linear.X() + sinf ( yaw ) * linear.Y();
+	odom_.twist.twist.linear.y = cosf ( yaw ) * linear.Y() - sinf ( yaw ) * linear.X();
     }
 
     tf::Transform base_footprint_to_odom ( qt, vt );
