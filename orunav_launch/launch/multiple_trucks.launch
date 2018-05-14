@@ -38,7 +38,7 @@
       <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
       <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
       <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
-      <param name="min_incr_path_dist" value="0.02" />
+      <param name="min_incr_path_dist" value="0.2" />
       <param name="visualize" value="true" />
     </node>
     
@@ -64,6 +64,10 @@
       <param name="use_xy_constraints" value="true" />
       <param name="phi_min" value="-1.2" />
       <param name="phi_max" value="1.2" />
+
+      <param name="use_incremental" value="true" />
+      <param name="incr_max_nb_points" value="30" />
+      <param name="incr_nb_points_discard" value="10" />
     </node>  
     
     <node pkg="orunav_trajectory_processor" type="deltatvec_service" name="deltatvec_service" output="screen">
@@ -119,7 +123,7 @@
       <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
       <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
       <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
-      <param name="min_incr_path_dist" value="0.02" />
+      <param name="min_incr_path_dist" value="0.2" />
       <param name="visualize" value="true" />
     </node>
     
@@ -199,7 +203,7 @@
       <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
       <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
       <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
-      <param name="min_incr_path_dist" value="0.02" />
+      <param name="min_incr_path_dist" value="0.2" />
       <param name="visualize" value="true" />
     </node>
     

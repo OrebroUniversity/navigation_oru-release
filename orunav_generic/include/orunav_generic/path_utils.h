@@ -297,8 +297,6 @@ Path getReversePathWithoutChangingDirection(const PathInterface &path)
   return ret;
 }
 
-/// ---------------------------- HERE !!!!!!!!!!!!!!!!!!!!
-
 // Return the last index if there is no distance left.
 size_t getPathIdxWithGreaterDistance(const PathInterface &path, double distance,
                                      size_t start_idx) {
@@ -436,6 +434,30 @@ orunav_generic::Path selectPathIntervall(const orunav_generic::PathInterface &pa
   }
   return ret;
 }
+
+orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &traj,
+						     size_t startIdx,
+						     size_t stopIdx) {
+  assert(stopIdx <= traj.sizePath());
+  assert(startIdx < stopIdx);
+  orunav_generic::Trajectory ret;
+  for (size_t i = startIdx; i < stopIdx; i++) {
+    ret.addTrajectoryPoint(traj.getPose2d(i),traj.getSteeringAngle(i), traj.getDriveVel(i), traj.getSteeringVel(i));
+  }
+  return ret;
+
+}
+
+orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterface &traj,
+						    std::vector<int> indexes) {
+  orunav_generic::Trajectory ret;
+  for (size_t i = 0; i < indexes.size(); i++) {
+    ret.addTrajectoryPoint(traj.getPose2d(indexes[i]),traj.getSteeringAngle(indexes[i]), traj.getDriveVel(indexes[i]), traj.getSteeringVel(indexes[i]));
+  }
+  return ret;
+
+ }
+
  
 std::vector<Path> splitOnDistance(const PathInterface &path, double distance) {
   

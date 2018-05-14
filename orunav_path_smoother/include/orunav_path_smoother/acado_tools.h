@@ -91,6 +91,22 @@ inline orunav_generic::Path convertACADOStateVariableGridToPath(const ACADO::Var
   return path;
 }
 
+inline orunav_generic::Trajectory convertACADOStateControlVariableGridToTrajectory(const ACADO::VariablesGrid &states, const ACADO::VariablesGrid &controls) {
+  orunav_generic::Trajectory traj;
+  int nbStates = states.getNumRows();
+
+  for (unsigned int i = 0; i < states.getDim()/nbStates; i++) {
+    double x = states(i,0);
+    double y = states(i,1);
+    double th = states(i,2);
+    double phi = states(i,3);
+    double v = controls(i,0);
+    double w = controls(i,1);
+    traj.addTrajectoryPoint(orunav_generic::Pose2d(x,y,th), phi, v, w);
+  }
+  return traj;
+} 
+
 inline ACADO::DVector convertACADOStateVariableGridToVector(const ACADO::VariablesGrid &states, int idx)
 {
   ACADO::DVector vec(states.getNumRows());

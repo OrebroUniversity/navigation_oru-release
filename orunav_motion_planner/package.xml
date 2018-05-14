@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_motion_planner</name>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <description>The orunav_motion_planner package, the core was developped by Marcello Cirillo</description>
 
-  <maintainer email="henrik.andreasson@oru.se">Marcello Cirillo</maintainer>
+  <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
   <license>TODO</license>
 
   <build_depend>cmake_modules</build_depend>

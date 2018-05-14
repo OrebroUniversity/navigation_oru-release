@@ -2,6 +2,8 @@
 
 #include <orunav_generic/types.h>
 #include <orunav_geometry/polygon.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 namespace orunav_geometry {
 
@@ -210,6 +212,26 @@ namespace orunav_geometry {
     Polygon bound;
   };
 
+  class RobotModel2dHRP: public RobotModel2dInterface {
+  public:
+    RobotModel2dHRP() {
+//      bound.points.push_back(Eigen::Vector2d(0.65-0.165, 0.25));
+//      bound.points.push_back(Eigen::Vector2d(0.65-0.165, -0.25));
+//      bound.points.push_back(Eigen::Vector2d(-0.165, -0.25));
+//      bound.points.push_back(Eigen::Vector2d(-0.165, 0.25));
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165-0.1, 0.25-0.1));
+      bound.points.push_back(Eigen::Vector2d(0.65-0.165-0.1, -0.25+0.1));
+      bound.points.push_back(Eigen::Vector2d(-0.165+0.1, -0.25+0.1));
+      bound.points.push_back(Eigen::Vector2d(-0.165+0.1, 0.25-0.1));
+    }
+    virtual const Polygon& getBoundingRegion(const orunav_generic::RobotInternalState2d &s) const {
+      // Hardcoded values only - this really is only a square
+      return bound;
+    }
+  private:
+    Polygon bound;
+  };
+
   // TODO, the numbering orignates from the constraint extractor - could be made a bit more fancy :-).
   class RobotModelTypeFactory {
   public:
@@ -225,16 +247,46 @@ namespace orunav_geometry {
 	return &model4;
       case 5:
 	return &model5;
+      case 6:
+  return &model6;
       default:
 	return &model1;
       }
     }
+
+    boost::shared_ptr<RobotModel2dInterface> create (const std::string &type) {
+      if (type == "cititruck") {
+        return boost::make_shared<RobotModel2dCiTiTruck>();
+      }
+      else if ("cititruck_arm") {
+        return boost::make_shared<RobotModel2dCiTiTruckWithArm>();
+      }
+      else if (type == "snowwhite") {
+        return boost::make_shared<RobotModel2dSnowWhite>();
+      }
+      else if (type == "one_square_meter") {
+        return boost::make_shared<RobotModel2dOneSquareMeter>();
+      }
+      else if (type == "hx01" || type == "xa15") {
+        return boost::make_shared<RobotModel2dXa15>();
+      }
+      else if (type == "hrp") {
+        return boost::make_shared<RobotModel2dHRP>();
+      }
+      else {
+        assert(false);
+      }
+      return boost::make_shared<RobotModel2dCiTiTruck>();
+    }
+
+
   private:
     orunav_geometry::RobotModel2dSnowWhite model1;
     orunav_geometry::RobotModel2dCiTiTruck model2;
     orunav_geometry::RobotModel2dOneSquareMeter model3;
     orunav_geometry::RobotModel2dPitViper model4;
     orunav_geometry::RobotModel2dXa15 model5;
+    orunav_geometry::RobotModel2dHRP model6;
   };
 
   class RobotModel2dWithState : public orunav_generic::Point2dContainerInterface, public orunav_generic::Point2dCollisionCheckInterface {

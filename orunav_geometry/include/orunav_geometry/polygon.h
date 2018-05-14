@@ -23,6 +23,9 @@ namespace orunav_geometry {
 				std::vector<double> &A1,
 				std::vector<double> &b) const;
 
+    // Returns true if the provided polygon fully intersect with this polygon.
+    bool intersection(const orunav_geometry::Polygon &p) const;
+
     Eigen::Vector2d getCenter() const;
 
     void clear();

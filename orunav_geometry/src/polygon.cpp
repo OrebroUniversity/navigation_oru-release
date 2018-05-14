@@ -99,6 +99,14 @@ Polygon::getMatrixFormAsVectors(std::vector<double> &A0, std::vector<double> &A1
     b = std::vector<double>(dt,dt+b_.rows());
  }
 
+bool
+Polygon::intersection(const Polygon &p) const {
+  polygon poly = getBoostPolygon(this->points);
+  polygon poly2 = getBoostPolygon(p.points);
+
+  return boost::geometry::within(poly, poly2);
+}
+
 void Polygon::clear() {
   points.clear();
 }

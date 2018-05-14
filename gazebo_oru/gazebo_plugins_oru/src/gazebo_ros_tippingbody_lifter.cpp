@@ -64,7 +64,11 @@ void GazeboRosTippingbodyLifter::Load ( physics::ModelPtr _parent, sdf::ElementP
     // Initialize update rate stuff
     if ( this->update_rate_ > 0.0 ) this->update_period_ = 1.0 / this->update_rate_;
     else this->update_period_ = 0.0;
+#if GAZEBO_MAJOR_VERSION >= 8
+    last_actuator_update_ = parent->GetWorld()->SimTime();
+#else
     last_actuator_update_ = parent->GetWorld()->GetSimTime();
+#endif
 
     // Initialize velocity stuff
     alive_ = true;
@@ -119,7 +123,11 @@ void GazeboRosTippingbodyLifter::publishJointState()
     joint_state_.effort.resize ( joints.size() );
     for ( std::size_t i = 0; i < joints.size(); i++ ) {
         joint_state_.name[i] = joints[i]->GetName();
-        joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+	#if GAZEBO_MAJOR_VERSION >= 8
+	joint_state_.position[i] = joints[i]->Position ( 0 );
+#else
+	joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+#endif
         joint_state_.velocity[i] = joints[i]->GetVelocity ( 0 );
         joint_state_.effort[i] = joints[i]->GetForce ( 0 );
     }
@@ -136,10 +144,14 @@ void GazeboRosTippingbodyLifter::publishTF()
         std::string frame = gazebo_ros_->resolveTF ( joints[i]->GetName() );
         std::string parent_frame = gazebo_ros_->resolveTF ( joints[i]->GetParent()->GetName() );
 
-        math::Pose pose = joints[i]->GetChild()->GetRelativePose();
-
-        tf::Quaternion qt ( pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w );
-        tf::Vector3 vt ( pose.pos.x, pose.pos.y, pose.pos.z );
+#if GAZEBO_MAJOR_VERSION >= 8
+	ignition::math::Pose3d pose = joints[i]->GetChild()->RelativePose();
+#else
+        ignition::math::Pose3d pose = joints[i]->GetChild()->GetRelativePose().Ign();
+#endif
+   
+	tf::Quaternion qt ( pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W() );
+	tf::Vector3 vt ( pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z() );
 
         tf::Transform transform ( qt, vt );
         transform_broadcaster_->sendTransform ( tf::StampedTransform ( transform, current_time, parent_frame, frame ) );
@@ -150,7 +162,11 @@ void GazeboRosTippingbodyLifter::publishTF()
 void GazeboRosTippingbodyLifter::UpdateChild()
 {
     UpdateTippingbodyEncoder();
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
     double seconds_since_last_update = ( current_time - last_actuator_update_ ).Double();
     if ( seconds_since_last_update > update_period_ ) {
 
@@ -188,7 +204,12 @@ void GazeboRosTippingbodyLifter::UpdateChild()
 void GazeboRosTippingbodyLifter::motorController ( double target_tippingbody, double dt )
 {
   // Use the PID class...
-  double current_tippingbody = joint_tippingbody_->GetChild()->GetRelativePose().pos.z;
+#if GAZEBO_MAJOR_VERSION >= 8
+  ignition::math::Pose3d pose = joint_tippingbody_->GetChild()->RelativePose();
+#else
+  ignition::math::Pose3d pose = joint_tippingbody_->GetChild()->GetRelativePose().Ign();
+#endif
+  double current_tippingbody = pose.Pos().Z();
   double error = current_tippingbody - target_tippingbody;
   double control_value = this->joint_pid_.Update(error, dt);
 
@@ -229,11 +250,19 @@ void GazeboRosTippingbodyLifter::QueueThread()
 
 void GazeboRosTippingbodyLifter::UpdateTippingbodyEncoder()
 {
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
     double step_time = ( current_time - last_encoder_update_ ).Double();
     last_encoder_update_ = current_time;
 
+#if GAZEBO_MAJOR_VERSION >= 8
+    tippingbody_encoder_ = joint_tippingbody_->Position(0);
+#else
     tippingbody_encoder_ = joint_tippingbody_->GetAngle(0).Radian();
+#endif
 }
 
 

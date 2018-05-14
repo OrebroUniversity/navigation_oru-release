@@ -126,6 +126,9 @@ int main(int argc, char **argv)
   nh.param<bool>("reassign_constraints", reassign_constraints, false);
   nh.param<int>("reassign_iters", reassign_iters, 1);
   nh.param<double>("reassign_min_distance", reassign_min_distance_, -1.);
+  nh.param<bool>("use_incremental", smoother_params.use_incremental, false);
+  nh.param<int>("incr_max_nb_points", smoother_params.incr_max_nb_points, 20);
+  nh.param<int>("incr_nb_points_discard", smoother_params.incr_nb_points_discard, 5);
   if (visualize)
   {
       std::cout << "The output is visualized using visualization_markers (in rviz)." << std::endl;

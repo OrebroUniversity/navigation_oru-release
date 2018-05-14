@@ -102,7 +102,10 @@ namespace orunav_generic {
     virtual void setPose2d(const Pose2d& p) { this->pose = p; }
     virtual double getSteeringAngle() const { return steeringAngle; }
     virtual void setSteeringAngle(double s) { this->steeringAngle = s; }
-    
+    // l is the distance between the fixed axis and the steering wheel.
+    virtual double getCurvature(double l) { return (tan(this->steeringAngle)/l); }
+    virtual void setCurvature(double curvature, double l) { this->steeringAngle = atan(curvature*l); }
+
     void addControlStep(const ControlInterface &control, double len, double dt)
     {
       pose(0) += cos(pose(2)) * control.getFwdVel() * dt;

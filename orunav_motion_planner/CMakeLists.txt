@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   orunav_conversions
   orunav_geometry
 )
+find_package(OpenCV REQUIRED)
 
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
@@ -34,8 +35,8 @@ find_package(Boost REQUIRED COMPONENTS system program_options thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES orunav_motion_planner
-  CATKIN_DEPENDS roscpp std_msgs cv_bridge orunav_rviz orunav_conversions
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs cv_bridge orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry
+  DEPENDS Boost
 )
 
 ###########
@@ -78,13 +79,13 @@ add_executable(get_path_service src/get_path_service.cpp
 add_dependencies(get_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(get_path_service
 #  orunav_motion_planner 
-${catkin_LIBRARIES}
+${catkin_LIBRARIES} ${OpenCV_LIBS}
 )
 
 add_executable(get_path_client src/get_path_client.cpp)
 add_dependencies(get_path_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(get_path_client
-  ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+  ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS}
 )
 
 #############

@@ -1,6 +1,8 @@
 <launch>
 
-  <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch"/>
+  <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch">
+    <arg name="gui" value="false"/>
+  </include>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck.xacro'" />
 
@@ -14,8 +16,9 @@
     </include>
   </group>
   <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
-  <node pkg="tf" type="static_transform_publisher" name="robot1_kinect_link_broadcaster" args="0 0 0 0 1.57 0 robot1/kinect_link robot1/kinect_link_tmp 100" />
-  <node pkg="tf" type="static_transform_publisher" name="robot1_kinect_link_tmp_broadcaster" args="0 0 0 -1.57 0 0 robot1/kinect_link_tmp robot1/robot1/kinect_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="robot1_kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" />
+  <!--node pkg="tf" type="static_transform_publisher" name="robot1_kinect_link_broadcaster" args="0 0 0 0 1.57 0 robot1/kinect_link robot1/kinect_link_tmp 100" />
+  <node pkg="tf" type="static_transform_publisher" name="robot1_kinect_link_tmp_broadcaster" args="0 0 0 -1.57 0 0 robot1/kinect_link_tmp robot1/robot1/kinect_link 100" /-->
 
 
     <!-- pallet 1 -->

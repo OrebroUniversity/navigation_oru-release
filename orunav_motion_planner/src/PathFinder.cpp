@@ -89,7 +89,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 	// check if all VehicleModels have the same world granularity
 	for (std::vector<VehicleMission*>::iterator it =  missions_.begin(); it != missions_.end(); it ++) {
 		if (fabs((*it)->getVehicleModel()->getModelGranularity() - WP::WORLD_SPACE_GRANULARITY) > WP::CALCULATION_APPROXIMATION_ERROR) {
-			writeLogLine(std::string("FATAL ERROR: mismatching model resolutions"), "PathFinder", WP::LOG_FILE);
+      writeLogLine(std::string("FATAL ERROR: mismatching model resolutions (check also that the primitive file was loaded)"), "PathFinder", WP::LOG_FILE);
 			return result;
 		}
 	}

@@ -14,6 +14,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 
 #include <boost/serialization/vector.hpp>
+#include <boost/filesystem.hpp>
 
 constraint_extract::PolygonConstraintsLookup *lookup;
 bool visualize;
@@ -263,6 +264,11 @@ int main(int argc, char **argv)
   };
     
   lookup = new constraint_extract::PolygonConstraintsLookup(*model, s.loadType, lookup_params);
+
+  if ( !boost::filesystem::exists( lookuptables_file ) )
+  {
+    save_lookup = true;
+  }
 
   if (!lookuptables_file.empty() && !save_lookup) {
       ROS_INFO_STREAM("[PolygonConstraintService]: loading lookup tables : " << lookuptables_file);

@@ -49,6 +49,7 @@ private:
   int cts_hole_width_;
   bool multiple_vehicles_;
   bool use_ct_;
+  std::string execute_task_name_;
   
  public:
   CoordinatorFakeNode(ros::NodeHandle &paramHandle) : task_id_inc_(0)
@@ -61,6 +62,8 @@ private:
       paramHandle.param<int>("cts_hole_width", cts_hole_width_, 0);
       paramHandle.param<bool>("multiple_vehicles", multiple_vehicles_, false);
       paramHandle.param<bool>("use_ct", use_ct_, true);
+      paramHandle.param<std::string>("execute_task_name", execute_task_name_, std::string("/execute_task"));
+
       
       // Services
       service_set_ = nh_.advertiseService("set_task", &CoordinatorFakeNode::setTaskCB, this);
@@ -222,24 +225,26 @@ private:
 
       {
         ros::ServiceClient client;
+        std::string service_name;
         if (multiple_vehicles_) {
-          client = nh_.serviceClient<orunav_msgs::SetTask>(orunav_generic::getRobotTopicName(task_.target.robot_id, "/execute_task"));
+          service_name = orunav_generic::getRobotTopicName(task_.target.robot_id, this->execute_task_name_);
         }
         else {
-          client = nh_.serviceClient<orunav_msgs::SetTask>("execute_task");
+          service_name = this->execute_task_name_;
         }
+        client = nh_.serviceClient<orunav_msgs::SetTask>(service_name);
         
         orunav_msgs::SetTask srv;
         srv.request.task = task_;
         
         if (client.call(srv)) {
-          ROS_INFO("[CoordinatorFakeNode] - execute_task call sucessfull");
+          ROS_INFO_STREAM("[CoordinatorFakeNode] - " << service_name << " call sucessfull");
       }
         else
         {
-          ROS_ERROR("[CoordinatorFakeNode] - Failed to call service: execute_task");
+          ROS_ERROR_STREAM("[CoordinatorFakeNode] - Failed to call service: " << service_name);
         }
-        ROS_INFO_STREAM("[CoordinatorFakeNode] - execute_task return value : " << srv.response.result);
+        ROS_INFO_STREAM("[CoordinatorFakeNode] - " << service_name << " return value : " << srv.response.result);
       }	    
       
     } // while

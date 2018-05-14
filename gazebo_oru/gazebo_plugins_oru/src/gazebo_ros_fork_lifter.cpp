@@ -67,8 +67,12 @@ void GazeboRosForkLifter::Load ( physics::ModelPtr _parent, sdf::ElementPtr _sdf
     // Initialize update rate stuff
     if ( this->update_rate_ > 0.0 ) this->update_period_ = 1.0 / this->update_rate_;
     else this->update_period_ = 0.0;
+#if GAZEBO_MAJOR_VERSION >= 8
+    last_actuator_update_ = parent->GetWorld()->SimTime();
+#else
     last_actuator_update_ = parent->GetWorld()->GetSimTime();
-
+#endif
+    
     // Initialize velocity stuff
     alive_ = true;
 
@@ -122,7 +126,11 @@ void GazeboRosForkLifter::publishJointState()
     joint_state_.effort.resize ( joints.size() );
     for ( std::size_t i = 0; i < joints.size(); i++ ) {
         joint_state_.name[i] = joints[i]->GetName();
-        joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+#if GAZEBO_MAJOR_VERSION >= 8
+	joint_state_.position[i] = joints[i]->Position ( 0 );
+#else
+	joint_state_.position[i] = joints[i]->GetAngle ( 0 ).Radian();
+#endif
         joint_state_.velocity[i] = joints[i]->GetVelocity ( 0 );
         joint_state_.effort[i] = joints[i]->GetForce ( 0 );
     }
@@ -139,10 +147,14 @@ void GazeboRosForkLifter::publishTF()
         std::string frame = gazebo_ros_->resolveTF ( joints[i]->GetName() );
         std::string parent_frame = gazebo_ros_->resolveTF ( joints[i]->GetParent()->GetName() );
 
-        math::Pose pose = joints[i]->GetChild()->GetRelativePose();
-
-        tf::Quaternion qt ( pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w );
-        tf::Vector3 vt ( pose.pos.x, pose.pos.y, pose.pos.z );
+#if GAZEBO_MAJOR_VERSION >= 8
+	ignition::math::Pose3d pose = joints[i]->GetChild()->RelativePose();
+#else
+        ignition::math::Pose3d pose = joints[i]->GetChild()->GetRelativePose().Ign();
+#endif
+   
+	tf::Quaternion qt ( pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W() );
+	tf::Vector3 vt ( pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z() );
 
         tf::Transform transform ( qt, vt );
         transform_broadcaster_->sendTransform ( tf::StampedTransform ( transform, current_time, parent_frame, frame ) );
@@ -153,7 +165,12 @@ void GazeboRosForkLifter::publishTF()
 void GazeboRosForkLifter::UpdateChild()
 {
     UpdateForkEncoder();
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
+    
     double seconds_since_last_update = ( current_time - last_actuator_update_ ).Double();
     if ( seconds_since_last_update > update_period_ ) {
 
@@ -191,7 +208,14 @@ void GazeboRosForkLifter::UpdateChild()
 void GazeboRosForkLifter::motorController ( double target_fork_height, double dt )
 {
   // Use the PID class...
-  double current_fork_height = joint_fork_->GetChild()->GetRelativePose().pos.z;
+#if GAZEBO_MAJOR_VERSION >= 8
+  ignition::math::Pose3d pose = joint_fork_->GetChild()->RelativePose();
+#else
+  ignition::math::Pose3d pose = joint_fork_->GetChild()->GetRelativePose().Ign();
+#endif
+  double current_fork_height = pose.Pos().Z();
+
+  
   double error = current_fork_height - target_fork_height;
   double control_value = this->joint_pid_.Update(error, dt);
 #if GAZEBO_MAJOR_VERSION > 2
@@ -235,79 +259,21 @@ void GazeboRosForkLifter::QueueThread()
 
 void GazeboRosForkLifter::UpdateForkEncoder()
 {
+#if GAZEBO_MAJOR_VERSION >= 8
+    common::Time current_time = parent->GetWorld()->SimTime();
+#else
     common::Time current_time = parent->GetWorld()->GetSimTime();
+#endif
     double step_time = ( current_time - last_encoder_update_ ).Double();
     last_encoder_update_ = current_time;
-
-    fork_height_encoder_ = joint_fork_->GetChild()->GetRelativePose().pos.z;
-}
-
-#if 0
-void GazeboRosForkLifter::publishOdometry ( double step_time )
-{
-
-    ros::Time current_time = ros::Time::now();
-    std::string odom_frame = gazebo_ros_->resolveTF ( odometry_frame_ );
-    std::string base_footprint_frame = gazebo_ros_->resolveTF ( robot_base_frame_ );
-
-    tf::Quaternion qt;
-    tf::Vector3 vt;
-
-    if ( odom_source_ == ENCODER ) {
-        // getting data form encoder integration
-        qt = tf::Quaternion ( odom_.pose.pose.orientation.x, odom_.pose.pose.orientation.y, odom_.pose.pose.orientation.z, odom_.pose.pose.orientation.w );
-        vt = tf::Vector3 ( odom_.pose.pose.position.x, odom_.pose.pose.position.y, odom_.pose.pose.position.z );
-
-    }
-    if ( odom_source_ == WORLD ) {
-        // getting data form gazebo world
-        math::Pose pose = parent->GetWorldPose();
-        qt = tf::Quaternion ( pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w );
-        vt = tf::Vector3 ( pose.pos.x, pose.pos.y, pose.pos.z );
-
-        odom_.pose.pose.position.x = vt.x();
-        odom_.pose.pose.position.y = vt.y();
-        odom_.pose.pose.position.z = vt.z();
-
-        odom_.pose.pose.orientation.x = qt.x();
-        odom_.pose.pose.orientation.y = qt.y();
-        odom_.pose.pose.orientation.z = qt.z();
-        odom_.pose.pose.orientation.w = qt.w();
-
-        // get velocity in /odom frame
-        math::Vector3 linear;
-        linear = parent->GetWorldLinearVel();
-        odom_.twist.twist.angular.z = parent->GetWorldAngularVel().z;
-
-        // convert velocity to child_frame_id (aka base_footprint)
-        float yaw = pose.rot.GetYaw();
-        odom_.twist.twist.linear.x = cosf ( yaw ) * linear.x + sinf ( yaw ) * linear.y;
-        odom_.twist.twist.linear.y = cosf ( yaw ) * linear.y - sinf ( yaw ) * linear.x;
-    }
-
-    tf::Transform base_footprint_to_odom ( qt, vt );
-    transform_broadcaster_->sendTransform (
-        tf::StampedTransform ( base_footprint_to_odom, current_time,
-                               odom_frame, base_footprint_frame ) );
-
-
-    // set covariance - TODO, fix this(!)
-    odom_.pose.covariance[0] = 0.00001;
-    odom_.pose.covariance[7] = 0.00001;
-    odom_.pose.covariance[14] = 1000000000000.0;
-    odom_.pose.covariance[21] = 1000000000000.0;
-    odom_.pose.covariance[28] = 1000000000000.0;
-    odom_.pose.covariance[35] = 0.001;
-
-
-    // set header
-    odom_.header.stamp = current_time;
-    odom_.header.frame_id = odom_frame;
-    odom_.child_frame_id = base_footprint_frame;
-
-    odometry_publisher_.publish ( odom_ );
-}
+#if GAZEBO_MAJOR_VERSION >= 8
+  ignition::math::Pose3d pose = joint_fork_->GetChild()->RelativePose();
+#else
+  ignition::math::Pose3d pose = joint_fork_->GetChild()->GetRelativePose().Ign();
 #endif
+  fork_height_encoder_ = pose.Pos().Z();
+}
+
 
 GZ_REGISTER_MODEL_PLUGIN ( GazeboRosForkLifter )
 }

@@ -16,9 +16,8 @@ endif()
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_generic
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS Eigen3 Boost
+  CATKIN_DEPENDS angles
+  DEPENDS Boost
 )
 
 ###########

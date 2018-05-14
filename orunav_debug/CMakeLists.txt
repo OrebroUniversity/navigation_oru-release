@@ -27,10 +27,9 @@ endif()
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES orunav_debug
-  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry orunav_node_utils tf orunav_rviz orunav_conversions orunav_geometry
+  DEPENDS Boost
 )
 
 ###########

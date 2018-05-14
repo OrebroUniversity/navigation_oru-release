@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <robot name="cititruck" xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <xacro:arg default="robot_xacro_default" name="tf_prefix"/>
-
+    <xacro:arg name="tf_prefix" default="robot_xacro_default"/>
+    <xacro:arg name="velodyne" default="false"/>
+    <xacro:arg name="kinect2" default="false"/>
+    <xacro:arg name="kinect1" default="false"/> <!-- deprecated -->
+    
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>
 
@@ -369,39 +372,49 @@
 
 
     <!-- Velodyne VLP16 -->
-    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-    <VLP-16 parent="base_link" prefix="$(arg tf_prefix)" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
-        <origin xyz="0.8 0 0.95" rpy="0 0 0" />
-    </VLP-16>
+    <xacro:if value="$(arg velodyne)">
+      <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+      <VLP-16 parent="base_link" prefix="$(arg tf_prefix)" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
+          <origin xyz="0.8 0 0.95" rpy="0 0 0" />
+      </VLP-16>
+    </xacro:if>
 
 
-    <!-- Old Kinect -->
-    <link name="kinect_link">
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.1 0.1 0.1"/>
-            </geometry>
-        </collision>
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.001 0.001 0.001"/>
-            </geometry>
-        </visual>
-        <inertial>
-            <mass value="1e-5"/>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
-        </inertial>
-    </link>
+    <!-- Kinect v2 -->
+    <xacro:if value="$(arg kinect2)">
+      <xacro:include filename="$(find kinect2_description)/urdf/kinect2/kinect2.xacro"/>
+      <kinect2_sensor parent="base_link" prefix="$(arg tf_prefix)" name="kinect2" cam_px="0.65" cam_py="0" cam_pz="1.15" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
+    </xacro:if>
 
-    <joint name="kinect_joint" type="fixed">
-        <axis xyz="0 1 0"/>
-        <origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
-        <!--        <origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/>-->
-        <parent link="base_link"/>
-        <child link="kinect_link"/>
-    </joint>
+    <!-- Old Kinect (deprecated, only used for pallet detection?) -->
+    <xacro:if value="$(arg kinect1)">
+      <link name="kinect_link">
+          <collision>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <box size="0.1 0.1 0.1"/>
+              </geometry>
+          </collision>
+          <visual>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <box size="0.001 0.001 0.001"/>
+              </geometry>
+          </visual>
+          <inertial>
+              <mass value="1e-5"/>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+          </inertial>
+      </link>
+
+      <joint name="kinect_joint" type="fixed">
+          <axis xyz="0 1 0"/>
+          <origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
+          <!--        <origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/>-->
+          <parent link="base_link"/>
+          <child link="kinect_link"/>
+      </joint>
+    </xacro:if>
 
 </robot>

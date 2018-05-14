@@ -32,17 +32,15 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O3")
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_path_pool
-  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry roscpp
-#  DEPENDS system_lib
+  LIBRARIES graph_astar
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs visualization_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry
+  DEPENDS Boost TinyXML
 )
 
 ###########
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}

@@ -341,12 +341,21 @@
 
       <joint name="kinect_joint" type="fixed">
 	<axis xyz="0 1 0" />
+ 	<!--origin xyz="0.5 0 0.7" rpy="${pi/2 + 0.5} 0 ${-pi/2}" /--> <!-- 0 2.5 0 -->
  	<origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
 <!--  	<origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/> -->
 	<parent link="base_link"/>
 	<child link="kinect_link"/>
       </joint>
       
+      <link name="kinect_rgb_optical_link"/>
+      <joint name="kinect_optical_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0.0 0.0 0.0" rpy="${-pi/2} 0 ${-pi/2}"/> 
+        <parent link="kinect_link"/>
+        <child link="kinect_rgb_optical_link"/>
+      </joint>
+
   
 
 </robot>

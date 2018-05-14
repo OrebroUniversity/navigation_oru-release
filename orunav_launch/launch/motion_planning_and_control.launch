@@ -2,6 +2,7 @@
 <launch>	
   <arg name="robotid" default="1"/>
   <arg name="prefix" default="robot1"/>
+  <arg name="use_safetyregions" default="false"/>
   <group ns="$(arg prefix)">
     <param name="tf_prefix" value="$(arg prefix)" />
     
@@ -43,6 +44,9 @@
       <param name="reassign_constraints" value="true" />
       <param name="reassign_iters" value="1" />
       <param name="reassign_min_distance" value="0.1" />
+      <param name="use_incremental" value="true" />
+      <param name="incr_max_nb_points" value="30" />
+      <param name="incr_nb_points_discard" value="10" />
     </node>  
 
     <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node" output="screen">
@@ -59,7 +63,14 @@
       <param name="max_steering_range_smoothed_path" value="1.5" />
       <param name="min_docking_distance" value="0.1" />
       <param name="use_ct" value="false"/>
-      </node>
+
+      <param name="use_update_task_service" value="false"/>
+
+      <param name="use_safetyregions" value="$(arg use_safetyregions)"/>
+      <param name="safety_laser_topic" value="/nav_laser"/>
+      <param name="slowdown_drivingslow_lookahead_time" value="20"/>
+      <param name="max_slowdown_vel" value="0.1"/>
+     </node>
     
   </group>
 </launch>

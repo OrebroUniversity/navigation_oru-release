@@ -30,9 +30,8 @@ find_package(Boost REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES orunav_trajectory_processor
-  CATKIN_DEPENDS orunav_rviz orunav_conversions orunav_geometry
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry tf
+  DEPENDS Boost
 )
 
 ###########

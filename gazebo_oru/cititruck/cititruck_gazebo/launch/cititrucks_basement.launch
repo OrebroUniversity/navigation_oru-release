@@ -7,9 +7,9 @@
   <group ns="robot1">
     <param name="tf_prefix" value="robot1" />
     <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
-      <arg name="robot_pose_x" value="3.717"/> 
-      <arg name="robot_pose_y" value="13.054"/>
-      <arg name="robot_pose_yaw" default="0.0116937"/>
+      <arg name="robot_pose_x" value="4.0"/> 
+      <arg name="robot_pose_y" value="13.0"/>
+      <arg name="robot_pose_yaw" default="0.0"/>
       <arg name="robot_name" value="robot1" />
     </include>
   </group>
@@ -17,9 +17,9 @@
   <group ns="robot2">
     <param name="tf_prefix" value="robot2" />
     <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
-      <arg name="robot_pose_x" value="16.167"/> 
-      <arg name="robot_pose_y" value="2.028"/>
-      <arg name="robot_pose_yaw" default="3.06567"/>
+      <arg name="robot_pose_x" value="4.0"/> 
+      <arg name="robot_pose_y" value="15.0"/>
+      <arg name="robot_pose_yaw" default="0."/>
       <arg name="robot_name" value="robot2" />
     </include>
   </group>

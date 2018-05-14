@@ -2,6 +2,13 @@
 Changelog for package orunav_motion_planner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-01-18)
+------------------
+* added opencv in cmakelists
+* Add slightly more helpful error message.
+* Updated DEPENDS and CATKIN_DEPENDS.
+* Contributors: Henrik Andreasson, daniel
+
 0.2.1 (2017-09-19)
 ------------------
 * merge
