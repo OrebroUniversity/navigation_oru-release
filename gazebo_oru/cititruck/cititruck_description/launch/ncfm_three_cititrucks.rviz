@@ -51,6 +51,431 @@ Visualization Manager:
       Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot1/deps
+      Name: MarkerArray
+      Namespaces:
+        _1-2: true
+        _1-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot1/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot2/deps
+      Name: MarkerArray
+      Namespaces:
+        _2-1: true
+        _2-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot2/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot3/deps
+      Name: MarkerArray
+      Namespaces:
+        _3-4: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot3/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot4/deps
+      Name: MarkerArray
+      Namespaces:
+        _4-21: true
+        _4-3: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot4/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot5/deps
+      Name: MarkerArray
+      Namespaces:
+        _5-22: true
+        _5-6: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot5/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot6/deps
+      Name: MarkerArray
+      Namespaces:
+        _6-22: true
+        _6-5: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot6/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot7/deps
+      Name: MarkerArray
+      Namespaces:
+        _7-21: true
+        _7-8: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot7/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot8/deps
+      Name: MarkerArray
+      Namespaces:
+        _8-21: true
+        _8-7: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot8/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot9/deps
+      Name: MarkerArray
+      Namespaces:
+        _9-10: true
+        _9-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot9/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot10/deps
+      Name: MarkerArray
+      Namespaces:
+        _10-22: true
+        _10-9: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot10/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot11/deps
+      Name: MarkerArray
+      Namespaces:
+        _11-12: true
+        _11-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot11/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot12/deps
+      Name: MarkerArray
+      Namespaces:
+        _12-11: true
+        _12-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot12/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot13/deps
+      Name: MarkerArray
+      Namespaces:
+        _13-14: true
+        _13-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot13/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot14/deps
+      Name: MarkerArray
+      Namespaces:
+        _14-13: true
+        _14-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot14/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot15/deps
+      Name: MarkerArray
+      Namespaces:
+        _15-16: true
+        _15-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot15/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot16/deps
+      Name: MarkerArray
+      Namespaces:
+        _16-15: true
+        _16-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot16/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot17/deps
+      Name: MarkerArray
+      Namespaces:
+        _17-18: true
+        _17-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot17/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot18/deps
+      Name: MarkerArray
+      Namespaces:
+        _18-17: true
+        _18-22: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot18/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot19/deps
+      Name: MarkerArray
+      Namespaces:
+        _19-20: true
+        _19-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot19/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot20/deps
+      Name: MarkerArray
+      Namespaces:
+        _20-19: true
+        _20-21: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot20/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot21/deps
+      Name: MarkerArray
+      Namespaces:
+        _21-11: true
+        _21-12: true
+        _21-16: true
+        _21-3: true
+        _21-4: true
+        _21-7: true
+        _21-8: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot21/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot22/deps
+      Name: MarkerArray
+      Namespaces:
+        _22-10: true
+        _22-14: true
+        _22-2: true
+        _22-6: true
+        _22-9: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /robot22/status
+      Name: MarkerArray
+      Namespaces:
+        current_envelope: true
+        current_pose: true
+        robot_state: true
+      Queue Size: 100
+      Value: true
     - Alpha: 0.0700000003
       Class: rviz/Map
       Color Scheme: map
