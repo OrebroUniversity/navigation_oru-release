@@ -31,9 +31,9 @@
   <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
 
 
-  <rosparam file="$(find iliad_smp)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
-  <rosparam file="$(find iliad_smp)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
-  <node pkg="iliad_smp" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
+  <node pkg="iliad_smp_global_planner" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
     <param name="min_incr_path_dist" value="0.2" />
     <param name="visualize" value="true" />
   </node>
