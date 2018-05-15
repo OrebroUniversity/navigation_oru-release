@@ -1,0 +1,485 @@
+<?xml version="1.0"?>
+
+<robot name="BTruck" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find cititruck_description)/urdf/BTruck.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro" />
+
+  <xacro:property name="forks_pidP" value="2000" />
+  <xacro:property name="forks_pidI" value="0" />
+  <xacro:property name="forks_pidD" value="10" />
+  
+  <xacro:property name="forks_low" value="0.08" />    
+  <xacro:property name="forks_high" value="1" />
+  
+  <xacro:property name="forks_maxeffort" value="1000" />
+
+
+ <!--BTruck dimension paraemters -->
+
+	<xacro:property name="x" value="0.786" />
+	<xacro:property name="y" value="1.604" />
+	<xacro:property name="m1" value="0.055" />
+	<xacro:property name="b1" value="0.79" />
+	<xacro:property name="l2" value="1.186" />
+	<xacro:property name="h3" value="1.712" />
+	<xacro:property name="b11" value="0.38" />
+	<xacro:property name="h13" value="0.091" />
+	<xacro:property name="e" value="0.18" />
+	<xacro:property name="l" value="1.2" />
+	<xacro:property name="x_pilar" value="0.24" />
+	<xacro:property name="y_pilar" value="0.05" /> <!-- to check -->
+	<xacro:property name="z_pilar" value="2.25" />
+	<xacro:property name="y_sensor_platform" value="0.65" />
+	<xacro:property name="b5" value="0.55" />
+	<xacro:property name="x_sensor_bar" value="${x_pilar + 0.05}" />
+	<xacro:property name="y_sensor_bar" value="${y_sensor_platform - 2*y_pilar}" />
+	<xacro:property name="z_sensor_bar" value="0.04" />
+	<xacro:property name="rear_wheel_diameter" value="0.085" />	
+	<xacro:property name="rear_wheel_length" value="0.075" />
+	<xacro:property name="front_wheel_length" value="0.05" />
+	<xacro:property name="front_wheel_diameter" value="0.150" />
+	<xacro:property name="x_sick" value="0.1" />
+	<xacro:property name="y_sick" value="0.1" />
+	<xacro:property name="z_sick" value="0.1" />
+	<xacro:property name="M_PI" value="3.1415927" />
+
+
+
+
+  <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack dedpends on this frame and KDL needs a root link without any intertia -->
+    <link name="base_footprint">
+    </link>
+
+    <joint name="base_footprint_joint" type="fixed">
+      <origin xyz="0 0 ${m1}" rpy="0 0 0" />
+      <child link="base_link" />
+      <parent link="base_footprint"/>
+    </joint>
+
+  <!-- Base Link -->
+  <link name="base_link">
+    <inertial>
+      <mass value="20"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+      <origin/>
+    </inertial>
+    <visual>
+      <origin xyz="${(y - x - x_pilar)/2.0 + x + x_pilar} 0 0.48" rpy="0 0 0" />
+      <geometry>
+        <box size="${y - x - x_pilar} ${b1} 0.96" />
+      </geometry>
+      <material name="red"/>
+    </visual>
+    
+    <collision>
+      <origin xyz="${(y - x - x_pilar)/2.0 + x + x_pilar} 0 0.1" rpy="0 0 0" />
+      <geometry>
+        <box size="${y - x - x_pilar} ${b1} 0.005" />
+      </geometry>
+    </collision>
+  </link>
+  
+    <link name="left_fork">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${l} ${e} ${h13}" />
+        </geometry>   
+        <material name="grey" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${l} ${e} ${h13}" />
+        </geometry>
+	<contact_coefficients mu="1" kp="10.0" kd="10.0"/>
+      </collision>
+    </link>
+
+    <link name="right_fork">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${l} ${e} ${h13}" />
+        </geometry>   
+        <material name="grey" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${l} ${e} ${h13}" />
+        </geometry>
+	<contact_coefficients mu="1" kp="10.0" kd="10.0"/>
+      </collision>
+    </link>
+
+    <link name="base_fork">
+      <inertial>
+        <mass value="0.1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.01 0.01 0.01" />
+        </geometry>
+        <material name="grey" />
+      </visual>
+    </link>
+
+    <!-- static joint connect the single prismatic joint with the forks... -->
+    <joint name="left_fork_joint" type="fixed">
+      <origin xyz="0 ${b5/2.0-e/2.0} 0.0" rpy="0 0 0" />
+      <child link="left_fork" />
+      <parent link="base_fork"/>
+    </joint>
+
+    <joint name="right_fork_joint" type="fixed">
+      <origin xyz="0 ${-(b5/2.0-e/2.0)} 0.0" rpy="0 0 0" />
+      <child link="right_fork" />
+      <parent link="base_fork"/>
+    </joint>
+
+<!-- lift speed with load 0.07 (m/s) not applied  -->
+    <joint name="fork_joint" type="prismatic">
+      <origin xyz="${x - l/2.0} 0.0 0.0" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="base_fork"/>
+      <axis xyz="0 0 1" />
+      <limit lower="0" upper="${h3}" effort="1000" velocity="100" /> 
+    </joint>
+
+<!-- Sensor Platform -->
+
+    <link name="base_pilar">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.01 0.01 0.01" />
+        </geometry>
+        
+        <material name="black" />
+      </visual>
+    </link>
+
+   <link name="right_pilar">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
+        </geometry>
+        
+        <material name="black" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="left_pilar">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
+        </geometry>
+        
+        <material name="black" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="sensor_bar">
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_sensor_bar} ${y_sensor_bar} ${z_sensor_bar}" />
+        </geometry>
+        
+        <material name="black" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="${x_sensor_bar} ${y_sensor_bar} ${z_sensor_bar}" />
+        </geometry>
+      </collision>
+    </link>
+
+   <joint name="base_pilar_joint" type="fixed">
+      <origin xyz="${x + x_pilar/2.0} 0 0" rpy="0 0 0.0" />
+      <child link="base_pilar" />
+      <parent link="base_link"/>
+    </joint>
+	
+
+   <joint name="left_pilar_joint" type="fixed">
+      <origin xyz="0.0 ${y_sensor_platform/2.0 - y_pilar/2.0} ${z_pilar/2.0}" rpy="0 0 0" />
+      <child link="left_pilar" />
+      <parent link="base_pilar"/>
+    </joint>
+
+   <joint name="right_pilar_joint" type="fixed">
+      <origin xyz="0 ${-(y_sensor_platform/2.0 - y_pilar/2.0)} ${z_pilar/2.0}" rpy="0 0 0" />
+      <child link="right_pilar" />
+      <parent link="base_pilar"/>
+    </joint>
+    
+    <joint name="sensor_bar_joint" type="fixed">
+      <origin xyz="0 0 ${b1 + 0.6 + z_sensor_bar/2.0} " rpy="0 0 0" />
+      <child link="sensor_bar" />
+      <parent link="base_pilar"/>
+    </joint>
+	
+<!-- Rear Steering Wheel -->
+
+    <link name="steer_link">
+        <inertial>
+          <mass value="0.01"/>
+          <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+          <origin/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.03 0.03 0.03" />
+          </geometry>
+          <material name="orange"/>
+        </visual>
+      </link>
+      
+      <link name="sd_wheel_link">
+        <inertial>
+          <mass value="10"/>
+          <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          <origin/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${rear_wheel_diameter/2}" length="${rear_wheel_length}" />
+          </geometry>
+          <material name="black"/>
+        </visual>
+        
+        <collision>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${rear_wheel_diameter/2}" length="${rear_wheel_length}" />
+          </geometry>
+        </collision>
+      </link>
+
+      <joint name="base2steer_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="steer_link"/>
+        <limit effort="10000.0" lower="-1.57" upper="1.57" velocity="100"/>
+        <origin xyz="${y} 0 ${rear_wheel_diameter/2 - m1}" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+      </joint>
+
+      <joint name="steer2sd_wheel_joint" type="continuous">
+        <parent link="steer_link"/>
+        <child link="sd_wheel_link"/>
+        <limit effort="10000.0" velocity="100"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+      </joint>
+
+<!-- Front Wheels -->
+
+      <link name="fixed_left_wheel_link">
+        <inertial>
+          <mass value="0.1"/>
+          <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          <origin/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${front_wheel_diameter/2.0}" length="${front_wheel_length}" />
+          </geometry>
+          <material name="gray"/>
+        </visual>
+        
+        <collision>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${front_wheel_diameter/2.0}" length="${front_wheel_length}" />
+          </geometry>
+         <!-- <contact_coefficients mu="100" kp="10.0" kd="0.1"/> -->
+        </collision>
+      </link>
+      
+      <joint name="base2fixed_left_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="fixed_left_wheel_link"/>
+        <origin xyz="0 ${b5/2 - e/2} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+      </joint>
+      
+      <link name="fixed_right_wheel_link">
+        <inertial>
+          <mass value="0.1"/>
+          <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          <origin/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${front_wheel_diameter/2.0}" length="${front_wheel_length}" />
+          </geometry>
+          <material name="gray"/>
+        </visual>
+        
+        <collision>
+          <origin xyz="0 0 0" rpy="1.57 0 0" />
+          <geometry>
+            <cylinder radius="${front_wheel_diameter/2.0}" length="${front_wheel_length}" />
+          </geometry>
+         <!-- <contact_coefficients mu="100" kp="10.0" kd="0.1"/> -->
+        </collision>
+      </link>
+
+      <joint name="base2fixed_right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="fixed_right_wheel_link"/>
+        <origin xyz="0 ${-(b5/2 - e/2)} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+      </joint>
+
+
+<!-- Sick laser -->
+      <link name="laser_link">
+	<collision>
+	  <origin xyz="0 0 0" rpy="0 0 0"/>
+	  <geometry>
+	    <box size="${x_sick} ${y_sick} ${z_sick}"/>
+	  </geometry>
+	</collision>
+	
+	<visual>
+	  <origin xyz="0 0 0" rpy="0 0 0"/>
+	  <geometry>
+            <mesh filename="package://cititruck_description/meshes/sick_s300_laser.dae"/>
+	  </geometry>
+	</visual>
+	
+	<inertial>
+	  <mass value="1e-5" />
+	  <origin xyz="0 0 0" rpy="0 0 0"/>
+	  <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+	</inertial>
+      </link>
+
+      <joint name="laser_joint" type="fixed">
+	<axis xyz="0 1 0" />
+	<origin xyz="${l2 + x -y_sick/2.0} 0 ${z_sick/2.0}" rpy="3.14159 0 0"/>
+	<parent link="base_link"/>
+	<child link="laser_link"/>
+      </joint> 
+
+<!-- Kinect V2 -->
+
+  <joint name="kinect_joint" type="fixed">
+        <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 0" /> <!-- check sensor height z -->
+        <parent link="base_pilar"/>
+        <child link="kinect_link"/>
+      </joint>
+
+      <link name="kinect_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+          <geometry>
+            <mesh filename="package://cititruck_description/meshes/kinect_v2.dae"/>
+          </geometry>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+          	<box size="0.1 0.1 0.1"/> <!-- check this later --> 
+          </geometry>
+        </collision>
+      </link>
+
+      <joint name="kinect_depth_joint" type="fixed">
+        <origin xyz="0.0 -0.02 0.0" rpy="0 0 0" />
+        <parent link="kinect_link" />
+        <child link="kinect_depth_frame"/>
+      </joint>
+
+      <link name="kinect_depth_frame"/>
+
+      <joint name="kinect_depth_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
+        <parent link="kinect_depth_frame" />
+        <child link="kinect_depth_optical_frame"/>
+      </joint>
+
+      <link name="kinect_depth_optical_frame"/>
+
+      <joint name="kinect_rgb_joint" type="fixed">
+        <origin xyz="0.0 -0.0125 0.0" rpy="0 0 0" />
+        <parent link="kinect_link" />
+        <child link="kinect_rgb_frame"/>
+      </joint>
+
+      <link name="kinect_rgb_frame"/>
+
+      <joint name="kinect_rgb_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2.0} 0.0 ${-M_PI/2.0}" />
+        <parent link="kinect_rgb_frame" />
+        <child link="kinect_rgb_optical_frame"/>
+      </joint>
+
+<link name="kinect_rgb_optical_frame"/>
+
+</robot>
