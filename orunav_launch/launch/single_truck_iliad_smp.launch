@@ -31,9 +31,9 @@
   <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
 
 
-  <rosparam file="$(find iliad_smp)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
-  <rosparam file="$(find iliad_smp)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
-  <node pkg="iliad_smp" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_costmap.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
+  <node pkg="iliad_smp_global_planner" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
     <param name="min_incr_path_dist" value="0.2" />
     <param name="visualize" value="true" />
   </node>
@@ -65,7 +65,7 @@
     <param name="reassign_iters" value="1" />
     <param name="reassign_min_distance" value="0.1" />
     <!-- set do_nothing to true if you want to avoid post smoothing -->
-    <param name="do_nothing" value="false"/>
+    <param name="do_nothing" value="true"/>
   </node>  
 
   <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node_citi1" output="screen">
@@ -76,6 +76,7 @@
     <param name="max_vel" value="0.3" />
     <param name="max_rotational_vel" value="0.3" />
     <param name="max_acc" value="0.1" />
+    <param name="no_smoothing" value="true" />
   </node>
 
   </group>
