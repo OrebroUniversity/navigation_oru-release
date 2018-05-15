@@ -217,6 +217,7 @@ private:
   bool start_driving_after_recover_;
 
   bool real_cititruck_;
+  bool no_smoothing_;
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle) 
   {
@@ -283,6 +284,7 @@ public:
     paramHandle.param<bool>("use_update_task_service", use_update_task_service_, true);
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
     paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
+    paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
     
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
@@ -739,66 +741,77 @@ public:
     // Perform smoothing
     orunav_msgs::GetPolygonConstraints srv_constraints;
     orunav_msgs::GetSmoothedPath srv_smoothedpath;
-    { // Compute the constraints goes here
-      orunav_msgs::GetPolygonConstraints srv;
-      srv.request.map = map;
-      srv.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
-                                                                                      orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
-                                                                                      orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
-      
-      ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetPolygonConstraints>("polygonconstraint_service");
-      if (client.call(srv)) {
-        ROS_INFO("[KMOVehicleExecutionNode] - polygonconstraint_service - successfull");
-      }
-      else
-      {
-        ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: PolygonConstraint");
-        return false;
-      }
-      
-      // Check that the constraints are valid / add valid flag in the msg.
-      srv_constraints = srv;
-    }
 
+    // init resulting path to the unsmoothed one
+    srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+    if(!no_smoothing_)
     {
-      // Perform optimization
-      orunav_msgs::GetSmoothedPath srv;
-      srv.request.path = srv_constraints.request.path;
-      srv.request.map = srv_constraints.request.map;
-      srv.request.constraints = srv_constraints.response.constraints;
 
-      ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_path");
-      if (client.call(srv)) {
-        ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_path - successfull");
+      { // Compute the constraints goes here
+        orunav_msgs::GetPolygonConstraints srv;
+        srv.request.map = map;
+        srv.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+        
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetPolygonConstraints>("polygonconstraint_service");
+        if (client.call(srv)) {
+          ROS_INFO("[KMOVehicleExecutionNode] - polygonconstraint_service - successfull");
+        }
+        else
+        {
+          ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: PolygonConstraint");
+          return false;
+        }
+        
+        // Check that the constraints are valid / add valid flag in the msg.
+        srv_constraints = srv;
       }
-      else
+
       {
-        ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: GetSmoothedPath");
-        return false;
-      }
-      srv_smoothedpath = srv;
-      path = orunav_conversions::createPathFromPathMsg(srv.response.path);
-      
-      double max_steering_angle = M_PI/2.;
-      double max_dist_offset = 0.1;
-      double max_heading_offset = 0.1;
-      if (!orunav_generic::validSmoothedPath(path,
-                                             orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
-                                             orunav_conversions::createState2dFromPoseSteeringMsg(target.goal),
-                                             max_steering_angle,
-                                             max_dist_offset,
-                                             max_heading_offset)) {
-        ROS_ERROR("Invalid smoothed path(!)");
+        // Perform optimization
+        orunav_msgs::GetSmoothedPath srv;
+        srv.request.path = srv_constraints.request.path;
+        srv.request.map = srv_constraints.request.map;
+        srv.request.constraints = srv_constraints.response.constraints;
 
-        std::cout << " path.getPose2d(0) : " << path.getPose2d(0) << std::endl;
-        std::cout << " path.getPose2d(path.sizePath()-1) : " << path.getPose2d(path.sizePath()-1) << std::endl;
-        std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() << std::endl;
-        std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() << std::endl;
-        return false;
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_path");
+        if (client.call(srv)) {
+          ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_path - successfull");
+        }
+        else
+        {
+          ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: GetSmoothedPath");
+          return false;
+        }
+        srv_smoothedpath = srv;
+        path = orunav_conversions::createPathFromPathMsg(srv.response.path);
+        
+        double max_steering_angle = M_PI/2.;
+        double max_dist_offset = 0.1;
+        double max_heading_offset = 0.1;
+        if (!orunav_generic::validSmoothedPath(path,
+                                               orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                               orunav_conversions::createState2dFromPoseSteeringMsg(target.goal),
+                                               max_steering_angle,
+                                               max_dist_offset,
+                                               max_heading_offset)) {
+          ROS_ERROR("Invalid smoothed path(!)");
+
+          std::cout << " path.getPose2d(0) : " << path.getPose2d(0) << std::endl;
+          std::cout << " path.getPose2d(path.sizePath()-1) : " << path.getPose2d(path.sizePath()-1) << std::endl;
+          std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() << std::endl;
+          std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() << std::endl;
+          return false;
+        }
+        // The path smoother if enabled select different constraints.
+        srv_constraints.response.constraints = srv_smoothedpath.response.constraints;
       }
-      // The path smoother if enabled select different constraints.
-      srv_constraints.response.constraints = srv_smoothedpath.response.constraints;
+    
     }
+
 
     if (req.target.start_op.operation == req.target.start_op.UNLOAD) {
       target.start; // the docking pose
