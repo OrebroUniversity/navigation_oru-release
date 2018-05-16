@@ -24,15 +24,5 @@
     </include>
   </group>
 
-  <group ns="robot3">
-    <param name="tf_prefix" value="robot3" />
-    <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
-      <arg name="robot_pose_x" value="8.0"/> 
-      <arg name="robot_pose_y" value="8.0"/>
-      <arg name="robot_pose_yaw" default="0."/>
-      <arg name="robot_name" value="robot3" />
-    </include>
-  </group>
-
 
 </launch>
