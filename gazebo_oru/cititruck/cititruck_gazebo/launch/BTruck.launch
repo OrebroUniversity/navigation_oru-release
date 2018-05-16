@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <arg name="robot_pose_x" default="0"/>
   <arg name="robot_pose_y" default="0"/>
@@ -7,17 +9,17 @@
   <arg name="robot_pose_yaw" default="0"/>
   <arg name="robot_name" default="BTruck"/>
   <arg name="xacro_name" default="BTruck"/>
+  <arg name="gui" default="true"/>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/$(arg xacro_name).xacro'" />
+  <param name="use_gui" value="$(arg gui)"/>
 
   <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />
 
- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
- <!-- Show in Rviz   -->
+  <!-- Show in Rviz   -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/BTruck.rviz"/>
-
- <!-- Show in Gazebo   -->
-  <node name="gazebo" pkg="gazebo_ros" type="gazebo"/>
 
 </launch>

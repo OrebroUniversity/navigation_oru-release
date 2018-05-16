@@ -72,6 +72,10 @@
   <gazebo reference="right_fork" >
     <material>Gazebo/Grey</material>
   </gazebo>
+  
+  <gazebo reference="reflex_link_pitch" >
+    <material>Gazebo/Black</material>
+  </gazebo>
 
 
   <!-- SICK safety laser -->
