@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!-- This xacro contains a macro for spawning a sensor calibration assembly inside a robot's URDF file.
+ The idea is that on the final robot, the assembly just consists of two fixed joints, which have the origin and rpy values set properly
+ to reflect the sensor's extrinsic calibration values.
+
+ Instead, during the calibration phase, these two fixed joints are replaced by a chain of nine prismatic+revolute joints, such that
+ each dimension can be tweaked individually using the sliders in the joint state publisher GUI.
+
+ Once calibrated, the slider positions should be (manually) copied into a text file, to be read either by the joint state publisher
+ during subsequent runs (as zero positions of the joints), or to be used as calibration values for the fixed joints in this macro.
+-->
+
+<robot name="sensor_calibration_assembly_macro" xmlns:xacro="http://ros.org/wiki/xacro">
+
+     <!-- Command-line arguments -->
+    <xacro:arg name="use_fixed_joints" default="true"/> <!-- Set to false for calibration -->
+    <xacro:arg name="calib_file" default=""/> <!-- Same file name should be passed to joint state publisher. Should be set up like this:
+        zeros:
+                velodyne_calib_pre_x: 0.1
+                velodyne_calib_pre_y: -0.2
+                ...
+                velodyne_calib_roll: 0.10
+                velodyne_calib_pitch: -0.03
+                ..
+                velodyne_calib_post_x: 0.05
+            -->
+
+    <!-- Helper macro -->
+    <xacro:macro name="simple_link" params="name">
+        <link name="${name}">
+            <inertia ixx="3.64583333333e-07" ixy="0.0" ixz="0.0" iyy="3.64583333333e-07" iyz="0.0" izz="3.125e-07"/>
+        </link>
+    </xacro:macro>
+
+    <!-- Invoke this macro to create a sensor calibration assembly (XYZ offset + rotation + XYZ post-offset). -->
+    <xacro:macro name="sensor_calibration_assembly" params="sensor_id parent_link create_final_link:=true">
+           
+        <!-- Joint limits (only used for version with movable joints) -->
+        <xacro:property name="max_trans" value="1.0"/>
+        <xacro:property name="max_rot" value="1.57"/>
+
+        <!-- Version with fixed pre-calibrated joints (for use in Gazebo and on the actual robot) -->
+        <xacro:if value="$(arg use_fixed_joints)">
+            <!-- Load joint zero positions, and use them for the fixed offsets and rpy -->
+            <xacro:property name="default_calib" value="${load_yaml('$(arg calib_file)')['zeros']}"/>
+
+            <xacro:property name="pre_x" value="${default_calib.get(sensor_id + '_calib_pre_x', 0.0)}"/>
+            <xacro:property name="pre_y" value="${default_calib.get(sensor_id + '_calib_pre_y', 0.0)}"/>
+            <xacro:property name="pre_z" value="${default_calib.get(sensor_id + '_calib_pre_z', 0.0)}"/>
+
+            <xacro:property name="roll"  value="${default_calib.get(sensor_id + '_calib_roll', 0.0)}"/>
+            <xacro:property name="pitch" value="${default_calib.get(sensor_id + '_calib_pitch', 0.0)}"/>
+            <xacro:property name="yaw"   value="${default_calib.get(sensor_id + '_calib_yaw', 0.0)}"/>
+
+            <xacro:property name="post_x" value="${default_calib.get(sensor_id + '_calib_post_x', 0.0)}"/>
+            <xacro:property name="post_y" value="${default_calib.get(sensor_id + '_calib_post_y', 0.0)}"/>
+            <xacro:property name="post_z" value="${default_calib.get(sensor_id + '_calib_post_z', 0.0)}"/>
+
+            <!-- Initial offset (pre-translation) + Rotation -->
+            <simple_link name="${sensor_id}_calib_link"/>
+            <joint name="${parent_link}_to_${sensor_id}_calib_link" type="fixed">
+                <origin xyz="${pre_x} ${pre_y} ${pre_z}" rpy="${roll} ${pitch} ${yaw}"/>
+                <parent link="${parent_link}"/>
+                <child link="${sensor_id}_calib_link"/>
+            </joint>
+
+            <!-- Final offset (post-translation after rotation) -->
+            <joint name="${sensor_id}_calib_link_to_${sensor_id}_link" type="fixed">
+                <origin xyz="${post_x} ${post_y} ${post_z}"/>
+                <parent link="${sensor_id}_calib_link"/>
+                <child link="${sensor_id}_link"/>
+            </joint>
+        </xacro:if>
+
+        <!-- Version with movable joints (only for calib use with joint state publisher GUI) -->
+        <xacro:unless value="$(arg use_fixed_joints)">
+            <!-- Zero values will be loaded by joint state publisher! Joints should be 1D because only 1D values are supported in the GUI -->
+
+            <!-- Pre-translation -->
+            <simple_link name="${sensor_id}_calib_pre_x_link"/>
+            <joint name="${sensor_id}_calib_pre_x" type="prismatic">
+                <axis xyz="1 0 0"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${parent_link}"/>
+                <child link="${sensor_id}_calib_pre_x_link"/>
+            </joint>
+            
+            <simple_link name="${sensor_id}_calib_pre_y_link"/>
+            <joint name="${sensor_id}_calib_pre_y" type="prismatic">
+                <axis xyz="0 1 0"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_pre_x_link"/>
+                <child link="${sensor_id}_calib_pre_y_link"/>
+            </joint>
+            
+            <simple_link name="${sensor_id}_calib_pre_z_link"/>
+            <joint name="${sensor_id}_calib_pre_z" type="prismatic">
+                <axis xyz="0 0 1"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_pre_y_link"/>
+                <child link="${sensor_id}_calib_pre_z_link"/>
+            </joint>
+
+            <!-- Rotation -->
+            <simple_link name="${sensor_id}_calib_roll_link"/>
+            <joint name="${sensor_id}_calib_roll" type="revolute">
+                <axis xyz="1 0 0"/>
+                <limit lower="-${max_rot}" upper="+${max_rot}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_pre_z_link"/>
+                <child link="${sensor_id}_calib_roll_link"/>
+            </joint>
+            
+            <simple_link name="${sensor_id}_calib_pitch_link"/>
+            <joint name="${sensor_id}_calib_pitch" type="revolute">
+                <axis xyz="0 1 0"/>
+                <limit lower="-${max_rot}" upper="+${max_rot}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_roll_link"/>
+                <child link="${sensor_id}_calib_pitch_link"/>
+            </joint>
+            
+            <simple_link name="${sensor_id}_calib_link"/>
+            <joint name="${sensor_id}_calib_yaw" type="revolute">
+                <axis xyz="0 0 1"/>
+                <limit lower="-${max_rot}" upper="+${max_rot}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_pitch_link"/>
+                <child link="${sensor_id}_calib_link"/>
+            </joint>
+
+            <!-- Post-translation (after rotation) -->
+            <simple_link name="${sensor_id}_calib_post_x_link"/>
+            <joint name="${sensor_id}_calib_post_x" type="prismatic">
+                <axis xyz="1 0 0"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_link"/>
+                <child link="${sensor_id}_calib_post_x_link"/>
+            </joint>
+            
+            <simple_link name="${sensor_id}_calib_post_y_link"/>
+            <joint name="${sensor_id}_calib_post_y" type="prismatic">
+                <axis xyz="0 1 0"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_post_x_link"/>
+                <child link="${sensor_id}_calib_post_y_link"/>
+            </joint>
+
+            <joint name="${sensor_id}_calib_post_z" type="prismatic">
+                <axis xyz="0 0 1"/>
+                <limit lower="-${max_trans}" upper="+${max_trans}" effort="1" velocity="1"/>
+                <parent link="${sensor_id}_calib_post_y_link"/>
+                <child link="${sensor_id}_link"/>
+            </joint>
+
+            <!-- End of version with movable joints for calib -->  
+        </xacro:unless>
+
+        <xacro:if value="${create_final_link}">
+            <simple_link name="${sensor_id}_link"/>
+        </xacro:if>
+        
+    </xacro:macro>
+
+</robot>

@@ -14,5 +14,6 @@ install(DIRECTORY
    urdf
    meshes
    launch
+   calibration
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

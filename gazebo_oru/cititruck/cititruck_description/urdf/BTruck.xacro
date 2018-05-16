@@ -6,6 +6,8 @@
   <xacro:include filename="$(find cititruck_description)/urdf/BTruck.gazebo" />
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro" />
+  <!-- Adds extra joints for calibration of sensors -->
+  <xacro:include filename="$(find cititruck_description)/urdf/sensor_calibration_assembly.xacro" />
 
   <xacro:property name="forks_pidP" value="2000" />
   <xacro:property name="forks_pidI" value="0" />
@@ -22,31 +24,31 @@
 
  <!-- BTruck dimension paraemters -->
 
-	<xacro:property name="x" value="0.786" />
-	<xacro:property name="y" value="1.604" />
-	<xacro:property name="m1" value="0.055" />
-	<xacro:property name="b1" value="0.79" />
-	<xacro:property name="l2" value="1.186" />
-	<xacro:property name="h3" value="1.712" />
-	<xacro:property name="b11" value="0.38" />
-	<xacro:property name="h13" value="0.091" />
-	<xacro:property name="e" value="0.18" />
-	<xacro:property name="l" value="1.2" />
-	<xacro:property name="x_pilar" value="0.24" />
-	<xacro:property name="y_pilar" value="0.05" /> <!-- to check -->
-	<xacro:property name="z_pilar" value="2.25" />
-	<xacro:property name="y_sensor_platform" value="0.64" /> <!--external distance between pilars-->
-	<xacro:property name="b5" value="0.55" />
-	<xacro:property name="x_sensor_bar" value="${x_pilar + 0.05}" />
-	<xacro:property name="y_sensor_bar" value="${y_sensor_platform - 2*y_pilar}" />
-	<xacro:property name="z_sensor_bar" value="0.04" />
-	<xacro:property name="rear_wheel_diameter" value="0.085" />	
-	<xacro:property name="rear_wheel_length" value="0.075" />
-	<xacro:property name="front_wheel_length" value="0.05" />
-	<xacro:property name="front_wheel_diameter" value="0.150" />
-	<xacro:property name="x_sick" value="0.1" />
-	<xacro:property name="y_sick" value="0.1" />
-	<xacro:property name="z_sick" value="0.1" />
+    <xacro:property name="x" value="0.786" />
+    <xacro:property name="y" value="1.604" />
+    <xacro:property name="m1" value="0.055" />
+    <xacro:property name="b1" value="0.79" />
+    <xacro:property name="l2" value="1.186" />
+    <xacro:property name="h3" value="1.712" />
+    <xacro:property name="b11" value="0.38" />
+    <xacro:property name="h13" value="0.091" />
+    <xacro:property name="e" value="0.18" />
+    <xacro:property name="l" value="1.2" />
+    <xacro:property name="x_pilar" value="0.24" />
+    <xacro:property name="y_pilar" value="0.05" /> <!-- to check -->
+    <xacro:property name="z_pilar" value="2.25" />
+    <xacro:property name="y_sensor_platform" value="0.64" /> <!--external distance between pilars-->
+    <xacro:property name="b5" value="0.55" />
+    <xacro:property name="x_sensor_bar" value="${x_pilar + 0.05}" />
+    <xacro:property name="y_sensor_bar" value="${y_sensor_platform - 2*y_pilar}" />
+    <xacro:property name="z_sensor_bar" value="0.04" />
+    <xacro:property name="rear_wheel_diameter" value="0.085" /> 
+    <xacro:property name="rear_wheel_length" value="0.075" />
+    <xacro:property name="front_wheel_length" value="0.05" />
+    <xacro:property name="front_wheel_diameter" value="0.150" />
+    <xacro:property name="x_sick" value="0.1" />
+    <xacro:property name="y_sick" value="0.1" />
+    <xacro:property name="z_sick" value="0.1" />
 
   <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack dedpends on this frame and KDL needs a root link without any inteltia -->
     <link name="base_footprint">
@@ -100,7 +102,7 @@
         <geometry>
           <box size="${l} ${e} ${h13}" />
         </geometry>
-	<contact_coefficients mu="1" kp="10.0" kd="10.0"/>
+    <contact_coefficients mu="1" kp="10.0" kd="10.0"/>
       </collision>
     </link>
 
@@ -123,7 +125,7 @@
         <geometry>
           <box size="${l} ${e} ${h13}" />
         </geometry>
-	<contact_coefficients mu="1" kp="10.0" kd="10.0"/>
+    <contact_coefficients mu="1" kp="10.0" kd="10.0"/>
       </collision>
     </link>
 
@@ -258,7 +260,7 @@
       <child link="base_pilar" />
       <parent link="base_link"/>
     </joint>
-	
+    
 
    <joint name="left_pilar_joint" type="fixed">
       <origin xyz="0.0 ${y_sensor_platform/2.0 - y_pilar/2.0} ${z_pilar/2.0}" rpy="0 0 0" />
@@ -277,7 +279,7 @@
       <child link="sensor_bar" />
       <parent link="base_pilar"/>
     </joint>
-	
+    
 <!-- Rear Steering Wheel -->
     <link name="steer_link">
         <inertial>
@@ -397,127 +399,78 @@
 
 <!-- Sick laser -->
       
-      <link name="laser_link">
-	<collision>
-	  <origin xyz="0 0 0" rpy="0 0 0"/>
-	  <geometry>
-	    <box size="${x_sick} ${y_sick} ${z_sick}"/>
-	  </geometry>
-	</collision>
-	
-	<visual>
-	  <origin xyz="0 0 0" rpy="0 0 0"/>
-	  <geometry>
+      <link name="safety_laser_base_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${x_sick} ${y_sick} ${z_sick}"/>
+      </geometry>
+    </collision>
+    
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
             <mesh filename="package://cititruck_description/meshes/sick_s300_laser.dae"/>
-	  </geometry>
-	</visual>
-	
-	<inertial>
-	  <mass value="1e-5" />
-	  <origin xyz="0 0 0" rpy="0 0 0"/>
-	  <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-	</inertial>
+      </geometry>
+    </visual>
+    
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
       </link>
 
-      <joint name="laser_joint" type="fixed">
-	<axis xyz="0 1 0" />
-	<origin xyz="${l2 + x -y_sick/2.0} 0 ${z_sick/2.0}" rpy="3.14159 0 0"/>
-	<parent link="base_link"/>
-	<child link="laser_link"/>
+      <joint name="safety_laser_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="${l2 + x -y_sick/2.0} 0 ${z_sick/2.0}" rpy="3.14159 0 0"/>
+    <parent link="base_link"/>
+    <child link="safety_laser_base_link"/>
       </joint> 
+
+      <sensor_calibration_assembly sensor_id="safety_laser" parent_link="safety_laser_base_link"/>
+
 
 <!-- Kinect V2 -->
       
-    <joint name="kinect_joint" type="fixed">
+    <joint name="kinect2_joint" type="fixed">
       <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 0" /> <!-- check sensor height z -->
       <parent link="base_pilar"/>
-      <child link="kinect_link"/>
+      <child link="kinect2_base_link"/>
     </joint>
 
-    <link name="kinect_link">
+    <link name="kinect2_base_link"/>
+
+    <sensor_calibration_assembly sensor_id="kinect2" parent_link="kinect2_base_link" create_final_link="false"/>
+
+    <link name="kinect2_link">
       <visual>
-	<origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
-	<geometry>
-	  <mesh filename="package://cititruck_description/meshes/kinect_v2.dae"/>
-	</geometry>
+    <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+    <geometry>
+      <mesh filename="package://cititruck_description/meshes/kinect_v2.dae"/>
+    </geometry>
       </visual>
+      <!--
       <collision>
-	<origin xyz="0 0 0" rpy="0 0 0" />
-	<geometry>
-	      <box size="0.1 0.1 0.1"/> <!-- check this later --> 
-	</geometry>
-      </collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+          <box size="0.1 0.1 0.1"/>
+    </geometry>
+      </collision>-->
     </link>
 
-<!--    <joint name="kinect_depth_joint" type="fixed">
-      <origin xyz="0.0 -0.02 0.0" rpy="0 0 0" />
-      <parent link="kinect_link" />
-      <child link="kinect_depth_frame"/>
-    </joint>
-
-    <link name="kinect_depth_frame"/>
-
-    <joint name="kinect_depth_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
-      <parent link="kinect_depth_frame" />
-      <child link="kinect_depth_optical_frame"/>
-    </joint>
-
-    <link name="kinect_depth_optical_frame"/>
-
-    <joint name="kinect_rgb_joint" type="fixed">
-      <origin xyz="0.0 -0.0125 0.0" rpy="0 0 0" />
-      <parent link="kinect_link" />
-      <child link="kinect_rgb_frame"/>
-    </joint>
-
-    <link name="kinect_rgb_frame"/>
-
-    <joint name="kinect_rgb_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2.0} 0.0 ${-M_PI/2.0}" />
-      <parent link="kinect_rgb_frame" />
-      <child link="kinect_rgb_optical_frame"/>
-    </joint>
-
-    <link name="kinect_rgb_optical_frame"/>-->
-
-
 <!-- Velodyne HDL32E -->
-    <!-- FIXME: origin z -->
-    <joint name="velodyne_base_mount_joint" type="fixed">
-      <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.18} ${b1 + 0.6 + z_sensor_bar + 0.14}" rpy="0 0 0"/> 
+    <joint name="velodyne_base_joint" type="fixed">
+      <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.18} ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 0"/> 
       <parent link="base_pilar"/>
       <child link="velodyne_base_link"/>
     </joint>
 
-    <link name="velodyne_base_link">
-      <inertial>
-        <mass value="1.0"/>
-        <origin xyz="0 0 0.07212"/>
-        <inertia ixx="${(1.0 * (3.0*0.04267*0.04267 + 0.14424*0.14424)) / 12.0}" ixy="0" ixz="0"
-          iyy="${(1.0 * (3.0*0.04267*0.04267 + 0.14424*0.14424)) / 12.0}" iyz="0"
-          izz="${0.5 * 1.0 * (0.04267*0.04267)}"/>
-      </inertial>
-      <visual>
-        <geometry>
-          <mesh filename="package://cititruck_description/meshes/HDL32E_base.dae" />
-        </geometry>
-      </visual>
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0.07212"/>
-        <geometry>
-          <cylinder radius="0.04267" length="0.14424"/>
-        </geometry>
-      </collision>
-    </link>
+    <link name="velodyne_base_link"/>
 
-    <joint name="velodyne_base_scan_joint" type="fixed" >
-      <origin xyz="0 0 0.09081" rpy="0 0 0" />
-      <parent link="velodyne_base_link" />
-      <child link="velodyne"/>
-    </joint>
+    <sensor_calibration_assembly sensor_id="velodyne" parent_link="velodyne_base_link" create_final_link="false"/>
 
-    <link name="velodyne">
+    <link name="velodyne_link">
       <inertial>
         <mass value="0.01"/>
         <origin xyz="0 0 0"/>
@@ -530,21 +483,49 @@
         </geometry>
       </visual>
     </link>
-    
+
+
+    <joint name="velodyne_mount_joint" type="fixed" >
+      <origin xyz="0 0 -0.09081" rpy="0 0 0" />
+      <parent link="velodyne_link" />
+      <child link="velodyne_mount_link"/>
+    </joint>
+
+    <link name="velodyne_mount_link">
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0.07212"/>
+        <inertia ixx="${(1.0 * (3.0*0.04267*0.04267 + 0.14424*0.14424)) / 12.0}" ixy="0" ixz="0"
+          iyy="${(1.0 * (3.0*0.04267*0.04267 + 0.14424*0.14424)) / 12.0}" iyz="0"
+          izz="${0.5 * 1.0 * (0.04267*0.04267)}"/>
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://cititruck_description/meshes/HDL32E_base.dae" />
+        </geometry>
+      </visual>
+      <!--
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.07212"/>
+        <geometry>
+          <cylinder radius="0.04267" length="0.14424"/>
+        </geometry>
+      </collision>
+  -->
+    </link>
     
     <!-- Asus camera Up -->
-    <!-- FIXME: origin -->
     <joint name="asus_joint" type="fixed">
         <origin xyz="0 ${y_sensor_platform/2.0 + .06} ${b1 + .6 + z_sensor_bar}" rpy="0 0 ${M_PI/2}"/> 
         <parent link="base_pilar"/>
-        <child link="asus_link"/>
+        <child link="asus_base_link"/>
       </joint>
       
-      <link name="asus_link"/>
+      <link name="asus_base_link"/>
       
-      
-      
-      <link name="asus_link_pitch">
+      <sensor_calibration_assembly sensor_id="asus" parent_link="asus_base_link" create_final_link="false"/>
+
+      <link name="asus_link">
         <inertial>
           <mass value="0.200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
@@ -557,65 +538,30 @@
           </geometry>
         </visual>
         
-      <collision>
-	<origin xyz="0 0 0" rpy="0 0 0" />
-	<geometry>
-	  <box size="0.035 0.185 0.025"/>
-	</geometry>
-      </collision>
-
-      </link>
-
-
-      <joint name="asus_joint_pitch" type="revolute">
-        <origin xyz="0 0 0" rpy="0 0 0"/> 
-        <parent link="asus_link"/>
-        <child link="asus_link_pitch"/>
-	<axis xyz="0 1 0"/>
-        <limit effort="100" lower="${-M_PI}" upper="${M_PI}" velocity=".1" />
-      </joint>
-
-<!--      <joint name="asus_depth_joint" type="fixed">
-        <origin xyz="0.0 0.049 0.0" rpy="0 0 0" />
-        <parent link="asus_link" />
-        <child link="asus_depth_frame"/>
-      </joint>
-
-      <link name="asus_depth_frame"/>
-
-      <joint name="asus_depth_optical_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
-        <parent link="asus_depth_frame" />
-        <child link="asus_depth_optical_frame"/>
-      </joint>
-
-      <link name="asus_depth_optical_frame"/>
-
-      <joint name="asus_rgb_joint" type="fixed">
-        <origin xyz="0.0 0.022 0.0" rpy="0 0 0" />
-        <parent link="asus_link" />
-        <child link="asus_rgb_frame"/>
-      </joint>
-
-      <link name="asus_rgb_frame"/>
-
-      <joint name="asus_rgb_optical_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
-        <parent link="asus_rgb_frame" />
-        <child link="asus_rgb_optical_frame"/>
-      </joint>
-
-  <link name="asus_rgb_optical_frame"/>-->
+            <!--
+          <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.035 0.185 0.025"/>
+        </geometry>
+          </collision>
+        -->
+    </link>
   
-  <!-- Asus camera down -->
+  <!-- Intel Realsense camera on fork -->
     <!-- FIXME: origin -->
-    <joint name="intel_joint" type="fixed">
+    <joint name="realsense_joint" type="fixed">
         <origin xyz="${l/2} 0 0.235" rpy="0 0 ${M_PI}"/> 
         <parent link="base_fork"/>
-        <child link="intel_link"/>
+        <child link="realsense_base_link"/>
       </joint>
       
-      <link name="intel_link">
+      <link name="realsense_base_link"/>
+
+
+      <sensor_calibration_assembly sensor_id="realsense" parent_link="realsense_base_link" create_final_link="false"/>
+
+    <link name="realsense_link">
         <inertial>
           <mass value="0.200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
@@ -628,80 +574,43 @@
           </geometry>
         </visual>
         
+        <!--
       <collision>
-	<origin xyz="0 0 0" rpy="0 0 0" />
-	<geometry>
-	  <box size="0.035 0.185 0.025"/>
-	</geometry>
-      </collision>
-
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <box size="0.035 0.185 0.025"/>
+    </geometry>
+      </collision>  -->
       </link>
 
-<!--      <joint name="intel_depth_joint" type="fixed">
-        <origin xyz="0.0 0.049 0.0" rpy="0 0 0" />
-        <parent link="intel_link" />
-        <child link="intel_depth_frame"/>
-      </joint>
-
-      <link name="intel_depth_frame"/>
-
-      <joint name="intel_depth_optical_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
-        <parent link="intel_depth_frame" />
-        <child link="intel_depth_optical_frame"/>
-      </joint>
-
-      <link name="intel_depth_optical_frame"/>
-
-      <joint name="intel_rgb_joint" type="fixed">
-        <origin xyz="0.0 0.022 0.0" rpy="0 0 0" />
-        <parent link="intel_link" />
-        <child link="intel_rgb_frame"/>
-      </joint>
-
-      <link name="intel_rgb_frame"/>
-
-      <joint name="intel_rgb_optical_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
-        <parent link="intel_rgb_frame" />
-        <child link="intel_rgb_optical_frame"/>
-      </joint>
-
-  <link name="intel_rgb_optical_frame"/>-->
-  
     <!-- Reflex camera -->
     <!-- FIXME: origin -->
       <joint name="reflex_joint" type="fixed">
         <origin xyz="0 .09 1.90" rpy="0 0 ${M_PI}"/> 
         <parent link="base_pilar"/>
-        <child link="reflex_link"/>
+        <child link="reflex_base_link"/>
       </joint>
       
-      <link name="reflex_link"/>
+      <link name="reflex_base_link"/>
 
-      <joint name="reflex_joint_pitch" type="revolute">
-        <origin xyz="0 0 0" rpy="0 0 0"/> 
-        <parent link="reflex_link"/>
-        <child link="reflex_link_pitch"/>
-	<axis xyz="0 1 0"/>
-        <limit effort="100" lower="${-M_PI}" upper="${M_PI}" velocity=".1" />
-      </joint>
-      
-      <link name="reflex_link_pitch" >
-	<visual>
+      <sensor_calibration_assembly sensor_id="reflex" parent_link="reflex_base_link" create_final_link="false"/>
+
+      <link name="reflex_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                <box size="0.11 0.35 0.07"/>
+                </geometry>
+            <material name="black"/>
+        </visual>
+        <!--
+        <collision>
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
-            <box size="0.11 0.35 0.07"/>
+            <box size="0.035 0.185 0.025"/>
           </geometry>
-	  <material name="black"/>
-        </visual>
-	<collision>
-	  <origin xyz="0 0 0" rpy="0 0 0" />
-	  <geometry>
-	    <box size="0.035 0.185 0.025"/>
-	  </geometry>
-	</collision>
-	
+        </collision>
+    -->
       </link>
 
 </robot>
