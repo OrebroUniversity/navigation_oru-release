@@ -1,6 +1,6 @@
 image: robotlab.png
 resolution: 0.1
-origin: [-25, -25, 0.0]
+origin: [ 28.34, 28.45, 3.14]
 occupied_thresh: 0.5
 free_thresh: 0.5
-negate: 0
+negate: 1
