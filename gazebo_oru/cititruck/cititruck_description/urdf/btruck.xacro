@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<robot name="BTruck" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="btruck" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find cititruck_description)/urdf/BTruck.gazebo" />
+  <xacro:include filename="$(find cititruck_description)/urdf/btruck.gazebo" />
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro" />
   <!-- Adds extra joints for calibration of sensors -->
