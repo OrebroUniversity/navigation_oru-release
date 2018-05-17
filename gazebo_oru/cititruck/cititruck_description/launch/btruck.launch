@@ -4,7 +4,7 @@
   <arg name="xacro_name" default="btruck"/>
 
   <!-- Following parameters used for manual calibration of sensor joints -->
-  <arg name="gui" default="true"/>
+  <arg name="gui" default="false"/>
   <arg name="use_fixed_joints" default="false" if="$(arg gui)"/>
   <arg name="use_fixed_joints" default="true" unless="$(arg gui)"/>
   <arg name="calib_file" default="$(find cititruck_description)/calibration/btruck_calib.yaml"/>
