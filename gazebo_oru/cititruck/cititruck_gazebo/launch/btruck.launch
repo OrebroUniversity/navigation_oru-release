@@ -2,9 +2,12 @@
 
 <launch>
   <arg name="rviz" default="true"/>
+  <arg name="gui" default="false"/>
 
   <!-- Load URDF, start robot and joint state publisher -->
-  <include file="$(find cititruck_description)/launch/btruck.launch"/>
+  <include file="$(find cititruck_description)/launch/btruck.launch">
+    <arg name="gui" default="$(arg gui)"/>
+  </include>
 
   <!-- Spawn model in Gazebo -->
   <arg name="robot_pose_x" default="0"/>
