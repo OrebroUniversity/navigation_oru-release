@@ -1,0 +1,44 @@
+<!-- 
+    Example launch file to run the iliad_smp planner on the citi truck robot. 
+    The file is an initial attempt to launch the required software, topics and transforms
+ -->
+ 
+<?xml version="1.0"?>
+<launch>
+<!-- run dual-laser localisation -->
+<node name="ndt_mcl" pkg="ndt_localization" type="ndt_mcl_localization" output="screen">
+<!-- jff file with map -->
+<param name="map_file" value="$(find ndt_localization)/maps/rob_lab_2.jff"  />
+<param name="sensor_pose_x" value="0.807" />
+<param name="sensor_pose_y" value="-0.003" />
+<param name="sensor_pose_z" value="1.5" />
+<param name="sensor_pose_t" value="3.14316344992" />
+<param name="initial_y" value="3.34" />
+<param name="initial_x" value="3.45" />
+<param name="initial_t" value="0.0" />
+<!-- resolution of jff map -->
+<param name="resolution" value="0.7" />
+<!-- show aprticles for debug purposes -->
+<param name="show_particles" value="true" />
+<!-- particle count for ndt-mcl -->
+<param name="particle_count" value="500" />
+<param name="show_pose" value="true"/>
+<param name="fraction" value="1.0"/>
+<param name="force_SIR" value="true" />
+<param name="input_topic_name" value="/robot1/kmo_navserver/laserscan1" />
+<param name="Laser" value="true" />
+<param name="odom_tf" value="world" />
+<param name="root_tf" value="world" />
+<param name="base_tf" value="odom_base_link" />
+</node>
+
+<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find graph_map)/launch/3d.rviz" /> -->
+
+<node name="ndt_map_publisher" pkg="ndt_localization" type="ndt_map_publisher" output="screen">
+	<param name="map_file" value="$(find ndt_localization)/maps/rob_lab_2.jff"  />
+	<param name="resolution" value="0.7" />
+	<param name="map_rate" value="1" />
+	<param name="map_frame" value="world" />
+</node>
+
+</launch>
