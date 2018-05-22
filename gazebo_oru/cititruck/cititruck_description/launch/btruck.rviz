@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /RobotModel1
         - /TF1
       Splitter Ratio: 0.5
     Tree Height: 775
@@ -67,34 +68,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        asus_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        asus_calib_roll_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         asus_link:
           Alpha: 1
           Show Axes: false
@@ -133,36 +106,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         kinect2_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        kinect2_calib_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -170,6 +114,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         left_fork:
           Alpha: 1
           Show Axes: false
@@ -184,36 +129,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         realsense_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        realsense_calib_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -221,39 +137,12 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         reflex_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
         reflex_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        reflex_calib_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -281,34 +170,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        safety_laser_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_calib_roll_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         safety_laser_link:
           Alpha: 1
           Show Axes: false
@@ -333,34 +194,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
         velodyne_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_pitch_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_post_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_post_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_pre_x_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_pre_y_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_pre_z_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_roll_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -375,7 +208,7 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: RobotModel
-      Robot Description: robot_description
+      Robot Description: btruck/robot_description
       TF Prefix: ""
       Update Interval: 0
       Value: true
@@ -385,153 +218,69 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        asus_base_link:
+        btruck/asus_base_link:
           Value: true
-        asus_calib_link:
+        btruck/asus_calib_link:
           Value: true
-        asus_calib_pitch_link:
+        btruck/asus_link:
           Value: true
-        asus_calib_post_x_link:
+        btruck/base_footprint:
           Value: true
-        asus_calib_post_y_link:
+        btruck/base_fork:
           Value: true
-        asus_calib_pre_x_link:
+        btruck/base_link:
           Value: true
-        asus_calib_pre_y_link:
+        btruck/base_pilar:
           Value: true
-        asus_calib_pre_z_link:
+        btruck/fixed_left_wheel_link:
           Value: true
-        asus_calib_roll_link:
+        btruck/fixed_right_wheel_link:
           Value: true
-        asus_link:
+        btruck/kinect2_base_link:
           Value: true
-        base_footprint:
+        btruck/kinect2_calib_link:
           Value: true
-        base_fork:
+        btruck/kinect2_link:
           Value: true
-        base_link:
+        btruck/left_fork:
           Value: true
-        base_pilar:
+        btruck/left_pilar:
           Value: true
-        fixed_left_wheel_link:
+        btruck/realsense_base_link:
           Value: true
-        fixed_right_wheel_link:
+        btruck/realsense_calib_link:
           Value: true
-        kinect2_base_link:
+        btruck/realsense_link:
           Value: true
-        kinect2_calib_link:
+        btruck/reflex_base_link:
           Value: true
-        kinect2_calib_pitch_link:
+        btruck/reflex_calib_link:
           Value: true
-        kinect2_calib_post_x_link:
+        btruck/reflex_link:
           Value: true
-        kinect2_calib_post_y_link:
+        btruck/right_fork:
           Value: true
-        kinect2_calib_pre_x_link:
+        btruck/right_pilar:
           Value: true
-        kinect2_calib_pre_y_link:
+        btruck/safety_laser_base_link:
           Value: true
-        kinect2_calib_pre_z_link:
+        btruck/safety_laser_calib_link:
           Value: true
-        kinect2_calib_roll_link:
+        btruck/safety_laser_link:
           Value: true
-        kinect2_link:
+        btruck/sd_wheel_link:
           Value: true
-        left_fork:
+        btruck/sensor_bar:
           Value: true
-        left_pilar:
+        btruck/steer_link:
           Value: true
-        realsense_base_link:
+        btruck/velodyne_base_link:
           Value: true
-        realsense_calib_link:
+        btruck/velodyne_calib_link:
           Value: true
-        realsense_calib_pitch_link:
+        btruck/velodyne_link:
           Value: true
-        realsense_calib_post_x_link:
-          Value: true
-        realsense_calib_post_y_link:
-          Value: true
-        realsense_calib_pre_x_link:
-          Value: true
-        realsense_calib_pre_y_link:
-          Value: true
-        realsense_calib_pre_z_link:
-          Value: true
-        realsense_calib_roll_link:
-          Value: true
-        realsense_link:
-          Value: true
-        reflex_base_link:
-          Value: true
-        reflex_calib_link:
-          Value: true
-        reflex_calib_pitch_link:
-          Value: true
-        reflex_calib_post_x_link:
-          Value: true
-        reflex_calib_post_y_link:
-          Value: true
-        reflex_calib_pre_x_link:
-          Value: true
-        reflex_calib_pre_y_link:
-          Value: true
-        reflex_calib_pre_z_link:
-          Value: true
-        reflex_calib_roll_link:
-          Value: true
-        reflex_link:
-          Value: true
-        right_fork:
-          Value: true
-        right_pilar:
-          Value: true
-        safety_laser_base_link:
-          Value: true
-        safety_laser_calib_link:
-          Value: true
-        safety_laser_calib_pitch_link:
-          Value: true
-        safety_laser_calib_post_x_link:
-          Value: true
-        safety_laser_calib_post_y_link:
-          Value: true
-        safety_laser_calib_pre_x_link:
-          Value: true
-        safety_laser_calib_pre_y_link:
-          Value: true
-        safety_laser_calib_pre_z_link:
-          Value: true
-        safety_laser_calib_roll_link:
-          Value: true
-        safety_laser_link:
-          Value: true
-        sd_wheel_link:
-          Value: true
-        sensor_bar:
-          Value: true
-        steer_link:
-          Value: true
-        velodyne_base_link:
-          Value: true
-        velodyne_calib_link:
-          Value: true
-        velodyne_calib_pitch_link:
-          Value: true
-        velodyne_calib_post_x_link:
-          Value: true
-        velodyne_calib_post_y_link:
-          Value: true
-        velodyne_calib_pre_x_link:
-          Value: true
-        velodyne_calib_pre_y_link:
-          Value: true
-        velodyne_calib_pre_z_link:
-          Value: true
-        velodyne_calib_roll_link:
-          Value: true
-        velodyne_link:
-          Value: true
-        velodyne_mount_link:
+        btruck/velodyne_mount_link:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -539,93 +288,51 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
-          base_link:
-            base_fork:
-              left_fork:
+        btruck/base_footprint:
+          btruck/base_link:
+            btruck/base_fork:
+              btruck/left_fork:
                 {}
-              realsense_base_link:
-                realsense_calib_pre_x_link:
-                  realsense_calib_pre_y_link:
-                    realsense_calib_pre_z_link:
-                      realsense_calib_roll_link:
-                        realsense_calib_pitch_link:
-                          realsense_calib_link:
-                            realsense_calib_post_x_link:
-                              realsense_calib_post_y_link:
-                                realsense_link:
-                                  {}
-              right_fork:
+              btruck/realsense_base_link:
+                btruck/realsense_calib_link:
+                  btruck/realsense_link:
+                    {}
+              btruck/right_fork:
                 {}
-            base_pilar:
-              asus_base_link:
-                asus_calib_pre_x_link:
-                  asus_calib_pre_y_link:
-                    asus_calib_pre_z_link:
-                      asus_calib_roll_link:
-                        asus_calib_pitch_link:
-                          asus_calib_link:
-                            asus_calib_post_x_link:
-                              asus_calib_post_y_link:
-                                asus_link:
-                                  {}
-              kinect2_base_link:
-                kinect2_calib_pre_x_link:
-                  kinect2_calib_pre_y_link:
-                    kinect2_calib_pre_z_link:
-                      kinect2_calib_roll_link:
-                        kinect2_calib_pitch_link:
-                          kinect2_calib_link:
-                            kinect2_calib_post_x_link:
-                              kinect2_calib_post_y_link:
-                                kinect2_link:
-                                  {}
-              left_pilar:
+            btruck/base_pilar:
+              btruck/asus_base_link:
+                btruck/asus_calib_link:
+                  btruck/asus_link:
+                    {}
+              btruck/kinect2_base_link:
+                btruck/kinect2_calib_link:
+                  btruck/kinect2_link:
+                    {}
+              btruck/left_pilar:
                 {}
-              reflex_base_link:
-                reflex_calib_pre_x_link:
-                  reflex_calib_pre_y_link:
-                    reflex_calib_pre_z_link:
-                      reflex_calib_roll_link:
-                        reflex_calib_pitch_link:
-                          reflex_calib_link:
-                            reflex_calib_post_x_link:
-                              reflex_calib_post_y_link:
-                                reflex_link:
-                                  {}
-              right_pilar:
+              btruck/reflex_base_link:
+                btruck/reflex_calib_link:
+                  btruck/reflex_link:
+                    {}
+              btruck/right_pilar:
                 {}
-              sensor_bar:
+              btruck/sensor_bar:
                 {}
-              velodyne_base_link:
-                velodyne_calib_pre_x_link:
-                  velodyne_calib_pre_y_link:
-                    velodyne_calib_pre_z_link:
-                      velodyne_calib_roll_link:
-                        velodyne_calib_pitch_link:
-                          velodyne_calib_link:
-                            velodyne_calib_post_x_link:
-                              velodyne_calib_post_y_link:
-                                velodyne_link:
-                                  velodyne_mount_link:
-                                    {}
-            fixed_left_wheel_link:
+              btruck/velodyne_base_link:
+                btruck/velodyne_calib_link:
+                  btruck/velodyne_link:
+                    btruck/velodyne_mount_link:
+                      {}
+            btruck/fixed_left_wheel_link:
               {}
-            fixed_right_wheel_link:
+            btruck/fixed_right_wheel_link:
               {}
-            safety_laser_base_link:
-              safety_laser_calib_pre_x_link:
-                safety_laser_calib_pre_y_link:
-                  safety_laser_calib_pre_z_link:
-                    safety_laser_calib_roll_link:
-                      safety_laser_calib_pitch_link:
-                        safety_laser_calib_link:
-                          safety_laser_calib_post_x_link:
-                            safety_laser_calib_post_y_link:
-                              safety_laser_link:
-                                {}
-            steer_link:
-              sd_wheel_link:
+            btruck/safety_laser_base_link:
+              btruck/safety_laser_calib_link:
+                btruck/safety_laser_link:
+                  {}
+            btruck/steer_link:
+              btruck/sd_wheel_link:
                 {}
       Update Interval: 0
       Value: true
@@ -633,7 +340,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_footprint
+    Fixed Frame: btruck/base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -654,7 +361,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 3.06747842
+      Distance: 6.78121805
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1

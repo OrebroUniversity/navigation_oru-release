@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 
 <robot name="btruck" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Prefix for includes etc. -->
+  <xacro:arg name="tf_prefix" default=""/>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/btruck.gazebo" />
