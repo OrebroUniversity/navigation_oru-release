@@ -7,7 +7,7 @@
   <arg name="robot_id" default="1"/>
   
   <!-- TF prefix of robot -->
-  <arg name="prefix" default="robot1$(arg robot_id)"/>
+  <arg name="prefix" default="robot$(arg robot_id)"/>
 
   <!-- Enable/disable sensor simulation -->
   <arg name="velodyne" default="false"/> <!-- requires velodyne_simulator -->

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- Robot start position -->
+<arg name="robot_pose_x" default="0"/>
+<arg name="robot_pose_y" default="0"/>
+<arg name="robot_pose_z" default="0"/>
+<arg name="robot_pose_roll" default="0"/>
+<arg name="robot_pose_pitch" default="0"/>
+<arg name="robot_pose_yaw" default="0"/>
+
+<!-- TF prefix -->
+<arg name="tf_prefix" default="robot1"/>
+
+<!-- Enable/disable sensor simulation -->
+<arg name="velodyne" default="false"/>
+<arg name="kinect2"  default="false"/>
+<arg name="kinect1"  default="false"/>
+
+
+<group ns="$(arg tf_prefix)">
+    <!-- Run xacro -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/iliad_velodyne_cititruck.xacro' tf_prefix:=$(arg tf_prefix) velodyne:=$(arg velodyne) kinect2:=$(arg kinect2) kinect1:=$(arg kinect1)"/>
+
+    <!-- Spawn model in Gazebo -->
+    <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg tf_prefix) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />
+
+    <!-- Publish static TF -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+</group>
+
+
+<!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
+<!--node pkg="tf" type="static_transform_publisher" name="kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" /-->
+
+</launch>

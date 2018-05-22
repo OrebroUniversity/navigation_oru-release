@@ -1,6 +1,7 @@
 #set a task to the vehicle execution node TODO a map of whatever kind should also be provided here
 orunav_msgs/RobotTarget target
 bool start_from_current_state
+orunav_msgs/Shape[] extra_obstacles
 ---
 int32 RESULT_OK = 0
 int32 RESULT_PATH_PLANNER_SERVICE_FAILED = 1

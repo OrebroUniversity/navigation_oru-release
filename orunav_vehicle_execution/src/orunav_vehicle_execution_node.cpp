@@ -681,7 +681,21 @@ public:
       target.start.pose = orunav_conversions::createMsgFromPose2d(back_off_pose);
       ROS_INFO("(to) Start :  [%f,%f,%f](%f)", target.start.pose.position.x, target.start.pose.position.y,tf::getYaw(target.start.pose.orientation), target.start.steering);
     }
-    
+
+    if (req.extra_obstacles.size() > 0) {
+      // If we have extra obstacles, let's add them to the map
+      //crate polygon poly via test/polygon2_test.cpp
+      for (int i = 0; i < req.extra_obstacles.size(); i++) {
+	orunav_generic::Point2dVec pts;
+	for (int j = 0; j < req.extra_obstacles[i].points.size(); j++) {
+	  pts.push_back(Eigen::Vector2d(req.extra_obstacles[i].points[j].x, req.extra_obstacles[i].points[j].y));
+	}
+	orunav_geometry::Polygon poly(pts);
+	constraint_extract::addPolygonToOccupancyMap(poly, map, 100);
+	//for (unsigned int k = 0; k < poly.sizePoint2d(); k++) std::cout << "pts : " << poly.getPoint2d(k) << std::endl;
+      }
+    }
+
     orunav_generic::Path path;
     { // Get path service call related stuff goes here...
       orunav_msgs::GetPath srv;

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="robotid" default="1"/>
+  <arg name="robot_id" default="1"/>
   <arg name="prefix" default="robot1"/>
   <arg name="velodyne_in_costmap" default="false"/>
-  <arg name="avoid_smoothing" default="true"/>
+  <arg name="avoid_smoothing" default="false"/>
 
   <group ns="$(arg prefix)">
     <param name="tf_prefix" value="$(arg prefix)" />
 
     <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
-      <param name="robot_id" value="$(arg robotid)" />
+      <param name="robot_id" value="$(arg robot_id)" />
     </node>
     <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
 
@@ -61,7 +61,7 @@
     </node>
 
     <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node" output="screen">
-      <param name="robot_id" value="$(arg robotid)" />
+      <param name="robot_id" value="$(arg robot_id)" />
       <param name="visualize" value="true" />
       <param name="max_tracking_error" value="-1." />
       <param name="use_forks" value="true" />
