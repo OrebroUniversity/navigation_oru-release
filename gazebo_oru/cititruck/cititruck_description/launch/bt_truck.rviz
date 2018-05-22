@@ -60,15 +60,15 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        asus_base_link:
+        asus_side_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        asus_calib_link:
+        asus_side_calib_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        asus_link:
+        asus_side_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -115,6 +115,37 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        laser2d_floor_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        laser2d_floor_calib_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        laser2d_floor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        laser3d_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        laser3d_calib_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        laser3d_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        laser3d_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         left_fork:
           Alpha: 1
           Show Axes: false
@@ -125,15 +156,15 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        realsense_base_link:
+        realsense_fork_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        realsense_calib_link:
+        realsense_fork_calib_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        realsense_link:
+        realsense_fork_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -161,19 +192,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        safety_laser_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        safety_laser_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        safety_laser_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         sd_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -189,27 +207,9 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_calib_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        velodyne_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_mount_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Name: RobotModel
-      Robot Description: btruck/robot_description
-      TF Prefix: ""
+      Robot Description: robot3/robot_description
+      TF Prefix: robot3
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -218,69 +218,69 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        btruck/asus_base_link:
+        robot3/asus_side_base_link:
           Value: true
-        btruck/asus_calib_link:
+        robot3/asus_side_calib_link:
           Value: true
-        btruck/asus_link:
+        robot3/asus_side_link:
           Value: true
-        btruck/base_footprint:
+        robot3/base_footprint:
           Value: true
-        btruck/base_fork:
+        robot3/base_fork:
           Value: true
-        btruck/base_link:
+        robot3/base_link:
           Value: true
-        btruck/base_pilar:
+        robot3/base_pilar:
           Value: true
-        btruck/fixed_left_wheel_link:
+        robot3/fixed_left_wheel_link:
           Value: true
-        btruck/fixed_right_wheel_link:
+        robot3/fixed_right_wheel_link:
           Value: true
-        btruck/kinect2_base_link:
+        robot3/kinect2_base_link:
           Value: true
-        btruck/kinect2_calib_link:
+        robot3/kinect2_calib_link:
           Value: true
-        btruck/kinect2_link:
+        robot3/kinect2_link:
           Value: true
-        btruck/left_fork:
+        robot3/laser2d_floor_base_link:
           Value: true
-        btruck/left_pilar:
+        robot3/laser2d_floor_calib_link:
           Value: true
-        btruck/realsense_base_link:
+        robot3/laser2d_floor_link:
           Value: true
-        btruck/realsense_calib_link:
+        robot3/laser3d_base_link:
           Value: true
-        btruck/realsense_link:
+        robot3/laser3d_calib_link:
           Value: true
-        btruck/reflex_base_link:
+        robot3/laser3d_link:
           Value: true
-        btruck/reflex_calib_link:
+        robot3/laser3d_mount_link:
           Value: true
-        btruck/reflex_link:
+        robot3/left_fork:
           Value: true
-        btruck/right_fork:
+        robot3/left_pilar:
           Value: true
-        btruck/right_pilar:
+        robot3/realsense_fork_base_link:
           Value: true
-        btruck/safety_laser_base_link:
+        robot3/realsense_fork_calib_link:
           Value: true
-        btruck/safety_laser_calib_link:
+        robot3/realsense_fork_link:
           Value: true
-        btruck/safety_laser_link:
+        robot3/reflex_base_link:
           Value: true
-        btruck/sd_wheel_link:
+        robot3/reflex_calib_link:
           Value: true
-        btruck/sensor_bar:
+        robot3/reflex_link:
           Value: true
-        btruck/steer_link:
+        robot3/right_fork:
           Value: true
-        btruck/velodyne_base_link:
+        robot3/right_pilar:
           Value: true
-        btruck/velodyne_calib_link:
+        robot3/sd_wheel_link:
           Value: true
-        btruck/velodyne_link:
+        robot3/sensor_bar:
           Value: true
-        btruck/velodyne_mount_link:
+        robot3/steer_link:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -288,51 +288,51 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        btruck/base_footprint:
-          btruck/base_link:
-            btruck/base_fork:
-              btruck/left_fork:
+        robot3/base_footprint:
+          robot3/base_link:
+            robot3/base_fork:
+              robot3/left_fork:
                 {}
-              btruck/realsense_base_link:
-                btruck/realsense_calib_link:
-                  btruck/realsense_link:
+              robot3/realsense_fork_base_link:
+                robot3/realsense_fork_calib_link:
+                  robot3/realsense_fork_link:
                     {}
-              btruck/right_fork:
+              robot3/right_fork:
                 {}
-            btruck/base_pilar:
-              btruck/asus_base_link:
-                btruck/asus_calib_link:
-                  btruck/asus_link:
+            robot3/base_pilar:
+              robot3/asus_side_base_link:
+                robot3/asus_side_calib_link:
+                  robot3/asus_side_link:
                     {}
-              btruck/kinect2_base_link:
-                btruck/kinect2_calib_link:
-                  btruck/kinect2_link:
+              robot3/kinect2_base_link:
+                robot3/kinect2_calib_link:
+                  robot3/kinect2_link:
                     {}
-              btruck/left_pilar:
-                {}
-              btruck/reflex_base_link:
-                btruck/reflex_calib_link:
-                  btruck/reflex_link:
-                    {}
-              btruck/right_pilar:
-                {}
-              btruck/sensor_bar:
-                {}
-              btruck/velodyne_base_link:
-                btruck/velodyne_calib_link:
-                  btruck/velodyne_link:
-                    btruck/velodyne_mount_link:
+              robot3/laser3d_base_link:
+                robot3/laser3d_calib_link:
+                  robot3/laser3d_link:
+                    robot3/laser3d_mount_link:
                       {}
-            btruck/fixed_left_wheel_link:
+              robot3/left_pilar:
+                {}
+              robot3/reflex_base_link:
+                robot3/reflex_calib_link:
+                  robot3/reflex_link:
+                    {}
+              robot3/right_pilar:
+                {}
+              robot3/sensor_bar:
+                {}
+            robot3/fixed_left_wheel_link:
               {}
-            btruck/fixed_right_wheel_link:
+            robot3/fixed_right_wheel_link:
               {}
-            btruck/safety_laser_base_link:
-              btruck/safety_laser_calib_link:
-                btruck/safety_laser_link:
+            robot3/laser2d_floor_base_link:
+              robot3/laser2d_floor_calib_link:
+                robot3/laser2d_floor_link:
                   {}
-            btruck/steer_link:
-              btruck/sd_wheel_link:
+            robot3/steer_link:
+              robot3/sd_wheel_link:
                 {}
       Update Interval: 0
       Value: true
@@ -340,7 +340,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: btruck/base_footprint
+    Fixed Frame: robot3/base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -361,25 +361,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 6.78121805
+      Distance: 4.55466461
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.120917559
-        Y: 0.46352762
-        Z: -1.1920929e-07
+        X: 0.425232172
+        Y: -0.334372759
+        Z: 5.96046448e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.485397875
+      Pitch: 0.59539777
       Target Frame: <Fixed Frame>
       Value: ThirdPersonFollower (rviz)
-      Yaw: 6.01540518
+      Yaw: 3.98040247
     Saved: ~
 Window Geometry:
   Displays:

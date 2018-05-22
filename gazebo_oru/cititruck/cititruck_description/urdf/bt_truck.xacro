@@ -5,7 +5,7 @@
   <xacro:arg name="tf_prefix" default=""/>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find cititruck_description)/urdf/btruck.gazebo" />
+  <xacro:include filename="$(find cititruck_description)/urdf/bt_truck.gazebo" />
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro" />
   <!-- Adds extra joints for calibration of sensors -->
