@@ -6,6 +6,13 @@
     <xacro:arg name="kinect2" default="false"/>
     <xacro:arg name="kinect1" default="false"/> <!-- deprecated -->
     
+    <!-- Arguments used in cititruck.gazebo -->
+    <xacro:arg name="controller_prefix" default=""/>
+    <xacro:arg name="sensor_prefix" default=""/>
+    <xacro:arg name="sick_name" default="safety"/>
+    <xacro:arg name="ls2000_name" default="nav"/>   
+    <xacro:arg name="kinect2_name" default=""/>
+
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>
 
@@ -313,7 +320,7 @@
     <!-- SENSORS START HERE -->
 
     <!-- SICK laser -->
-    <link name="safety_laser_link">
+    <link name="$(arg sick_name)_link">
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
@@ -333,16 +340,16 @@
         </inertial>
     </link>
 
-    <joint name="safety_laser_joint" type="fixed">
+    <joint name="$(arg sick_name)_joint" type="fixed">
         <axis xyz="0 1 0"/>
         <origin xyz="1.4 0 0.02" rpy="3.14159 0 0"/>
         <parent link="base_link"/>
-        <child link="safety_laser_link"/>
+        <child link="$(arg sick_name)_link"/>
     </joint>
 
 
     <!-- LS2000 navigation/localization laser -->
-    <link name="nav_laser_link">
+    <link name="$(arg ls2000_name)_link">
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
@@ -364,17 +371,17 @@
         </inertial>
     </link>
 
-    <joint name="nav_laser_joint" type="fixed">
+    <joint name="$(arg ls2000_name)_joint" type="fixed">
         <origin xyz="0.8 0 0.85" rpy="0 0 0"/>
         <parent link="base_link"/>
-        <child link="nav_laser_link"/>
+        <child link="$(arg ls2000_name)_link"/>
     </joint>
 
 
     <!-- Velodyne VLP16 -->
     <xacro:if value="$(arg velodyne)">
       <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-      <VLP-16 parent="base_link" prefix="$(arg tf_prefix)" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
+      <VLP-16 parent="base_link" prefix="$(arg tf_prefix)/velodyne" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
           <origin xyz="0.8 0 0.95" rpy="0 0 0" />
       </VLP-16>
     </xacro:if>
