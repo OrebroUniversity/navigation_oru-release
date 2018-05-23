@@ -87,6 +87,7 @@ add_service_files(
   SetDelay.srv
   SetPenetrationRate.srv
   RePlan.srv
+  Abort.srv
 )
 
 ## Generate actions in the 'action' folder
