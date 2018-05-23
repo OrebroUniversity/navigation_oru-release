@@ -109,7 +109,7 @@ private:
   ros::Subscriber laserscan2_sub_;
   
   ros::Subscriber control_report_sub_;
-  ros::Subscriber fork_report_sub_; 
+  ros::Subscriber fork_report_sub_;
   ros::Subscriber enc_sub_;
   ros::Subscriber map_sub_;
   ros::Subscriber pallet_poses_sub_;
@@ -196,7 +196,7 @@ private:
   // Motion planner parameters
   bool use_vector_map_and_geofence_;
 
-  // Used for the laser safety functionallities - important, the boost polygon performs really bad when used in debug mode (factor of 100s). 
+  // Used for the laser safety functionallities - important, the boost polygon performs really bad when used in debug mode (factor of 100s).
   tf::TransformListener tf_listener_;
   laser_geometry::LaserProjection laser_projection_;
   double ebrake_lookahead_time_;
@@ -219,7 +219,7 @@ private:
   bool real_cititruck_;
   bool no_smoothing_;
 public:
-  KMOVehicleExecutionNode(ros::NodeHandle &paramHandle) 
+  KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
     bool use_arm;
     // Parameters
@@ -317,7 +317,7 @@ public:
 
     if (use_arm) {
       model_ = &model2;
-    } 
+    }
     else {
       model_ = &model1;
     }
@@ -326,7 +326,7 @@ public:
         model_ = &model_pitviper;
       }
     }
-     
+
     valid_map_ = false;
     b_shutdown_ = false;
 
@@ -344,7 +344,7 @@ public:
   // Visualization code
   void visualizeCurrentMission() {
 
-    boost::mutex::scoped_lock lock(current_mutex_); 
+    boost::mutex::scoped_lock lock(current_mutex_);
     if (current_path_.sizePath() > 0) {
       orunav_generic::Path path = orunav_generic::minIncrementalDistancePath(current_path_, 0.1);
       orunav_rviz::drawPathInterface(path, "current_path_subsampled", 0, traj_params_.wheelBaseX, marker_pub_);
@@ -357,11 +357,11 @@ public:
         
       }
     }
-     
+
     // The trajectory
     orunav_generic::TrajectoryChunks chunks = vehicle_state_.getTrajectoryChunks();
-    orunav_rviz::drawTrajectoryChunksWithControl(chunks, 2, "chunks", marker_pub_); 
- 
+    orunav_rviz::drawTrajectoryChunksWithControl(chunks, 2, "chunks", marker_pub_);
+
     // Draw the trajetory as a path / cts, each pose2d is separated with 60 ms.
     orunav_rviz::drawTrajectoryChunksUsingTime(chunks, 2, "chunks_dt", current_start_time_, time_to_meter_factor_, traj_params_.timeStep, marker_pub_);
 
@@ -468,7 +468,7 @@ public:
     orunav_generic::Trajectory slowdown = orunav_generic::trajectoryChunksInterfaceToTrajectory(chunks, current_chunk_idx, current_step_idx, slowdown_chunk_idx, slowdown_step_idx);
     current_global_ebrake_area_ = constraint_extract::computeSweepArea(orunav_generic::minIncrementalDistancePath(ebrake, 0.5), *model_, robot_state);
     current_global_slowdown_area_ = constraint_extract::computeSweepArea(orunav_generic::minIncrementalDistancePath(slowdown, 0.5), *model_, robot_state);
-  
+
     //    ROS_INFO_STREAM("current_chunk_idx : " << current_chunk_idx << " current_step_idx : " << current_step_idx << " ebrake_chunk_idx : " << ebrake_chunk_idx << " ebrake_step_idx : " << ebrake_step_idx << " slowdown_chunk_idx : " << slowdown_chunk_idx << " slowdown_step_idx : " << slowdown_step_idx << " ebrake.sizeTrajectory() : " << ebrake.sizeTrajectory());
   }
 
@@ -483,10 +483,10 @@ public:
                           "robot_id_str", 1, 3, 1.0, 2.0, marker_pub_);
 
     orunav_rviz::drawPosition(vehicle_state_.getCurrentState2d().getPose2d()[0],
-                              vehicle_state_.getCurrentState2d().getPose2d()[1],
-                              (ros::Time::now().toSec() - current_start_time_)*time_to_meter_factor_,
-                              1,
-                              marker_pub_);
+        vehicle_state_.getCurrentState2d().getPose2d()[1],
+        (ros::Time::now().toSec() - current_start_time_)*time_to_meter_factor_,
+        1,
+        marker_pub_);
 
     // Draw the safety zones.
     if (use_safetyregions_) {
@@ -499,7 +499,7 @@ public:
 #if 0
       {
         unsigned idx = vehicle_state_.getCurrentTrajectoryChunkIdx();
-        ROS_INFO_STREAM("current trajectory chunk idx : " << idx); 
+        ROS_INFO_STREAM("current trajectory chunk idx : " << idx);
         if (idx < chunks.size()) {
           orunav_generic::Pose2d p = chunks.getChunk(idx).getPose2d(0);
           orunav_rviz::drawPose2d(p, 1, 1, 2., std::string("current_chunk_idx"), marker_pub_);
@@ -507,7 +507,7 @@ public:
       }
       {
         unsigned idx = vehicle_state_.getEarliestConnectChunkIdx();
-        ROS_INFO_STREAM("earliest trajectory chunk idx : " << idx); 
+        ROS_INFO_STREAM("earliest trajectory chunk idx : " << idx);
         if (idx < chunks.size()) {
           orunav_generic::Pose2d p = chunks.getChunk(idx).getPose2d(0);
           orunav_rviz::drawPose2d(p, 1, 2, 2., std::string("earliest_connect_chunk_idx"), marker_pub_);
@@ -516,7 +516,7 @@ public:
 #endif
       {
         int current_path_idx = vehicle_state_.getCurrentPathIdx();
-        //        ROS_INFO_STREAM("current_path_idx : " << current_path_idx); 
+        //        ROS_INFO_STREAM("current_path_idx : " << current_path_idx);
         if (current_path_idx >= 0 && current_path_idx < path.sizePath()) {
           orunav_generic::Pose2d p = path.getPose2d(current_path_idx);
           orunav_rviz::drawPose2d(p, 1, 1, 2., std::string("current_path_idx"), marker_pub_);
@@ -524,13 +524,13 @@ public:
       }
       {
         int earliest_path_idx = vehicle_state_.getEarliestPathIdxToConnect();
-        //        ROS_INFO_STREAM("earliest_path_idx : " << earliest_path_idx); 
+        //        ROS_INFO_STREAM("earliest_path_idx : " << earliest_path_idx);
         if (earliest_path_idx >= 0 && earliest_path_idx < path.sizePath()) {
           orunav_generic::Pose2d p = path.getPose2d(earliest_path_idx);
           orunav_rviz::drawPose2d(p, 1, 0, 2., std::string("earliest_connect_path_idx"), marker_pub_);
         }
         int docking_path_idx = getDockingPathIdx(path, earliest_path_idx, min_docking_distance_, max_docking_distance_);
-        //        ROS_INFO_STREAM("docking_path_idx : " << docking_path_idx); 
+        //        ROS_INFO_STREAM("docking_path_idx : " << docking_path_idx);
         if (docking_path_idx >= 0 && docking_path_idx < path.sizePath()) {
           orunav_generic::Pose2d p = path.getPose2d(docking_path_idx);
           orunav_rviz::drawPose2d(p, 1, 0, 2., std::string("docking_path_idx"), marker_pub_);
@@ -545,22 +545,22 @@ public:
           critical_point_idx = path.sizePath()-1;
         if (critical_point_idx < path.sizePath()) {
           orunav_rviz::drawSphere(path.getPose2d(critical_point_idx)[0],
-                                  path.getPose2d(critical_point_idx)[1],
-                                  0.2,
-                                  1,
-                                  std::string("critical_point"),
-                                  marker_pub_);
-        } 
+              path.getPose2d(critical_point_idx)[1],
+              0.2,
+              1,
+              std::string("critical_point"),
+              marker_pub_);
+        }
       }
       else { // If the crit point is zero, no path is loaded to vehicle_state, draw the current state just for illustration.
         if (critical_point_idx == 0) {
           orunav_rviz::drawSphere(vehicle_state_.getCurrentState2d().getPose2d()[0],
-                                  vehicle_state_.getCurrentState2d().getPose2d()[1],
-                                  0.2,
-                                  1,
-                                  std::string("critical_point"),
-                                  marker_pub_);
-        } 
+              vehicle_state_.getCurrentState2d().getPose2d()[1],
+              0.2,
+              1,
+              std::string("critical_point"),
+              marker_pub_);
+        }
       }
     }
 
@@ -584,7 +584,7 @@ public:
     if (target.start_op.operation == target.start_op.ACTIVATE_SUPPORT_LEGS) {
       ROS_WARN("start_op.operation == start_op.ACTIVATE_SUPPORT_LEGS");
       return false;
-    } 
+    }
     return true;
   }
   
@@ -623,7 +623,7 @@ public:
     //relevant if NOT use_vector_map_and_geofence_
     nav_msgs::OccupancyGrid map = current_map_;
 
-    if (use_vector_map_and_geofence_) {      
+    if (use_vector_map_and_geofence_) {
       //Get map from ac_mission_server here
       orunav_msgs::GetVectorMap vm_srv;
       ros::ServiceClient vm_client = nh_.serviceClient<orunav_msgs::GetVectorMap>("get_vector_map");
@@ -654,7 +654,7 @@ public:
     map_mutex_.unlock();
 
     // Based on the loading operations update the map and goal / start poses.
-    if (req.target.goal_op.operation == req.target.goal_op.LOAD_DETECT || 
+    if (req.target.goal_op.operation == req.target.goal_op.LOAD_DETECT ||
         req.target.goal_op.operation == req.target.goal_op.LOAD) {
       // Update the map with the pallet footprint
       orunav_geometry::PalletModel2dWithState pm = getPalletModelFromRobotTarget(req.target, false);
@@ -669,7 +669,7 @@ public:
     }
 
     if (req.target.start_op.operation == req.target.start_op.UNLOAD) {
-      // If we're going to unload at the start state -> then we need to force a backward movement and glue these together... 
+      // If we're going to unload at the start state -> then we need to force a backward movement and glue these together...
       // Unloading at the start state -> we need to move backwards
       orunav_geometry::PalletModel2dWithState pm = getPalletModelFromRobotTarget(req.target, true);
       constraint_extract::addPolygonToOccupancyMap(pm.getPosePolygon(), map, 100);
@@ -686,13 +686,13 @@ public:
       // If we have extra obstacles, let's add them to the map
       //crate polygon poly via test/polygon2_test.cpp
       for (int i = 0; i < req.extra_obstacles.size(); i++) {
-	orunav_generic::Point2dVec pts;
-	for (int j = 0; j < req.extra_obstacles[i].points.size(); j++) {
-	  pts.push_back(Eigen::Vector2d(req.extra_obstacles[i].points[j].x, req.extra_obstacles[i].points[j].y));
-	}
-	orunav_geometry::Polygon poly(pts);
-	constraint_extract::addPolygonToOccupancyMap(poly, map, 100);
-	//for (unsigned int k = 0; k < poly.sizePoint2d(); k++) std::cout << "pts : " << poly.getPoint2d(k) << std::endl;
+        orunav_generic::Point2dVec pts;
+        for (int j = 0; j < req.extra_obstacles[i].points.size(); j++) {
+          pts.push_back(Eigen::Vector2d(req.extra_obstacles[i].points[j].x, req.extra_obstacles[i].points[j].y));
+        }
+        orunav_geometry::Polygon poly(pts);
+        constraint_extract::addPolygonToOccupancyMap(poly, map, 100);
+        //for (unsigned int k = 0; k < poly.sizePoint2d(); k++) std::cout << "pts : " << poly.getPoint2d(k) << std::endl;
       }
     }
 
@@ -701,14 +701,14 @@ public:
       orunav_msgs::GetPath srv;
 
       if (!use_vector_map_and_geofence_) {
-	srv.request.map = map;
+        srv.request.map = map;
       }
 
       srv.request.target = target;
 
       if (use_vector_map_and_geofence_) {
-	srv.request.vector_map = vector_map_;
-	srv.request.geofence = geofence_;
+        srv.request.vector_map = vector_map_;
+        srv.request.geofence = geofence_;
       }
 
       // Update the target goal pose and map based on the load operations
@@ -751,22 +751,22 @@ public:
     //    path = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
     path = orunav_generic::minIncrementalDistanceMinNbPointsPath(path, min_incr_path_dist_, min_nb_path_points_);
     ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath());
- 
+
     // Perform smoothing
     orunav_msgs::GetPolygonConstraints srv_constraints;
     orunav_msgs::GetSmoothedPath srv_smoothedpath;
 
     // init resulting path to the unsmoothed one
-    srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
-                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
-                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+    srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
+                                                                                                  orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                                                                                  orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
     if(!no_smoothing_)
     {
 
       { // Compute the constraints goes here
         orunav_msgs::GetPolygonConstraints srv;
         srv.request.map = map;
-        srv.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+        srv.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                         orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
                                                                                         orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
         
@@ -823,20 +823,20 @@ public:
         // The path smoother if enabled select different constraints.
         srv_constraints.response.constraints = srv_smoothedpath.response.constraints;
       }
-    
+
     }
 
 
     if (req.target.start_op.operation == req.target.start_op.UNLOAD) {
       target.start; // the docking pose
-      req.target.start; // the actual drop pose 
+      req.target.start; // the actual drop pose
       
       orunav_generic::Path straight_path = orunav_generic::createStraightPathFromStartPose(orunav_conversions::createPose2dFromMsg(req.target.start.pose),
-                                                                                           orunav_conversions::createPose2dFromMsg(target.start.pose), 
+                                                                                           orunav_conversions::createPose2dFromMsg(target.start.pose),
                                                                                            0.1);
       addPathToPath(straight_path, path);
       path = straight_path;
-      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.start),
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.goal));
     }
@@ -847,14 +847,14 @@ public:
       req.target.goal; // the forklift pose where the lift should be made
       
       orunav_generic::Path straight_path = orunav_generic::createStraightPathFromStartPose(orunav_conversions::createPose2dFromMsg(target.goal.pose),
-                                                                                           orunav_conversions::createPose2dFromMsg(req.target.goal.pose), 
+                                                                                           orunav_conversions::createPose2dFromMsg(req.target.goal.pose),
                                                                                            0.1);
       addPathToPath(path, straight_path);
-      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.start),
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.goal));
     }
-        
+
     orunav_msgs::DeltaTVec dts;
     if (use_ct_ || provide_dts_) { // Get deltaT's service call related stuff goes here...
 
@@ -863,7 +863,7 @@ public:
       constraint_extract::PolygonConstraintsVec constraints = orunav_conversions::createPolygonConstraintsVecFromRobotConstraintsMsg(srv_constraints.response.constraints);
       constraint_extract::makeValidPathConstraintsForTrajectoryProcessing(path, constraints);
       srv_constraints.response.constraints = orunav_conversions::createRobotConstraintsFromPolygonConstraintsVec(constraints);
-      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path, 
+      srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.start),
                                                                                                     orunav_conversions::createState2dFromPoseSteeringMsg(req.target.goal));
       orunav_msgs::GetDeltaTVec srv;
@@ -936,7 +936,7 @@ public:
     //   ROS_WARN("goal operation requested");
     //   if (req.task.target.goal_load.status != req.task.target.goal_load.EMPTY) {
     //     // Turn on the load detection
-        
+
 
     //     orunav_msgs::ObjectPoseEstimation srv;
     //     srv.request.active = true;
@@ -954,7 +954,7 @@ public:
     //   }
     // }
 
-    // Perform some additional tests? 
+    // Perform some additional tests?
     // The trajectory processor has some requirment on the path. Note, by altering the path the constraints also needs to change accordingly.
     //makeTaskValidForTrajectoryProcessing(req.task); // TODO - preferably make an own Task class when all this is handled...
 
@@ -970,7 +970,7 @@ public:
     cond_.notify_one();
     return true;
   }
-    
+
   // Processing callbacks from subscriptions
   void process_map(const nav_msgs::OccupancyGrid::ConstPtr &msg) {
     map_mutex_.lock();
@@ -979,12 +979,12 @@ public:
     map_mutex_.unlock();
   }
 
-  void process_report(const orunav_msgs::ControllerReportConstPtr &msg) {    
+  void process_report(const orunav_msgs::ControllerReportConstPtr &msg) {
 
     if (use_forks_) {
       if (ros::Time::now().toSec() - last_process_fork_report_time_.toSec() > 5) {
         ROS_WARN_STREAM("[KMOVehicleExecution] - fork reports are not available (!), check use_fork flag?!?");
-      } 
+      }
     }
 
     orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
@@ -1050,17 +1050,17 @@ public:
     double tracking_error = 0.;
     if (msg->traj_values.size() > 0) {
       if (msg->traj_values[0].active && msg->traj_values[0].status == 1) {
-	tracking_error = msg->traj_values[0].value;
+        tracking_error = msg->traj_values[0].value;
       }
     }
     trackingErrorEBrake(tracking_error);
-  }	    
+  }
 
   bool compute_active_docking_path(orunav_generic::Path &new_path, const orunav_generic::Pose2d &pallet_pose) {
 
     // This function modifies the existing path based on the current pallet pose estimate.
     // The goal is that this modifications of the path should be very limited and even possible to
-    // run without the coordinator. 
+    // run without the coordinator.
     
     // Some sanity checks
     if (!vehicle_state_.isCurrentChunkIdxValid()) {
@@ -1071,7 +1071,7 @@ public:
     // For this to work we need the current chunk idx + offset to be valid. Where the offset if based on 1), when the chunk idx can be connected and a number of how many should be left before the end.
     {
       unsigned int chunk_idx = vehicle_state_.getCurrentTrajectoryChunkIdx() + 3; // This is the earliest we can connect to.
-      unsigned int chunk_idx_to_end_margin = 5; // After we connect we need some chunks to drive before the end. 
+      unsigned int chunk_idx_to_end_margin = 5; // After we connect we need some chunks to drive before the end.
       if (!vehicle_state_.isChunkIdxValid(chunk_idx+chunk_idx_to_end_margin+1)) {
         return false;
       }
@@ -1114,7 +1114,7 @@ public:
     // For the cititruck we can drive +5cm over the object centre (there will be 5cm spare space on the forks...however due to the overshooting that is a bit random this should probably increased even further...
     orunav_generic::Pose2d offset(overshoot_distance_, 0., 0.);
     orunav_generic::Pose2d end_path_pose = orunav_generic::addPose2d(pallet_pose, offset);
-    orunav_generic::Path straight_path = orunav_generic::createStraightPathFromStartPose(pick_pose_close, end_path_pose, 0.1);        
+    orunav_generic::Path straight_path = orunav_generic::createStraightPathFromStartPose(pick_pose_close, end_path_pose, 0.1);
 
     bool send_target_failed = false;
     
@@ -1122,10 +1122,10 @@ public:
     {
       orunav_generic::Pose2dVec pick_poses = pallet.getPickupPoses();
       orunav_generic::Pose2d pick_pose = pick_poses.getPose2d(0);
-            
+
       // Compare this with the last path point...
       orunav_generic::Pose2d path_pose = orig_path.getPose2d(orig_path.sizePath()-1);
-            
+
       double angular_diff = orunav_generic::getAngularNormDist(pick_pose, path_pose);
       double distance_diff = orunav_generic::getDistBetween(pick_pose, path_pose);
       orunav_generic::Pose2d pose_offset = orunav_generic::subPose2d(path_pose, pick_pose);
@@ -1152,23 +1152,23 @@ public:
         return false;
       }
     }
-        
+
     ROS_INFO("[VehicleExecutionNode] RID:%d - computing smoothed straight path", robot_id_);
-       
+
     // Compute the path... - use the straight_path_service
     ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetSmoothedStraightPath>(orunav_generic::getRobotTopicName(robot_id_, "/get_smoothed_straight_path"));
     orunav_msgs::GetSmoothedStraightPath srv;
-        
+
     orunav_generic::State2d start(orig_path.getPose2d(path_idx), orig_path.getSteeringAngle(path_idx));
     srv.request.start = orunav_conversions::createPoseSteeringMsgFromState2d(start);
-        
+
     orunav_generic::State2d goal(pick_pose_close, 0.);
     srv.request.goal = orunav_conversions::createPoseSteeringMsgFromState2d(goal);
-        
+
     srv.request.wheel_base = 1.19;
     srv.request.max_nb_opt_points = docking_max_nb_opt_points_;
     srv.request.resolution = 1./(srv.request.max_nb_opt_points*1.);
-        
+
     if (client.call(srv))
     {
       orunav_generic::Path path_ext = orunav_conversions::createPathFromPathMsg(srv.response.path);
@@ -1185,7 +1185,7 @@ public:
           return false;
         }
       }
-            
+
       orunav_generic::Path path_final = orunav_generic::createStraightPathFromStartPose(goal.getPose2d(), pallet_pose, 0.05); // Go straight the very last bit...
       ROS_INFO("Got new path(!) -> based on smooth straight...");
       // Fuse the paths together...
@@ -1194,12 +1194,12 @@ public:
       addPathToPath(new_path, path_final);
       new_path = orunav_generic::minIncrementalDistancePath(new_path, 0.0001);
       orunav_generic::savePathTextFile(new_path, "online_smoothed.path");
-            
+
       orunav_rviz::drawPathInterface(path_ext, "path_smoother_straight_path", 0, srv.request.wheel_base, marker_pub_);
       orunav_rviz::drawPose2d(start.getPose2d(), 0, 1, 1., "path_smoother_straight_start_pose2d", marker_pub_);
       orunav_rviz::drawPose2d(goal.getPose2d(), 0, 1, 1., "path_smoother_straigh_goal_pose2d", marker_pub_);
       orunav_rviz::drawPathInterface(new_path, "modified_path", 0, srv.request.wheel_base, marker_pub_);
-        
+
       return true;
     }
     else
@@ -1217,7 +1217,7 @@ public:
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect()) {
       // Add some checks on the pose.
-      orunav_generic::Pose2d pallet_pose = orunav_conversions::createPose2dFromMsg(msg->pose.pose); 
+      orunav_generic::Pose2d pallet_pose = orunav_conversions::createPose2dFromMsg(msg->pose.pose);
       ROS_INFO("[KMOVehicleExecution] : in LOAD_DETECT, got a pallet estimate.");
 
       // Need to move the vehicle state to waiting.
@@ -1229,7 +1229,7 @@ public:
       orunav_msgs::Task task;
       {
         orunav_msgs::ComputeTask srv;
-              
+
         srv.request.target = vehicle_state_.getTask().target;
         orunav_generic::State2d start = vehicle_state_.getCurrentGoalState();
         srv.request.target.start = orunav_conversions::createPoseSteeringMsgFromState2d(start);
@@ -1241,7 +1241,7 @@ public:
         srv.request.target.goal.pose = orunav_conversions::createMsgFromPose2d(end_path_pose);
         srv.request.start_from_current_state = true; // in this case we're fine since we're standing still.
         srv.request.target.goal_op.operation = srv.request.target.goal_op.LOAD;
-              
+
         if (computeTaskCB(srv.request,
                           srv.response)) {
           ROS_INFO("[KMOVehicleExecution] - compute_task sucessfull");
@@ -1259,7 +1259,7 @@ public:
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
         orunav_msgs::SetTask srv;
         srv.request.task = task;
-              
+
         if (client.call(srv)) {
           ROS_INFO("[KMOVehicleExecution] - set(update)_task sucessfull");
         }
@@ -1290,17 +1290,17 @@ public:
     }
 
     inputs_mutex_.lock();
-    orunav_generic::Pose2d pallet_pose = orunav_conversions::createPose2dFromMsg(msg->pose.pose); 
+    orunav_generic::Pose2d pallet_pose = orunav_conversions::createPose2dFromMsg(msg->pose.pose);
     vehicle_state_.setDockingPose(pallet_pose);
     inputs_mutex_.unlock();
     
     // Two options.
     // 1) we can modify the trajectory on the fly while driving.
     // 2) we need to perform a bigger adjustment and try again - for each pickup task we need to have received at least one pallet pose estimate.
-        
+
     orunav_generic::Path path;
     if (compute_active_docking_path(path, pallet_pose)) {
-          
+
       vehicle_state_.setDocking(true);
 
       //      bool use_update_task_service_ = true;
@@ -1330,7 +1330,7 @@ public:
         executeTaskCB(srv.request,
                       srv.response);
       }
-            
+
     }
     else {
       // Need to recompute the path using full steps... need to compute the paths first and then set it. Set the update flag to allow it to continue even if it is active.
@@ -1342,14 +1342,14 @@ public:
       orunav_msgs::Task task;
       {
         orunav_msgs::ComputeTask srv;
-              
+
         srv.request.target = vehicle_state_.getTask().target;
         //        srv.request.target.start.pose = vehicle_state_.getTask().target.goal.pose; // This goal pose is the pallet pickup pose... should have the actual planned path pose.
         orunav_generic::State2d start = vehicle_state_.getCurrentGoalState();
         srv.request.target.start = orunav_conversions::createPoseSteeringMsgFromState2d(start);
         srv.request.target.goal.pose = msg->pose.pose; // the pallet pose
         srv.request.start_from_current_state = false; // since we're anyway cannot alter the path, drive until the previous goal.
-              
+
         if (computeTaskCB(srv.request,
                           srv.response)) {
           ROS_INFO("[KMOVehicleExecution] - compute_task sucessfull");
@@ -1367,7 +1367,7 @@ public:
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/set_task");
         orunav_msgs::SetTask srv;
         srv.request.task = task;
-              
+
         if (client.call(srv)) {
           ROS_INFO("[KMOVehicleExecution] - set_task sucessfull");
         }
@@ -1379,7 +1379,7 @@ public:
         ROS_INFO_STREAM("[KMOVehicleExecution] - set_task return value : " << srv.response.result);
       }
     }
-        
+
   }
 
 
@@ -1434,17 +1434,17 @@ public:
     // 1) Compute the laser scan in global coords.
     // 2) Check the 2d points if they are inside the convexHull of the regions.
     if(!tf_listener_.waitForTransform(
-                                      msg->header.frame_id,
-                                      "/world",
-                                      msg->header.stamp + ros::Duration().fromSec(msg->ranges.size()*msg->time_increment),
-                                      ros::Duration(1.0))) {
+         msg->header.frame_id,
+         "/world",
+         msg->header.stamp + ros::Duration().fromSec(msg->ranges.size()*msg->time_increment),
+         ros::Duration(1.0))) {
       return;
     }
 
     sensor_msgs::PointCloud cloud, cloud_ebrake, cloud_slowdown, cloud_ignore;
     laser_projection_.transformLaserScanToPointCloud("/world",*msg,
-                                              cloud,tf_listener_);
- 
+                                                     cloud,tf_listener_);
+
     cloud_ebrake.header = cloud.header;
     cloud_slowdown.header = cloud.header;
     cloud_ignore.header = cloud.header;
@@ -1466,19 +1466,19 @@ public:
     
     for (size_t i = start_idx; i < cloud.points.size()-stop_idx; i++) {
       // Self occlusion, for simulation using the nav laser, don't fully get why they have to be this wide the ignore area but otherwise it will detect the frame!
-      if (!real_cititruck_) 
+      if (!real_cititruck_)
       {
-	if (i >= 205 && i <= 240) {
-        cloud_ignore.points.push_back(cloud.points[i]);
-        continue;
-      }
-      if (i >= 390 && i <= 425) {
-        cloud_ignore.points.push_back(cloud.points[i]);
-        continue;
-      }
+        if (i >= 205 && i <= 240) {
+          cloud_ignore.points.push_back(cloud.points[i]);
+          continue;
+        }
+        if (i >= 390 && i <= 425) {
+          cloud_ignore.points.push_back(cloud.points[i]);
+          continue;
+        }
       }
       if (current_global_ebrake_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
-                                           cloud.points[i].y))) {
+                                                                       cloud.points[i].y))) {
         ROS_INFO_STREAM("e-brake area collision point " << i);
         cloud_ebrake.points.push_back(cloud.points[i]);
         sendbrake = true;
@@ -1486,7 +1486,7 @@ public:
 
       }
       if (current_global_slowdown_area_.collisionPoint2d(Eigen::Vector2d(cloud.points[i].x,
-                                           cloud.points[i].y))) {
+                                                                         cloud.points[i].y))) {
         //ROS_INFO_STREAM("slowdown collision point " << i);
         cloud_slowdown.points.push_back(cloud.points[i]);
         slowdown = true;
@@ -1533,20 +1533,20 @@ public:
   }
 
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
-      // Turn on the load detection
-      orunav_msgs::ObjectPoseEstimation srv;
-      srv.request.active = true;
-      srv.request.pose = target.goal.pose;
-      srv.request.object.type = target.goal_load.status;
-      ros::ServiceClient client = nh_.serviceClient<orunav_msgs::ObjectPoseEstimation>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_estimation_service"));
-      if (client.call(srv)) {
-        ROS_INFO("[KMOVehicleExecutionNode] - pallet_estimation_service (started) - successfull");
-      }
-      else
-      {
-        ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: pallet_estimation_service");
-        return false;
-      }
+    // Turn on the load detection
+    orunav_msgs::ObjectPoseEstimation srv;
+    srv.request.active = true;
+    srv.request.pose = target.goal.pose;
+    srv.request.object.type = target.goal_load.status;
+    ros::ServiceClient client = nh_.serviceClient<orunav_msgs::ObjectPoseEstimation>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_estimation_service"));
+    if (client.call(srv)) {
+      ROS_INFO("[KMOVehicleExecutionNode] - pallet_estimation_service (started) - successfull");
+    }
+    else
+    {
+      ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: pallet_estimation_service");
+      return false;
+    }
   }
 
   bool turnOffPalletEstimation() {
@@ -1591,7 +1591,7 @@ public:
 
   void trackingErrorEBrake(double trackingError) {
     if (max_tracking_error_ < 0)
-      return; 
+      return;
     if (trackingError > max_tracking_error_) {
       ROS_INFO("[KMOVehicleExecutionNode] RID:%d - tracking error too high (%f > %f) - BRAKE.", robot_id_, trackingError, max_tracking_error_);
       sendBrakeCommand();
@@ -1631,7 +1631,7 @@ public:
       command.command = command.COMMAND_STARTTIME;
       command.start_time = startTime;
       
-      if (command.start_time < ros::Time::now()) { 
+      if (command.start_time < ros::Time::now()) {
         ROS_WARN("[KMOVehicleExecutionNode] - command start time < current time : %f secs.", (ros::Time::now() - command.start_time).toSec());
         ROS_WARN_STREAM("[KMOVehicleExecutionNode] - current time: " << ros::Time::now().toSec()
                         << " old command start time: " << command.start_time.toSec());
@@ -1667,15 +1667,15 @@ public:
     // Mutex off - only local variables from now on in the communication
     // -----------------------------------------------------------------
     waitForController();
-	
+
     std::vector<double> A0, A1, b;
-	
+
     orunav_msgs::ControllerTrajectoryChunkVec c_vec;
     // Send them off
     for (unsigned int i = chunks_data.first; i < chunks.size(); i++)
     {
       orunav_msgs::ControllerTrajectoryChunk c = orunav_conversions::createControllerTrajectoryChunkFromTrajectoryInterface(chunks[i]);
-	    
+
       c.robot_id = robot_id_;
       c.traj_id = 0;
       c.sequence_num = i;
@@ -1684,31 +1684,31 @@ public:
         c.final = true;
       c_vec.chunks.push_back(c);
     }
-      
+
     trajectorychunk_pub_.publish(c_vec);
     ROS_INFO("[KMOVehicleExecutionNode] - sending chunk size: %lu", c_vec.chunks.size());
-      
+
   }
 
 
 
-  // This takes care of computing/updating the reference trajectory followed by the controller node. 
+  // This takes care of computing/updating the reference trajectory followed by the controller node.
   void run() {
-      
+
     while(!b_shutdown_) {
       //usleep(100000);
       ROS_INFO("[KMOVehicleExecutionNode] trajectory update thread - going to sleep : %s", vehicle_state_.getDebugString().c_str());
-   
+
       boost::unique_lock<boost::mutex> uniqueLock(run_mutex_);
       cond_.wait(uniqueLock);
       
       ROS_INFO("[KMOVehicleExecutionNode] waking up, vehicle state : %s", vehicle_state_.getDebugString().c_str());
       // Need to be in WAIT state or ACTIVE state
       if (!vehicle_state_.canSendTrajectory()) { // This handle the previous problem if many coordination times are sent at once (WAITING_TRAJECTORY_SENT)
-	ROS_INFO("[KMOVehicleExecutionNode] - cannot send trajectory (wrong state)");
+        ROS_INFO("[KMOVehicleExecutionNode] - cannot send trajectory (wrong state)");
         usleep(100000);
         vehicle_state_.setResendTrajectory(true);
-    	continue;
+        continue;
       }
 
       if (vehicle_state_.getCriticalPointIdx() >= 0 && vehicle_state_.getCriticalPointIdx() < 2) {
@@ -1746,7 +1746,7 @@ public:
       inputs_mutex_.lock();
       current_constraints_path_ = path;
 
-      // TODO - this will affect the order of the constraints, they are not currently used anyway. 
+      // TODO - this will affect the order of the constraints, they are not currently used anyway.
       orunav_generic::makeValidPathForTrajectoryProcessing(path);
 
       if (!orunav_generic::validPathForTrajectoryProcessing(path)) {
@@ -1766,10 +1766,10 @@ public:
       inputs_mutex_.unlock();
 
       ///////////////////////////////////////////////////////////////////
-      // CASE 1: 
+      // CASE 1:
       ///////////////////////////////////////////////////////////////////
       if (vehicle_state_.vehicleStoppedAndTrajectoryNotCompleted() || (vehicle_state_.isWaitingTrajectoryEmpty() && vehicle_state_.hasActiveTaskCriticalPoint())) {
-	// Waiting - need to ship a trajectory off from the current location with zero speed.
+        // Waiting - need to ship a trajectory off from the current location with zero speed.
         ROS_INFO("[KMOVehicleExecutionNode] - CASE1");
 
         unsigned int path_idx;
@@ -1780,22 +1780,27 @@ public:
           continue;
         }
         vehicle_state_.setCurrentPathIdx(path_idx);
-	
+
         // Important the chunks will need to be re-indexed from 0.
         // It is currently only CASE2 which use on-the-fly modification of an active trajectory.
         vehicle_state_.clearTrajectoryChunkIdx();
       }
       
       ///////////////////////////////////////////////////////////////////
-      // CASE 2: 
+      // CASE 2:
       ///////////////////////////////////////////////////////////////////
       else if (vehicle_state_.isActive()) {
-	ROS_INFO("[KMOVehicleExecutionNode] - CASE2, need to send an updated trajectory for goalID %d", current_target_.goal_id);
+        ROS_INFO("[KMOVehicleExecutionNode] - CASE2, need to send an updated trajectory for goalID %d", current_target_.goal_id);
         bool send_brake;
         unsigned int path_idx;
         // idx when we can safely connect
         unsigned int chunk_idx = vehicle_state_.getCurrentTrajectoryChunkIdx() + chunk_idx_connect_offset_; // This is the earliest we can connect to.
         unsigned int chunk_idx_to_end_margin = 5; // After we connect we need some chunks to drive before the end.
+
+        bool new_path_is_shorter = (path.sizePath() < vehicle_state_.getPath().sizePath());
+        if (new_path_is_shorter) {
+          chunk_idx_to_end_margin = 1;
+        }
         if (vehicle_state_.isChunkIdxValid(chunk_idx+chunk_idx_to_end_margin)) {
           // Two options
           // 1) the new path start is the same as the prev path start
@@ -1804,8 +1809,8 @@ public:
           // In case of 2), we need to connect the provided path with the current path.
           ROS_INFO_STREAM("[KMOVehicleExecution] - (+3) chunk_idx: valid : " << chunk_idx);
           double path_chunk_distance;
-	  vehicle_state_.updatePath(path);
-	  if (use_ct_) { 
+          vehicle_state_.updatePath(path);
+          if (use_ct_) {
             ROS_INFO_STREAM("Adding cts: " << cts.size());
             ROS_INFO_STREAM("Path size : " << path.sizePath());
             vehicle_state_.setCoordinatedTimes(cts);
@@ -1851,7 +1856,7 @@ public:
         }
       }
       ///////////////////////////////////////////////////////////////////
-      // CASE 3: 
+      // CASE 3:
       ///////////////////////////////////////////////////////////////////
       else if (vehicle_state_.isWaitingTrajectoryEmpty()) {
         ROS_INFO("[KMOVehicleExecutionNode] - CASE3, great - goalID is %d", current_target_.goal_id);
@@ -1870,7 +1875,7 @@ public:
         ROS_INFO("Computing trajectory");
         chunks_data = computeTrajectoryChunksCASE3(vehicle_state_, traj_params_, use_ct_);
         ROS_INFO("Computing trajectory - done");
-      
+
         // Do we need to perform any operations at start? (note this is the only case when we should do any start operations...).
         if (vehicle_state_.performStartOperation()) {
           usleep(100000);
@@ -1880,11 +1885,11 @@ public:
       }
       
       ///////////////////////////////////////////////////////////////////
-      // CASE 4: 
+      // CASE 4:
       ///////////////////////////////////////////////////////////////////
       else {
-	ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
-	ROS_ERROR("[KMOVehicleExecutionNode] - in wong STATE(!) - should never happen");
+        ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
+        ROS_ERROR("[KMOVehicleExecutionNode] - in wong STATE(!) - should never happen");
       }
       
       //-----------------------------------------------------------------
@@ -1919,7 +1924,7 @@ public:
 };
 
 
-    
+
 
 
 int main(int argc, char** argv) {
@@ -1929,7 +1934,7 @@ int main(int argc, char** argv) {
 
   KMOVehicleExecutionNode ve(params);
 
-    
+
   ros::spin();
 
 }
