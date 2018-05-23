@@ -41,8 +41,6 @@
     <xacro:property name="z_pilar" value="2.25" />
     <xacro:property name="y_sensor_platform" value="0.64" /> <!--external distance between pilars-->
     <xacro:property name="b5" value="0.55" />
-    <xacro:property name="x_sensor_bar" value="${x_pilar + 0.05}" />
-    <xacro:property name="y_sensor_bar" value="${y_sensor_platform - 2*y_pilar}" />
     <xacro:property name="z_sensor_bar" value="0.04" />
     <xacro:property name="rear_wheel_diameter" value="0.085" /> 
     <xacro:property name="rear_wheel_length" value="0.075" />
@@ -69,14 +67,13 @@
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
       <origin/>
     </inertial>
-    <visual>
-      <origin xyz="${(y - x - x_pilar)/2.0 + x + x_pilar} 0 ${0.48-m1/2}" rpy="0 0 0" />
-      <geometry>
-        <box size="${y - x - x_pilar} ${b1} ${0.96-m1}" />
-      </geometry>
-      <material name="red"/>
-    </visual>
-    
+      <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://cititruck_description/meshes/forklift_body.stl" scale="0.001 0.001 0.001"/>
+          </geometry>
+	  <material name="white"/>
+        </visual> 
     <collision>
       <origin xyz="${(y - x - x_pilar)/2.0 + x + x_pilar} 0 0.1" rpy="0 0 0" />
       <geometry>
@@ -84,52 +81,9 @@
       </geometry>
     </collision>
   </link>
-  
-    <link name="left_fork">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${l} ${e} ${h13}" />
-        </geometry>   
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${l} ${e} ${h13}" />
-        </geometry>
-    <contact_coefficients mu="1" kp="10.0" kd="10.0"/>
-      </collision>
-    </link>
 
-    <link name="right_fork">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${l} ${e} ${h13}" />
-        </geometry>   
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${l} ${e} ${h13}" />
-        </geometry>
-    <contact_coefficients mu="1" kp="10.0" kd="10.0"/>
-      </collision>
-    </link>
+<!-- Forlift Forks -->
+
 
     <link name="base_fork">
       <inertial>
@@ -139,27 +93,22 @@
                  iyy="0.01" iyz="0.0" izz="0.01" />
       </inertial>
       <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://cititruck_description/meshes/forklift_forks.stl" scale="0.001 0.001 0.001"/>
+          </geometry>
+	  <material name="green"/>
+      </visual>
+      <collision>
         <origin xyz="0 0 0.0" rpy="0 0 0" />
         <geometry>
-          <box size="0.01 0.01 0.01" />
+          <box size="${l} ${b5} ${h13}" />
         </geometry>
-        <material name="grey" />
-      </visual>
+    <contact_coefficients mu="1" kp="10.0" kd="10.0"/>
+      </collision>
     </link>
 
-    <!-- static joint connect the single prismatic joint with the forks... -->
-    <joint name="left_fork_joint" type="fixed">
-      <origin xyz="0 ${b5/2.0-e/2.0} 0.0" rpy="0 0 0" />
-      <child link="left_fork" />
-      <parent link="base_fork"/>
-    </joint>
-
-    <joint name="right_fork_joint" type="fixed">
-      <origin xyz="0 ${-(b5/2.0-e/2.0)} 0.0" rpy="0 0 0" />
-      <child link="right_fork" />
-      <parent link="base_fork"/>
-    </joint>
-
+   
 <!-- lift speed with load 0.07 (m/s) not applied  -->
     <joint name="fork_joint" type="prismatic">
       <origin xyz="${x - l/2.0} 0.0 0.0" rpy="0 0 0" />
@@ -169,118 +118,9 @@
       <limit lower="0" upper="${h3}" effort="1000" velocity="100" /> 
     </joint>
 
-<!-- Sensor Platform -->
 
-    <link name="base_pilar">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="0.01 0.01 0.01" />
-        </geometry>
-        
-        <material name="grey" />
-      </visual>
-    </link>
 
-   <link name="right_pilar">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
-        </geometry>
-        
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
-        </geometry>
-      </collision>
-    </link>
 
-    <link name="left_pilar">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
-        </geometry>
-        
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_pilar} ${y_pilar} ${z_pilar}" />
-        </geometry>
-      </collision>
-    </link>
-
-    <link name="sensor_bar">
-      <inertial>
-        <mass value="1" />
-        <origin xyz="0 0 0.0" />
-        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
-                 iyy="0.01" iyz="0.0" izz="0.01" />
-      </inertial>
-      <visual>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_sensor_bar} ${y_sensor_bar} ${z_sensor_bar}" />
-        </geometry>
-        
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0" rpy="0 0 0" />
-        <geometry>
-          <box size="${x_sensor_bar} ${y_sensor_bar} ${z_sensor_bar}" />
-        </geometry>
-      </collision>
-    </link>
-
-   <joint name="base_pilar_joint" type="fixed">
-      <origin xyz="${x + x_pilar/2.0} 0 0" rpy="0 0 0.0" />
-      <child link="base_pilar" />
-      <parent link="base_link"/>
-    </joint>
-    
-
-   <joint name="left_pilar_joint" type="fixed">
-      <origin xyz="0.0 ${y_sensor_platform/2.0 - y_pilar/2.0} ${z_pilar/2.0}" rpy="0 0 0" />
-      <child link="left_pilar" />
-      <parent link="base_pilar"/>
-    </joint>
-
-   <joint name="right_pilar_joint" type="fixed">
-      <origin xyz="0 ${-(y_sensor_platform/2.0 - y_pilar/2.0)} ${z_pilar/2.0}" rpy="0 0 0" />
-      <child link="right_pilar" />
-      <parent link="base_pilar"/>
-    </joint>
-    
-    <joint name="sensor_bar_joint" type="fixed">
-      <origin xyz="0 0 ${b1 + 0.6 + z_sensor_bar/2.0} " rpy="0 0 0" />
-      <child link="sensor_bar" />
-      <parent link="base_pilar"/>
-    </joint>
     
 <!-- Rear Steering Wheel -->
     <link name="steer_link">
@@ -399,6 +239,12 @@
       </joint>
 
 
+
+<!-- ***********************************************
+     ********************Sensors********************
+     ***********************************************  -->
+
+
 <!-- Sick laser -->
       
       <link name="laser2d_floor_base_link">
@@ -433,11 +279,12 @@
       <sensor_calibration_assembly sensor_id="laser2d_floor" parent_link="laser2d_floor_base_link"/>
 
 
+
 <!-- Kinect V2 -->
       
     <joint name="kinect2_joint" type="fixed">
-      <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 0" /> <!-- check sensor height z -->
-      <parent link="base_pilar"/>
+      <origin xyz="${ 0.27 + x } ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 0" /> <!-- check sensor height z -->
+      <parent link="base_link"/>
       <child link="kinect2_base_link"/>
     </joint>
 
@@ -461,10 +308,13 @@
       </collision>-->
     </link>
 
-<!-- velodyne HDL32E -->
+
+<!-- Velodyne HDL32E -->
+
+
     <joint name="velodyne_base_joint" type="fixed">
-      <origin xyz="${-x_pilar/2 + 0.27} ${y_sensor_platform/2.0 - 0.18} ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 0"/> 
-      <parent link="base_pilar"/>
+      <origin xyz="${ x + 0.27} ${y_sensor_platform/2.0 - 0.18} ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 0"/> 
+      <parent link="base_link"/>
       <child link="velodyne_base_link"/>
     </joint>
 
@@ -515,11 +365,18 @@
       </collision>
   -->
     </link>
+
+
+
+
+
+
     
-    <!-- Asus camera Up -->
+
+<!-- Asus camera Up -->
     <joint name="asus_side_joint" type="fixed">
-        <origin xyz="0 ${y_sensor_platform/2.0 + .06} ${b1 + .6 + z_sensor_bar}" rpy="0 0 ${M_PI/2}"/> 
-        <parent link="base_pilar"/>
+        <origin xyz="${x + x_pilar/2.0} ${y_sensor_platform/2.0 + .06} ${b1 + .6 + z_sensor_bar}" rpy="0 0 ${M_PI/2}"/> 
+        <parent link="base_link"/>
         <child link="asus_side_base_link"/>
       </joint>
       
@@ -549,8 +406,13 @@
           </collision>
         -->
     </link>
+
+
+
+
+
   
-  <!-- Intel Realsense camera on fork -->
+<!-- Intel Realsense camera on fork -->
     <!-- FIXME: origin -->
     <joint name="realsense_fork_joint" type="fixed">
         <origin xyz="${l/2} 0 0.235" rpy="0 0 ${M_PI}"/> 
@@ -585,11 +447,16 @@
       </collision>  -->
       </link>
 
-    <!-- Reflex camera -->
+
+
+
+
+
+<!-- Reflex camera -->
     <!-- FIXME: origin -->
       <joint name="reflex_joint" type="fixed">
-        <origin xyz="0 .09 1.90" rpy="0 0 ${M_PI}"/> 
-        <parent link="base_pilar"/>
+        <origin xyz="${x + x_pilar/2.0} .09 1.90" rpy="0 0 ${M_PI}"/> 
+        <parent link="base_link"/>
         <child link="reflex_base_link"/>
       </joint>
       
@@ -614,5 +481,37 @@
         </collision>
     -->
       </link>
+
+<!-- LS2000 -->
+
+      <link name="LS2000_link">
+        <inertial>
+          <mass value="0.200" />
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://cititruck_description/meshes/ls2000_laser.dae"/>
+          </geometry>
+        </visual>       
+            <!--
+          <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.035 0.185 0.025"/>
+        </geometry>
+          </collision>
+        -->
+    </link>
+
+      <joint name="LS2000_joint" type="fixed">
+        <origin xyz="1.257 0 2.3005" rpy="0 0 ${M_PI}"/> 
+        <parent link="base_link"/>
+        <child link="LS2000_link"/>
+      </joint>
+
+
 
 </robot>
