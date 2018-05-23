@@ -1,7 +1,0 @@
-zeros:
-  laser3d_calib_pre_x: 0.0
-  laser3d_calib_pre_y: 0.0
-  laser3d_calib_roll: 0.0
-
-  laser2d_floor_calib_pre_x: 0.0
-
