@@ -37,7 +37,7 @@
            
         <!-- Joint limits (only used for version with movable joints) -->
         <xacro:property name="max_trans" value="1.0"/>
-        <xacro:property name="max_rot" value="1.57"/>
+        <xacro:property name="max_rot" value="3.14159"/>
 
         <!-- Version with fixed pre-calibrated joints (for use in Gazebo and on the actual robot) -->
         <xacro:if value="$(arg use_fixed_joints)">
