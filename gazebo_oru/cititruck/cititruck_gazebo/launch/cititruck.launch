@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <arg name="robot_pose_x" default="0"/>
   <arg name="robot_pose_y" default="0"/>
@@ -8,10 +10,24 @@
   <arg name="robot_name" default="cititruck"/>
   <arg name="xacro_name" default="cititruck"/>
 
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/$(arg xacro_name).xacro'" />
+  <arg name="asus_camera" default="false" />
+  <arg name="velodyne" default="false" />
+  <arg name="kinect2" default="false" />
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder 
+    '$(find cititruck_description)/urdf/$(arg xacro_name).xacro'
+     velodyne:=$(arg velodyne) kinect2:=$(arg kinect2) asus_camera:=$(arg asus_camera) tf_prefix:=$(arg robot_name)/sensors  controller_prefix:=controller/  sensor_prefix:=sensors/  sick_name:=laser2d_floor ls2000_name:=laser2d_top kinect2_name:=kinect2"
+  />
 
   <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />
 
- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <group if="$(arg kinect2)">
+    <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_prefix... -->
+    <!-- TODO who needs this? -->
+    <node pkg="tf" type="static_transform_publisher" name="$(arg robot_name)_kinect2_link_broadcaster" args="0 0 0 0 1.57 0 $(arg robot_name)/kinect2_link $(arg robot_name)/kinect2_link_tmp 100" />
+    <node pkg="tf" type="static_transform_publisher" name="$(arg robot_name)_kinect_link_tmp_broadcaster" args="0 0 0 -1.57 0 0 $(arg robot_name)/kinect2_link_tmp $(arg robot_name)/$(arg robot_name)/kinect2_link 100" />
+  </group>>
 
 </launch>
