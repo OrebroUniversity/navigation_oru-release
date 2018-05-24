@@ -12,6 +12,8 @@
     <xacro:arg name="sick_name" default="safety"/>
     <xacro:arg name="ls2000_name" default="nav"/>   
     <xacro:arg name="kinect2_name" default=""/>
+    <xacro:arg name="kinect1_name" default="kinect"/>
+    
 
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>
@@ -393,35 +395,10 @@
       <kinect2_sensor parent="base_link" prefix="$(arg tf_prefix)" name="kinect2" cam_px="0.65" cam_py="0" cam_pz="1.15" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
     </xacro:if>
 
-    <!-- Old Kinect (deprecated, only used for pallet detection?) -->
+    <!-- Old Kinect, only used for pallet detection -->    
     <xacro:if value="$(arg kinect1)">
-      <link name="kinect_link">
-          <collision>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <geometry>
-                  <box size="0.1 0.1 0.1"/>
-              </geometry>
-          </collision>
-          <visual>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <geometry>
-                  <box size="0.001 0.001 0.001"/>
-              </geometry>
-          </visual>
-          <inertial>
-              <mass value="1e-5"/>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
-          </inertial>
-      </link>
-
-      <joint name="kinect_joint" type="fixed">
-          <axis xyz="0 1 0"/>
-          <origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
-          <!--        <origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/>-->
-          <parent link="base_link"/>
-          <child link="kinect_link"/>
-      </joint>
+      <xacro:include filename="$(find kinect2_description)/urdf/asus/asus.xacro"/>
+      <asus_sensor parent="base_link" prefix="$(arg tf_prefix)" name="$(arg kinect1_name)" cam_px="0.55" cam_py="0" cam_pz="0.7" cam_or="0" cam_op="2.5" cam_oy="0"/>
     </xacro:if>
 
 </robot>
