@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 
 <robot name="btruck" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Prefix for includes etc. -->
+  <xacro:arg name="tf_prefix" default=""/>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find cititruck_description)/urdf/btruck.gazebo" />
+  <xacro:include filename="$(find cititruck_description)/urdf/bt_truck.gazebo" />
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro" />
   <!-- Adds extra joints for calibration of sensors -->
@@ -245,7 +247,7 @@
 
 <!-- Sick laser -->
       
-      <link name="safety_laser_base_link">
+      <link name="laser2d_floor_base_link">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -267,14 +269,14 @@
     </inertial>
       </link>
 
-      <joint name="safety_laser_joint" type="fixed">
+      <joint name="laser2d_floor_joint" type="fixed">
     <axis xyz="0 1 0" />
     <origin xyz="${l2 + x -y_sick/2.0} 0 ${z_sick/2.0}" rpy="3.14159 0 0"/>
     <parent link="base_link"/>
-    <child link="safety_laser_base_link"/>
+    <child link="laser2d_floor_base_link"/>
       </joint> 
 
-      <sensor_calibration_assembly sensor_id="safety_laser" parent_link="safety_laser_base_link"/>
+      <sensor_calibration_assembly sensor_id="laser2d_floor" parent_link="laser2d_floor_base_link"/>
 
 
 
@@ -305,9 +307,6 @@
     </geometry>
       </collision>-->
     </link>
-
-
-
 
 
 <!-- Velodyne HDL32E -->
@@ -373,18 +372,19 @@
 
 
     
+
 <!-- Asus camera Up -->
-    <joint name="asus_joint" type="fixed">
+    <joint name="asus_side_joint" type="fixed">
         <origin xyz="${x + x_pilar/2.0} ${y_sensor_platform/2.0 + .06} ${b1 + .6 + z_sensor_bar}" rpy="0 0 ${M_PI/2}"/> 
         <parent link="base_link"/>
-        <child link="asus_base_link"/>
+        <child link="asus_side_base_link"/>
       </joint>
       
-      <link name="asus_base_link"/>
+      <link name="asus_side_base_link"/>
       
-      <sensor_calibration_assembly sensor_id="asus" parent_link="asus_base_link" create_final_link="false"/>
+      <sensor_calibration_assembly sensor_id="asus_side" parent_link="asus_side_base_link" create_final_link="false"/>
 
-      <link name="asus_link">
+      <link name="asus_side_link">
         <inertial>
           <mass value="0.200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
@@ -414,18 +414,18 @@
   
 <!-- Intel Realsense camera on fork -->
     <!-- FIXME: origin -->
-    <joint name="realsense_joint" type="fixed">
+    <joint name="realsense_fork_joint" type="fixed">
         <origin xyz="${l/2} 0 0.235" rpy="0 0 ${M_PI}"/> 
         <parent link="base_fork"/>
-        <child link="realsense_base_link"/>
+        <child link="realsense_fork_base_link"/>
       </joint>
       
-      <link name="realsense_base_link"/>
+      <link name="realsense_fork_base_link"/>
 
 
-      <sensor_calibration_assembly sensor_id="realsense" parent_link="realsense_base_link" create_final_link="false"/>
+      <sensor_calibration_assembly sensor_id="realsense_fork" parent_link="realsense_fork_base_link" create_final_link="false"/>
 
-    <link name="realsense_link">
+    <link name="realsense_fork_link">
         <inertial>
           <mass value="0.200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
@@ -484,7 +484,7 @@
 
 <!-- LS2000 -->
 
-      <link name="LS2000_link">
+      <link name="laser2d_top_base_link">
         <inertial>
           <mass value="0.200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
@@ -506,12 +506,13 @@
         -->
     </link>
 
-      <joint name="LS2000_joint" type="fixed">
+      <joint name="laser2d_top_base_joint" type="fixed">
         <origin xyz="1.257 0 2.3005" rpy="0 0 ${M_PI}"/> 
         <parent link="base_link"/>
-        <child link="LS2000_link"/>
+        <child link="laser2d_top_base_link"/>
       </joint>
 
+      <sensor_calibration_assembly sensor_id="laser2d_top" parent_link="laser2d_top_base_link"/>
 
 
 </robot>

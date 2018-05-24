@@ -1,7 +1,0 @@
-zeros:
-  velodyne_calib_pre_x: 0.0
-  velodyne_calib_pre_y: 0.0
-  velodyne_calib_roll: 0.0
-
-  safety_laser_calib_pre_x: 0.0
-
