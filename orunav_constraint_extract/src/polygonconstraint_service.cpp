@@ -22,6 +22,7 @@ bool save_constraints_and_path;
 ros::Publisher marker_pub;
 bool visualize_outer_constraints;
 bool visualize_only_invalid;
+bool debug;
 
 bool getPolygonConstraintsCallback(orunav_msgs::GetPolygonConstraints::Request  &req,
          orunav_msgs::GetPolygonConstraints::Response &res )
@@ -34,6 +35,17 @@ bool getPolygonConstraintsCallback(orunav_msgs::GetPolygonConstraints::Request  
   orunav_generic::Path path = orunav_conversions::createPathFromPathMsg(req.path);
   orunav_generic::Pose2d target_start_pose = orunav_conversions::createPose2dFromMsg(req.path.target_start.pose);
   orunav_generic::Pose2d target_goal_pose = orunav_conversions::createPose2dFromMsg(req.path.target_goal.pose);
+
+  if (debug) {
+    ROS_INFO_STREAM("[PolygonConstraintService]: path length : " << path.sizePath());
+    ROS_INFO_STREAM("[PolygonConstraintService]: map : " << req.map.info);
+    ROS_INFO_STREAM("[PolygonConstraintServcie]: map data size : " << req.map.data.size());
+  }
+
+  if (path.sizePath() == 0) {
+    ROS_WARN("[PolygonConstraintService]: empty path provided(!)");
+    return false;
+  }
 
   constraint_extract::PolygonConstraint constraint;
   int constraint_idx;
@@ -237,6 +249,7 @@ int main(int argc, char **argv)
   nh.param("visualize_only_invalid", visualize_only_invalid, false);
   nh.param("skip_overlap", lookup_params.skip_overlap, false);
   nh.param("resolution", lookup_params.resolution, 0.1);
+  nh.param("debug", debug, false);
   
   if (visualize)
     {
