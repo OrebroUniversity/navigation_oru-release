@@ -2,12 +2,12 @@
 # The content of the 'zeros' field, i.e. the joint values, can be adjusted at runtime using the joint_state_publisher GUI!
 resulting_transforms:
   asus_side:
+  - 0.03380000000000005
   - 0.0
   - 0.0
-  - 0.0
-  - 0.0
-  - -0.0
-  - 0.0
+  - -0.04575999821583818
+  - 0.2638154042902163
+  - -0.17383329723721205
   kinect2:
   - 0.0
   - 0.0
@@ -51,6 +51,9 @@ resulting_transforms:
   - -0.0
   - 1.5092198359999998
 zeros:
+  asus_side_calib_pitch: 0.2676634679999999
+  asus_side_calib_pre_x: 0.03380000000000005
+  asus_side_calib_yaw: -0.16776090599999982
   kinect2_calib_pitch: -0.021991129999999977
   kinect2_calib_yaw: -0.1105839679999998
   laser2d_floor_calib_roll: 3.14159
