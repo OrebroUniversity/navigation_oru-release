@@ -24,7 +24,7 @@
       <steerTorque>1000</steerTorque>
       <driveTorque>1000</driveTorque>
 
-      <commandTopic>cmd_vel</commandTopic>
+      <commandTopic>$(arg controller_prefix)cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>/world</odometryFrame>
       <robotBaseFrame>base_footprint</robotBaseFrame>
@@ -47,7 +47,7 @@
       <forkTorque>100000</forkTorque>
       <pidP>100000</pidP>
 
-      <commandTopic>cmd_fork</commandTopic>
+      <commandTopic>$(arg controller_prefix)cmd_fork</commandTopic>
       <robotBaseFrame>base_footprint</robotBaseFrame>
       <useVelocityControl>true</useVelocityControl>
 
@@ -56,8 +56,8 @@
   </gazebo>
 
   <!-- SICK safety laser -->
-  <gazebo reference="safety_laser_link">
-    <sensor type="gpu_ray" name="safety_laser_sensor">
+  <gazebo reference="$(arg sick_name)_link">
+    <sensor type="gpu_ray" name="$(arg sick_name)_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
       <update_rate>40</update_rate>
@@ -90,15 +90,15 @@
         </noise>
       </ray>
       <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
-        <topicName>safety_laser</topicName>
-        <frameName>safety_laser_link</frameName>
+        <topicName>$(arg sensor_prefix)$(arg sick_name)</topicName>
+        <frameName>$(arg sick_name)_link</frameName>
       </plugin>
     </sensor>
   </gazebo>
 
   <!-- navigation laser (LS2000) -->
-  <gazebo reference="nav_laser_link">
-    <sensor type="gpu_ray" name="nav_laser_sensor">
+  <gazebo reference="$(arg ls2000_name)_link">
+    <sensor type="gpu_ray" name="$(arg ls2000_name)_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
       <update_rate>16</update_rate>
@@ -124,8 +124,8 @@
         </noise>
       </ray>
       <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
-        <topicName>nav_laser</topicName>
-        <frameName>nav_laser_link</frameName>
+        <topicName>$(arg sensor_prefix)$(arg ls2000_name)</topicName>
+        <frameName>$(arg ls2000_name)_link</frameName>
       </plugin>
     </sensor>
   </gazebo>
@@ -188,11 +188,11 @@
 	<alwaysOn>true</alwaysOn>
 	<updateRate>1.0</updateRate>
 	<cameraName>kinect_rgb</cameraName>
-	<imageTopicName>rgb/image_raw</imageTopicName>
-	<cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-	<depthImageTopicName>depth/image_raw</depthImageTopicName>
-	<depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-	<pointCloudTopicName>depth_registered/points</pointCloudTopicName>
+	<imageTopicName>$(arg sensor_prefix)$(arg kinect2_name)rgb/image_raw</imageTopicName>
+	<cameraInfoTopicName>$(arg sensor_prefix)$(arg kinect2_name)rgb/camera_info</cameraInfoTopicName>
+	<depthImageTopicName>$(arg sensor_prefix)$(arg kinect2_name)depth/image_raw</depthImageTopicName>
+	<depthImageCameraInfoTopicName>$(arg sensor_prefix)$(arg kinect2_name)depth/camera_info</depthImageCameraInfoTopicName>
+	<pointCloudTopicName>$(arg sensor_prefix)$(arg kinect2_name)depth_registered/points</pointCloudTopicName>
 	<frameName>kinect_rgb_optical_link</frameName>
 	<pointCloudCutoff>0.5</pointCloudCutoff>
 	<distortionK1>0.00000001</distortionK1>

@@ -1,0 +1,154 @@
+<!-- 
+    Example launch file to run the iliad_smp planner on the citi truck robot. 
+    The file is an initial attempt to launch the required software, topics and transforms
+ -->
+
+<?xml version="1.0"?>
+<launch>
+
+  <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
+  <rosparam command="load" file="$(find orunav_params)/config/citi1.cfg"/>
+  
+  <arg name="laser_in_costmap" default="false"/>
+  <arg name="prefix" default="robot1"/>
+  <arg name="avoid_smoothing" default="true"/>
+
+  <!-- Launching the map server -->
+  <include file="$(find gazebo_worlds_oru)/launch/roblab_map_server_world_frame.launch"/>
+
+
+  <!-- Launching the localization -->
+  <include file="$(find orunav_launch)/launch/ndt_mcl_roblab.launch"/>
+
+  <node pkg="orunav_vehicle_execution" type="point_n_click_target_client" name="point_n_click_target_client_citi1" output="screen">
+    <param name="load_operation" value="false" />
+    <rosparam param="robot_ids">[1]</rosparam>
+    <param name="multiple_vehicles" value="true" />
+  </node>
+
+  <node pkg="orunav_coordinator_fake" type="coordinator_fake_node" name="coordinator_fake_node" output="screen">
+    <param name="multiple_vehicles" value="true" />
+    <param name="use_ct" value="false" />  
+  </node>
+
+
+  <!-- Needed for the costmap -->
+  <node pkg="tf" type="static_transform_publisher" name="robot1_baselink_to_baselink" args="0 0 0 0 0 0 /base_link /robot1/base_link 100"/> 
+
+  <node pkg="tf" type="static_transform_publisher" name="robot1_baselink_to_laserscan0" args="0.836854 -0.00740841 0 -3.10886773 0 0 /robot1/base_link /laserscan1 100"/> 
+  <!-- -3.10886773 -->
+  <node pkg="tf" type="static_transform_publisher" name="robot1_baselink_to_laserscan1" args="1.44 0.07 0 0 0 0 /robot1/base_link /laserscan0 100"/> 
+
+  <!-- Remapping the topic of the kmo_navserver to the ndt_mcl_pose. Setting epu to true would allow the system to read the odom as an input -->
+  <!-- <remap from="/robot1/kmo_navserver/input_loc" to="/ndt_mcl_pose"/> -->
+
+  <!-- ALL ROBOT SPECIFIC TASKS -->
+  <group ns="robot1">
+  <param name="tf_prefix" value="robot1" />
+
+  <node pkg="kmo_navserver" type="kmo_navserver_node" name="kmo_navserver" output="screen">
+     <param name="host" value="192.168.100.100" />
+     <param name="enc" value="true" />
+     <param name="state" value="true" />
+     <param name="laser" value="true" />
+     <param name="sick" value="true" />
+     <param name="steering_fix_wheel_distance" value="1.190" />
+     <param name="steering_fix_wheel_distance_y" value="0.0" />
+     <param name="tf_frame_state_id" value="base_link" />
+     
+     <param name="tf_x" value="1.5" />
+     <param name="tf_y" value="0.0" />
+     <param name="tf_z" value="0.05" />
+     <remap from="vmc_navserver/laserscan" to="laserscan"/>
+     <param name="epu" value="true" />
+     <param name="debug" value="0" />
+     <param name="use_epu_time_offset" value="true" />
+     <param name="min_time_loc_delta" value="0.1" />
+  </node>
+
+  <node pkg="kmo_fork_control" type="fork_control_cititruck_node" name="fork_control" output="screen">
+     <param name="visualize" value="true" />
+     <param name="fork_max_moving_time" value="2.5" />
+     <param name="fork_moving_time_support_to_low" value="0.3" />
+     <param name="delay_support_to_low" value="0.2" />
+  </node>
+
+  <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
+        <param name="robot_id" value="1" />
+  </node>
+
+
+  <!-- Load initial settings -->
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_costmap_cititruck1.yml" command="load" ns="generate_path_iliad/iliad_smp_costmap/"/>
+  <rosparam file="$(find iliad_smp_global_planner)/cfg/iliad_smp_planner.yml" command="load" ns="generate_path_iliad/iliad_smp"/>
+
+  <!-- Which planner? -->
+  <rosparam ns="generate_path_iliad/iliad_smp"> 
+    planner_type : "RRTstar" 
+  </rosparam>
+
+  <!-- Re-arrange the sources to consider in the costmap -->
+  <group if="$(arg laser_in_costmap)">
+      <rosparam param="plugins" ns="generate_path_iliad/iliad_smp_costmap/">
+        - {name: static_map, type: "costmap_2d::StaticLayer"}
+        - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+        <!-- - {name: inflater, type: "costmap_2d::InflationLayer"} -->
+      </rosparam>
+
+      <rosparam param="obstacle_layer" ns="generate_path_iliad/iliad_smp_costmap/" subst_value="True">
+        observation_sources: laserscan0_sensor laserscan1_sensor
+        laserscan1_sensor: {data_type:  LaserScan, sensor_frame: /laserscan1, topic: /$(arg prefix)/kmo_navserver/laserscan1, marking: true, clearing: true, obstacle_range: 30.0, raytrace_range: 30.5}
+        laserscan0_sensor: {data_type:  LaserScan, sensor_frame: /laserscan0, topic: /$(arg prefix)/kmo_navserver/laserscan0, marking: true, clearing: true, obstacle_range: 6.0, raytrace_range: 6.5}
+      </rosparam>
+  </group>
+  <!-- Now launch the planner -->
+  <node pkg="iliad_smp_global_planner" type="generate_path_iliad" name="generate_path_iliad" output="screen">   
+    <param name="min_incr_path_dist" value="0.2" />
+    <param name="visualize" value="true" />
+  </node>
+
+
+  <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
+    <param name="load_type" value="1" />
+    <param name="model_type" value="2" />
+    <param name="visualize" value="false" />
+    <param name="save_constraints_and_path" value="true" />
+    <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
+    <param name="visualize_outer_constraints" value="false" />
+    <param name="visualize_only_invalid" value="false" />
+    <param name="skip_overlap" value="true" />
+    <param name="save_lookuptables" value="false" />
+  </node>  
+
+  <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
+    <param name="visualize" value="true" />
+    <param name="visualize_deep" value="false" />
+    <param name="wheel_base" value="1.190" />
+    <param name="minimize_phi_and_dist" value="true" />
+    <param name="init_controls" value="true" />
+    <param name="use_th_constraints" value="true" />
+    <param name="use_xy_constraints" value="true" />
+    <param name="phi_min" value="-1.0" /> <!-- -0.9 -->
+    <param name="phi_max" value="1.0" />  <!-- 0.9 -->
+    <param name="reassign_constraints" value="true" />
+    <param name="reassign_iters" value="1" />
+    <param name="reassign_min_distance" value="0.1" />
+    <param name="do_nothing" value="$(arg avoid_smoothing)"/>
+  </node>  
+
+  <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node_citi1" output="screen">
+    <param name="visualize" value="true" />
+    <param name="max_tracking_error" value="-1." />
+    <param name="use_forks" value="true" />
+
+    <param name="max_vel" value="0.3" />
+    <param name="max_rotational_vel" value="0.3" />
+    <param name="max_acc" value="0.1" />
+    <param name="no_smoothing" value="$(arg avoid_smoothing)" />
+  </node>
+
+  </group>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/cititruck.rviz"/>
+
+</launch>
