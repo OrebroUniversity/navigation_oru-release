@@ -283,31 +283,30 @@
 <!-- Kinect V2 -->
       
     <joint name="kinect2_joint" type="fixed">
-      <origin xyz="${ 0.27 + x } ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 0" /> <!-- check sensor height z -->
+      <origin xyz="${ 0.27 + x } ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 ${M_PI}" /> <!-- check sensor height z -->
       <parent link="base_link"/>
       <child link="kinect2_base_link"/>
     </joint>
 
-    <link name="kinect2_base_link"/>
-
-    <sensor_calibration_assembly sensor_id="kinect2" parent_link="kinect2_base_link" create_final_link="false"/>
-
-    <link name="kinect2_link">
-      <visual>
-    <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
-    <geometry>
-      <mesh filename="package://cititruck_description/meshes/kinect_v2.dae"/>
-    </geometry>
-      </visual>
-      <!--
-      <collision>
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <geometry>
-          <box size="0.1 0.1 0.1"/>
-    </geometry>
-      </collision>-->
+    <link name="kinect2_base_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://cititruck_description/meshes/kinect_v2.dae"/>
+          </geometry>
+          </visual>
     </link>
 
+    <sensor_calibration_assembly sensor_id="kinect2" parent_link="kinect2_base_link" final_link_suffix="before_optical_link"/>
+
+    <!-- Extra joint added to get pointcloud aligned correctly in bagfiles; do not remove without cross-checking against recorded bagfiles -->
+    <!-- TODO: Check against live data on robot when running kinect2_bridge -->
+    <joint name="kinect2_optical_joint" type="fixed">
+      <origin rpy="${-M_PI/2.0} 0 ${-M_PI/2.0}"/>
+      <parent link="kinect2_before_optical_link"/>
+      <child link="kinect2_link"/>
+    </joint>
+    <link name="kinect2_link"/>
 
 <!-- Velodyne HDL32E -->
 
