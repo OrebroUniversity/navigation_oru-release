@@ -2,6 +2,18 @@
 
 <robot name="cititruck" xmlns:xacro="http://ros.org/wiki/xacro">
 
+    <xacro:arg name="tf_prefix" default="robot_xacro_default"/>
+    <xacro:arg name="velodyne" default="false"/>
+    <xacro:arg name="kinect2" default="false"/>
+    <xacro:arg name="kinect1" default="false"/> <!-- deprecated -->
+    
+    <!-- Arguments used in cititruck.gazebo -->
+    <xacro:arg name="controller_prefix" default=""/>
+    <xacro:arg name="sensor_prefix" default=""/>
+    <xacro:arg name="sick_name" default="safety"/>
+    <xacro:arg name="ls2000_name" default="nav"/>   
+    <xacro:arg name="kinect2_name" default=""/>
+
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo" />
   <!-- Import Rviz colors -->
