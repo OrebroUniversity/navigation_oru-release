@@ -1,6 +1,6 @@
 # navigation_oru (orunav) navigation stack
 
-This contains a breif guide how to install / run some examples of the ROS-based software tools NAVIGATION_ORU developed at ORU in a set of previous project (SAUNA, SAVIE, Semantic Robot).
+This contains a breif guide how to install / run some examples of the ROS-based software tools NAVIGATION_ORU developed at ORU in a set of previous and on-going projects (SAUNA, SAVIE, ILIAD and Semantic Robot).
 
 ## Installation instructions
 
@@ -98,7 +98,7 @@ In order to navigate to a pose in the environment, select the "2D Nav Goal" butt
 This will bring up the gazebo simulation GUI and RViz. There we have an empty environment with three trucks. 
 
 
-Similar to the single truck example you can utilize the task bar to select where each truch should drive. Note that the coordination is not in place yet and you can easily make the trucks to collide. To set which truck should go where use one of the "2D Nav Goal" buttons (there are three of them, the first will trigger the first vehicle, the second the second vehicle and so on).
+Similar to the single truck example you can utilize the task bar to select where each truch should drive. Note that the coordination is not running here, check out https://github.com/FedericoPecora/coordination_oru if you want coordination as well. To set which truck should go where use one of the "2D Nav Goal" buttons (there are three of them, the first will trigger the first vehicle, the second the second vehicle and so on).
 ![alt text][rviz_multiple_trucks_run].
 
 [rviz_multiple_trucks_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_multiple_trucks_run.png "RViz visualization of a sample run with three vehicles"
