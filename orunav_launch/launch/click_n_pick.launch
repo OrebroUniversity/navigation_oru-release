@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="robot_id" default="1" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
 
@@ -25,9 +28,10 @@
   <param name="tf_prefix" value="robot1" />
 
   <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
-        <param name="robot_id" value="1" />
+        <param name="robot_id" value="$(arg robot_id)" />
+	<remap from="/$(arg tf_prefix)/cmd_vel" to ="/$(arg tf_prefix)/controller/cmd_vel"/>
   </node>
-  <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+  <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch"/>
 
   <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">		
     <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
@@ -81,11 +85,11 @@
       <param name="visualize_sdf" value="true"/>
       <param name="removeFloor" value="true"/>
       <param name="sensor_time_offset" value="0.0"/>
-      <remap from="pointcloud" to ="kinect_rgb/depth_registered/points"/>
+      <remap from="pointcloud" to ="kinect_rgb/sensors/kinect2depth_registered/points"/>
       <param name="residual_thresh" value="0.01"/>
       <param name="cov_thresh" value="0.2"/>
       <param name="only_compute_filter_used" value="true"/>
-      <param name="depth_frame_id" value="robot1/robot1/kinect_link" /> <!-- robot1/kinect_link -->
+      <param name="depth_frame_id" value="robot1/kinect_link" /> <!-- robot1/kinect_link -->
       <param name="asus_camera" value="false" />
       <param name="min_nb_matched_points" value="10000" />
       <param name="min_match_nb_points_ratio" value="0.1" />
