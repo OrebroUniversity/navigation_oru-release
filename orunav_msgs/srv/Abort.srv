@@ -1,3 +1,3 @@
 #ID of robot to abort
-std_msgs/Int32 robotID
+int32 robotID
 ---

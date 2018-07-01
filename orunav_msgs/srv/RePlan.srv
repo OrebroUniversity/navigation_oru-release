@@ -1,4 +1,3 @@
-#set a delay on a mission
-int32[] robotInUse
+#ID of robot to replan for
+int32 robotID
 ---
-bool success

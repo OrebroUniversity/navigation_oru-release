@@ -1,0 +1,28 @@
+<launch>
+
+  <include file="$(find gazebo_worlds_oru)/launch/empty_world_paused.launch"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck.xacro'" />
+
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot1" />
+    <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
+      <arg name="robot_pose_x" value="0.99"/> 
+      <arg name="robot_pose_y" value="5.0"/>
+      <arg name="robot_pose_yaw" default="-0.891676654487"/>
+      <arg name="robot_name" value="robot1" />
+    </include>
+  </group>
+
+  <group ns="robot2">
+    <param name="tf_prefix" value="robot2" />
+    <include file="$(find cititruck_gazebo)/launch/cititruck.launch">
+      <arg name="robot_pose_x" value="0.5"/> 
+      <arg name="robot_pose_y" value="0.5"/>
+      <arg name="robot_pose_yaw" default="0."/>
+      <arg name="robot_name" value="robot2" />
+    </include>
+  </group>
+
+
+</launch>
