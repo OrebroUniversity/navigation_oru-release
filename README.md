@@ -1,6 +1,6 @@
 # navigation_oru (orunav) navigation stack
 
-This contains a breif guide how to install / run some examples of the ROS-based software tools NAVIGATION_ORU developed at ORU in a set of previous project (SAUNA, SAVIE, Semantic Robot).
+This contains a brief guide how to install / run some examples of the ROS-based software tools NAVIGATION_ORU developed at ORU in a set of previous and on-going projects (SAUNA, SAVIE, ILIAD and Semantic Robot).
 
 ## Installation instructions
 
@@ -56,7 +56,7 @@ You need to build this package from source.
 `$ catkin_make`						
 
 
-NOTE: the default build type is in DEBUG mode - some packages as the constraint extractor work way faster if they are built in RELEASE mode. Change the build into RELASE mode by:
+NOTE: the default build type is in DEBUG mode - some packages as the constraint extractor work way faster if they are built in RELEASE mode. Change the build into RELEASE mode by:
 
 `$ catkin_make -DCMAKE_BUILD_TYPE=Release`
 
@@ -69,7 +69,7 @@ Update the GAZEBO_MODEL_PATH variable, add the following to your ~/.bashrc file:
 
 `export GAZEBO_MODEL_PATH=/home/<your_user_name>/catkin_ws/src/navigation_oru/gazebo_oru/gazebo_models_oru/models:$GAZEBO_MODEL_PATH`
 
-This is needed inorder to be able to load the different environements (otherwise you get "no namepace found" messages and an empty world).
+This is needed in order to be able to load the different environments (otherwise you get "no namespace found" messages and an empty world).
 
 
 ## A set of examples
@@ -98,7 +98,7 @@ In order to navigate to a pose in the environment, select the "2D Nav Goal" butt
 This will bring up the gazebo simulation GUI and RViz. There we have an empty environment with three trucks. 
 
 
-Similar to the single truck example you can utilize the task bar to select where each truch should drive. Note that the coordination is not in place yet and you can easily make the trucks to collide. To set which truck should go where use one of the "2D Nav Goal" buttons (there are three of them, the first will trigger the first vehicle, the second the second vehicle and so on).
+Similar to the single truck example you can utilize the task bar to select where each truck should drive. Note that the coordination is not running here, check out https://github.com/FedericoPecora/coordination_oru if you want coordination as well. To set which truck should go where use one of the "2D Nav Goal" buttons (there are three of them, the first will trigger the first vehicle, the second the second vehicle and so on).
 ![alt text][rviz_multiple_trucks_run].
 
 [rviz_multiple_trucks_run]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_multiple_trucks_run.png "RViz visualization of a sample run with three vehicles"
@@ -121,7 +121,7 @@ Two goal target poses is loaded from a file, one which is the approximate pickup
 
 `$ rosservice call /robot1/next_task`
 
-The alignement of the pallets is done using a sdf based tracker - due to the camera monting the images are up-side down in the visualization.
+The alignment of the pallets is done using a sdf based tracker - due to the camera mounting the images are up-side down in the visualization.
 
 ![alt text][sdf_pallet_model]
 ![alt text][sdf_pallet_aligned]
@@ -129,13 +129,13 @@ The alignement of the pallets is done using a sdf based tracker - due to the cam
 
 [sdf_pallet_model]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_model.png "SDF model of an EUR-pallet"
 [sdf_pallet_aligned]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/sdf_pallet_aligned.png "The aligned pallet"
-[rviz_pallet_picking]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_pallet_picking.png "RViz visualization of pallet picking, the red box is the intial pallet pose estimate and the green one is the estimated one."
+[rviz_pallet_picking]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/rviz_pallet_picking.png "RViz visualization of pallet picking, the red box is the initial pallet pose estimate and the green one is the estimated one."
 [gazebo_pallet_picking]: https://github.com/OrebroUniversity/navigation_oru-release/blob/master/docs/figs/gazebo_pallet_picking.png "Gazebo view of the pallet picking."
 
 
 ## Description of packages
 
-In alfabetic order.
+In alphabetic order.
 
 #### gazebo_oru
 
@@ -147,7 +147,7 @@ Meta package for the whole stack.
 
 ####  orunav_constraint_extract
 
-Given an occupancy map, the geometry of the vehicle, and a vehicle pose, this package computes a collision free region (area and heading intervall). This is used in the orunav_path_smoother package to optimize the path.
+Given an occupancy map, the geometry of the vehicle, and a vehicle pose, this package computes a collision free region (area and heading interval). This is used in the orunav_path_smoother package to optimize the path.
 
 #### orunav_conversions
 
@@ -159,7 +159,7 @@ This provides an coordinator instance which have the same interface as the real 
 
 #### orunav_debug
 
-Package with debugging tools. There is a tool to plot the behaviour of the controller, see test/README.txt in the package.
+Package with debugging tools. There is a tool to plot the behavior of the controller, see test/README.txt in the package.
 
 #### orunav_fork_control
 
@@ -167,7 +167,7 @@ Provides an interface to operating the forklifts. This interface is used for dri
 
 #### orunav_generic
 
-A set of generic types and interfaces, such as pose, path, trajectory etc. Contains also vaious of utilities function and also ways to do serialization (saving / loading).
+A set of generic types and interfaces, such as pose, path, trajectory etc. Contains also various of utilities function and also ways to do serialization (saving / loading).
 
 #### orunav_geometry
 
@@ -179,7 +179,7 @@ Contains a set of example launch files.
 
 #### orunav_motion_planner
 
-Lattice based motion planner, will provide a relative fast way of computing kinematically feasible motion between discritized poses.
+Lattice based motion planner, will provide a relative fast way of computing kinetically feasible motion between discretized poses.
 
 #### orunav_mpc
 
@@ -191,11 +191,11 @@ Package for all specialized messaged used.
 
 #### orunav_node_utils
 
-Generic tools that are useful when writing nodes to handle a set of targets / missiongs.
+Generic tools that are useful when writing nodes to handle a set of targets / missions.
 
 #### orunav_pallet_detection_sdf
 
-Package using signed distance funtion to estimate poses of euro pallets.
+Package using signed distance function to estimate poses of euro pallets.
 
 #### orunav_params
 
@@ -205,9 +205,9 @@ Package that contains a set of parameters for the system.
 
 Path planning using a set of predefined paths.
 
-#### orunav_path_smooter
+#### orunav_path_smoother
 
-Path smooting functionality that takes an exising motion, for example, from the orunav_motion_planner, and minimize the amount of required driving and turning.
+Path smoothing functionality that takes an existing motion, for example, from the orunav_motion_planner, and minimize the amount of required driving and turning.
 
 #### orunav_rosbag_tools
 
@@ -215,7 +215,7 @@ Rosbag processing tools, contains an odometry meter.
 
 #### orunav_rviz
 
-Functions to display various of generic types (orunav_generic) to rviz. Note that some rviz message generation for specitic types are located in the package where they are defined.
+Functions to display various of generic types (orunav_generic) to rviz. Note that some rviz message generation for specific types are located in the package where they are defined.
 
 #### orunav_trajectory_processor
 

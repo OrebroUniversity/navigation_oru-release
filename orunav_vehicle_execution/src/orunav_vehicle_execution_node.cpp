@@ -1800,8 +1800,9 @@ public:
         bool new_path_is_shorter = (path.sizePath() < vehicle_state_.getPath().sizePath());
         if (new_path_is_shorter) {
           chunk_idx_to_end_margin = 1;
+	  ROS_INFO_STREAM("[KMOVehicleExecution] - SIZE of paths: new:" << path.sizePath() << " old:" << vehicle_state_.getPath().sizePath() << " curretn IDX:" << vehicle_state_.getCurrentPathIdx());
         }
-        if (vehicle_state_.isChunkIdxValid(chunk_idx+chunk_idx_to_end_margin)) {
+        if (new_path_is_shorter || vehicle_state_.isChunkIdxValid(chunk_idx+chunk_idx_to_end_margin)) {
           // Two options
           // 1) the new path start is the same as the prev path start
           // 2) the new path start is the same as the prev path goal
