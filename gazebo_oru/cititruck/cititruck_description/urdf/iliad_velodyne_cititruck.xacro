@@ -392,7 +392,7 @@
     <!-- FIXED: The name should be velodyne_link -->
     <xacro:if value="$(arg velodyne)">
       <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-      <VLP-16 parent="velodyne_base_link" prefix="$(arg tf_prefix)/velodyne" name="velodyne_link" topic="/velodyne_points" hz="10" samples="440">
+      <VLP-16 parent="velodyne_base_link" prefix="$(arg tf_prefix)" name="velodyne_link" topic="$(arg sensor_prefix)/velodyne_points" hz="10" samples="440">
           <origin xyz="0 0 0" rpy="0 0 0" /> <!-- given by calibration -->
       </VLP-16>
       <sensor_calibration_assembly sensor_id="velodyne" parent_link="base_link" final_link_suffix="base_link"/>
@@ -402,7 +402,7 @@
     <!-- Kinect v2 -->
     <xacro:if value="$(arg kinect2)">
       <xacro:include filename="$(find kinect2_description)/urdf/kinect2/kinect2.xacro"/>
-      <kinect2_sensor parent="kinect2_base_link" prefix="$(arg tf_prefix)" name="kinect2" cam_px="0" cam_py="0" cam_pz="0" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
+      <kinect2_sensor parent="kinect2_base_link" prefix="$(arg tf_prefix)/$(arg sensor_prefix)" name="kinect2" cam_px="0" cam_py="0" cam_pz="0" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
       <sensor_calibration_assembly sensor_id="kinect2" parent_link="base_link" final_link_suffix="base_link"/>
     </xacro:if>
 
