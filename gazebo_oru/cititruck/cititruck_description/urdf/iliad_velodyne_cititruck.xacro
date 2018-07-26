@@ -383,7 +383,7 @@
     <!-- Velodyne VLP16 -->
     <xacro:if value="$(arg velodyne)">
       <xacro:include filename="$(find velodyne_description8)/urdf/VLP-16.urdf.xacro"/>
-      <VLP-16 parent="base_link" gpu="true" name="$(arg tf_prefix)/velodyne" topic="/$(arg tf_prefix)/$(arg sensor_prefix)/velodyne/velodyne_points" hz="10" samples="440">
+      <VLP-16 parent="base_link" gpu="true" name="velodyne" topic="/$(arg tf_prefix)/$(arg sensor_prefix)/velodyne/velodyne_points" hz="10" samples="440">
           <origin xyz="0.8 0 0.95" rpy="0 0 0" />
       </VLP-16>
     </xacro:if>
