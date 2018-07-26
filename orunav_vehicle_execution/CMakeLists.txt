@@ -103,6 +103,13 @@ target_link_libraries(laser_filter
    -lboost_program_options
  )
 
+add_executable(generate_random_targets src/generate_random_targets_main.cpp)
+add_dependencies(generate_random_targets ${catkin_EXPORTED_TARGETS})
+target_link_libraries(generate_random_targets
+   ${catkin_LIBRARIES}
+   -lboost_program_options
+ )
+
 #############
 ## Install ##
 #############

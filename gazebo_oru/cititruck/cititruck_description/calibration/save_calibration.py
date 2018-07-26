@@ -29,7 +29,7 @@ rospack = rospkg.RosPack()
 
 robot_prefix = "(robot.*)"
 start_link_suffix = "_calib_start_link"
-end_link_suffix = "_link"
+end_link_suffix = "_calib_post_z_link"
 
 
 tf_listener = tf.TransformListener()

@@ -317,6 +317,14 @@ Path truncatePath(const PathInterface &path, size_t idx) {
   return ret;
 }
 
+Path truncatePathEnd(const PathInterface &path, size_t idx) {
+  Path ret;
+  for (size_t i = 0; i < idx; i++) {
+    ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
+  }
+  return ret;
+}
+
 // The intermediate points exisit twice (when the change in direction occurs)
 Path concatenateDirectionalPaths(const std::vector<Path> &paths)
 {
@@ -1080,7 +1088,7 @@ orunav_generic::Path createStraightPathFromStartPose(const orunav_generic::Pose2
   Eigen::Vector3d inc = diff*resolution;
       
   path.addPathPoint(start, 0.);
-  for (int i = 1; i < steps; i++) {
+  for (int i = 1; i <= steps; i++) {
     orunav_generic::Pose2d p = orunav_generic::addPose2d(start, i*inc);
     path.addPathPoint(p, 0.);
   }
