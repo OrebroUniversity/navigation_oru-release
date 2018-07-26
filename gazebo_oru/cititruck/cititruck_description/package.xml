@@ -20,6 +20,7 @@
   <run_depend>create_description</run_depend>
   <run_depend>kinect2_description</run_depend>
   <run_depend>velodyne_description8</run_depend>
+  <run_depend>asus_description</run_depend>
 
   <export>
 

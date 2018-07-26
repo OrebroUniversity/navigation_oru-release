@@ -201,7 +201,7 @@
               <depthImageTopicName>depth/image_raw</depthImageTopicName>
               <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
               <pointCloudTopicName>depth_registered/points</pointCloudTopicName>
-              <frameName>$(arg kinect1_name)_rgb_optical_link</frameName>
+              <frameName>$(arg kinect1_name)_rgb_optical_frame</frameName>
               <pointCloudCutoff>0.5</pointCloudCutoff>
               <distortionK1>0.00000001</distortionK1>
               <distortionK2>0.00000001</distortionK2>
