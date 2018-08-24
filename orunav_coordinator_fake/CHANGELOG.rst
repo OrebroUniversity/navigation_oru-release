@@ -2,6 +2,13 @@
 Changelog for package orunav_coordinator_fake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Parameterized task names.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Henrik Andreasson
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
