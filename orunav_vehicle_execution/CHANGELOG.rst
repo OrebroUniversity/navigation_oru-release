@@ -2,8 +2,8 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Added arena files
 * Added small example of using targets file.
 * Added random target generator.

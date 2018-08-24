@@ -2,8 +2,8 @@
 Changelog for package orunav_params
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Config file for citi `#2 <https://github.com/OrebroUniversity/navigation_oru-release/issues/2>`_ ORU.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

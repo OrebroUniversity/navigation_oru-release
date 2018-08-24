@@ -2,8 +2,8 @@
 Changelog for package orunav_constraint_extract
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Merge branch 'master' into master
 * Added debug flag.
 * Added path-splitting support in the smoother.

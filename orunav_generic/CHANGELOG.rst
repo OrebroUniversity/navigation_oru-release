@@ -2,8 +2,8 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Merge branch 'master' into master
 * Added path truncation function.
 * Added curvature functions.

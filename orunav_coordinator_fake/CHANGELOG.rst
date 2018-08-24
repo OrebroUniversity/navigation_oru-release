@@ -2,8 +2,8 @@
 Changelog for package orunav_coordinator_fake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Parameterized task names.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

@@ -2,8 +2,8 @@
 Changelog for package navigation_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Contributors: Henrik Andreasson

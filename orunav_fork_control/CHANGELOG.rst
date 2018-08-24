@@ -2,8 +2,8 @@
 Changelog for package orunav_fork_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Fixed the last launch example with the pallet picking.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge pull request `#24 <https://github.com/OrebroUniversity/navigation_oru-release/issues/24>`_ from MFernandezCarmona/master

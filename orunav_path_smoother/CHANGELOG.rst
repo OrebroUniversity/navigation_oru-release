@@ -2,8 +2,8 @@
 Changelog for package orunav_path_smoother
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Added path-splitting support in the smoother.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Trajectory split functions for improving smoothing speeds.

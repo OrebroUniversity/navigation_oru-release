@@ -2,8 +2,8 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * post IJCAI demo, added some maps and launch files for arena
 * Added new arena files
 * Added arena files

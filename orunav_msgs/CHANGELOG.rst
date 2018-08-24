@@ -2,8 +2,8 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Added arena files
 * Merge branch 'master' into master
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

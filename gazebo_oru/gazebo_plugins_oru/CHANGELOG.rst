@@ -2,8 +2,8 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Fixed GAZEBO_DEPRECATED(8.0) issues.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release

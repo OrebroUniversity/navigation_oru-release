@@ -2,8 +2,8 @@
 Changelog for package gazebo_worlds_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * post IJCAI demo, added some maps and launch files for arena
 * IJCAI demo map
 * Added new arena files

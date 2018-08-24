@@ -2,8 +2,8 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Fixed the last launch example with the pallet picking.
 * Fixed the multiple truck to work with the new naming system.
 * Getting single_truck.launch from the tutorial to run again.

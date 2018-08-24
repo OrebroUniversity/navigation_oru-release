@@ -2,8 +2,8 @@
 Changelog for package orunav_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-08-24)
+------------------
 * Added intersection function.
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Added factory for geometry.
