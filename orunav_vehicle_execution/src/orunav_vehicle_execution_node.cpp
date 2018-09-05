@@ -983,7 +983,7 @@ public:
 
     if (use_forks_) {
       if (ros::Time::now().toSec() - last_process_fork_report_time_.toSec() > 5) {
-        ROS_WARN_STREAM("[KMOVehicleExecution] - fork reports are not available (!), check use_fork flag?!?");
+        ROS_WARN_STREAM("[KMOVehicleExecution] - fork reports are not available (!), check use_fork flag?!? using topic : " << fork_report_sub_.getTopic());
       }
     }
 
