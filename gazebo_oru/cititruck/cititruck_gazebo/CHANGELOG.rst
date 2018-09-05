@@ -2,6 +2,47 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* post IJCAI demo, added some maps and launch files for arena
+* Added new arena files
+* Added arena files
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#24 <https://github.com/OrebroUniversity/navigation_oru-release/issues/24>`_ from MFernandezCarmona/master
+  Parametric names in topics and in xacro files
+* Merge pull request `#22 <https://github.com/OrebroUniversity/navigation_oru-release/issues/22>`_ from batman177/master
+  Update bt_truck URDF, sensor naming conventions, rough calibration WIP
+* parametrized topics in xacro files
+* Renaming btruck to bt_truck to adhere to naming conventions
+* Merge upstream master branch into master
+* Saving integration week changes, updating launch files for BTruck
+* Cleaned up robot_lab_world stuff
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#20 <https://github.com/OrebroUniversity/navigation_oru-release/issues/20>`_ from batman177/master
+  Improvements to BT URDF + Gazebo launch files
+* Forward GUI arg to btruck URDF launch file
+* Merge upstream master into master
+* Rename btruck launch files to lower case for consistency; split up into URDF launcher + Gazebo launcher, to be able to run former on the robot.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#19 <https://github.com/OrebroUniversity/navigation_oru-release/issues/19>`_ from batman177/master
+  Adding sensor calibration for big truck
+* Adding sensor calibration for big truck
+* Made multiple trucks in robot lab with two trucks
+* Added multiple trucks launch files for robot_lab
+* Merge pull request `#18 <https://github.com/OrebroUniversity/navigation_oru-release/issues/18>`_ from OrebroUniversity/robot_lab_model
+  Robot lab model
+* More launch files added. Now one robot can be simulated in the robotlab world. -chitt
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Urdf model of the BTruck forklift with sensors
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* BT truck urdf model - work in progress
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* modified cititruck description for kinect camera in simulation, testing pallet detection
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Bruce Wayne, Brucye Wayne, Chittaranjan Swaminathan, Federico Pecora, Henrik Andreasson, Joao Salvado, Manuel Fernandez-Carmona, tsv
+
 0.2.2 (2018-01-18)
 ------------------
 * Modified placement of trucks in aass basement gazebo sim

@@ -2,6 +2,58 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* post IJCAI demo, added some maps and launch files for arena
+* IJCAI demo map
+* Fixed the last launch example with the pallet picking.
+* Getting single_truck.launch from the tutorial to run again.
+* Merge pull request `#25 <https://github.com/OrebroUniversity/navigation_oru-release/issues/25>`_ from batman177/master
+  Rough extrinsic calibration (sensors against each other) of Velodyne, Asus, Kinect v2, 2D lasers
+* Extrinsic calibration of Asus on bt_truck. Intrinsic calibration still needs to be improved, z scaling is off
+* Rough Kinect v2 calibration on bt_truck, had to add one extra joint, needs to be verified on real hardware
+* In calibration macro/script, make final sensor link configurable (for Kinect v2)
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#24 <https://github.com/OrebroUniversity/navigation_oru-release/issues/24>`_ from MFernandezCarmona/master
+  Parametric names in topics and in xacro files
+* Merge pull request `#22 <https://github.com/OrebroUniversity/navigation_oru-release/issues/22>`_ from batman177/master
+  Update bt_truck URDF, sensor naming conventions, rough calibration WIP
+* Pushing results from integration week: Fixing calibration when using fixed joints; adding save_calibration script; renaming LS2000->laser_top; adding calibration joint for laser2d_top; first very rough calibration of Velodyne and 2D lasers on bt_truck.
+* remapping fork control topics
+* parametrized topics in xacro files
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' into master
+* Extend rotation range of RPY sensor calib joints
+* Apply new naming scheme to sensors of bt_truck
+* Renaming btruck to bt_truck to adhere to naming conventions
+* Merge upstream master branch into master
+* Saving integration week changes, updating launch files for BTruck
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* xacro model with forklift cad
+* Modified RVIZ config file for 2 cititrucks
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#20 <https://github.com/OrebroUniversity/navigation_oru-release/issues/20>`_ from batman177/master
+  Improvements to BT URDF + Gazebo launch files
+* BT joint state publisher GUI off per default
+* Rename btruck launch files to lower case for consistency; split up into URDF launcher + Gazebo launcher, to be able to run former on the robot.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#19 <https://github.com/OrebroUniversity/navigation_oru-release/issues/19>`_ from batman177/master
+  Adding sensor calibration for big truck
+* Add missing calibration folder
+* Adding sensor calibration for big truck
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Urdf model of the BTruck forklift with sensors
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* BT truck urdf model - work in progress
+* Changed RVIZ config files to include markers from coordination_oru_ros
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* modified cititruck description for kinect camera in simulation, testing pallet detection
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Changed the cmd_vel default topic used.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Bruce Wayne, Brucye Wayne, Federico Pecora, Henrik Andreasson, Joao Salvado, Manuel Fernandez-Carmona, tsv
+
 0.2.2 (2018-01-18)
 ------------------
 * Made the navigation laser and safety laser to have the same FOV to get the raytracing to work correctly (using ray_gpu + a NVIDIA card).

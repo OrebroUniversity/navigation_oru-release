@@ -2,6 +2,17 @@
 Changelog for package orunav_fork_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Fixed the last launch example with the pallet picking.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#24 <https://github.com/OrebroUniversity/navigation_oru-release/issues/24>`_ from MFernandezCarmona/master
+  Parametric names in topics and in xacro files
+* remapping fork control topics
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated DEPENDS and CATKIN_DEPENDS.

@@ -2,6 +2,16 @@
 Changelog for package orunav_constraint_extract
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Merge branch 'master' into master
+* Added debug flag.
+* Added path-splitting support in the smoother.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Added lookuptable for snowwhite.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Bruce Wayne, Henrik Andreasson
+
 0.2.2 (2018-01-18)
 ------------------
 * Added function to automatically create the model file if non-exsiting.

@@ -224,3 +224,9 @@ Given a path and acceleration, max velocity, etc.  constraints compute a speed p
 #### orunav_vehicle_execution
 
 Package that acts as an interface to the tracking controller (orunav_mpc) and the coordinator. Contains the interface to compute task (e.g. how drive to this location) and execute task.
+
+## Citations
+
+The publication that to the highest degree explains the navigation_oru stack (most suitable citing) is:
+
+> H. Andreasson, J. Saarinen, M. Cirillo, T. Stoyanov and A. Lilienthal, “Fast, continuous state path smoothing to improve navigation accuracy”, ICRA 2015 [link](https://www.researchgate.net/profile/Henrik_Andreasson/publication/283778029_Fast_continuous_state_path_smoothing_to_improve_navigation_accuracy/links/582ab92f08ae102f071fd502/Fast-continuous-state-path-smoothing-to-improve-navigation-accuracy.pdf).

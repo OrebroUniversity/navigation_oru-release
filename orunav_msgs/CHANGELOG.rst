@@ -2,6 +2,19 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Added arena files
+* Merge branch 'master' into master
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Added abort service for coordiantor
+* Merge upstream master branch into master
+* Added extra obstacles in compute_task_service
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Added BT compatibility to the msgs.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Brucye Wayne, Federico Pecora, Henrik Andreasson, Joao Salvado
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated DEPENDS and CATKIN_DEPENDS.

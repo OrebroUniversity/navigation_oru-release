@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_path_pool</name>
-  <version>0.2.2</version>
+  <version>0.3.0</version>
   <description>The orunav_path_pool package - utilize .wef files (file format that the drawing layout tool exports) - see the README.txt</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>

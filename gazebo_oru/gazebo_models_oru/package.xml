@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>gazebo_models_oru</name>
-  <version>0.2.2</version>
+  <version>0.3.0</version>
   <description>gazebo_models_oru</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>

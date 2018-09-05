@@ -67,7 +67,7 @@ Visualization Manager:
       Marker Topic: /robot1/deps
       Name: MarkerArray
       Namespaces:
-        _1-2: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -75,9 +75,7 @@ Visualization Manager:
       Marker Topic: /robot1/status
       Name: MarkerArray
       Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -93,9 +91,7 @@ Visualization Manager:
       Marker Topic: /robot2/status
       Name: MarkerArray
       Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -441,11 +437,7 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_link:
-          Value: true
         map:
-          Value: true
-        odom_base_link:
           Value: true
         world:
           Value: true
@@ -456,11 +448,7 @@ Visualization Manager:
       Show Names: false
       Tree:
         world:
-          base_link:
-            {}
           map:
-            {}
-          odom_base_link:
             {}
       Update Interval: 0
       Value: true
@@ -501,27 +489,7 @@ Visualization Manager:
       Marker Topic: /robot1/visualization_marker
       Name: Marker
       Namespaces:
-        chunks: true
-        chunks_dt: true
-        chunks_idx0: true
-        critical_point: true
-        current_path_idx: true
-        current_path_subsampled: true
-        current_path_subsampled_sw: true
-        docking_path_idx: true
-        driven_ct: true
-        driven_traj: true
-        earliest_connect_path_idx: true
-        ebrake0: true
-        goal_pose2d: true
-        path_points1: true
-        path_smoother_new_path: true
-        path_subsampled: true
-        position: true
-        robot_id_str: true
-        slowdown0: true
-        start_pose2d: true
-        state_str: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -529,25 +497,7 @@ Visualization Manager:
       Marker Topic: /robot2/visualization_marker
       Name: Marker
       Namespaces:
-        chunks: true
-        chunks_dt: true
-        chunks_idx0: true
-        critical_point: true
-        current_path_idx: true
-        current_path_subsampled: true
-        current_path_subsampled_sw: true
-        docking_path_idx: true
-        driven_ct: true
-        driven_traj: true
-        earliest_connect_path_idx: true
-        goal_pose2d: true
-        path_points1: true
-        path_smoother_new_path: true
-        path_subsampled: true
-        position: true
-        robot_id_str: true
-        start_pose2d: true
-        state_str: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -587,16 +537,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 11.7561035
+      Distance: 10.9041195
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.0814786
-        Y: 3.83859396
-        Z: -1.60929441
+        X: 3.04482198
+        Y: 3.25245023
+        Z: -0.967752099
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
@@ -605,7 +555,7 @@ Visualization Manager:
       Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.13999963
+      Yaw: 1.56681991
     Saved: ~
 Window Geometry:
   Displays:

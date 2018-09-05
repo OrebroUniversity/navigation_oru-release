@@ -2,6 +2,39 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Fixed the last launch example with the pallet picking.
+* Fixed the multiple truck to work with the new naming system.
+* Getting single_truck.launch from the tutorial to run again.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#21 <https://github.com/OrebroUniversity/navigation_oru-release/issues/21>`_ from odysseus1766/master
+  providing launch files for running iliad_smp and localization on the …
+* Merge upstream master branch into master
+* providing launch files for running iliad_smp and localization on the cititruck robot
+* Added extra obstacles in compute_task_service
+* Cleaned up robot_lab_world stuff
+* Merge upstream master into master
+* Made multiple trucks in robot lab with two trucks
+* Added multiple trucks launch files for robot_lab
+* Merge pull request `#18 <https://github.com/OrebroUniversity/navigation_oru-release/issues/18>`_ from OrebroUniversity/robot_lab_model
+  Robot lab model
+* More launch files added. Now one robot can be simulated in the robotlab world. -chitt
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Added simulation launch file for testing the multimaster.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#16 <https://github.com/OrebroUniversity/navigation_oru-release/issues/16>`_ from odysseus1766/master
+  adding boolean parameter to avoid the smoothing and contraints genera…
+* adding boolean parameter to avoid the smoothing and contraints generation in vehicle execution node
+* Added correct iliad_smp_global_planner to launch files
+* Added incremental smoothing to speed things up.
+* Added incremental smoothing.
+* Added path-splitting support in the smoother.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Bruce Wayne, Brucye Wayne, Chittaranjan Swaminathan, Federico Pecora, Henrik Andreasson, Joao Salvado, Odysseus1766
+
 0.2.2 (2018-01-18)
 ------------------
 * Safetyregions flag added, with additional params.

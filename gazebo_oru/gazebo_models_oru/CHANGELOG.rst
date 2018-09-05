@@ -2,6 +2,16 @@
 Changelog for package gazebo_models_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#17 <https://github.com/OrebroUniversity/navigation_oru-release/issues/17>`_ from OrebroUniversity/robot_lab_model
+  Add priliminary robot_lab world -Chitt
+* Add priliminary robot_lab world -Chitt
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Chittaranjan Swaminathan, Federico Pecora, Henrik Andreasson
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated DEPENDS and CATKIN_DEPENDS.

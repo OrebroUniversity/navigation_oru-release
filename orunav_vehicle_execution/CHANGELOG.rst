@@ -2,6 +2,27 @@
 Changelog for package orunav_vehicle_execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-08-24)
+------------------
+* Added arena files
+* Added small example of using targets file.
+* Added random target generator.
+* Merge branch 'master' into master
+* Added shorter path fix.
+* Merge upstream master branch into master
+* Added extra obstacles in compute_task_service
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#16 <https://github.com/OrebroUniversity/navigation_oru-release/issues/16>`_ from odysseus1766/master
+  adding boolean parameter to avoid the smoothing and contraints genera…
+* adding boolean parameter to avoid the smoothing and contraints generation in vehicle execution node
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Fixed ros::Time problem.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Laser filter function, filter out readings due to self occlusion.
+* Contributors: Brucye Wayne, Federico Pecora, Henrik Andreasson, Joao Salvado, Odysseus1766
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated collision handling for the real trucks.
