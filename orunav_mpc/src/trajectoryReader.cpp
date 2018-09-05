@@ -389,6 +389,8 @@ void trajectoryReader::actOnCommand(const orunav_msgs::ControllerCommandConstPtr
             else
             {
                 start_time = cmd->start_time;
+                double timeDiff = (ros::Time::now() - start_time).toNSec() * 1e-6;
+                ROS_INFO("[orunav_mpc] Elapsed time since command: %3.3f",timeDiff);
                 if (start_time < ros::Time::now() - ros::Duration(SW_START_TIME_ALLOWED_ERROR_SEC))
                 {
                     start_time = ros::Time(0);

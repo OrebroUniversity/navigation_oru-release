@@ -6,6 +6,7 @@
 #include <orunav_vehicle_execution/io.h>
 
 #include <boost/program_options.hpp>
+#include <XmlRpcException.h>
 
 
 namespace po = boost::program_options;
@@ -28,13 +29,32 @@ public:
   PointNClickTargetClientNode(ros::NodeHandle paramHandle) : task_id_inc_(0)
  {
     XmlRpc::XmlRpcValue my_list;
-    paramHandle.getParam("robot_ids", my_list);
-    ROS_ASSERT(my_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
-    ROS_WARN("creating %d subscribers",my_list.size());
-    robot_goal_subs_ = new ros::Subscriber[my_list.size()];
+    ROS_INFO("[PointNClickTargetClientNode] - reading robot_ids");
+    bool gotList=false;
+
+    while(!gotList)
+    {
+      paramHandle.getParam("robot_ids", my_list);  
+      ROS_ASSERT_MSG(my_list.getType() == XmlRpc::XmlRpcValue::TypeArray, "robot_ids is not an array!");
+      
+      try
+      {
+          ROS_WARN("creating %d subscribers",my_list.size());
+          gotList=true;
+      }
+      catch (XmlRpc::XmlRpcException &ex)
+      {
+          ROS_ERROR("XmlRpc Exception: %s", ex.getMessage().c_str());
+          ROS_ERROR("Trying again to load it in half a second");          
+          ros::Duration(0.5).sleep(); // sleep for half a second
+      }
+
+    }
+
+    robot_goal_subs_ = new ros::Subscriber[my_list.size()];    
     for (int32_t i = 0; i < my_list.size(); ++i) 
     {
-      ROS_ASSERT(my_list[i].getType() == XmlRpc::XmlRpcValue::TypeInt);
+      ROS_ASSERT_MSG(my_list[i].getType() == XmlRpc::XmlRpcValue::TypeInt, "robot_id element is not an integer");
       int my_id = static_cast<int>(my_list[i]);
       
       // Goal topic
