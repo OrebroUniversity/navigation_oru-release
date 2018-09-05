@@ -227,6 +227,6 @@ Package that acts as an interface to the tracking controller (orunav_mpc) and th
 
 ## Citations
 
-The scientific publication that to the highest degree explains the navigation_oru stack and most suitable citing is:
+The publication that to the highest degree explains the navigation_oru stack (most suitable citing) is:
 
 > H. Andreasson, J. Saarinen, M. Cirillo, T. Stoyanov and A. Lilienthal, “Fast, continuous state path smoothing to improve navigation accuracy”, ICRA 2015 [link](https://www.researchgate.net/profile/Henrik_Andreasson/publication/283778029_Fast_continuous_state_path_smoothing_to_improve_navigation_accuracy/links/582ab92f08ae102f071fd502/Fast-continuous-state-path-smoothing-to-improve-navigation-accuracy.pdf).
