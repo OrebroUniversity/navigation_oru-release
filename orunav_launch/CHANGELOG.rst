@@ -2,8 +2,8 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Fixed fork topics.
 * Fixed fork topic.
 * Merge branch 'master' into master

@@ -2,8 +2,8 @@
 Changelog for package orunav_path_pool
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Removed orientation check, incrased max dist to 1 meter.
 * Merge branch 'master' into master
 * Contributors: Henrik Andreasson

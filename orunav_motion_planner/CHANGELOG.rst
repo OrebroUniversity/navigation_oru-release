@@ -2,8 +2,8 @@
 Changelog for package orunav_motion_planner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Merge branch 'master' into master
 * Contributors: Henrik Andreasson
 

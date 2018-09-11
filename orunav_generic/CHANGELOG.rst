@@ -2,8 +2,8 @@
 Changelog for package orunav_generic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Merge branch 'master' into master
 * merge Orebro with my branch
 * Contributors: Henrik Andreasson, Manuel Fernandez-Carmona

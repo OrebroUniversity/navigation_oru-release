@@ -2,8 +2,8 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
 * Merge pull request `#27 <https://github.com/OrebroUniversity/navigation_oru-release/issues/27>`_ from batman177/master
   Cititruck calibration

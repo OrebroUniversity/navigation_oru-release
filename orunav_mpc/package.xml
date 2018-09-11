@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>orunav_mpc</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>The orunav_mpc package, originally implemented by Alexander Sherikov</description>
 
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>

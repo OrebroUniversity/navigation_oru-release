@@ -2,8 +2,8 @@
 Changelog for package orunav_rosbag_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-09-11)
+------------------
 * Merge branch 'master' into master
 * Contributors: Henrik Andreasson
 
