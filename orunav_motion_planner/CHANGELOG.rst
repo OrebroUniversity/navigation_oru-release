@@ -2,6 +2,11 @@
 Changelog for package orunav_motion_planner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'master' into master
+* Contributors: Henrik Andreasson
+
 0.3.0 (2018-08-24)
 ------------------
 * Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
