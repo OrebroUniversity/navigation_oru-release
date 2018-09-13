@@ -4,7 +4,7 @@
     <xacro:arg name="tf_prefix" default="robot_xacro_default"/>
     <xacro:arg name="velodyne" default="false"/>
     <xacro:arg name="kinect2" default="false"/>
-    <xacro:arg name="kinect1" default="false"/> <!-- deprecated -->
+    <xacro:arg name="asus" default="false"/> <!-- not used by Cititruck? -->
     
     <!-- Arguments used in cititruck.gazebo -->
     <xacro:arg name="controller_prefix" default=""/>
@@ -12,12 +12,16 @@
     <xacro:arg name="sick_name" default="safety"/>
     <xacro:arg name="ls2000_name" default="nav"/>   
     <xacro:arg name="kinect2_name" default=""/>
-
+    <xacro:arg name="kinect1_name" default="kinect"/>
+    
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>
 
     <!-- Import Rviz colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/materials.xacro"/>
+
+    <!-- Adds extra joints for calibration of sensors -->
+    <xacro:include filename="$(find cititruck_description)/urdf/sensor_calibration_assembly.xacro" />
 
     <xacro:property name="forks_pidP" value="2000"/>
     <xacro:property name="forks_pidI" value="0"/>
@@ -320,7 +324,7 @@
     <!-- SENSORS START HERE -->
 
     <!-- SICK laser -->
-    <link name="$(arg sick_name)_link">
+    <link name="$(arg sick_name)_base_link">
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
@@ -344,12 +348,15 @@
         <axis xyz="0 1 0"/>
         <origin xyz="1.4 0 0.02" rpy="3.14159 0 0"/>
         <parent link="base_link"/>
-        <child link="$(arg sick_name)_link"/>
+        <child link="$(arg sick_name)_base_link"/>
     </joint>
+
+    <sensor_calibration_assembly sensor_id="$(arg sick_name)" parent_link="$(arg sick_name)_base_link"/>
+
 
 
     <!-- LS2000 navigation/localization laser -->
-    <link name="$(arg ls2000_name)_link">
+    <link name="$(arg ls2000_name)_base_link">
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
@@ -374,54 +381,35 @@
     <joint name="$(arg ls2000_name)_joint" type="fixed">
         <origin xyz="0.8 0 0.85" rpy="0 0 0"/>
         <parent link="base_link"/>
-        <child link="$(arg ls2000_name)_link"/>
+        <child link="$(arg ls2000_name)_base_link"/>
     </joint>
+
+    <sensor_calibration_assembly sensor_id="$(arg ls2000_name)" parent_link="$(arg ls2000_name)_base_link"/>
 
 
     <!-- Velodyne VLP16 -->
+    <!-- FIXME: We should rather attach the calibration assembly to the final link, otherwise we have a 3.7cm z offset during rotation, so need to split up the imported xacro -->
+    <!-- FIXED: The name should be velodyne_link -->
     <xacro:if value="$(arg velodyne)">
-      <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-      <VLP-16 parent="base_link" prefix="$(arg tf_prefix)/velodyne" name="velodyne" topic="/velodyne_points" hz="10" samples="440">
+      <xacro:include filename="$(find velodyne_description8)/urdf/VLP-16.urdf.xacro"/>
+      <VLP-16 parent="base_link" gpu="true" name="velodyne" topic="/$(arg tf_prefix)/$(arg sensor_prefix)/velodyne/velodyne_points" hz="10" samples="440">
           <origin xyz="0.8 0 0.95" rpy="0 0 0" />
       </VLP-16>
+      <sensor_calibration_assembly sensor_id="velodyne" parent_link="base_link" final_link_suffix="base_link"/>
     </xacro:if>
 
 
     <!-- Kinect v2 -->
     <xacro:if value="$(arg kinect2)">
       <xacro:include filename="$(find kinect2_description)/urdf/kinect2/kinect2.xacro"/>
-      <kinect2_sensor parent="base_link" prefix="$(arg tf_prefix)" name="kinect2" cam_px="0.65" cam_py="0" cam_pz="1.15" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
+
+      <kinect2_sensor parent="base_link" prefix="/$(arg tf_prefix)/$(arg sensor_prefix)" name="kinect2" cam_px="0.65" cam_py="0" cam_pz="1.15" cam_or="0" cam_op="0" cam_oy="3.1415926"/>
     </xacro:if>
 
-    <!-- Old Kinect (deprecated, only used for pallet detection?) -->
+    <!-- Old Kinect, only used for pallet detection -->    
     <xacro:if value="$(arg kinect1)">
-      <link name="kinect_link">
-          <collision>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <geometry>
-                  <box size="0.1 0.1 0.1"/>
-              </geometry>
-          </collision>
-          <visual>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <geometry>
-                  <box size="0.001 0.001 0.001"/>
-              </geometry>
-          </visual>
-          <inertial>
-              <mass value="1e-5"/>
-              <origin xyz="0 0 0" rpy="0 0 0"/>
-              <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
-          </inertial>
-      </link>
-
-      <joint name="kinect_joint" type="fixed">
-          <axis xyz="0 1 0"/>
-          <origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
-          <!--        <origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/>-->
-          <parent link="base_link"/>
-          <child link="kinect_link"/>
-      </joint>
+      <xacro:include filename="$(find asus_description)/urdf/asus/asus.xacro"/>
+      <asus_sensor parent="base_link" prefix="/$(arg tf_prefix)/$(arg sensor_prefix)" name="$(arg kinect1_name)" cam_px="0.55" cam_py="0" cam_pz="0.7" cam_or="0" cam_op="2.5" cam_oy="0"/>
     </xacro:if>
 
 </robot>

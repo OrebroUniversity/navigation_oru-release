@@ -5,6 +5,8 @@
     <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
 	      <param name="visualize" value="true" />
           <!-- Remapping didn't work with relative names -->
-          <remap from="$(arg topic_prefix)cmd_fork" to ="controller/$(arg cmd_fork_topic)"/>
+          <remap from="$(arg topic_prefix)cmd_fork" to ="$(arg cmd_fork_topic)"/>
+          <remap from="$(arg topic_prefix)/fork/command" to="$(arg topic_prefix)/control/fork/command"/>   
+          <remap from="$(arg topic_prefix)fork/report" to ="$(arg topic_prefix)/control/fork/report"/>
     </node>
 </launch>

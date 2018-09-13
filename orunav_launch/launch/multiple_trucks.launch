@@ -32,7 +32,9 @@
 	<remap from="/robot1/cmd_vel" to ="/robot1/controller/cmd_vel"/>
     </node>
    
-    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+    <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
+          <param name="visualize" value="true" />
+    </node>
 
     <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
       <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
@@ -118,7 +120,9 @@
 	<remap from="/robot2/cmd_vel" to ="/robot2/controller/cmd_vel"/>
     </node>
 
-    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+    <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
+      <param name="visualize" value="true" />
+    </node>
 
     <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
       <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
@@ -200,7 +204,10 @@
 	<remap from="/robot3/cmd_vel" to ="/robot3/controller/cmd_vel"/>
     </node>
 
-    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+    <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
+      <param name="visualize" value="true" />
+    </node>
+
     <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
       <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
       <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>

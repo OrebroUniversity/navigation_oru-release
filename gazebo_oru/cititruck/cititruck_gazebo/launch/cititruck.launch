@@ -16,7 +16,7 @@
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder 
     '$(find cititruck_description)/urdf/$(arg xacro_name).xacro'
-     velodyne:=$(arg velodyne) kinect2:=$(arg kinect2) asus_camera:=$(arg asus_camera) tf_prefix:=$(arg robot_name)/sensors  controller_prefix:=controller/  sensor_prefix:=sensors/  sick_name:=laser2d_floor ls2000_name:=laser2d_top kinect2_name:=kinect2"
+     velodyne:=$(arg velodyne) kinect2:=$(arg kinect2) kinect1:=$(arg asus_camera) kinect1_name:=asus_fork tf_prefix:=$(arg robot_name)/sensors  controller_prefix:=controller/  sensor_prefix:=sensors/  sick_name:=laser2d_floor ls2000_name:=laser2d_top kinect2_name:=kinect2"
   />
 
   <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo" respawn="false" output="screen" />

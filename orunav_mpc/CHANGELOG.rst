@@ -2,6 +2,21 @@
 Changelog for package orunav_mpc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Merge pull request `#28 <https://github.com/OrebroUniversity/navigation_oru-release/issues/28>`_ from MFernandezCarmona/master
+  Working version in NCFM cititruck4
+* providing extra info about errors
+* Contributors: Henrik Andreasson, Manuel Fernandez-Carmona
+
+0.3.0 (2018-08-24)
+------------------
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Changed the cmd_vel default topic used.
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Contributors: Henrik Andreasson
+
 0.2.2 (2018-01-18)
 ------------------
 * Updated DEPENDS and CATKIN_DEPENDS.
