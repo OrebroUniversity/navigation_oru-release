@@ -2,6 +2,15 @@
 Changelog for package orunav_fork_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Merge pull request `#28 <https://github.com/OrebroUniversity/navigation_oru-release/issues/28>`_ from MFernandezCarmona/master
+  Working version in NCFM cititruck4
+* Added support for gazebo8-gpu-accelerated simulated velodyne on L-CAS repos. Name refactoring
+* Merge branch 'master' from origin
+* Contributors: Brucye Wayne, Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.3.0 (2018-08-24)
 ------------------
 * Fixed the last launch example with the pallet picking.

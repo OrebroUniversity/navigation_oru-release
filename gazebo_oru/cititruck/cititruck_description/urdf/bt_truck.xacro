@@ -283,7 +283,7 @@
 <!-- Kinect V2 -->
       
     <joint name="kinect2_joint" type="fixed">
-      <origin xyz="${ 0.27 + x } ${y_sensor_platform/2.0 - 0.3} ${b1 + 0.6 + z_sensor_bar + 0.05}" rpy="0 0 ${M_PI}" /> <!-- check sensor height z -->
+      <origin xyz="${ 0.3 + x } ${0.29 - y_sensor_platform/2.0} ${b1 + 0.76 + z_sensor_bar + 0.05}" rpy="0 0 ${M_PI}" /> <!-- check sensor height z -->
       <parent link="base_link"/>
       <child link="kinect2_base_link"/>
     </joint>

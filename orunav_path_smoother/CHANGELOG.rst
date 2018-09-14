@@ -2,6 +2,11 @@
 Changelog for package orunav_path_smoother
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Contributors: Henrik Andreasson
+
 0.3.0 (2018-08-24)
 ------------------
 * Added path-splitting support in the smoother.

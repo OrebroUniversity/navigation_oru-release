@@ -2,6 +2,11 @@
 Changelog for package orunav_coordinator_fake
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Contributors: Henrik Andreasson
+
 0.3.0 (2018-08-24)
 ------------------
 * Parameterized task names.

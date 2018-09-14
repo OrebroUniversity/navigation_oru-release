@@ -2,6 +2,13 @@
 Changelog for package orunav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* merge Orebro with my branch
+* Merge branch 'master' from origin
+* Contributors: Brucye Wayne, Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.3.0 (2018-08-24)
 ------------------
 * Added arena files

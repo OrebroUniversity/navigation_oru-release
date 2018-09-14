@@ -2,6 +2,11 @@
 Changelog for package gazebo_plugins_oru
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Contributors: Henrik Andreasson
+
 0.3.0 (2018-08-24)
 ------------------
 * Fixed GAZEBO_DEPRECATED(8.0) issues.

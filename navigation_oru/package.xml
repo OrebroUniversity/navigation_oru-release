@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>navigation_oru</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>The navigation_oru package, AASS, Orebro University</description>
   <maintainer email="henrik.andreasson@oru.se">Henrik Andreasson</maintainer>
 

@@ -2,6 +2,19 @@
 Changelog for package cititruck_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' into master
+* Merge pull request `#28 <https://github.com/OrebroUniversity/navigation_oru-release/issues/28>`_ from MFernandezCarmona/master
+  Working version in NCFM cititruck4
+* merge Orebro with my branch
+* Merge branch 'master' of https://github.com/MFernandezCarmona/navigation_oru-release
+* Merge branch 'master' from origin
+* Merge pull request `#1 <https://github.com/OrebroUniversity/navigation_oru-release/issues/1>`_ from OrebroUniversity/master
+  Merge from Orebro
+* added simulated asus
+* Contributors: Brucye Wayne, Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.3.0 (2018-08-24)
 ------------------
 * post IJCAI demo, added some maps and launch files for arena

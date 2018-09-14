@@ -2,6 +2,18 @@
 Changelog for package orunav_launch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Fixed fork topics.
+* Fixed fork topic.
+* Merge branch 'master' into master
+* merge Orebro with my branch
+* Merge branch 'master' of https://github.com/MFernandezCarmona/navigation_oru-release
+* Merge branch 'master' from origin
+* Merge pull request `#1 <https://github.com/OrebroUniversity/navigation_oru-release/issues/1>`_ from OrebroUniversity/master
+  Merge from Orebro
+* Contributors: Brucye Wayne, Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.3.0 (2018-08-24)
 ------------------
 * Fixed the last launch example with the pallet picking.

@@ -2,6 +2,30 @@
 Changelog for package cititruck_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2018-09-11)
+------------------
+* Merge branch 'master' of https://github.com/OrebroUniversity/navigation_oru-release
+* Merge pull request `#27 <https://github.com/OrebroUniversity/navigation_oru-release/issues/27>`_ from batman177/master
+  Cititruck calibration
+* Merge branch 'master' into master
+* Merge pull request `#28 <https://github.com/OrebroUniversity/navigation_oru-release/issues/28>`_ from MFernandezCarmona/master
+  Working version in NCFM cititruck4
+* error in velodyne tf
+* merge Orebro with my branch
+* Added dependence to asus_description. Changed frame name to match iliad_velodine_xacro
+* Merge branch 'master' of https://github.com/MFernandezCarmona/navigation_oru-release
+* Added support for gazebo8-gpu-accelerated simulated velodyne on L-CAS repos. Name refactoring
+* Saving progress
+* Merge upstream branch 'master'
+* Adding sensor calibration joints for Cititruck. Some cleanup.
+* Removing calibration files, now in iliad_launch_system
+* Merge branch 'master' from origin
+* Removing bt_truck.launch, moved to iliad_metapackage/iliad_launch_system
+* Merge pull request `#1 <https://github.com/OrebroUniversity/navigation_oru-release/issues/1>`_ from OrebroUniversity/master
+  Merge from Orebro
+* added simulated asus
+* Contributors: Brucye Wayne, Henrik Andreasson, Manuel Fernandez-Carmona
+
 0.3.0 (2018-08-24)
 ------------------
 * post IJCAI demo, added some maps and launch files for arena
