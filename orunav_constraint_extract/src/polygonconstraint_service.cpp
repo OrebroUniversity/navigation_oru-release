@@ -24,6 +24,8 @@ bool visualize_outer_constraints;
 bool visualize_only_invalid;
 bool debug;
 
+const char blue[] = {0x1b, '[', '1', ';', '3', '4', 'm', 0};
+
 bool getPolygonConstraintsCallback(orunav_msgs::GetPolygonConstraints::Request  &req,
          orunav_msgs::GetPolygonConstraints::Response &res )
 {
@@ -281,6 +283,7 @@ int main(int argc, char **argv)
   if ( !boost::filesystem::exists( lookuptables_file ) )
   {
     save_lookup = true;
+    ROS_WARN_STREAM("Lookup tables files doesn't exist!");
   }
 
   if (!lookuptables_file.empty() && !save_lookup) {
@@ -301,8 +304,9 @@ int main(int argc, char **argv)
   lookup->compute();
   ros::Time t_4 = ros::Time::now();
   ROS_INFO_STREAM("[PolygonConstraintService]: computation time : " << (t_4 - t_3).toSec() << " <--- done.");
-  
+
   if (save_lookup) {
+    ROS_INFO_STREAM(blue << "save_lookup IS true");
       std::cout << "[PolygonConstraintService]: saving the lookup tables to: " << lookuptables_file << std::endl;
       std::ofstream ofs(lookuptables_file.c_str());
 //      boost::archive::text_oarchive ar(ofs);

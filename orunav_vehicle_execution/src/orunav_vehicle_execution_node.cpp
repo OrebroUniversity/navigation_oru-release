@@ -95,6 +95,9 @@ void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &na
 class KMOVehicleExecutionNode {
 
 private:
+
+  std::string tf_prefix_;
+
   ros::NodeHandle nh_;
   ros::ServiceServer service_compute_;
   ros::ServiceServer service_execute_;
@@ -223,7 +226,7 @@ public:
   {
     bool use_arm;
     // Parameters
-    paramHandle.param<int>("robot_id", robot_id_, 1);
+    paramHandle.param<std::string>("tf_prefix", tf_prefix_, std::string(""));
     {
       std::vector<int> robot_ids;
       robot_ids.push_back(robot_id_);
@@ -291,24 +294,24 @@ public:
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
 
     // Publishers
-    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>(orunav_generic::getRobotTopicName(robot_id_, "/controller/trajectories"),1000);
-    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
-    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
-    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
+    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>(tf_prefix_ + "/control/controller/trajectories",1000);
+    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(tf_prefix_ + "/control/controller/commands", 1000);
+    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(tf_prefix_ + "/control/fork/command", 1);
+    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(tf_prefix_ + "/control/report", 1);
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
-    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
+    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(tf_prefix_ + "/control/controller/reports", 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
-      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
+      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(tf_prefix_ + "/control/fork/report", 10, &KMOVehicleExecutionNode::process_fork_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
-    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
+    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(tf_prefix_ + "/pallet_poses", 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
 
-    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic), 10,&KMOVehicleExecutionNode::process_laserscan, this);
-    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic2), 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(tf_prefix_ + "/sensors/" + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(tf_prefix_ + "/sensors/" + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
     
 
-    marker_pub_ = nh_.advertise<visualization_msgs::Marker>(orunav_generic::getRobotTopicName(robot_id_, "/visualization_marker"), 10);
+    marker_pub_ = nh_.advertise<visualization_msgs::Marker>(tf_prefix_ + "/visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
     heartbeat_fast_visualization_   = nh_.createTimer(ros::Duration(0.1),&KMOVehicleExecutionNode::publish_visualization_fast,this);
