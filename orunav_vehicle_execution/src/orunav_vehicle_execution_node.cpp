@@ -91,6 +91,7 @@ void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &na
   pub.publish(m);
 }
 
+char blue[] = {0x1b, '[', '1', ';', '3', '4', 'm', 0};
 
 class KMOVehicleExecutionNode {
 
@@ -227,6 +228,7 @@ public:
     bool use_arm;
     // Parameters
     paramHandle.param<std::string>("tf_prefix", tf_prefix_, std::string(""));
+    ROS_INFO_STREAM(blue << "tf_prefix read as: " << tf_prefix_);
     {
       std::vector<int> robot_ids;
       robot_ids.push_back(robot_id_);
