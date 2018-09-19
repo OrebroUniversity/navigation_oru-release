@@ -227,7 +227,8 @@ public:
   {
     bool use_arm;
     // Parameters
-    paramHandle.param<std::string>("tf_prefix", tf_prefix_, std::string(""));
+    paramHandle.param<int>("robot_id", robot_id_, 1);
+    nh_.param<std::string>("tf_prefix", tf_prefix_, std::string(""));
     ROS_INFO_STREAM(blue << "tf_prefix read as: " << tf_prefix_);
     {
       std::vector<int> robot_ids;
