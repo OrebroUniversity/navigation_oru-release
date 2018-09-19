@@ -306,8 +306,8 @@ public:
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
     pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>("pallet_poses", 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
 
-    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan("sensors/" + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
-    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>("sensors/" + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
     
 
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
