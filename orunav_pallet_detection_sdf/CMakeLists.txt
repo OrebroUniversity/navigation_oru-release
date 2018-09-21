@@ -59,9 +59,18 @@ target_link_libraries(camera_pose_calib_node
    ${PCL_LIBS}
 )
 
-add_executable(euro_pallet_sdf_node src/euro_pallet_sdf_node_main.cpp src/sdf.cpp)
+add_executable(euro_pallet_sdf_node src/euro_pallet_sdf_node_main.cpp src/sdf.cpp
+src/registration_obbicp.cpp)
 add_dependencies(euro_pallet_sdf_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(euro_pallet_sdf_node
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBS}
+   ${PCL_LIBS}
+)
+
+add_executable(pallet_detector_node src/pallet_detector_node.cpp src/registration_obbicp.cpp)
+add_dependencies(pallet_detector_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(pallet_detector_node
    ${catkin_LIBRARIES}
    ${OpenCV_LIBS}
    ${PCL_LIBS}

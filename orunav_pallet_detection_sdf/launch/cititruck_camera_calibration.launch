@@ -8,24 +8,26 @@
 <!-- THIS IS WHAT WE WOULD LIKE TO FIND -->
 <!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.544789 0.0328316 0.819339 -0.00176918 0.931147 -0.00738716 0.364565 /world /camera_link 10"/-->
 
-<!--node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.502203 0.024297 0.696929 0.00534436 0.940198 0.00590517 0.340535 /world /robot1/camera_link 10"/-->
-<node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.503549 0.0207056 0.717198 -0.00638187 0.939847 0.013395 0.341274 /world /robot1/camera_link 10"/>
-
-
- <!--include file="$(find openni_launch)/launch/openni.launch">
+<node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.699344 -0.044987 0.838105 -0.320109 0.0113935 0.947305 0.00385003 /world /robot1/camera_link 10"/>
+<!--include file="$(find openni_launch)/launch/openni.launch">
    <arg name="tf_prefix" value="robot1" />
  </include-->
 
- <include file="$(find openni2_launch)/launch/openni2_tf_prefix.launch">
+ <!-- <include file="$(find openni2_launch)/launch/openni2_tf_prefix.launch">
    <arg name="tf_prefix" value="robot1" />
- </include>
+ </include -->
 
   <node pkg="orunav_pallet_detection_sdf" type="camera_pose_calib_node" name="camera_pose_calib_node" output="screen">
-  <remap from="pointcloud" to ="/camera/depth_registered/points"/> <!-- MUST have registred points to this node -->
+  <remap from="pointcloud" to ="/camera/depth_registered/points"/>   <!-- MUST have registred points to this node -->
+  <!-- <remap from="pointcloud" to ="/camera/depth/points"/> -->
+  <remap from="depthmap" to ="/camera/depth/image"/>
   <param name="use_pallet_to_calib" value="false" />
-  <param name="save_background_indices" value="true" />
+  <param name="save_background_indices" value="false" />
   <param name="visualize_sdf" value="true" />
-    </node>
+  <param name="visualize" value="true" />
+  <param name="camera_upSideDown" value="false" />
+  <param name="dst_thresh" value="0.05" />
+  </node>
 
   <node pkg="rviz" type="rviz" name="rviz" 
     args="-d $(find orunav_pallet_detection_sdf)/launch/camera_calibration.rviz"/>
