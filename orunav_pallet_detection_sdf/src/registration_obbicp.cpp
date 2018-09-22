@@ -1,3 +1,5 @@
+// Author: Dinh-Cuong Hoang, cuong.hoang@oru.se
+
 #include "registration_obbicp.h"
 
 registrationOBBICP::registrationOBBICP()
@@ -446,8 +448,8 @@ void registrationOBBICP::coarseToFineRegistration(std::vector<clusterOBBICP> &my
                                     myclusters[i].modelPoints, finalMat.inverse());
             pcl::transformPointCloud(models[bestModel].colorPoints, 
                                     myclusters[i].colorModelPoints,  finalMat.inverse()); 
-            //myclusters[i].OBB.cornerPoints.clear();
-            //computeOBB(myclusters[i].modelPoints, myclusters[i].OBB);            
+            myclusters[i].OBB.cornerPoints.clear();
+            computeOBB(myclusters[i].modelPoints, myclusters[i].OBB);            
             std::cerr << "bestScore: " << bestScore << "\n";
             std::cerr << "Recognised object: " << models[bestModel].name << "\n";
             std::cerr << "Finish registration: " << "Successful!" << "\n";

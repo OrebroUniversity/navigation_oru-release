@@ -3,12 +3,13 @@
   
     <!-- Stream Data -->
     <param name="using_bagfile" value="true"/>
+    <param name="pallet_name" value="full_pallet"/>
 
     <remap from="pointcloud" to ="/camera/depth/points"/>
     <remap from="depthmap" to ="/camera/depth/image"/>
     
-    <param name="ground_depthmap_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/ground_depth.png"/>
-    <param name="models_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/"/>
+    <param name="ground_depthmap_dir" value="/home/hoang/catkin_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/ground_depth.png"/>
+    <param name="models_dir" value="/home/hoang/catkin_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/"/>
 
     <param name="downsample" value="true"/>
     <param name="downsample_ratio" value="0.02"/>

@@ -1,3 +1,5 @@
+// Author: Dinh-Cuong Hoang, cuong.hoang@oru.se
+
 #ifndef REGISTRATION_OBBICP
 #define REGISTRATION_OBBICP
 

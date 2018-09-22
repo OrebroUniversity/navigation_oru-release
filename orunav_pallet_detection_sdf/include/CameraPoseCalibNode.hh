@@ -93,8 +93,8 @@ class CameraPoseCalibNode
         paramHandle.param<bool>("use_pallet_to_calib", use_pallet_to_calib_, false);
             
         paramHandle.param<bool>("save_background_indices", save_background_indices_, false);
-        background_indices_file_name_ = std::string("background.dat");
-            
+        paramHandle.param<std::string>("background_indices_file_name_", background_indices_file_name_, "");
+                    
   	    if (visualize)
 	    {
 		    std::cout << "The output is visualized using visualization_markers (in rviz)." << std::endl;

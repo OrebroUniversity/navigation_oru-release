@@ -1,3 +1,6 @@
+// Author: Dinh-Cuong Hoang, cuong.hoang@oru.se
+// Author: Dinh-Cuong Hoang, cuong.hoang@oru.se
+
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
@@ -30,6 +33,7 @@ class PalletDetectorNode
         ros::Subscriber pointcloud_sub_;
         ros::Subscriber depth_sub_;
 
+        std::string pallet_name;
         bool using_bagfile;
         bool visual_model;
         bool save_ground_depthmap;
@@ -60,6 +64,7 @@ class PalletDetectorNode
             myOBBICP = new registrationOBBICP();
             myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
+            paramHandle.param<std::string>("pallet_name", pallet_name, "full_pallet");
             paramHandle.param<bool>("using_bagfile", using_bagfile, true);
             paramHandle.param<bool>("visual_model", visual_model, true);             
             paramHandle.param<bool>("save_ground_depthmap", save_ground_depthmap, true);
@@ -96,15 +101,9 @@ class PalletDetectorNode
         void loadPointCloudModel()
         {
             std::vector<std::string> dirs;
-
-            objectNames.push_back("full_pallet");
-            std::string dir_full_pallet_model = models_dir + "full_pallet.ply";
+            objectNames.push_back(pallet_name);
+            std::string dir_full_pallet_model = models_dir + pallet_name + ".ply";
             dirs.push_back(dir_full_pallet_model);
-            
-            /* objectNames.push_back("half_pallet");
-            std::string dir_half_pallet_model = models_dir + "half_pallet.ply";
-            dirs.push_back(dir_half_pallet_model); */
-
             myOBBICP->loadModels(dirs, objectNames, models);
         }
 

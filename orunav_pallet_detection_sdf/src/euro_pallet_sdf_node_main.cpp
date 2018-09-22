@@ -60,7 +60,6 @@
 
 using namespace cv;
 using namespace std;
-//-------------OBBICP------------------
 
 class EuroPalletSDFNode {
 
@@ -135,8 +134,9 @@ private:
 
   //-----------------------------OBBICP----------------------------       
         ros::Publisher pointsRGB_pub, markers_pub;
-        ros::Subscriber depth_sub_;
+        ros::Subscriber depth_sub_, semantic_sub_;
 
+        std::string pallet_name;
         bool obbicp_based_;
         bool save_ground_depthmap;
         bool using_bagfile;
@@ -158,7 +158,7 @@ private:
         std::vector<std::string> objectNames;
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr myCloud;
 
-        cv::Mat depth;
+        cv::Mat depth, semantic_image;
   //----------------------------OBBICP-----------------------------
 
 public: 
@@ -171,6 +171,7 @@ public:
     myOBBICP = new registrationOBBICP();
     myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
+    paramHandle.param<std::string>("pallet_name", pallet_name, "full_pallet");
     paramHandle.param<bool>("using_bagfile", using_bagfile, false);
     paramHandle.param<bool>("visual_model", visual_model, true);             
     paramHandle.param<bool>("OBBICP_based_", obbicp_based_, false);
@@ -194,10 +195,15 @@ public:
     paramHandle.param<std::string>("models_dir", models_dir, "");
 
     depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 1, 
-                    &EuroPalletSDFNode::process_depthmap, this);             
-    pointsRGB_pub = nh_.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("filtered_points", 10);
+                    &EuroPalletSDFNode::process_depthmap, this);
+    semantic_sub_ = nh_.subscribe<sensor_msgs::Image>("semanticmap", 1, 
+                    &EuroPalletSDFNode::process_semantic, this);             
+    pointsRGB_pub = nh_.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("filtered_points", 1);
     markers_pub = nh_.advertise<visualization_msgs::MarkerArray>( "OBBs", 1);
     loadPointCloudModel();
+
+    cv::Mat semanticImg(cv::Size(640, 480), CV_8UC1, Scalar(0));
+    semantic_image = semanticImg;
 
     //---------------------- Para For OBBICP Finish  ----------------------//
 
@@ -669,15 +675,9 @@ public:
   void loadPointCloudModel()
   {
     std::vector<std::string> dirs;
-    
-    objectNames.push_back("full_pallet");
-    std::string dir_full_pallet_model = models_dir + "full_pallet.ply";
+    objectNames.push_back(pallet_name);
+    std::string dir_full_pallet_model = models_dir + pallet_name + ".ply";
     dirs.push_back(dir_full_pallet_model);
-    
-    /* objectNames.push_back("half_pallet");
-    std::string dir_half_pallet_model = models_dir + "half_pallet.ply";
-    dirs.push_back(dir_half_pallet_model); */
-
     myOBBICP->loadModels(dirs, objectNames, models);
   }
  
@@ -695,6 +695,7 @@ public:
               if(isnan(ground_depthImg.at<float>(row, col))) continue;
 
               double depth = depthImg.at<float>(row, col);
+              unsigned char semantic = semantic_image.at<unsigned char>(row, col);
               double groundDepth = ground_depthImg.at<float>(row, col);
               
               pcl::PointXYZRGB point;
@@ -702,7 +703,7 @@ public:
               point.y = (row-cy) * depth / fy;
               point.z = depth;
               
-              if(abs(depth-groundDepth) < background_thresh)
+              if(abs(depth-groundDepth) < background_thresh & semantic >= 0)
               {
                   point.r = 0; point.g = 0; point.b = 255;
                   myCloud->push_back(point);
@@ -719,6 +720,21 @@ public:
       }
   }
  
+void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
+{
+  cv_bridge::CvImageConstPtr bridge;
+  try
+  {
+    bridge = cv_bridge::toCvCopy(msg, "8UC1");
+    semantic_image = bridge->image;
+  }
+  catch (cv_bridge::Exception& e)
+  {
+    ROS_ERROR("Failed to transform rgb image.");
+    return;
+  }
+}
+
   void process_depthmap (const sensor_msgs::Image::ConstPtr& msg)
   {
       std::cerr << "\n" << "//----------- New Depth Frame Recieved -----------//" << "\n";
@@ -760,13 +776,15 @@ public:
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform("camera_link", "camera_depth_optical_frame", ros::Time(0), transform);
+              tf_listener.lookupTransform("robot4/asus_fork_link", "robot4/asus_fork_depth_optical_frame", ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
               
-              tf_listener.lookupTransform("world", "camera_link", ros::Time(0), transform);
+              tf_listener.lookupTransform("world", "robot4/asus_fork_link", ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
           }
           catch (tf::TransformException ex)
           {
@@ -792,7 +810,7 @@ public:
       myOBBICP->obbDimensionalCheck(models, myclusters, tolerance);
       
       if(!using_bagfile) myCloud->header.frame_id = "world"; 
-      else myCloud->header.frame_id = "camera_depth_optical_frame"; 
+      else myCloud->header.frame_id = "robot4/asus_fork_depth_optical_frame"; 
       
       pointsRGB_pub.publish(*myCloud);
       markersPublish(); 
@@ -806,13 +824,15 @@ public:
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform("camera_link", "camera_depth_optical_frame", ros::Time(0), transform);
+              tf_listener.lookupTransform("robot4/asus_fork_link", "robot4/asus_fork_depth_optical_frame", ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
               
-              tf_listener.lookupTransform("world", "camera_link", ros::Time(0), transform);
+              tf_listener.lookupTransform("world", "robot4/asus_fork_link", ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
           }
           catch (tf::TransformException ex)
           {
@@ -848,19 +868,29 @@ public:
               {
                   pcl::PointCloud<pcl::PointXYZRGB> clusterRGB;
                   pcl::copyPointCloud(myclusters[i].colorModelPoints, clusterRGB);
-                  *myCloud += clusterRGB;            
+                  *myCloud += clusterRGB;
+
+                  std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
+                  std::cerr << myclusters[i].OBB.toOrigin.inverse() << "\n";
+
+                  std::cerr << "\n" << "OBB center:" << "\n";
+                  std::cerr << myclusters[i].OBB.center.x << " ";
+                  std::cerr << myclusters[i].OBB.center.y << " ";
+                  std::cerr << myclusters[i].OBB.center.z << "\n";
+
+
+                  /* Vector3f pallet_pose_eu = myclusters[i].OBB.eulerAngles(0, 1, 2); 
+                  std::cerr << "\n" << "Pallet pose x y z Rx Ry Rz: " << "\n";
+                  std::cerr << pallet_pose_eu << "\n"; */            
               }
           }
       }
 
       if(!using_bagfile) myCloud->header.frame_id = "world"; 
-      else myCloud->header.frame_id = "camera_depth_optical_frame"; 
+      else myCloud->header.frame_id = "robot4/asus_fork_depth_optical_frame"; 
 
       pointsRGB_pub.publish(*myCloud);
       markersPublish();
-
-      //cv::Mat label(cv::Size(640, 480), CV_8UC1, Scalar(0)); 
-      //semanticImprove(depth, myclusters, label);
   }
 
   void markersPublish()
@@ -870,7 +900,7 @@ public:
       geometry_msgs::Point p;
       
       if(!using_bagfile) OBB.header.frame_id = "world"; 
-      else OBB.header.frame_id = "camera_depth_optical_frame";
+      else OBB.header.frame_id = "robot4/asus_fork_depth_optical_frame";
       OBB.header.stamp = ros::Time::now();
       OBB.ns = "OBBs";
       OBB.id = 0;
@@ -884,7 +914,7 @@ public:
       OBB.pose.orientation.z = 0.0;
       OBB.pose.orientation.w = 1.0;
       OBB.scale.x = 0.01; OBB.scale.y = 0.01; OBB.scale.z = 0.01;
-      OBB.color.r = 1.0f; OBB.color.g = 1.0f; OBB.color.b = 1.0f; OBB.color.a = 8.0;
+      OBB.color.r = 0.0f; OBB.color.g = 1.0f; OBB.color.b = 0.0f; OBB.color.a = 8.0;
 
       if(myclusters.size() == 0) 
       { 
