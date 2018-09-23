@@ -1,8 +1,8 @@
 # Pallet Detection and Localization in 3D Space. <br />
 
-[Demo video](https://www.youtube.com/watch?v=Cd79mRIMDks)
+## [Demo video](https://www.youtube.com/watch?v=Cd79mRIMDks)
 
-## The code is tested on Ubuntu 16.04, ROS kinetic, tensorflow gpu version 1.6, Cuda 9.0, Asus Xtion Pro Live Camera. <br />
+### The code is tested on Ubuntu 16.04, ROS kinetic, tensorflow gpu version 1.6, Cuda 9.0, Asus Xtion Pro Live Camera. <br />
 
 $ cd ~/catkin_ws <br />
 $ source devel/setup.bash <br />
