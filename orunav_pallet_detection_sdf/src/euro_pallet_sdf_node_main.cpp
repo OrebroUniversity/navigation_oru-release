@@ -816,7 +816,7 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
 
       for(int k = 0; k < myclusters.size(); k++)
       {
-        if(myclusters[k].recognizedObj == "") continue;
+        if(!myclusters[k].passOBBcandidates.size()) continue;
           std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
           std::cerr << myclusters[k].OBB.toOrigin.inverse() << "\n";
 
@@ -925,7 +925,7 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
       OBB.pose.orientation.y = 0.0;
       OBB.pose.orientation.z = 0.0;
       OBB.pose.orientation.w = 1.0;
-      OBB.scale.x = 0.01; OBB.scale.y = 0.01; OBB.scale.z = 0.01;
+      OBB.scale.x = 0.02; OBB.scale.y = 0.02; OBB.scale.z = 0.02;
       OBB.color.r = 0.0f; OBB.color.g = 1.0f; OBB.color.b = 0.0f; OBB.color.a = 8.0;
 
       if(myclusters.size() == 0) 
