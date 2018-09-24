@@ -808,6 +808,18 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
       myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
       myOBBICP->getClusters(cloud, cluster_indices, myclusters);
       myOBBICP->obbDimensionalCheck(models, myclusters, tolerance);
+
+      for(int k = 0; k < myclusters.size(); k++)
+      {
+        if(myclusters[k].recognizedObj == "") continue;
+          std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
+          std::cerr << myclusters[k].OBB.toOrigin.inverse() << "\n";
+
+          std::cerr << "\n" << "OBB center:" << "\n";
+          std::cerr << myclusters[k].OBB.center.x << " ";
+          std::cerr << myclusters[k].OBB.center.y << " ";
+          std::cerr << myclusters[k].OBB.center.z << "\n";
+      }
       
       if(!using_bagfile) myCloud->header.frame_id = "world"; 
       else myCloud->header.frame_id = "robot4/asus_fork_depth_optical_frame"; 
