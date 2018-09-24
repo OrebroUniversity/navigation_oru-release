@@ -10,9 +10,14 @@ $ cd ~/catkin_make <br />
 $ catkin_make --pkg  orunav_pallet_detection_sdf <br />
 $ roslaunch orunav_pallet_detection_sdf pallet_detector_node.launch <br />
 
-<br />
+Segmantation:
+
 ![alt text](https://github.com/OrebroUniversity/navigation_oru-release/blob/ms2-wip/orunav_pallet_detection_sdf/docs/images/segmentation.png)
-<br />
+
+Model Registration:
+
 ![alt text]( https://github.com/OrebroUniversity/navigation_oru-release/blob/ms2-wip/orunav_pallet_detection_sdf/docs/images/model_matching.png )
-<br />
+
+Pose Estimation:
+
 ![alt text](https://github.com/OrebroUniversity/navigation_oru-release/blob/ms2-wip/orunav_pallet_detection_sdf/docs/images/pose_estimation.png)
