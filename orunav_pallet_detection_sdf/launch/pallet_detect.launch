@@ -4,7 +4,8 @@
     <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen">
       
       <param name="robot_id_" value="4"/>
-      <param name="pallet_name" value="full_pallet"/>
+      <param name="full_pallet_name" value="full_pallet"/>
+      <param name="half_pallet_name" value="half_pallet_ncfm"/>
       <param name="using_bagfile" value="false"/>
 
       <remap from="pointcloud" to ="/robot4/sensors/asus_fork/depth_registered/points"/> 
@@ -52,7 +53,7 @@
       <param name="tolerance_Z" value="0.3"/>
 
       <!-- Coarse to Fine Registration -->
-      <param name="ICP_based" value="true"/>
+      <param name="ICP_based" value="false"/>
       <param name="overlap_dst_thresh" value="0.05"/>
       <param name="overlap_score_thresh" value="0.8"/>
 

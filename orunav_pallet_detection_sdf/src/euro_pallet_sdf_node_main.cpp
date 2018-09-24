@@ -137,7 +137,8 @@ private:
         ros::Publisher pointsRGB_pub, markers_pub;
         ros::Subscriber depth_sub_, semantic_sub_;
 
-        std::string pallet_name;
+        std::string full_pallet_name;
+        std::string half_pallet_name;
         bool obbicp_based_;
         bool save_ground_depthmap;
         bool using_bagfile;
@@ -172,7 +173,8 @@ public:
     myOBBICP = new registrationOBBICP();
     myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    paramHandle.param<std::string>("pallet_name", pallet_name, "full_pallet");
+    paramHandle.param<std::string>("full_pallet_name", full_pallet_name, "full_pallet");
+    paramHandle.param<std::string>("half_pallet_name", half_pallet_name, "half_pallet");
     paramHandle.param<bool>("using_bagfile", using_bagfile, false);
     paramHandle.param<bool>("visual_model", visual_model, true);             
     paramHandle.param<bool>("OBBICP_based_", obbicp_based_, false);
@@ -677,9 +679,15 @@ public:
   void loadPointCloudModel()
   {
     std::vector<std::string> dirs;
-    objectNames.push_back(pallet_name);
-    std::string dir_full_pallet_model = models_dir + pallet_name + ".ply";
+
+    objectNames.push_back(full_pallet_name);
+    std::string dir_full_pallet_model = models_dir + full_pallet_name + ".ply";
     dirs.push_back(dir_full_pallet_model);
+
+    objectNames.push_back(half_pallet_name);
+    std::string dir_half_pallet_model = models_dir + half_pallet_name + ".ply";
+    dirs.push_back(dir_half_pallet_model);
+
     myOBBICP->loadModels(dirs, objectNames, models);
   }
  
