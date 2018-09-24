@@ -106,6 +106,7 @@ private:
   bool do_nothing;
 
   std::string depth_frame_id_;
+  std::string base_link_id_;
   std::string camera_frame_id_;
   std::string tf_base_link_;
 
@@ -238,6 +239,7 @@ public:
     paramHandle.param<bool>("do_nothing", do_nothing, false);
 
     paramHandle.param<std::string>("depth_frame_id", depth_frame_id_, std::string("/kinect_optical_frame"));
+    paramHandle.param<std::string>("base_link_id", base_link_id_, std::string("/base_link"));    
     paramHandle.param<std::string>("camera_frame_id", camera_frame_id_, std::string(""));
     paramHandle.param<std::string>("tf_base_link", tf_base_link_, orunav_generic::getRobotBaseLinkTF(robot_id_));
     paramHandle.param<double>("floor_distance_thresh", floor_distance_thresh_, 0.01);
@@ -776,12 +778,7 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform("robot4/asus_fork_link", "robot4/asus_fork_depth_optical_frame", ros::Time(0), transform);
-              tf::poseTFToEigen(transform, Tcam_offset);
-              pcl::transformPointCloud (cloud, cloud, Tcam_offset);
-              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
-              
-              tf_listener.lookupTransform("world", "robot4/asus_fork_link", ros::Time(0), transform);
+              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
               pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
@@ -821,8 +818,8 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
           std::cerr << myclusters[k].OBB.center.z << "\n";
       }
       
-      if(!using_bagfile) myCloud->header.frame_id = "world"; 
-      else myCloud->header.frame_id = "robot4/asus_fork_depth_optical_frame"; 
+      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      else myCloud->header.frame_id = depth_frame_id_; 
       
       pointsRGB_pub.publish(*myCloud);
       markersPublish(); 
@@ -836,12 +833,7 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform("robot4/asus_fork_link", "robot4/asus_fork_depth_optical_frame", ros::Time(0), transform);
-              tf::poseTFToEigen(transform, Tcam_offset);
-              pcl::transformPointCloud (cloud, cloud, Tcam_offset);
-              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
-              
-              tf_listener.lookupTransform("world", "robot4/asus_fork_link", ros::Time(0), transform);
+              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
               pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
@@ -898,8 +890,8 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
           }
       }
 
-      if(!using_bagfile) myCloud->header.frame_id = "world"; 
-      else myCloud->header.frame_id = "robot4/asus_fork_depth_optical_frame"; 
+      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      else myCloud->header.frame_id = depth_frame_id_; 
 
       pointsRGB_pub.publish(*myCloud);
       markersPublish();
@@ -911,8 +903,8 @@ void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
       visualization_msgs::Marker OBB;
       geometry_msgs::Point p;
       
-      if(!using_bagfile) OBB.header.frame_id = "world"; 
-      else OBB.header.frame_id = "robot4/asus_fork_depth_optical_frame";
+      if(!using_bagfile) OBB.header.frame_id = base_link_id_; 
+      else OBB.header.frame_id = depth_frame_id_;
       OBB.header.stamp = ros::Time::now();
       OBB.ns = "OBBs";
       OBB.id = 0;

@@ -7,10 +7,13 @@
       <param name="pallet_name" value="full_pallet"/>
       <param name="using_bagfile" value="false"/>
 
-    <!-- ==================== SDF Based Start ==================== -->    
-
       <remap from="pointcloud" to ="/robot4/sensors/asus_fork/depth_registered/points"/> 
-      <param name="depth_frame_id" value="camera_depth_frame" />
+      <remap from="depthmap" to ="/robot4/sensors/asus_fork/depth/image"/>
+
+      <param name="depth_frame_id" value="robot4/asus_fork_depth_optical_frame" />
+      <param name="base_link_id" value="robot4/base_link" />
+
+    <!-- ==================== SDF Based Start ==================== -->    
 
       <param name="background_indices_file_name" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/background.dat"/>
       <param name="Dmax" value="0.4"/>
@@ -31,9 +34,6 @@
 
     <!-- =================== OBBICP Based Start =================== -->
       <param name="OBBICP_based_" value="true"/>
-
-      <remap from="pointcloud" to ="/robot4/sensors/asus_fork/depth/points"/>
-      <remap from="depthmap" to ="/robot4/sensors/asus_fork/depth/image"/>
       
       <param name="ground_depthmap_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/ground_depth.png"/>
       <param name="models_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/"/>
@@ -71,9 +71,6 @@
   </group>
    
    <!-- Only work for online camera -->
-  <node pkg="tf" type="static_transform_publisher" name="robotX_ASUS_4" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 world robot4/asus_fork_link 10"/>
-  <node pkg="tf" type="static_transform_publisher" name="world_robot4" args="0 0 0 0 0 0 world /base_link 10"/>
+  <node pkg="tf" type="static_transform_publisher" name="robotX_ASUS_4" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 robot4/base_link robot4/asus_fork_link 10"/>
   
-  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orunav_pallet_detection_sdf)/launch/pallet_detect.rviz"/>
- -->
 </launch>
