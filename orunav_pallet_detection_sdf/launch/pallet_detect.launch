@@ -50,8 +50,8 @@
       <param name="maxSegPoints" value="9900000"/>
       <param name="minSegPoints" value="100"/>
       <!-- For obbDimensionalCheck -->
-      <param name="tolerance_X" value="0.2"/>
-      <param name="tolerance_Y" value="0.2"/>
+      <param name="tolerance_X" value="0.3"/>
+      <param name="tolerance_Y" value="0.3"/>
       <param name="tolerance_Z" value="0.5"/>
 
       <!-- Coarse to Fine Registration -->
