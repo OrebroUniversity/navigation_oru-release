@@ -850,6 +850,7 @@ public:
 
       Eigen::Matrix4f pallet_pose_matrix;
       double dstToOrigin = 99999999;
+      bool pallet_ready = false;
 
       for(int k = 0; k < myclusters.size(); k++)
       {
@@ -868,11 +869,12 @@ public:
         if(dstToOrigin > dst)
         {
           pallet_pose_matrix = myclusters[k].OBB.toOrigin.inverse();
+          pallet_ready = true;
         }
       }
+      if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
+      pallet_ready = false;
 
-      publish_pallet_pose(pallet_pose_matrix);
-      
       if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
       else myCloud->header.frame_id = depth_frame_id_; 
       
@@ -918,6 +920,10 @@ public:
       myOBBICP->coarseToFineRegistration(myclusters, models, 
       overlap_dst_thresh, overlap_score_thresh);
 
+      Eigen::Matrix4f pallet_pose_matrix;
+      double dstToOrigin = 99999999;
+      bool pallet_ready = false;
+
       // Visualize model matching
       if(visual_model)
       {
@@ -935,15 +941,22 @@ public:
                   std::cerr << "\n" << "OBB center:" << "\n";
                   std::cerr << myclusters[i].OBB.center.x << " ";
                   std::cerr << myclusters[i].OBB.center.y << " ";
-                  std::cerr << myclusters[i].OBB.center.z << "\n";
+                  std::cerr << myclusters[i].OBB.center.z << "\n"; 
 
-
-                  /* Vector3f pallet_pose_eu = myclusters[i].OBB.eulerAngles(0, 1, 2); 
-                  std::cerr << "\n" << "Pallet pose x y z Rx Ry Rz: " << "\n";
-                  std::cerr << pallet_pose_eu << "\n"; */            
+                  double dst = myclusters[i].OBB.center.x*myclusters[i].OBB.center.x +
+                              myclusters[i].OBB.center.y*myclusters[i].OBB.center.y +
+                              myclusters[i].OBB.center.z*myclusters[i].OBB.center.z;
+                  if(dstToOrigin > dst)
+                  {
+                    pallet_pose_matrix = myclusters[i].OBB.toOrigin.inverse();
+                    pallet_ready = true;
+                  }           
               }
           }
       }
+
+      if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
+      pallet_ready = false;
 
       if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
       else myCloud->header.frame_id = depth_frame_id_; 
