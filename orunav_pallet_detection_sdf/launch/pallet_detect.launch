@@ -14,6 +14,9 @@
       <param name="depth_frame_id" value="robot4/asus_fork_depth_optical_frame" />
       <param name="base_link_id" value="robot4/base_link" />
 
+      <param name="pallet_pose_topic" value="/pallet_poses" />
+      <param name="pallet_pose_id" value="robot4/base_link" />
+
     <!-- ==================== SDF Based Start ==================== -->    
 
       <param name="background_indices_file_name" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/background.dat"/>
