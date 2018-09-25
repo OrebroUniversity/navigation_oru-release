@@ -730,20 +730,20 @@ public:
       }
   }
  
-void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
-{
-  cv_bridge::CvImageConstPtr bridge;
-  try
+  void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
   {
-    bridge = cv_bridge::toCvCopy(msg, "8UC1");
-    semantic_image = bridge->image;
+    cv_bridge::CvImageConstPtr bridge;
+    try
+    {
+      bridge = cv_bridge::toCvCopy(msg, "8UC1");
+      semantic_image = bridge->image;
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      ROS_ERROR("Failed to transform rgb image.");
+      return;
+    }
   }
-  catch (cv_bridge::Exception& e)
-  {
-    ROS_ERROR("Failed to transform rgb image.");
-    return;
-  }
-}
 
   void process_depthmap (const sensor_msgs::Image::ConstPtr& msg)
   {

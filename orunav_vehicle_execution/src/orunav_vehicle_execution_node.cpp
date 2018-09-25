@@ -1215,7 +1215,7 @@ public:
 
   void process_pallet_poses(/*const geometry_msgs::PoseStampedConstPtr &msg*/
                             const orunav_msgs::ObjectPoseConstPtr &msg) {
-
+    ROS_INFO("[MMN] got pallet poses");
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect()) {
       // Add some checks on the pose.
