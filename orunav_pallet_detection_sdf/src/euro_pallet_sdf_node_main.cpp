@@ -694,7 +694,7 @@ public:
 
   void publish_pallet_pose(const Eigen::Matrix4f& pose_matrix)
   {
-    //pposeTrack.matrix() = pose_matrix;
+    pposeTrack.matrix() = pose_matrix.cast<double>();
     tf::Transform tf_out;
     tf::poseEigenToTF(pposeTrack, tf_out);
     pose_stamped.header.frame_id = pallet_pose_id;
