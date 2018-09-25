@@ -206,7 +206,7 @@ public:
 
     if(obbicp_based_)
     {
-      depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 1, 
+      depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 2, 
                       &EuroPalletSDFNode::process_depthmap, this);
       semantic_sub_ = nh_.subscribe<sensor_msgs::Image>("semanticmap", 1, 
                       &EuroPalletSDFNode::process_semantic, this);             
