@@ -869,6 +869,7 @@ public:
         if(dstToOrigin > dst)
         {
           pallet_pose_matrix = myclusters[k].OBB.toOrigin.inverse();
+          dstToOrigin = dst;
           pallet_ready = true;
         }
       }
@@ -949,6 +950,7 @@ public:
                   if(dstToOrigin > dst)
                   {
                     pallet_pose_matrix = myclusters[i].OBB.toOrigin.inverse();
+                    dstToOrigin = dst;
                     pallet_ready = true;
                   }           
               }
