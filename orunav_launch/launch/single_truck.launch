@@ -30,11 +30,20 @@
   <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
         <param name="robot_id" value="$(arg robot_id)" />
 	<remap from="/$(arg tf_prefix)/cmd_vel" to ="/$(arg tf_prefix)/controller/cmd_vel"/>
+	<!--remap from="/$(arg tf_prefix)/cmd_vel" to ="/$(arg tf_prefix)/control/controller/cmd_vel"/-->
+	<remap from="controller/commands" to="control/controller/commands"/>   
+        <remap from="controller/reports" to ="control/controller/reports"/>
+        <remap from="controller/trajectories" to ="control/controller/trajectories"/>          
   </node>
 
-  <node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
-            <param name="visualize" value="true" />
-  </node>
+  <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch">
+    <arg name="cmd_fork_topic" value="/$(arg tf_prefix)/control/controller/cmd_fork" /> 
+    <arg name="topic_prefix"   value="/$(arg tf_prefix)/"/>
+  </include>
+  
+  <!--node pkg="orunav_fork_control" type="fork_control_sim_node" name="fork_control" output="screen">
+    <param name="visualize" value="true" />
+  </node-->
 
   <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">		
     <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
