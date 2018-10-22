@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <node pkg="ndt_fuser" type="ndt_fuser_node" name="laser_fuser_2d" output="screen">
+	<param name="laser_topic" value="/robot1/laserscan" />
+	<param name="matchLaser" value="true" />
+	
+	<param name="size_x_meters" value="30" />
+	<param name="size_y_meters" value="30" />
+	<param name="size_z_meters" value="0.8" />
+	<param name="resolution" value="0.2" />
+	<param name="laser_variance_z" value="0.02" />
+	
+	<param name="sensor_range" value="20." />
+	<param name="min_laser_range" value="0.5" />
+	
+	<!-- Specific sensor offset parameters for the example file -->
+	<param name="sensor_pose_x" value="0.695" />
+	<param name="sensor_pose_y" value="-0.01" />
+	<param name="sensor_pose_t" value="-0.0069813" />
+	
+	<param name="pose_init_x" value="10.727" />
+	<param name="pose_init_y" value="2.186" />
+	<param name="pose_init_t" value="0.05" />
+
+	<param name="map_directory" value="$(find ndt_fuser)/maps/" />	
+	<param name="map_name_prefix" value="aasslab2d" />
+
+	<param name="beHMT" value="false" />
+	<param name="useOdometry" value="true" />
+	<param name="odometry_topic" value="/robot1/vmc_navserver/odom" />
+	<param name="visualize" value="true" />
+	<param name="plotGTTrack" value="true" />
+	<param name="renderGTmap" value="true" />
+	<param name="initPoseFromGT" value="true" />
+	<param name="gt_topic" value="/robot1/vmc_navserver/state" />
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="robotX_frontsick" args="-0.325782 -0.0142168 1.06297 3.13318 2.67089 0 /robot1/base_link /base_front_laser_link 10"/>
+
+
+</launch>

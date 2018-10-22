@@ -1,0 +1,1 @@
+rosrun orunav_projector manual_calibration --pos_x -0.325782 --pos_y -0.0142168 --pos_z 1.06297 --fp_x -0.866651 --fp_y -0.0096648 --fp_z 0 --aspect_ratio 0.67
