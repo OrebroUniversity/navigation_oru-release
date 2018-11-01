@@ -75,7 +75,7 @@ class ErraticKeyboardTeleopNode
     void Init( int RobotIdentification)
     {
       char * Buffer = new char[100];
-      sprintf( Buffer, "/robot%d/cmd_vel", RobotIdentification);
+      sprintf( Buffer, "/robot%d/controller/cmd_vel", RobotIdentification);
       pub_vel_ = n_.advertise<geometry_msgs::Twist>( Buffer, 1);
       
       ros::NodeHandle n_private("~");
@@ -83,7 +83,7 @@ class ErraticKeyboardTeleopNode
       n_private.param("yaw_rate", yaw_rate_, 1.0);
       
       //advertise another topic (controlling the forks)
-      sprintf( Buffer, "/robot%d/cmd_fork", RobotIdentification);
+      sprintf( Buffer, "/robot%d/controller/cmd_fork", RobotIdentification);
       pub_fork_ = n_.advertise<geometry_msgs::Point>( Buffer, 1);      
       
       delete [] Buffer;
