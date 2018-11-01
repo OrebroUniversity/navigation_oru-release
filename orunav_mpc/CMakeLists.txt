@@ -29,7 +29,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 # Options
 ####################################
 
-SET(SW_BUILD_SIMULATION OFF CACHE BOOL          "Build controller to run within simulation." FORCE)
+SET(SW_BUILD_SIMULATION ON CACHE BOOL          "Build controller to run within simulation." FORCE)
 SET(SW_ENABLE_LOGGING ON CACHE BOOL             "Enable logging." FORCE)
 SET(SW_ENABLE_DEBUG ON CACHE BOOL               "Enable debug." FORCE)
 SET(SW_ENABLE_NAVSERVER_READER OFF CACHE BOOL   "Use connection to Navserver instead of CAN bus." FORCE)
