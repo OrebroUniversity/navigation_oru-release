@@ -33,7 +33,7 @@ private:
   ros::NodeHandle nh_;
 
   ros::Subscriber control_report_sub_;
-  ros::Subscriber fork_report_sub_; 
+  ros::Subscriber fork_report_sub_;
   ros::Subscriber marker_sub_;
   ros::Subscriber laserscan_sub_;
 
@@ -55,17 +55,17 @@ private:
   double secs; // defined for blinking action
 
 public:
-  ProjectorNDTVizNode(ros::NodeHandle &paramHandle) 
+  ProjectorNDTVizNode(ros::NodeHandle &paramHandle)
   {
     double grid_size;
 
     // Parameters
     paramHandle.param<int>("robot_id", robot_id_, 1);
     paramHandle.param<bool>("use_forks", use_forks_, true);
-    paramHandle.param<bool>("draw_sweep_area", draw_sweep_area_, true);
+    paramHandle.param<bool>("draw_sweep_area", draw_sweep_area_, false);
     paramHandle.param<bool>("draw_arrow", draw_arrow_, true);
-    paramHandle.param<bool>("draw_path", draw_path_, true);
-    paramHandle.param<bool>("blink_arrow", blink_, true);
+    paramHandle.param<bool>("draw_path", draw_path_, false);
+    paramHandle.param<bool>("blink_arrow", blink_, false);
 
     // paramHandle.param<double>("pos_x", pos(0), -0.325782);
     // paramHandle.param<double>("pos_y", pos(1), -0.0142168);
@@ -101,8 +101,8 @@ public:
 
     // laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, "/laser_forkdir_scan"), 10,&ProjectorNDTVizNode::process_laserscan, this);
 
-    
-    ndt_viz_.win3D->setFullScreen(true);
+
+    ndt_viz_.win3D->setFullScreen(false); // full screen setting default - true
     ndt_viz_.win3D->setMotionBlurFrames(0);
     ndt_viz_.win3D->setAspectRatioFactor(aspect_ratio);
     if (!movable_camera_)
@@ -170,7 +170,7 @@ public:
       }
 
     }
-    
+
   }
 
 // OLD function for drawing the arrow
@@ -185,6 +185,7 @@ public:
 //  }
 
 // NEW function for drawing the color filled arrow and blinking
+// Also, note the changes made in the file polygon_arrow.h in orunav_geometry
 
   void draw_arrow() {
     std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > pts;
@@ -193,8 +194,6 @@ public:
       pts.push_back(poly.getPoint2d(i));
     }
     //ndt_viz_.addPolygon(pts, 0., 0., 1.);
-
-
 
 //std::cout<<"Time   "<<secs<<std::endl;
 
@@ -226,7 +225,7 @@ else
 
 // ndt_viz_.win3D->setFullScreen(false);
 
-  
+
 
 
   void update_arrow(const orunav_generic::State2d &state) {
@@ -235,14 +234,14 @@ else
     pose = orunav_generic::addPose2d(pose, orunav_generic::Pose2d(-1.0, 0., M_PI));
 
     // Add some turning (from the steering wheel to the arrow)
-    pose[2] -= state.getSteeringAngle();
-    
+    pose[2] -= state.getSteeringAngle(); //Steering angle input to the arrow -- this needs to be replaced by the new steering wheel inout of the BT Truck.
+
     poly_arrow_.update(pose);
   }
 
-  void process_report(const orunav_msgs::ControllerReportConstPtr &msg) {    
+  void process_report(const orunav_msgs::ControllerReportConstPtr &msg) {
 
-    
+
     orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
     if (draw_arrow_) {
       update_arrow(state);
@@ -269,7 +268,7 @@ else
     ndt_viz_.win3D->setCameraPosition(proj_pos(0),
                                       proj_pos(1),
                                       proj_pos(2));
-    
+
     ndt_viz_.win3D->setCameraPointingToPoint(proj_fp(0),
                                              proj_fp(1),
                                              proj_fp(2));
@@ -279,7 +278,7 @@ else
     //     msg->status == msg->CONTROLLER_STATUS_FINALIZE) {
     //   ndt_viz_.addTrajectoryPoint(state.getPose2d()[0],
     //                               state.getPose2d()[1],
-    //                               0.0,1.0,0,0);	
+    //                               0.0,1.0,0,0);
     //   ndt_viz_.displayTrajectory();
     // }
     // else {
@@ -289,48 +288,48 @@ else
 
     // Eigen::Affine3d Tcam;
     // if (!projector_frame_id_.empty()) {
-      
+
     //   tf::StampedTransform transform;
     //   tf_listener_.waitForTransform("/world", projector_frame_id_, msg->stamp, ros::Duration(1.0));
     //   try{
     //     tf_listener_.lookupTransform("/world", projector_frame_id_, msg->stamp, transform);
-                
+
     //     tf::poseTFToEigen(transform, Tcam);
     //   }
     //   catch (tf::TransformException ex){
     //     ROS_ERROR("%s",ex.what());
     //     return;
-    //   }             
+    //   }
     // }
 
     // ndt_viz_.win3D->setCameraPosition(Tcam.translation()(0),
     //                                   Tcam.translation()(1),
     //                                   Tcam.translation()(2));
-    
+
     // // Compute a forward point ("to look at"), here we assume that the X-axis gives the forward direction.
     // Eigen::Affine3d Tlook_at_offset = Eigen::Affine3d::Identity();
     // Tlook_at_offset.translation() = Eigen::Vector3d(1., 0., 0.);
     // Eigen::Affine3d Tlook_at = Tcam * Tlook_at_offset;
-    
+
     // ndt_viz_.win3D->setCameraPointingToPoint(Tlook_at.translation()(0),
     //                                          Tlook_at.translation()(1),
     //                                          Tlook_at.translation()(2));
 
     // ndt_viz_.addTrajectoryPoint(state.getPose2d()[0],
     //                             state.getPose2d()[1],
-    //                             0.0,1.0,0,0);	
+    //                             0.0,1.0,0,0);
     // ndt_viz_.displayTrajectory();
 
-    
+
 
   }
 
   void process_fork_report(const orunav_msgs::ForkReportConstPtr &msg) {
-    
-  }  	    
+
+  }
 
   // void process_laserscan(const sensor_msgs::LaserScanConstPtr &msg) {
-    
+
   //   ROS_INFO_STREAM("process_laserscan");
   //   if(!tf_listener_.waitForTransform(
   //                                     msg->header.frame_id,
@@ -341,9 +340,9 @@ else
   //   }
   //   tf::StampedTransform transform;
   //   try{
-  //     tf_listener_.lookupTransform(msg->header.frame_id, "/world", 
+  //     tf_listener_.lookupTransform(msg->header.frame_id, "/world",
   //                                 msg->header.stamp, transform);
-                
+
   //     }
   //     catch (tf::TransformException ex){
   //       ROS_ERROR("%s",ex.what());
@@ -371,7 +370,7 @@ int main(int argc, char** argv) {
 
   ProjectorNDTVizNode p(params);
 
-    
+
   ros::spin();
 
 }

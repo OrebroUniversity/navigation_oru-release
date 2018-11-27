@@ -1,16 +1,16 @@
 <launch>
-  
-    <node pkg="orunav_projector" type="projector_ndtviz_node" name="projector_ndtviz_node" output="screen">
+
+    <node pkg="orunav_projector" type="projector_ndtviz_node" name="projector_ndtviz_node" output="screen"/>
       <param name="visualize" value="true" />
       <param name="movable_camera" value="false" />
-      <param name="grid_size" value="-0.1" /> 
+      <param name="grid_size" value="-0.1" />
       <param name="draw_sweep_area" value="false" />
       <param name="draw_path" value="false" />
       <param name="draw_arrow" value="true" />
       <param name="blink_arrow" value="false" />
 
 
-   
+
       <param name="pos_x" value="-0.757664" />
       <param name="pos_y" value="0.104473" />
       <param name="pos_z" value="2.23963" />
@@ -18,19 +18,17 @@
       <param name="fp_y" value="0.10447"/>
       <param name="fp_z" value="0"/>
       <param name="aspect_ratio" value="1.102"/>
-      	
 
-      <param name="slowdown_texture" value="/home/han/catkin_ws/src/orunav/orunav_projector/textures/zebra.png" />
-    </node>
+
+<!--      <param name="slowdown_texture" value="/home/han/catkin_ws/src/orunav/orunav_projector/textures/zebra.png" />
+</node> -->
 
     <node pkg="tf" type="static_transform_publisher" name="robotX_projector" args="-0.325782 -0.0142168 1.06297 3.13318 2.67089 0 /robot1/base_footprint /robot1/projector_link 10"/>
- 
+
     <!-- Get some calibrated values using the sdf calibration with the forks (pallet detection pkg)  -->
     <!-- node pkg="tf" type="static_transform_publisher" name="robot1_kinect_1" args="0.865331 -0.0419522 0.863999 0.0569153 0.950112 -0.0227423 0.305827 /robot1/base_footprint /robot1/camera_link 10"/-->
-    
+
     <!-- The projector should have a similar position and orientation (apart from it being mounted up side down -->
-    
+
     <!-- node pkg="tf" type="static_transform_publisher" name="robot1_projector" args="0 0 0 0 0 3.14 /robot1/camera_link /robot1/projector_link 10"/-->
-
-
 </launch>
