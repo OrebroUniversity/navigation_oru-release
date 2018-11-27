@@ -45,6 +45,7 @@ private:
   tf::TransformListener tf_listener_;
   std::string projector_frame_id_;
   std::string tf_base_link_;
+  std::string controller_report_topic;
 
   Eigen::Vector3d pos, fp;
   double aspect_ratio;
@@ -86,14 +87,15 @@ public:
     paramHandle.param<bool>("movable_camera", movable_camera_, false);
     paramHandle.param<std::string>("projector_frame_id", projector_frame_id_, orunav_generic::getRobotTF(robot_id_, std::string("/projector_link")));
     paramHandle.param<std::string>("tf_base_link", tf_base_link_, orunav_generic::getRobotBaseLinkTF(robot_id_));
+    paramHandle.param<std::string>("controller_report_topic", controller_report_topic, orunav_generic::getRobotTopicName(robot_id_, "/controller/report"));
 
-
+    ROS_INFO("The controller report topic is currently: %s", controller_report_topic.c_str() );
     secs = ros::Time::now().toSec(); //defined for blinking action
 
     std::string slowdown_texture;
     paramHandle.param<std::string>("slowdown_texture", slowdown_texture, "zebra.png");
 
-    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&ProjectorNDTVizNode::process_report, this);
+    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(controller_report_topic, 10,&ProjectorNDTVizNode::process_report, this);
     if (use_forks_) {
       fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &ProjectorNDTVizNode::process_fork_report,this);
     }
