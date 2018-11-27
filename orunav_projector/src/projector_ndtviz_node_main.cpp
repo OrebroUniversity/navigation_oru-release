@@ -65,7 +65,7 @@ public:
     paramHandle.param<bool>("draw_sweep_area", draw_sweep_area_, false);
     paramHandle.param<bool>("draw_arrow", draw_arrow_, true);
     paramHandle.param<bool>("draw_path", draw_path_, false);
-    paramHandle.param<bool>("blink_arrow", blink_, false);
+    paramHandle.param<bool>("blink_arrow", blink_, true);
 
     // paramHandle.param<double>("pos_x", pos(0), -0.325782);
     // paramHandle.param<double>("pos_y", pos(1), -0.0142168);
