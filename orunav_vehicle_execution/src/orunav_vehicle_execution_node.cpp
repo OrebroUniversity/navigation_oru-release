@@ -91,10 +91,12 @@ void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &na
   pub.publish(m);
 }
 
+char blue[] = {0x1b, '[', '1', ';', '3', '4', 'm', 0};
 
 class KMOVehicleExecutionNode {
 
 private:
+
   ros::NodeHandle nh_;
   ros::ServiceServer service_compute_;
   ros::ServiceServer service_execute_;
@@ -291,24 +293,24 @@ public:
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
 
     // Publishers
-    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>(orunav_generic::getRobotTopicName(robot_id_, "/controller/trajectories"),1000);
-    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
-    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
-    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
+    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>("control/controller/trajectories",1000);
+    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>("control/controller/commands", 1000);
+    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>("control/fork/command", 1);
+    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>("control/report", 1);
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
-    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
+    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>("control/controller/reports", 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
-      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
+      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>("control/fork/report", 10, &KMOVehicleExecutionNode::process_fork_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
-    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
+    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>("pallet_poses", 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
 
-    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic), 10,&KMOVehicleExecutionNode::process_laserscan, this);
-    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic2), 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
     
 
-    marker_pub_ = nh_.advertise<visualization_msgs::Marker>(orunav_generic::getRobotTopicName(robot_id_, "/visualization_marker"), 10);
+    marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
     heartbeat_fast_visualization_   = nh_.createTimer(ros::Duration(0.1),&KMOVehicleExecutionNode::publish_visualization_fast,this);
@@ -1213,7 +1215,7 @@ public:
 
   void process_pallet_poses(/*const geometry_msgs::PoseStampedConstPtr &msg*/
                             const orunav_msgs::ObjectPoseConstPtr &msg) {
-
+    ROS_INFO("[MMN] got pallet poses");
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect()) {
       // Add some checks on the pose.

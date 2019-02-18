@@ -256,7 +256,6 @@ void RenderDiffPC(const Eigen::Affine3d &transformation,
     
     return;
 }
-
  
  void RenderPC(
     const Eigen::Affine3d &transformation, 
@@ -303,8 +302,6 @@ void RenderDiffPC(const Eigen::Affine3d &transformation,
     return;
   }
 
-
- 
  void Render(
     const Eigen::Affine3d &transformation, 
     const int rows, 

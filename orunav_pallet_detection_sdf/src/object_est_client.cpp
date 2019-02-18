@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     ("py", po::value<double>(&py)->default_value(0.), "init pallet pose [y] in /world")
     ("pth", po::value<double>(&pth)->default_value(0.), "init pallet pose [theta] in /world")
     ("robot_id", po::value<int>(&robot_id)->default_value(1), "robot id to be used to select the service /robot{robot_id}/pallet_estimation_service")
-    ("object_type", po::value<int>(&object_type)->default_value(2), "object type, EUR pallet = 1, half pallet = 2")
+    ("object_type", po::value<int>(&object_type)->default_value(1), "object type, EUR pallet = 1, half pallet = 2")
     ;
   
   po::variables_map vm;

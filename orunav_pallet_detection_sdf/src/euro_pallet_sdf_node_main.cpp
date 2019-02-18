@@ -39,6 +39,27 @@
 #include <orunav_msgs/ObjectPoseEstimation.h>
 #include <orunav_msgs/ObjectPose.h>
 
+//-------------OBBICP------------------
+#include <ros/ros.h>
+#include <sensor_msgs/Image.h>
+#include <cv_bridge/cv_bridge.h>
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+
+// PCL
+#include <pcl_ros/point_cloud.h>
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/kdtree/kdtree_flann.h>
+
+// OpenCV specific includes
+#include <opencv2/highgui/highgui.hpp>
+
+#include <registration_obbicp.h>
+
+using namespace cv;
+using namespace std;
 
 class EuroPalletSDFNode {
 
@@ -85,6 +106,7 @@ private:
   bool do_nothing;
 
   std::string depth_frame_id_;
+  std::string base_link_id_;
   std::string camera_frame_id_;
   std::string tf_base_link_;
 
@@ -111,14 +133,100 @@ private:
   //  std::string object_type_;
   unsigned int object_type_;
 
+  //-----------------------------OBBICP----------------------------       
+  ros::Publisher pointsRGB_pub, markers_pub;
+  ros::Subscriber depth_sub_, semantic_sub_;
+
+  std::string full_pallet_name;
+  std::string half_pallet_name;
+
+  std::string pallet_pose_topic;
+  std::string pallet_pose_id;
+
+  bool obbicp_based_;
+  bool save_ground_depthmap;
+  bool using_bagfile;
+  bool visual_model;        
+  bool deepLearning_based, ICP_based;
+  bool downsample;
+
+  double background_thresh;
+  double downsample_ratio;
+  double EC_segThresh;
+  int maxSegPoints, minSegPoints;
+  double tolerance[3];
+  double overlap_dst_thresh, overlap_score_thresh;
+  std::string ground_depthmap_dir, models_dir;
+
+  registrationOBBICP *myOBBICP;
+  std::vector<ObjectModel> models;
+  std::vector<clusterOBBICP> myclusters;
+  std::vector<std::string> objectNames;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr myCloud;
+
+  cv::Mat depth, semantic_image;
+  //----------------------------OBBICP-----------------------------
 
 public: 
-  EuroPalletSDFNode (ros::NodeHandle &paramHandle) : active_(false) {
-    paramHandle.param<int>("robot_id", robot_id_, 1);
-        
-    pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud",1,&EuroPalletSDFNode::process_pointcloud,this);
+  EuroPalletSDFNode (ros::NodeHandle &paramHandle) : active_(false) 
+  {
+    paramHandle.param<int>("robot_id", robot_id_, 4);
 
-    service_ = nh_.advertiseService(orunav_generic::getRobotTopicName(robot_id_, "/pallet_estimation_service"), &EuroPalletSDFNode::objectPoseEstimationCB, this);
+    //---------------------- Para For OBBICP  ----------------------//
+    
+    myOBBICP = new registrationOBBICP();
+    myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+    paramHandle.param<std::string>("full_pallet_name", full_pallet_name, "full_pallet");
+    paramHandle.param<std::string>("half_pallet_name", half_pallet_name, "half_pallet");
+    paramHandle.param<std::string>("pallet_pose_topic", pallet_pose_topic, "/pallet_poses");
+    paramHandle.param<std::string>("pallet_pose_id", pallet_pose_id, "robot4/base_link");
+    
+    paramHandle.param<bool>("using_bagfile", using_bagfile, false);
+    paramHandle.param<bool>("visual_model", visual_model, true);             
+    paramHandle.param<bool>("OBBICP_based_", obbicp_based_, false);
+    paramHandle.param<bool>("save_ground_depthmap", save_ground_depthmap, true);
+    paramHandle.param<bool>("deepLearning_based", deepLearning_based, false);
+    paramHandle.param<bool>("ICP_based", ICP_based, true);
+    paramHandle.param<bool>("downsample", downsample, false);
+
+    paramHandle.param<double>("background_thresh", background_thresh, 0.05);
+    paramHandle.param<double>("downsample_ratio", downsample_ratio, 0.05);
+    paramHandle.param<double>("EC_segThresh", EC_segThresh, 0.05);
+    paramHandle.param<int>("maxSegPoints", maxSegPoints, 9900000);
+    paramHandle.param<int>("minSegPoints", minSegPoints, 100);
+    paramHandle.param<double>("tolerance_X", tolerance[0], 0.2);
+    paramHandle.param<double>("tolerance_Y", tolerance[1], 0.2);
+    paramHandle.param<double>("tolerance_Z", tolerance[2], 0.6);
+    paramHandle.param<double>("overlap_dst_thresh", overlap_dst_thresh, 0.05);
+    paramHandle.param<double>("overlap_score_thresh", overlap_score_thresh, 0.8);
+    
+    paramHandle.param<std::string>("ground_depthmap_dir", ground_depthmap_dir, "");
+    paramHandle.param<std::string>("models_dir", models_dir, "");
+
+    if(obbicp_based_)
+    {
+      depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 2, 
+                      &EuroPalletSDFNode::process_depthmap, this);
+      semantic_sub_ = nh_.subscribe<sensor_msgs::Image>("semanticmap", 1, 
+                      &EuroPalletSDFNode::process_semantic, this);             
+      pointsRGB_pub = nh_.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("filtered_points", 1);
+      markers_pub = nh_.advertise<visualization_msgs::MarkerArray>( "OBBs", 1);
+      loadPointCloudModel();
+
+      cv::Mat semanticImg(cv::Size(640, 480), CV_8UC1, Scalar(0));
+      semantic_image = semanticImg;
+    }
+
+    //---------------------- Para For OBBICP Finish  ----------------------//
+
+      pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud",1,
+                          &EuroPalletSDFNode::process_pointcloud,this);  
+
+    pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud",1,
+                          &EuroPalletSDFNode::process_pointcloud,this);
+    service_ = nh_.advertiseService(orunav_generic::getRobotTopicName(robot_id_, 
+                    "/pallet_estimation_service"), &EuroPalletSDFNode::objectPoseEstimationCB, this);
             
     paramHandle.param<bool>("visualize",visualize,true);
     paramHandle.param<bool>("visualize_sdf",visualize_sdf,true);
@@ -146,6 +254,7 @@ public:
     paramHandle.param<bool>("do_nothing", do_nothing, false);
 
     paramHandle.param<std::string>("depth_frame_id", depth_frame_id_, std::string("/kinect_optical_frame"));
+    paramHandle.param<std::string>("base_link_id", base_link_id_, std::string("/base_link"));    
     paramHandle.param<std::string>("camera_frame_id", camera_frame_id_, std::string(""));
     paramHandle.param<std::string>("tf_base_link", tf_base_link_, orunav_generic::getRobotBaseLinkTF(robot_id_));
     paramHandle.param<double>("floor_distance_thresh", floor_distance_thresh_, 0.01);
@@ -172,7 +281,7 @@ public:
       marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
     }
         
-    pallet_poses_pub_ = nh_.advertise<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"),10);
+    pallet_poses_pub_ = nh_.advertise<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, pallet_pose_topic),10);
 
     //    pallet_poses_vis_only_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses_vis_only"),10);
         
@@ -192,7 +301,6 @@ public:
         
     // Final movements (on the floor coord).
     Eigen::Affine3d Tcam_offset = Eigen::AngleAxisd(cam_rot(2), Eigen::Vector3d::UnitZ())*Eigen::Translation3d(Eigen::Vector3d(cam_pos(0), cam_pos(1), cam_pos(2)));
-
 
     Tcam = Tcam_offset*Tcam_floor*Tcam_sdf;
 
@@ -230,6 +338,8 @@ public:
     pose_stamped.header.frame_id = "/world";
 
     object_type_ = 0;
+
+    std::cerr << "Waiting for sensor data ...";
 
   }
     
@@ -336,8 +446,11 @@ public:
     est_cov = (Ik - Kk)*est_cov;
   }
   
-  void process_pointcloud(const sensor_msgs::PointCloud2::ConstPtr &msg) {
-    
+  void process_pointcloud(const sensor_msgs::PointCloud2::ConstPtr &msg) 
+  {
+    pose_stamped.header.stamp = msg->header.stamp;
+    if(obbicp_based_) return;
+
     if (!active_)
       return;
     
@@ -361,6 +474,7 @@ public:
     catch (tf::TransformException ex){
       ROS_ERROR("[EuroPalletSDF]: %s",ex.what());
       errorcnt++;
+      //std::cerr << "cuong 0" << "\n";
       return;
     }
     tf::poseTFToEigen(transform, baseToWorld);
@@ -425,11 +539,10 @@ public:
       extract.setNegative (true);
       extract.filter (cloud_f);
             
-            
       // For simplicily keep the cloud intact -> fill the values .z = -1.
-      for (unsigned int i = 0; i < inliers.indices.size(); i++) {
+      /* for (unsigned int i = 0; i < inliers.indices.size(); i++) {
         cloud[inliers.indices[i]].z = -1;
-      }
+      } */
       // If we have any background data -> the forks
       if (!background_indices_.empty()) {
         ROS_INFO("[EuroPalletSDF]: Number of pre-stored background points : %lu", background_indices_.size());
@@ -437,9 +550,13 @@ public:
           cloud[background_indices_[i]].z = -1;
         }
       }
-      pointcloud_pub_.publish(cloud_f);
+      pointcloud_pub_.publish(cloud);
     }
+      //std::cerr << cloud.size() << "\n";
 
+    //cuong
+    //std::cerr << "cuong:" << "\n";
+    //std::cerr << init_Tcam.matrix() << "\n";
 
     double t1 = orunav_generic::getDoubleTime();
     Eigen::Affine3d aligned_Tcam = sdf::EstimatePalletPosePC(init_Tcam,        //cam pose
@@ -533,7 +650,7 @@ public:
       ROS_INFO("[EuroPalletSDF]: not enough points");
     }
     //else we simply don't update the estimates!	
-    
+    //visualize = false;
     if (visualize) {
       
       Eigen::Affine3d Tcam_inv = aligned_Tcam.inverse();
@@ -572,12 +689,404 @@ public:
       pallet_poses_pub_.publish(object_pose);
     }
   }
+
+  //-----------------------------------OBBICP------------------------------------
+
+  void publish_pallet_pose(const Eigen::Matrix4f& pose_matrix)
+  {
+    pposeTrack.matrix() = pose_matrix.cast<double>();
+    tf::Transform tf_out;
+    tf::poseEigenToTF(pposeTrack, tf_out);
+    pose_stamped.header.frame_id = pallet_pose_id;
+    pose_stamped.pose = sdf::sdf_transformToPose(tf_out);
+    
+    orunav_msgs::ObjectPose object_pose;
+    object_pose.pose = pose_stamped;
+    object_pose.object.type = object_type_;
+    pallet_poses_pub_.publish(object_pose);
+
+    std::cerr << "\n" << "Homogeneous matrix of closest pallet:" << "\n";
+    std::cerr << pose_matrix << "\n";
+
+  }
+
+  void loadPointCloudModel()
+  {
+    std::vector<std::string> dirs;
+
+    objectNames.push_back(full_pallet_name);
+    std::string dir_full_pallet_model = models_dir + full_pallet_name + ".ply";
+    dirs.push_back(dir_full_pallet_model);
+
+    objectNames.push_back(half_pallet_name);
+    std::string dir_half_pallet_model = models_dir + half_pallet_name + ".ply";
+    dirs.push_back(dir_half_pallet_model);
+
+    myOBBICP->loadModels(dirs, objectNames, models);
+  }
+ 
+  void depthToCloud(const cv::Mat& depthImg, pcl::PointCloud<pcl::PointXYZ> &cloud)
+  {
+      float cx = 319.5; float cy = 239.5; float fx = 580.0; float fy = 580.0;
+      cv::Mat ground_depthImg;
+      ground_depthImg = cv::imread(ground_depthmap_dir, -1);
+      ground_depthImg.convertTo(ground_depthImg, CV_32FC1, 0.001);
+      for(int row = 0; row < depthImg.rows; row++)
+      {
+          for(int col = 0; col < depthImg.cols; col++)       
+          {
+              if(isnan(depthImg.at<float>(row, col))) continue;
+              if(isnan(ground_depthImg.at<float>(row, col))) continue;
+
+              double depth = depthImg.at<float>(row, col);
+              unsigned char semantic = semantic_image.at<unsigned char>(row, col);
+              double groundDepth = ground_depthImg.at<float>(row, col);
+              
+              pcl::PointXYZRGB point;
+              point.x = (col-cx) * depth / fx;
+              point.y = (row-cy) * depth / fy;
+              point.z = depth;
+              
+              if(abs(depth-groundDepth) < background_thresh & semantic >= 0)
+              {
+                  point.r = 0; point.g = 0; point.b = 255;
+                  myCloud->push_back(point);
+              } 
+              else
+              {
+                  pcl::PointXYZ objPoint;
+                  objPoint.x = point.x;
+                  objPoint.y = point.y;
+                  objPoint.z = point.z;
+                  cloud.push_back(objPoint);
+              }
+          }
+      }
+  }
+ 
+  void process_semantic (const sensor_msgs::Image::ConstPtr& msg)
+  {
+    cv_bridge::CvImageConstPtr bridge;
+    try
+    {
+      bridge = cv_bridge::toCvCopy(msg, "8UC1");
+      semantic_image = bridge->image;
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      ROS_ERROR("Failed to transform rgb image.");
+      return;
+    }
+  }
+
+  void process_depthmap (const sensor_msgs::Image::ConstPtr& msg)
+  {
+      std::cerr << "\n" << "//----------- New Depth Frame Recieved -----------//" << "\n";
+      
+      if(myCloud->size()) myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>); 
+
+      cv_bridge::CvImageConstPtr bridge;
+
+      try
+      {
+          bridge = cv_bridge::toCvCopy(msg, "32FC1");
+          if(save_ground_depthmap)
+          {
+              cv::Mat depth = bridge->image.clone();      
+              depth.convertTo(depth, CV_16UC1, 1000.0);
+              cv::imwrite(ground_depthmap_dir, depth);
+              std::cerr << "Depth saved to: " << "\n" << ground_depthmap_dir << "\n";
+              return;
+          }
+      }
+      catch (cv_bridge::Exception& e)
+      {
+          ROS_ERROR("Failed to transform depth image.");
+          return;
+      }
+
+      depth = bridge->image.clone();
+      pcl::PointCloud<pcl::PointXYZ> cloud;
+      depthToCloud(depth, cloud);
+      if(ICP_based) obbicp_pipeline(cloud);
+      else nonICP_pipeline(cloud);
+  }
+
+  void nonICP_pipeline(pcl::PointCloud<pcl::PointXYZ> &cloud)
+  {
+      if(!using_bagfile)
+      {
+          tf::StampedTransform transform;
+          Eigen::Affine3d Tcam_offset;
+          try
+          {
+              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
+              tf::poseTFToEigen(transform, Tcam_offset);
+              pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+          }
+          catch (tf::TransformException ex)
+          {
+              ROS_ERROR("%s",ex.what());
+          }
+      }
+
+      std::vector<pcl::PointIndices> cluster_indices;
+      if(myclusters.size()) myclusters.clear();
+      
+      if(downsample) myOBBICP->downSample(cloud, cloud, downsample_ratio);
+      std::cerr << "Scene Points after removing ground and downsample: " << cloud.size() << "\n";
+      
+      myOBBICP->pclEuclideanDistanceSegmentation(cloud, cluster_indices, EC_segThresh, maxSegPoints, minSegPoints);
+      if(cluster_indices.size() == 0)
+      {
+          std::cerr << "No cluster!" << "\n";
+          return;
+      }
+      
+      myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
+      myOBBICP->getClusters(cloud, cluster_indices, myclusters);
+      myOBBICP->obbDimensionalCheck(models, myclusters, tolerance);
+
+      Eigen::Matrix4f pallet_pose_matrix;
+      double dstToOrigin = 99999999;
+      bool pallet_ready = false;
+
+      for(int k = 0; k < myclusters.size(); k++)
+      {
+        if(!myclusters[k].passOBBcandidates.size()) continue;
+
+        std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
+        std::cerr << myclusters[k].OBB.toOrigin.inverse() << "\n";
+        std::cerr << "\n" << "OBB center:" << "\n";
+        std::cerr << myclusters[k].OBB.center.x << " ";
+        std::cerr << myclusters[k].OBB.center.y << " ";
+        std::cerr << myclusters[k].OBB.center.z << "\n";
+        
+        double dst = myclusters[k].OBB.center.x*myclusters[k].OBB.center.x +
+                    myclusters[k].OBB.center.y*myclusters[k].OBB.center.y +
+                    myclusters[k].OBB.center.z*myclusters[k].OBB.center.z;
+        if(dstToOrigin > dst)
+        {
+          pallet_pose_matrix = myclusters[k].OBB.toOrigin.inverse();
+          dstToOrigin = dst;
+          pallet_ready = true;
+        }
+      }
+      if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
+      pallet_ready = false;
+
+      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      else myCloud->header.frame_id = depth_frame_id_; 
+      
+      pointsRGB_pub.publish(*myCloud);
+      markersPublish(); 
+  }
+
+  void obbicp_pipeline(pcl::PointCloud<pcl::PointXYZ> &cloud)
+  {
+      if(!using_bagfile)
+      {
+          tf::StampedTransform transform;
+          Eigen::Affine3d Tcam_offset;
+          try
+          {
+              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
+              tf::poseTFToEigen(transform, Tcam_offset);
+              pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+          }
+          catch (tf::TransformException ex)
+          {
+              ROS_ERROR("%s",ex.what());
+          }
+      }
+
+      std::vector<pcl::PointIndices> cluster_indices;
+      if(myclusters.size()) myclusters.clear();
+      
+      if(downsample) myOBBICP->downSample(cloud, cloud, downsample_ratio);
+      std::cerr << "\n" << "Scene after removing ground and downsample: " << cloud.size() << "\n";
+      
+      myOBBICP->pclEuclideanDistanceSegmentation(cloud, cluster_indices, EC_segThresh, maxSegPoints, minSegPoints);
+      if(cluster_indices.size() == 0)
+      {
+          std::cerr << "No cluster!" << "\n";
+          return;
+      }
+      
+      myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
+      myOBBICP->getClusters(cloud, cluster_indices, myclusters);
+      myOBBICP->obbDimensionalCheck(models, myclusters, tolerance);
+      myOBBICP->coarseToFineRegistration(myclusters, models, 
+      overlap_dst_thresh, overlap_score_thresh);
+
+      Eigen::Matrix4f pallet_pose_matrix;
+      double dstToOrigin = 99999999;
+      bool pallet_ready = false;
+
+      // Visualize model matching
+      if(visual_model)
+      {
+          for(int i=0; i < myclusters.size(); i++)
+          {
+              if(myclusters[i].recognizedObj != "")
+              {
+                  pcl::PointCloud<pcl::PointXYZRGB> clusterRGB;
+                  pcl::copyPointCloud(myclusters[i].colorModelPoints, clusterRGB);
+                  *myCloud += clusterRGB;
+
+                  std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
+                  std::cerr << myclusters[i].OBB.toOrigin.inverse() << "\n";
+
+                  std::cerr << "\n" << "OBB center:" << "\n";
+                  std::cerr << myclusters[i].OBB.center.x << " ";
+                  std::cerr << myclusters[i].OBB.center.y << " ";
+                  std::cerr << myclusters[i].OBB.center.z << "\n"; 
+
+                  double dst = myclusters[i].OBB.center.x*myclusters[i].OBB.center.x +
+                              myclusters[i].OBB.center.y*myclusters[i].OBB.center.y +
+                              myclusters[i].OBB.center.z*myclusters[i].OBB.center.z;
+                  if(dstToOrigin > dst)
+                  {
+                    pallet_pose_matrix = myclusters[i].OBB.toOrigin.inverse();
+                    dstToOrigin = dst;
+                    pallet_ready = true;
+                  }           
+              }
+          }
+      }
+
+      if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
+      pallet_ready = false;
+
+      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      else myCloud->header.frame_id = depth_frame_id_; 
+
+      pointsRGB_pub.publish(*myCloud);
+      markersPublish();
+  }
+
+  void markersPublish()
+  {
+      visualization_msgs::MarkerArray multiMarker;
+      visualization_msgs::Marker OBB;
+      geometry_msgs::Point p;
+      
+      if(!using_bagfile) OBB.header.frame_id = base_link_id_; 
+      else OBB.header.frame_id = depth_frame_id_;
+      OBB.header.stamp = ros::Time::now();
+      OBB.ns = "OBBs";
+      OBB.id = 0;
+      OBB.type = visualization_msgs::Marker::LINE_LIST;
+      OBB.action = visualization_msgs::Marker::ADD;
+      OBB.pose.position.x = 0;
+      OBB.pose.position.y = 0;
+      OBB.pose.position.z = 0;
+      OBB.pose.orientation.x = 0.0;
+      OBB.pose.orientation.y = 0.0;
+      OBB.pose.orientation.z = 0.0;
+      OBB.pose.orientation.w = 1.0;
+      OBB.scale.x = 0.02; OBB.scale.y = 0.02; OBB.scale.z = 0.02;
+      OBB.color.r = 0.0f; OBB.color.g = 1.0f; OBB.color.b = 0.0f; OBB.color.a = 8.0;
+
+      if(myclusters.size() == 0) 
+      { 
+          OBB.lifetime = ros::Duration();
+          multiMarker.markers.push_back(OBB);             
+          markers_pub.publish(multiMarker);
+          return;
+      };
+
+      for(int k = 0; k < myclusters.size(); k++)
+      {
+          if(ICP_based & myclusters[k].recognizedObj == "") continue;
+          if(!ICP_based & !myclusters[k].passOBBcandidates.size()) continue;
+          
+          for(int i = 0; i < 8; i++)
+          {
+              if(i == 3 || i == 7)
+              {
+                  p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                  p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                  p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                  OBB.points.push_back(p);
+                  p.x = myclusters[k].OBB.cornerPoints.points[i-3].x;
+                  p.y = myclusters[k].OBB.cornerPoints.points[i-3].y; 
+                  p.z = myclusters[k].OBB.cornerPoints.points[i-3].z;
+                  OBB.points.push_back(p);
+                  if(i == 3)
+                  {
+                      p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                      OBB.points.push_back(p);
+                      p.x = myclusters[k].OBB.cornerPoints.points[5].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[5].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[5].z;
+                      OBB.points.push_back(p);
+                  }
+                  if(i == 7)
+                  {
+                      p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                      OBB.points.push_back(p);
+                      p.x = myclusters[k].OBB.cornerPoints.points[1].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[1].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[1].z;
+                      OBB.points.push_back(p);
+                  }
+              }
+              else
+              {
+                  p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                  p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                  p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                  OBB.points.push_back(p);
+                  p.x = myclusters[k].OBB.cornerPoints.points[i+1].x;
+                  p.y = myclusters[k].OBB.cornerPoints.points[i+1].y; 
+                  p.z = myclusters[k].OBB.cornerPoints.points[i+1].z;
+                  OBB.points.push_back(p);
+                  if(i == 0)
+                  {
+                      p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                      OBB.points.push_back(p);
+                      p.x = myclusters[k].OBB.cornerPoints.points[6].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[6].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[6].z;
+                      OBB.points.push_back(p);
+                  }
+                  if(i == 2)
+                  {
+                      p.x = myclusters[k].OBB.cornerPoints.points[i].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[i].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[i].z;
+                      OBB.points.push_back(p);
+                      p.x = myclusters[k].OBB.cornerPoints.points[4].x;
+                      p.y = myclusters[k].OBB.cornerPoints.points[4].y; 
+                      p.z = myclusters[k].OBB.cornerPoints.points[4].z;
+                      OBB.points.push_back(p);
+                  }
+              }
+          }
+      }
+
+      OBB.lifetime = ros::Duration();
+      multiMarker.markers.push_back(OBB);
+      markers_pub.publish(multiMarker);
+  }
+  
+  //------------------------------------OBBICP--------------------------------------
   
   };
 
   using namespace std;
 
-  int main(int argc, char** argv) {
+  int main(int argc, char** argv) 
+  {
 
     ros::init(argc,argv,"euro_pallet_sdf_node");
     ros::NodeHandle params ("~");
