@@ -46,12 +46,13 @@ int main(int argc, char **argv)
   ros::NodeHandle nh_;
   nh_.param<int>("robot_id", robot_id_, 1);
   //ros::Subscriber control_report_sub_;
-  	string path_file_name;
+  	string path_file_name, controller_reports_topic;
   		po::options_description desc("Allowed options");
      	desc.add_options()
        		("help", "produce help message")
        		("debug", "print debug output")
        		("fileName", po::value<string>(&path_file_name)->required(), "path file to be used")
+       		("controller_reports_topic", po::value<string>(&controller_reports_topic)->required(), "controller/reports topic")
           ;
 
      po::variables_map vm;
@@ -71,10 +72,12 @@ int main(int argc, char **argv)
     boost::shared_ptr<orunav_msgs::ControllerReport const> msg;
     orunav_msgs::ControllerReport cr;
 
-    msg  = ros::topic::waitForMessage<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), nh_);
+    cout << "Waiting for reports..." << std::endl;
+    msg  = ros::topic::waitForMessage<orunav_msgs::ControllerReport>(controller_reports_topic, nh_);
     if (msg != NULL) {
         cr = *msg;
     }
+    cout << "Got controller reports msg" << std::endl;
     orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
     orunav_generic::Pose2d pose = orunav_conversions::createPose2dFromControllerStateMsg(msg->state);
     
@@ -110,11 +113,12 @@ int main(int argc, char **argv)
   	task.abort = false;
 
     ros::ServiceClient client = nh_.serviceClient<orunav_msgs::ExecuteTask>(orunav_generic::getRobotTopicName(robot_id_,"/execute_task"));
+    client.waitForExistence();
     orunav_msgs::ExecuteTask srv;
     srv.request.task = task;
 
     if (client.call(srv)) {
-      ROS_INFO("[DrivePathExecutionClientNode] - execute_task sucessfull");
+      ROS_INFO("[DrivePathExecutionClientNode] - execute_task successful");
     }
     else
     {
