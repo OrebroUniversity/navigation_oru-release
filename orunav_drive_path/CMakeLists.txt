@@ -152,6 +152,12 @@ target_link_libraries(orunav_drive_two_path_node
    -lboost_program_options
  )
 
+add_executable(traj_extract src/trajectory_extract.cpp)
+add_dependencies(traj_extract ${catkin_EXPORTED_TARGETS})
+target_link_libraries(traj_extract
+  ${catkin_LIBRARIES}
+)
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/orunav_drive_path.cpp
