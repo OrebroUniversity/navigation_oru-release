@@ -38,6 +38,7 @@ int main(int argn, char* args[]) {
 
 	std::cout << "Waiting for messages on the topic. Send a goal and the generated trajectory will be written to the specified file." << std::endl;
 
+	ros::init(argn, args, "traj_ex");
 	ros::NodeHandle nh;
 	ros::Subscriber controller_traj_sub = nh.subscribe(topic_name, 1, &callbac);
 
