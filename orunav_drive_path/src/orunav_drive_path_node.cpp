@@ -69,31 +69,31 @@ int main(int argc, char **argv)
 
     cout << "First pose : " << loaded_path.getPose2d(0) << endl;
 
-    boost::shared_ptr<orunav_msgs::ControllerReport const> msg;
-    orunav_msgs::ControllerReport cr;
-
-    cout << "Waiting for reports..." << std::endl;
-    msg  = ros::topic::waitForMessage<orunav_msgs::ControllerReport>(controller_reports_topic, nh_);
-    if (msg != NULL) {
-        cr = *msg;
-    }
-    cout << "Got controller reports msg" << std::endl;
-    orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
-    orunav_generic::Pose2d pose = orunav_conversions::createPose2dFromControllerStateMsg(msg->state);
-    
-    cout<<"Pose from topic: " << pose(0)<<" "<< pose(1) << " " << pose(2) << endl;
-    //cout<<"Pose from topic: " << pose.getPose2d(0) << endl;
-    orunav_generic::setFirstPoseAsOrigin(loaded_path);
-    cout << "First pose (after origin transformation) : " << loaded_path.getPose2d(0) << endl;
-    cout << "Second pose (after origin transformation) : " << loaded_path.getPose2d(1) << endl;
-    orunav_generic::savePathTextFile(loaded_path,"path_ori.txt");
-
-    orunav_generic::addPose2dOffset(loaded_path, pose);
-    //orunav_generic::moveToOrigin(loaded_path, pose);
-
-    cout << "First pose (after offset transformation) : " << loaded_path.getPose2d(0) << endl;
-    cout << "Second pose (after offset transformation) : " << loaded_path.getPose2d(1) << endl;
-    orunav_generic::savePathTextFile(loaded_path,"path_off.txt");
+//    boost::shared_ptr<orunav_msgs::ControllerReport const> msg;
+//    orunav_msgs::ControllerReport cr;
+//
+//    cout << "Waiting for reports..." << std::endl;
+//    msg  = ros::topic::waitForMessage<orunav_msgs::ControllerReport>(controller_reports_topic, nh_);
+//    if (msg != NULL) {
+//        cr = *msg;
+//    }
+//    cout << "Got controller reports msg" << std::endl;
+//    orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
+//    orunav_generic::Pose2d pose = orunav_conversions::createPose2dFromControllerStateMsg(msg->state);
+//
+//    cout<<"Pose from topic: " << pose(0)<<" "<< pose(1) << " " << pose(2) << endl;
+//    //cout<<"Pose from topic: " << pose.getPose2d(0) << endl;
+//    orunav_generic::setFirstPoseAsOrigin(loaded_path);
+//    cout << "First pose (after origin transformation) : " << loaded_path.getPose2d(0) << endl;
+//    cout << "Second pose (after origin transformation) : " << loaded_path.getPose2d(1) << endl;
+//    orunav_generic::savePathTextFile(loaded_path,"path_ori.txt");
+//
+//    orunav_generic::addPose2dOffset(loaded_path, pose);
+//    //orunav_generic::moveToOrigin(loaded_path, pose);
+//
+//    cout << "First pose (after offset transformation) : " << loaded_path.getPose2d(0) << endl;
+//    cout << "Second pose (after offset transformation) : " << loaded_path.getPose2d(1) << endl;
+//    orunav_generic::savePathTextFile(loaded_path,"path_off.txt");
         
     //control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,drive_pathCB);
   		
