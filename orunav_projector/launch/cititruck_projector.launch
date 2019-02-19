@@ -9,7 +9,7 @@
     <param name="draw_sweep_area" value="false" />
     <param name="draw_path" value="false" />
     <param name="draw_arrow" value="true" />
-    <param name="blink_arrow" value="true" />
+    <param name="blink_arrow" value="false" />
     <param name="controller_report_topic" value="control/controller/reports"/>
 
 

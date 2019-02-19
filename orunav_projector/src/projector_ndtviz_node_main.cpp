@@ -104,7 +104,7 @@ public:
     // laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, "/laser_forkdir_scan"), 10,&ProjectorNDTVizNode::process_laserscan, this);
 
 
-    ndt_viz_.win3D->setFullScreen(false); // full screen setting default - true
+    ndt_viz_.win3D->setFullScreen(true); // full screen setting default - true
     ndt_viz_.win3D->setMotionBlurFrames(0);
     ndt_viz_.win3D->setAspectRatioFactor(aspect_ratio);
     if (!movable_camera_)
