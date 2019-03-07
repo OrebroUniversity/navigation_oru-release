@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node name="channel_model" pkg="orunav_channel" type="orunav_channel_node" output="screen">
+    <rosparam param="robot_ids">[1, 2, 3, 4]</rosparam>
+    <param name="min_tx_delay_millis" value="10" />
+    <param name="max_tx_delay_millis" value="100" />
+    <param name="packet_loss_probability" value="0.2" />
+  </node>
+
+</launch>
