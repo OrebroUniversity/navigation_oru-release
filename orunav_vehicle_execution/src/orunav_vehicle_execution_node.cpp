@@ -160,6 +160,7 @@ private:
   double max_tracking_error_;
 
   ros::Timer heartbeat_report_pub_;
+  double heartbeat_report_period_sec_;
   
   // Visualization params
   bool visualize_;
@@ -229,6 +230,7 @@ public:
       robot_ids.push_back(robot_id_);
       target_handler_.setRobotIDsToCompute(robot_ids);
     }
+    paramHandle.param<double>("heartbeat_report_period_sec",heartbeat_report_period_sec_, 1.0);
     paramHandle.param<std::string>("model", model_name_, std::string("cititruck"));
     paramHandle.param<bool>("use_forks", use_forks_, false);
     paramHandle.param<bool>("use_arm", use_arm, false);
@@ -312,7 +314,7 @@ public:
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
     heartbeat_fast_visualization_   = nh_.createTimer(ros::Duration(0.1),&KMOVehicleExecutionNode::publish_visualization_fast,this);
-    heartbeat_report_pub_ = nh_.createTimer(ros::Duration(1.0), &KMOVehicleExecutionNode::publish_report,this);
+    heartbeat_report_pub_ = nh_.createTimer(ros::Duration(heartbeat_report_period_sec_), &KMOVehicleExecutionNode::publish_report,this);
     heartbeat_perception_ = nh_.createTimer(ros::Duration(0.2), &KMOVehicleExecutionNode::handle_perception, this);
 
     if (use_arm) {
