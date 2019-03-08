@@ -7,9 +7,14 @@
 #include <ros/subscriber.h>
 #include <ros/publisher.h>
 
-//std library
+//messages
+#include <orunav_msgs/RobotReport.h>
+
+//libraries
 #include <vector>
 #include <string>
+#include <boost/thread.hpp>
+#include <random>
 
 //Get parameters from launch file
 #include <XmlRpcValue.h>
@@ -17,7 +22,7 @@
 
 namespace channel_model {
   class ChannelModel {
-    ros::NodeHandle nh_, pnh_;
+    ros::NodeHandle nh_;
     std::vector<int> robotIDs_;
     std::vector<ros::Subscriber> report_subscribers_;
     std::vector<ros::Publisher> delayed_report_publishers_;
@@ -25,8 +30,11 @@ namespace channel_model {
     int min_tx_delay_millis_;
     int max_tx_delay_millis_;
     
+    void onNewRobotReport(const orunav_msgs::RobotReport::Ptr msg);
+    bool delayRobotReport(const orunav_msgs::RobotReport::Ptr msg, int delay);
+    
   public:
-    ChannelModel();
+    ChannelModel(ros::NodeHandle &paramHandle);
   };  
 };
 

@@ -6,8 +6,8 @@ using namespace channel_model;
 int main(int argc, char** argv){
   ros::init(argc, argv, "channel_model");
 
-  ros::NodeHandle nh;
-  ChannelModel ch;
+  ros::NodeHandle params ("~");;
+  ChannelModel ch(params);
   
   ros::spin();
 
