@@ -1,4 +1,5 @@
 #task for a given robot
+int32 seq
 orunav_msgs/RobotTarget target
 orunav_msgs/Path path
 int32 criticalPoint #path point beyond which robot should not proceed (-1 means no critical point)

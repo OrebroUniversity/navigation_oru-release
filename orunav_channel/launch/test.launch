@@ -2,10 +2,15 @@
 <launch>
 
   <node name="channel_model" pkg="orunav_channel" type="orunav_channel_node" output="screen">
-    <rosparam param="robot_ids">[1, 2, 3, 4]</rosparam>
+    <rosparam param="robot_ids">[1, 2, 3]</rosparam>
     <param name="min_tx_delay_millis" value="10" />
     <param name="max_tx_delay_millis" value="100" />
     <param name="packet_loss_probability" value="0.2" />
+    <param name="max_unsafety_probability" value="0.0001" />
+    <param name="tf_prefix" value="/robot" />
+    <param name="report_topic" value="report" />
+    <param name="execute_task_topic" value="unreliable_execute_task" />
+    <param name="execute_task_service" value="execute_task" />
   </node>
 
 </launch>
