@@ -161,6 +161,7 @@ private:
 
   ros::Timer heartbeat_report_pub_;
   double heartbeat_report_period_sec_;
+  int32_t report_counter_;
   
   // Visualization params
   bool visualize_;
@@ -222,7 +223,9 @@ private:
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
+    report_counter_ = 0;
     bool use_arm;
+    
     // Parameters
     paramHandle.param<int>("robot_id", robot_id_, 1);
     {
@@ -413,6 +416,7 @@ public:
   void publish_report(const ros::TimerEvent &event) {
     orunav_msgs::RobotReport msg = vehicle_state_.getReport();
     msg.robot_id = robot_id_;
+    msg.seq = (++report_counter_)%std::numeric_limits<int32_t>::max();
     report_pub_.publish(msg);
   }
 
