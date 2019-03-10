@@ -48,10 +48,15 @@ namespace channel_model {
     std::vector<ros::Subscriber> execute_task_subscribers_;
     std::vector<ros::ServiceClient> execute_task_clients_;
     
+    //utilities
+    float getRand(const float lb, const float ub);
+    int getRobotIndex(const int robot_id);
+    
+    //callback and functions
     void onNewRobotReport(const orunav_msgs::RobotReport::Ptr msg);
-    bool delayRobotReport(const orunav_msgs::RobotReport::Ptr msg, const int delay);
+    bool delayRobotReport(const orunav_msgs::RobotReport::Ptr msg);
     void onNewTaskMsg(const orunav_msgs::Task::Ptr msg);
-    bool delayTaskExecution(const orunav_msgs::Task::Ptr msg, const int delay); 
+    bool delayTaskExecution(const orunav_msgs::Task msg); 
     
   public:
     ChannelModel(ros::NodeHandle &paramHandle);

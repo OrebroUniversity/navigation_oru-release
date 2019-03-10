@@ -10,7 +10,7 @@ ChannelModel::ChannelModel(ros::NodeHandle &paramHandle) : nh_() {
     paramHandle.param<double>("max_unsafety_probability", max_unsafety_probability, 0.0001);
     paramHandle.param<int>("min_tx_delay_millis", min_tx_delay_millis_, 0);
     paramHandle.param<int>("max_tx_delay_millis", max_tx_delay_millis_, 0);    
-    number_of_replicas_ = (packet_loss_probability_ > 0 && max_unsafety_probability > 0) ? static_cast<int>(log(max_unsafety_probability)/log(packet_loss_probability_)) : 1;
+    number_of_replicas_ = (packet_loss_probability_ > 0 && max_unsafety_probability > 0) ? std::max(static_cast<int>(log(1.0-sqrt(1.0-max_unsafety_probability))/log(packet_loss_probability_)), 1) : 1;
     XmlRpc::XmlRpcValue robot_ids;
     if (paramHandle.getParam("robot_ids", robot_ids)) {
       ROS_ASSERT(robot_ids.getType() == XmlRpc::XmlRpcValue::TypeArray);
@@ -37,73 +37,71 @@ ChannelModel::ChannelModel(ros::NodeHandle &paramHandle) : nh_() {
       delayed_report_publishers_[i] = nh_.advertise<orunav_msgs::RobotReport>(prefix_+std::to_string(robotIDs_[i])+"/report_delayed", 10);
       execute_task_subscribers_[i] = nh_.subscribe(prefix_+std::to_string(robotIDs_[i])+"/"+execute_task_topic_, 1, &ChannelModel::onNewTaskMsg, this);
       execute_task_clients_[i] = nh_.serviceClient<orunav_msgs::ExecuteTask>(prefix_+std::to_string(robotIDs_[i])+"/"+execute_task_service_);
-      task_counters_[i] = -1;
+      task_counters_[i] = -2;
     }
+}
 
+float ChannelModel::getRand(const float lb, const float ub) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(std::min(lb,ub), std::max(lb,ub));
+  return dis(gen);
+}
+
+int ChannelModel::getRobotIndex(const int robot_id) {
+  auto iter = std::find(robotIDs_.begin(), robotIDs_.end(), robot_id);
+  if (iter == robotIDs_.end())
+    return -1;
+  return std::distance(robotIDs_.begin(),iter);
 }
 
 void ChannelModel::onNewRobotReport(const orunav_msgs::RobotReport::Ptr msg)
 {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<> dis(0.0, 1.0);
-  if (packet_loss_probability_ > 0 ? dis(gen) > packet_loss_probability_ : true) {
-    int delay = min_tx_delay_millis_ + static_cast<int>(dis(gen)*(max_tx_delay_millis_-min_tx_delay_millis_));
-    boost::thread* th = new boost::thread(&ChannelModel::delayRobotReport, this, msg, delay);
-  }
+  if (packet_loss_probability_ > 0 ? getRand(0.0,1.0) > packet_loss_probability_ : true) 
+    boost::thread* th = new boost::thread(&ChannelModel::delayRobotReport, this, msg);
   else
     ROS_DEBUG_STREAM("Lost RobotReport to Robot" << msg->robot_id);
 }
 
-bool ChannelModel::delayRobotReport(const orunav_msgs::RobotReport::Ptr msg, const int delay)
+bool ChannelModel::delayRobotReport(const orunav_msgs::RobotReport::Ptr msg)
 {
-  auto iter = std::find(robotIDs_.begin(), robotIDs_.end(), msg->robot_id);
-  if (iter == robotIDs_.end()) {
+  int index = getRobotIndex(msg->robot_id);
+  if (index == -1) {
     ROS_WARN_STREAM("Wrong Robot ID in RobotReport.");
     return false;
   }
-  ros::Duration(1e-3*delay).sleep();
-  delayed_report_publishers_[std::distance(robotIDs_.begin(),iter)].publish(msg);
-  
+  int delayInMillis = min_tx_delay_millis_ + static_cast<int>(getRand(0.0,1.0)*(max_tx_delay_millis_-min_tx_delay_millis_));
+  ros::Duration(1e-3*delayInMillis).sleep();
+  delayed_report_publishers_[index].publish(msg);
   return true;
 }
 
 void ChannelModel::onNewTaskMsg(const orunav_msgs::Task::Ptr msg)
 {
-  auto iter = std::find(robotIDs_.begin(), robotIDs_.end(), msg->constraints.robot_id);
-  if (iter == robotIDs_.end()) {
+  int index = getRobotIndex(msg->robot_id);
+  if (index == -1) {
     ROS_WARN_STREAM("Wrong Robot ID in Task.");
     return;
   }
-  int index = std::distance(robotIDs_.begin(), iter);
   if (msg->seq > task_counters_[index]) {
     task_counters_[index] = msg->seq;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
     bool send = false;
     for (int i = 0; i < number_of_replicas_; i++) {
-      send = dis(gen) > packet_loss_probability_;
+      send = getRand(0.0,1.0) >= packet_loss_probability_;
       if (send) break;
     }
-    if (send) {
-      int delay = min_tx_delay_millis_ + static_cast<int>(dis(gen)*(max_tx_delay_millis_-min_tx_delay_millis_));
-       boost::thread* th = new boost::thread(&ChannelModel::delayTaskExecution, this, msg, delay);
-    }
-  }
+    if (send) 
+      boost::thread* th = new boost::thread(&ChannelModel::delayTaskExecution, this, *msg);
+ }
 }
 
-bool ChannelModel::delayTaskExecution(const orunav_msgs::Task::Ptr msg, const int delay) {
-  ros::Duration(1e-3*delay).sleep();
+bool ChannelModel::delayTaskExecution(const orunav_msgs::Task msg) {
+  int delayInMillis = min_tx_delay_millis_ + static_cast<int>(getRand(0.0,1.0)*(max_tx_delay_millis_-min_tx_delay_millis_));
+  ros::Duration(1e-3*delayInMillis).sleep();
   orunav_msgs::ExecuteTaskRequest req;
-  req.task = *msg;
+  req.task = msg;
   orunav_msgs::ExecuteTaskResponse res;
-  if (execute_task_clients_[msg->constraints.robot_id].call(req,res)) {
-    if (res.result)
-      ROS_WARN_STREAM("Failed to start execution of goal " << msg->criticalPoint << " for robot " << msg->constraints.robot_id << ".");
-  }
-  else
-    ROS_ERROR_STREAM("Failed to call task execution service. Goal: " << msg->criticalPoint << " Robot: " << msg->constraints.robot_id << ".");
-  
+  if (!execute_task_clients_[getRobotIndex(msg.robot_id)].call(req,res))
+    ROS_ERROR_STREAM("Failed to start execution of goal " << msg.criticalPoint << " Robot: " << msg.robot_id << ".");
   return true;
 }
