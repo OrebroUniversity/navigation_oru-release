@@ -83,7 +83,7 @@ void ChannelModel::onNewTaskMsg(const orunav_msgs::Task::Ptr msg)
     ROS_WARN_STREAM("Wrong Robot ID in Task.");
     return;
   }
-  if (msg->seq > task_counters_[index]) {
+  if (msg->seq > task_counters_[index] || msg->seq == -1) {
     task_counters_[index] = msg->seq;
     bool send = false;
     for (int i = 0; i < number_of_replicas_; i++) {
