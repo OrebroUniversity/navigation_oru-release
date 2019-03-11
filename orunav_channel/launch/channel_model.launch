@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <arg name="max_unsafety_probability" default="0.001" />
+  <arg name="max_packet_loss_probability" default="0" />
+  <arg name="min_tx_delay_millis" default="0" />
+  <arg name="max_tx_delay_millis" default="0"/>
+  <arg name="tf_prefix" default="/robot" />
+  <arg name="report_topic" default="report" />
+  <arg name="execute_task_topic" default="unreliable_execute_task" />
+  <arg name="execute_task_service" default="execute_task" />
+  <arg name="robot_ids" default="[1]" />
+
+
+  <node name="channel_model" pkg="orunav_channel" type="orunav_channel_node" output="screen">
+    <rosparam param="robot_ids" subst_value="true">$(arg robot_ids)</rosparam>
+    <param name="min_tx_delay_millis" value="$(arg min_tx_delay_millis)" />
+    <param name="max_tx_delay_millis" value="$(arg max_tx_delay_millis)" />
+    <param name="packet_loss_probability" value="$(arg max_packet_loss_probability)" />
+    <param name="max_unsafety_probability" value="$(arg max_unsafety_probability)" />
+    <param name="tf_prefix" value="$(arg tf_prefix)" />
+    <param name="report_topic" value="$(arg report_topic)" />
+    <param name="execute_task_topic" value="$(arg execute_task_topic)" />
+    <param name="execute_task_service" value="$(arg execute_task_service)" />
+  </node>
+
+</launch>
