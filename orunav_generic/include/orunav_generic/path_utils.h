@@ -32,7 +32,7 @@ bool forwardPath(const PathInterface &path)
   return false;
 }
 
-void getMinMaxSteeringAngle(const PathInterface &path, double &min, double &max) 
+inline void getMinMaxSteeringAngle(const PathInterface &path, double &min, double &max) 
 {
   max = -M_PI;
   min = M_PI;
@@ -46,7 +46,7 @@ void getMinMaxSteeringAngle(const PathInterface &path, double &min, double &max)
   }
 }
 
-void getIncrementalPathDiff(const PathInterface &path, double &maxDistIncr, double &maxThIncr, double &maxSteeringAngleIncr) {
+inline void getIncrementalPathDiff(const PathInterface &path, double &maxDistIncr, double &maxThIncr, double &maxSteeringAngleIncr) {
   maxDistIncr = 0.;
   maxThIncr = 0.;
   maxSteeringAngleIncr = 0.;
@@ -59,7 +59,7 @@ void getIncrementalPathDiff(const PathInterface &path, double &maxDistIncr, doub
   }
 }
  
-Path minIncrementalDistancePathIdx(const PathInterface &path, double minDist, std::vector<size_t> &idx)
+inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minDist, std::vector<size_t> &idx)
 {
   idx.clear();
   Path ret;
@@ -83,12 +83,12 @@ Path minIncrementalDistancePathIdx(const PathInterface &path, double minDist, st
   return ret;
 }
 
-Path minIncrementalDistancePath(const PathInterface &path, double minDist) {
+inline Path minIncrementalDistancePath(const PathInterface &path, double minDist) {
   std::vector<size_t> idx;
   return minIncrementalDistancePathIdx(path, minDist, idx);
 }
 
-Path subSamplePath(const PathInterface &path, int skipNbPoints) 
+inline Path subSamplePath(const PathInterface &path, int skipNbPoints) 
 {
   size_t last_i = 0;
   size_t size = path.sizePath();
@@ -109,7 +109,7 @@ Path subSamplePath(const PathInterface &path, int skipNbPoints)
 }
 
 
-double getPathDistanceBetweenIndexes(const PathInterface &path, size_t start, size_t end) {
+inline double getPathDistanceBetweenIndexes(const PathInterface &path, size_t start, size_t end) {
   if (path.sizePath() < 1)
     return 0.;
   if (end <= start)
@@ -122,7 +122,7 @@ double getPathDistanceBetweenIndexes(const PathInterface &path, size_t start, si
   return dist;
 }
 
-double getTotalDistance(const PathInterface &path)
+inline double getTotalDistance(const PathInterface &path)
 {
   if (path.sizePath() < 1)
     return 0.;
@@ -135,12 +135,12 @@ double getTotalDistance(const PathInterface &path)
   //   return getPathDistanceBetweenIndexes(path, 0, path.sizePath()-1);
 }
 
-Path minIncrDistancePath(const PathInterface &path, double minDist)
+inline Path minIncrDistancePath(const PathInterface &path, double minDist)
 {
   return  minIncrementalDistancePath(path, minDist);
 }   
 
-Path minIncrementalDistanceMinNbPointsPath(const PathInterface &path, double minDist, int minNbPoints) {
+inline Path minIncrementalDistanceMinNbPointsPath(const PathInterface &path, double minDist, int minNbPoints) {
   double dist = getTotalDistance(path);
   double min_dist = dist / (1.*minNbPoints);
   if (min_dist > minDist)
@@ -150,7 +150,7 @@ Path minIncrementalDistanceMinNbPointsPath(const PathInterface &path, double min
 
 
 
-std::vector<size_t> calculateRequiredPathPointsIdx(const PathInterface &path)
+inline std::vector<size_t> calculateRequiredPathPointsIdx(const PathInterface &path)
 {
   // Some trajectory points should always be keept. This holds for the starting and end but also if the direction changes along the path. Note that the direction calculations are needs to have at least som min distance traveled.
   std::vector<size_t> required_idx;
@@ -171,7 +171,7 @@ std::vector<size_t> calculateRequiredPathPointsIdx(const PathInterface &path)
   return required_idx;
 }
 
-bool getIdxFromEndMinDistance(const PathInterface &path, const double &minDist, size_t &idx, double &usedDistance) {
+inline bool getIdxFromEndMinDistance(const PathInterface &path, const double &minDist, size_t &idx, double &usedDistance) {
   std::vector<size_t> req_path_points = calculateRequiredPathPointsIdx(path);
    
   assert(req_path_points.size() > 1);
@@ -191,13 +191,13 @@ bool getIdxFromEndMinDistance(const PathInterface &path, const double &minDist, 
 }
 
 
-int calculateNumberOfTravelDirectionalChanges(const PathInterface &path)
+inline int calculateNumberOfTravelDirectionalChanges(const PathInterface &path)
 {
   std::vector<size_t> req_pts = calculateRequiredPathPointsIdx(path);
   return req_pts.size()-2; // 2 -> the start / end.
 }
 
-Path subSamplePathIncludingRequiredPathPoints(const PathInterface &path, int skipNbPoints) 
+inline Path subSamplePathIncludingRequiredPathPoints(const PathInterface &path, int skipNbPoints) 
 {
   size_t last_i = 0;
   size_t size = path.sizePath();
@@ -235,7 +235,7 @@ Path subSamplePathIncludingRequiredPathPoints(const PathInterface &path, int ski
 
 
 
-Path calculateRequiredPathPoints(const PathInterface &path)
+inline Path calculateRequiredPathPoints(const PathInterface &path)
 {
   // Some trajectory points should always be keept. This holds for the starting and end but also if the direction changes along the path. Note that the direction calculations needs to have at least som min distance traveled.
   Path ret;
@@ -247,7 +247,7 @@ Path calculateRequiredPathPoints(const PathInterface &path)
   return ret;
 }
 
-Path getGoalStatesFromPaths(const std::vector<Path> &paths)
+inline Path getGoalStatesFromPaths(const std::vector<Path> &paths)
 {
   Path ret;
   for (size_t i = 0; i < paths.size(); i++)
@@ -260,7 +260,7 @@ Path getGoalStatesFromPaths(const std::vector<Path> &paths)
   return ret;
 }
 
-Path getStartStatesFromPaths(const std::vector<Path> &paths)
+inline Path getStartStatesFromPaths(const std::vector<Path> &paths)
 {
   Path ret;
   for (size_t i = 0; i < paths.size(); i++)
@@ -272,7 +272,7 @@ Path getStartStatesFromPaths(const std::vector<Path> &paths)
   return ret;
 }
 
-Path getReversePath(const PathInterface& path)
+inline Path getReversePath(const PathInterface& path)
 {
   Path ret;
   for (size_t i = 0; i < path.sizePath(); i++)
@@ -285,7 +285,7 @@ Path getReversePath(const PathInterface& path)
   return ret;
 }
 
-Path getReversePathWithoutChangingDirection(const PathInterface &path)
+inline Path getReversePathWithoutChangingDirection(const PathInterface &path)
 {
   Path ret;
   size_t size = path.sizePath();
@@ -298,7 +298,7 @@ Path getReversePathWithoutChangingDirection(const PathInterface &path)
 }
 
 // Return the last index if there is no distance left.
-size_t getPathIdxWithGreaterDistance(const PathInterface &path, double distance,
+inline size_t getPathIdxWithGreaterDistance(const PathInterface &path, double distance,
                                      size_t start_idx) {
     double dist = 0.;
     size_t i = start_idx;
@@ -309,7 +309,7 @@ size_t getPathIdxWithGreaterDistance(const PathInterface &path, double distance,
     return i;
 }
 
-Path truncatePath(const PathInterface &path, size_t idx) {
+inline Path truncatePath(const PathInterface &path, size_t idx) {
   Path ret;
   for (size_t i = idx; i < path.sizePath(); i++) {
     ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
@@ -317,7 +317,7 @@ Path truncatePath(const PathInterface &path, size_t idx) {
   return ret;
 }
 
-Path truncatePathEnd(const PathInterface &path, size_t idx) {
+inline Path truncatePathEnd(const PathInterface &path, size_t idx) {
   Path ret;
   for (size_t i = 0; i < idx; i++) {
     ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
@@ -326,7 +326,7 @@ Path truncatePathEnd(const PathInterface &path, size_t idx) {
 }
 
 // The intermediate points exisit twice (when the change in direction occurs)
-Path concatenateDirectionalPaths(const std::vector<Path> &paths)
+inline Path concatenateDirectionalPaths(const std::vector<Path> &paths)
 {
   Path ret = paths[0];
   for (size_t i = 1; i < paths.size(); i++)
@@ -340,7 +340,7 @@ Path concatenateDirectionalPaths(const std::vector<Path> &paths)
 }
 
 
-void removeThNormalization(PathInterface &path)
+inline void removeThNormalization(PathInterface &path)
 {
   double offset = 0.;
   for (size_t i = 1; i < path.sizePath(); i++)
@@ -358,14 +358,14 @@ void removeThNormalization(PathInterface &path)
   }
 }
 
-orunav_generic::Path getThNormalizationFreePath(const PathInterface &path)
+inline orunav_generic::Path getThNormalizationFreePath(const PathInterface &path)
 {
   orunav_generic::Path ret(path);
   removeThNormalization(ret);
   return ret;
 }
 
-Trajectory convertPathToTrajectoryWithoutModel(const PathInterface &path, double dt) 
+inline Trajectory convertPathToTrajectoryWithoutModel(const PathInterface &path, double dt) 
 {
   Trajectory traj;
   size_t size = path.sizePath();
@@ -384,7 +384,7 @@ Trajectory convertPathToTrajectoryWithoutModel(const PathInterface &path, double
   return traj;
 }
 
-void getMinMaxVelocities(const TrajectoryInterface &traj, double &minDriveVel, double &maxDriveVel, double &minSteeringVel, double &maxSteeringVel) {
+inline void getMinMaxVelocities(const TrajectoryInterface &traj, double &minDriveVel, double &maxDriveVel, double &minSteeringVel, double &maxSteeringVel) {
   minDriveVel = 0.; maxDriveVel = 0.; minSteeringVel = 0.; maxSteeringVel = 0.;
 
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) 
@@ -404,7 +404,7 @@ void getMinMaxVelocities(const TrajectoryInterface &traj, double &minDriveVel, d
 }
 
 //! Return a forward simulated path based on the trajectory, where the initial pose / steering angle is taken from the first trajectory point. (len is the length of the vehicle and dt the fixed time step).
-orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, double len, double dt) {
+inline orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, double len, double dt) {
   orunav_generic::Path path;
   assert(traj.sizeTrajectory() > 0);
   assert(len != 0);
@@ -425,13 +425,13 @@ orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, double l
   return path;
 }
 
-void addPathToPath(Path &p, const PathInterface &p2) {
+inline void addPathToPath(Path &p, const PathInterface &p2) {
   for (size_t i = 0; i < p2.sizePath(); i++) {
     p.addPathPoint(p2.getPose2d(i), p2.getSteeringAngle(i));
   }
 }
 
-orunav_generic::Path selectPathIntervall(const orunav_generic::PathInterface &path, 
+inline orunav_generic::Path selectPathIntervall(const orunav_generic::PathInterface &path, 
                                          size_t startIdx, 
                                          size_t stopIdx) {
   assert(stopIdx <= path.sizePath());
@@ -443,7 +443,7 @@ orunav_generic::Path selectPathIntervall(const orunav_generic::PathInterface &pa
   return ret;
 }
 
-orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &traj,
+inline orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &traj,
 						     size_t startIdx,
 						     size_t stopIdx) {
   assert(stopIdx <= traj.sizePath());
@@ -456,7 +456,7 @@ orunav_generic::Trajectory selectTrajectoryInterval(const TrajectoryInterface &t
 
 }
 
-orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterface &traj,
+inline orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterface &traj,
 						    std::vector<int> indexes) {
   orunav_generic::Trajectory ret;
   for (size_t i = 0; i < indexes.size(); i++) {
@@ -467,7 +467,7 @@ orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterface &tr
  }
 
  
-std::vector<Path> splitOnDistance(const PathInterface &path, double distance) {
+inline std::vector<Path> splitOnDistance(const PathInterface &path, double distance) {
   
   std::vector<Path> paths;
   size_t start_idx = 0;
@@ -482,7 +482,7 @@ std::vector<Path> splitOnDistance(const PathInterface &path, double distance) {
   return paths;
 }
 
-std::vector<Path> splitToDirectionalPaths(const PathInterface &path)
+inline std::vector<Path> splitToDirectionalPaths(const PathInterface &path)
 {
   assert(path.sizePath() > 2);
   std::vector<size_t> required_idx = calculateRequiredPathPointsIdx(path);
@@ -503,7 +503,7 @@ std::vector<Path> splitToDirectionalPaths(const PathInterface &path)
   return ret;
 }
 
-int findState(const PathInterface &states, orunav_generic::State2dInterface &query, double maxDistOffset, double maxAngularOffset, double maxSteeringAngleOffset)
+inline int findState(const PathInterface &states, orunav_generic::State2dInterface &query, double maxDistOffset, double maxAngularOffset, double maxSteeringAngleOffset)
 {
   int ret = -1;
   for (size_t i = 0; i < states.sizePath(); i++) {
@@ -517,7 +517,7 @@ int findState(const PathInterface &states, orunav_generic::State2dInterface &que
   return ret;
 }
 
-std::vector<std::pair<size_t, double> > getDistancesTo(const PathInterface &states, orunav_generic::State2dInterface &query) {
+inline std::vector<std::pair<size_t, double> > getDistancesTo(const PathInterface &states, orunav_generic::State2dInterface &query) {
   std::vector<std::pair<size_t, double> > ret;
   for (size_t i = 0; i < states.sizePath(); i++) {
     ret.push_back(std::pair<size_t, double>(i, getDistBetween(query.getPose2d(), states.getPose2d(i)) + fabs(angles::normalize_angle(query.getSteeringAngle() - states.getSteeringAngle(i)))));
@@ -525,16 +525,16 @@ std::vector<std::pair<size_t, double> > getDistancesTo(const PathInterface &stat
   return ret;
 }
 
-bool sort_distance_pairs (std::pair<size_t, double> i, std::pair<size_t, double> j) { return (i.second <j.second); }
+inline bool sort_distance_pairs (std::pair<size_t, double> i, std::pair<size_t, double> j) { return (i.second <j.second); }
 
-std::vector<std::pair<size_t, double> > findClosestStatesVec(const PathInterface &states, orunav_generic::State2dInterface &query) {
+inline std::vector<std::pair<size_t, double> > findClosestStatesVec(const PathInterface &states, orunav_generic::State2dInterface &query) {
   std::vector<std::pair<size_t, double> > distances = getDistancesTo(states, query);
   // Sort them
   std::sort(distances.begin(), distances.end(), sort_distance_pairs);
   return distances;
 }
 
-void addUniqueStates(Path &states, const PathInterface &addStates, double maxDistOffset, double maxAngularOffset, double maxSteeringAngleOffset)
+inline void addUniqueStates(Path &states, const PathInterface &addStates, double maxDistOffset, double maxAngularOffset, double maxSteeringAngleOffset)
 {
   for (size_t i = 0; i < addStates.sizePath(); i++) {
     State2d s(addStates, i);
@@ -544,7 +544,7 @@ void addUniqueStates(Path &states, const PathInterface &addStates, double maxDis
   }
 }
 
-double avgSqrDistancePathError(const PathInterface &p1, const PathInterface &p2) 
+inline double avgSqrDistancePathError(const PathInterface &p1, const PathInterface &p2) 
 {
   size_t size = p1.sizePath();
   if (p2.sizePath() < size)
@@ -560,7 +560,7 @@ double avgSqrDistancePathError(const PathInterface &p1, const PathInterface &p2)
   return  sqr_dist / ((double)size);
 }
 
-double calcTrajectoryErrorFixedDt(const orunav_generic::TrajectoryInterface &traj, double len, double dt) {
+inline double calcTrajectoryErrorFixedDt(const orunav_generic::TrajectoryInterface &traj, double len, double dt) {
   orunav_generic::Path p = forwardSimulation(traj, len, dt);
   //  orunav_generic::saveTrajectoryTextFile(traj, "dbg_t.txt");
   //  orunav_generic::savePathTextFile(p, "dbg_p.txt");
@@ -568,7 +568,7 @@ double calcTrajectoryErrorFixedDt(const orunav_generic::TrajectoryInterface &tra
   return avgSqrDistancePathError(p, traj);
 }
 
-Trajectory setFixedControlValues(const orunav_generic::Path &path, double v, double w) {
+inline Trajectory setFixedControlValues(const orunav_generic::Path &path, double v, double w) {
   Trajectory traj;
   for (size_t i = 0; i < path.sizePath(); i++) 
   {
@@ -577,7 +577,7 @@ Trajectory setFixedControlValues(const orunav_generic::Path &path, double v, dou
   return traj;
 }
 
-Trajectory setFixedControlValuesW(const orunav_generic::TrajectoryInterface &trajectory, double w) {
+inline Trajectory setFixedControlValuesW(const orunav_generic::TrajectoryInterface &trajectory, double w) {
   Trajectory traj;
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) 
   {
@@ -586,7 +586,7 @@ Trajectory setFixedControlValuesW(const orunav_generic::TrajectoryInterface &tra
   return traj;
 }
 
-Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vector<size_t> &inter_idx) {
+inline Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vector<size_t> &inter_idx) {
   // Need to compute the direction of change.
   inter_idx.clear();
   std::vector<bool> dir(path.sizePath()-1);
@@ -647,17 +647,17 @@ Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vector<size
   
 }
 
-Path minIntermediateDirPathPoints(const PathInterface &path) {
+inline Path minIntermediateDirPathPoints(const PathInterface &path) {
   std::vector<size_t> inter_idx;
   return minIntermediateDirPathPointsIdx(path, inter_idx);
 }
 
-bool validPathForTrajectoryProcessing(const orunav_generic::PathInterface &path) {
+inline bool validPathForTrajectoryProcessing(const orunav_generic::PathInterface &path) {
   orunav_generic::Path p = orunav_generic::minIntermediateDirPathPoints(path);
   return (p.sizePath() == path.sizePath());
 }
 
-TrajectoryChunks splitToTrajectoryChunks(const orunav_generic::TrajectoryInterface &traj, int splitStep)
+inline TrajectoryChunks splitToTrajectoryChunks(const orunav_generic::TrajectoryInterface &traj, int splitStep)
 {
   TrajectoryChunks ret;
   for (size_t i = 0; i < traj.sizeTrajectory(); i++)
@@ -675,7 +675,7 @@ TrajectoryChunks splitToTrajectoryChunks(const orunav_generic::TrajectoryInterfa
 // Since the vehicle might go back and forth - we cannot simply use a closest distance metric.
 // Here we instead assume that we call this function frequently, and update the idx when a the next
 // chunks first pose is closest. This makes the current active chunk to be 0.5*60 ms * the length of each chunk ahead.
-size_t getCurrentChunkIdx(const TrajectoryChunksInterface &chunks, const orunav_generic::Pose2d &pose, size_t previousIdx) 
+inline size_t getCurrentChunkIdx(const TrajectoryChunksInterface &chunks, const orunav_generic::Pose2d &pose, size_t previousIdx) 
 {
   if (chunks.sizeChunks() == 0)
     return 0;
@@ -703,7 +703,7 @@ size_t getCurrentChunkIdx(const TrajectoryChunksInterface &chunks, const orunav_
 }
 
 // Same but for the path idx.
-size_t getCurrentIdxSingleStep(const PathInterface &path, const orunav_generic::Pose2d &pose, size_t previousIdx) {
+inline size_t getCurrentIdxSingleStep(const PathInterface &path, const orunav_generic::Pose2d &pose, size_t previousIdx) {
   if (path.sizePath() == 0)
     return 0;
   if (!(path.sizePath() > previousIdx))
@@ -752,7 +752,7 @@ size_t getCurrentIdxSingleStep(const PathInterface &path, const orunav_generic::
 }
 
 // The path can be very dense. Make sure that we move until the distance starts to increase.
-size_t getCurrentIdx(const PathInterface &path, const orunav_generic::Pose2d &pose, size_t previousIdx) {
+inline size_t getCurrentIdx(const PathInterface &path, const orunav_generic::Pose2d &pose, size_t previousIdx) {
 
   if (path.sizePath() == 0)
     return 0;
@@ -776,7 +776,7 @@ size_t getCurrentIdx(const PathInterface &path, const orunav_generic::Pose2d &po
 }
  
 // This function assumes that the chunks and path starts from the path stepIdx...
-int getPathIdxUsingFirstPointInChunk(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double minValidDistance, size_t stepIdx) {
+inline int getPathIdxUsingFirstPointInChunk(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double minValidDistance, size_t stepIdx) {
   // This uses the accumulated distance
   if (path.sizePath() == 0)
     return -1;
@@ -805,7 +805,7 @@ int getPathIdxUsingFirstPointInChunk(const PathInterface &path, const Trajectory
 }
 
 //! Update the current chunk idx to the corresponding index in the future, given dt and future time.
-void updateChunkIdxStepIdxGivenFutureTime(unsigned int &currentChunkIdx, unsigned int &currentStepIdx, unsigned int stepsPerChunk, double dt, double futureTime) {
+inline void updateChunkIdxStepIdxGivenFutureTime(unsigned int &currentChunkIdx, unsigned int &currentStepIdx, unsigned int stepsPerChunk, double dt, double futureTime) {
   
   int step_inc = trunc(futureTime/(dt));
   int chunk_inc = trunc(step_inc / stepsPerChunk);
@@ -822,7 +822,7 @@ void updateChunkIdxStepIdxGivenFutureTime(unsigned int &currentChunkIdx, unsigne
 }
 
 //! Return a trajectory, if chunkIdxStop or stepIdxStop is bigger than the provided chunk data it will return the biggest trajectory up to this point.
-orunav_generic::Trajectory trajectoryChunksInterfaceToTrajectory(const TrajectoryChunksInterface &chunks,
+inline orunav_generic::Trajectory trajectoryChunksInterfaceToTrajectory(const TrajectoryChunksInterface &chunks,
                                                            size_t chunkIdxStart, size_t stepIdxStart,
                                                            size_t chunkIdxStop, size_t stepIdxStop)
 {
@@ -859,7 +859,7 @@ orunav_generic::Trajectory trajectoryChunksInterfaceToTrajectory(const Trajector
   return ret;
 }
 
-int getPathIdxUsingFirstPointInChunk2(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double minValidDistance, size_t stepIdx) {
+inline int getPathIdxUsingFirstPointInChunk2(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double minValidDistance, size_t stepIdx) {
 
   if (path.sizePath() == 0)
     return -1;
@@ -899,7 +899,7 @@ int getPathIdxUsingFirstPointInChunk2(const PathInterface &path, const Trajector
   return -1;
 }
 
-bool checkDirection(const orunav_generic::State2d &state2d, const orunav_generic::PathInterface &path, size_t idx) {
+inline bool checkDirection(const orunav_generic::State2d &state2d, const orunav_generic::PathInterface &path, size_t idx) {
   if (!(idx+1 < path.sizePath()))
     return false;
   bool dir1 = orunav_generic::forwardDirection(state2d.getPose2d(), 
@@ -912,7 +912,7 @@ bool checkDirection(const orunav_generic::State2d &state2d, const orunav_generic
 }                                                                      
 
 // This function assumes that the chunks and path starts from the path stepIdx...
-int getPathIdxUsingFirstPointInChunk3(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double &distance) {
+inline int getPathIdxUsingFirstPointInChunk3(const PathInterface &path, const TrajectoryChunksInterface &chunks, size_t chunkIdx, double &distance) {
   // This uses the accumulated distance
   if (path.sizePath() == 0) {
     return -1;
@@ -948,7 +948,7 @@ int getPathIdxUsingFirstPointInChunk3(const PathInterface &path, const Trajector
 
 
 
-TrajectoryChunks appendChunks(const TrajectoryChunks &orig, size_t startIdx, const TrajectoryChunks &add) {
+inline TrajectoryChunks appendChunks(const TrajectoryChunks &orig, size_t startIdx, const TrajectoryChunks &add) {
   TrajectoryChunks ret;
   for (size_t i = 0; i < startIdx; i++) {
     ret.push_back(orig[i]);
@@ -959,7 +959,7 @@ TrajectoryChunks appendChunks(const TrajectoryChunks &orig, size_t startIdx, con
   return ret;
 }
 
-void addPose2dOffset(Pose2dContainerInterface &poses, orunav_generic::Pose2d &offset) {
+inline void addPose2dOffset(Pose2dContainerInterface &poses, orunav_generic::Pose2d &offset) {
   if (poses.sizePose2d() == 0)
     return;
   
@@ -969,7 +969,7 @@ void addPose2dOffset(Pose2dContainerInterface &poses, orunav_generic::Pose2d &of
   }
 }
 
-void moveToOrigin(Pose2dContainerInterface &poses, const orunav_generic::Pose2d &origin) {
+inline void moveToOrigin(Pose2dContainerInterface &poses, const orunav_generic::Pose2d &origin) {
   if (poses.sizePose2d() == 0)
     return;
   
@@ -980,7 +980,7 @@ void moveToOrigin(Pose2dContainerInterface &poses, const orunav_generic::Pose2d 
 }
 
 //! Move the path to make the first path entry be at the origin (0,0,0) - this will affect x, y, theta.
-void setFirstPoseAsOrigin(Pose2dContainerInterface &poses) {
+inline void setFirstPoseAsOrigin(Pose2dContainerInterface &poses) {
   if (poses.sizePose2d() == 0)
     return;
 
@@ -992,7 +992,7 @@ void setFirstPoseAsOrigin(Pose2dContainerInterface &poses) {
   }
 }
 
-int getMinDistIdxToPath(const PathInterface &path, const Pose2d &pose) {
+inline int getMinDistIdxToPath(const PathInterface &path, const Pose2d &pose) {
   double min_dist = std::numeric_limits<double>::max();
   int min_dist_idx = -1;
   for (size_t i = 0; i < path.sizePath(); i++) {
@@ -1007,7 +1007,7 @@ int getMinDistIdxToPath(const PathInterface &path, const Pose2d &pose) {
 
 
 //! Return the time to reach chunk_idx given the current state
-double timeToReachChunkIdx(const orunav_generic::TrajectoryChunks &chunks,
+inline double timeToReachChunkIdx(const orunav_generic::TrajectoryChunks &chunks,
                            int chunkIdx,
                            const orunav_generic::State2d &state)
 {
@@ -1046,7 +1046,7 @@ double timeToReachChunkIdx(const orunav_generic::TrajectoryChunks &chunks,
 }
 
 //! This is currently used for fixing straight segments in the wef file - yes it looks a bit funny but don't change it.
-orunav_generic::Path createStraightPath(const orunav_generic::Pose2d &start, 
+inline orunav_generic::Path createStraightPath(const orunav_generic::Pose2d &start, 
                                         const orunav_generic::Pose2d &goal,
                                         double resolution)
 {
@@ -1070,7 +1070,7 @@ orunav_generic::Path createStraightPath(const orunav_generic::Pose2d &start,
 }
 
 //! This really improves the convergence rate of the ACADO optimization finding small path snippets (currently used for computing the path to final pallet pickup / lift location).
-orunav_generic::Path createStraightPathFromStartPose(const orunav_generic::Pose2d &start,
+inline orunav_generic::Path createStraightPathFromStartPose(const orunav_generic::Pose2d &start,
                                                      const orunav_generic::Pose2d &goal,
                                                      double resolution) {
   // Compute a straight line path between the points.
@@ -1098,7 +1098,7 @@ orunav_generic::Path createStraightPathFromStartPose(const orunav_generic::Pose2
 }
 
 
-orunav_generic::Control computeAvgSqrControlDifference(const orunav_generic::TrajectoryInterface &ref, 
+inline orunav_generic::Control computeAvgSqrControlDifference(const orunav_generic::TrajectoryInterface &ref, 
                                                        const orunav_generic::TrajectoryInterface &exec) {
   double dv_sum = 0;
   double sv_sum = 0;
@@ -1115,7 +1115,7 @@ orunav_generic::Control computeAvgSqrControlDifference(const orunav_generic::Tra
   return c;
 }
 
-bool validPath(const orunav_generic::PathInterface &path, double maxSteeringAngle) {
+inline bool validPath(const orunav_generic::PathInterface &path, double maxSteeringAngle) {
   if (path.sizePath() == 0)
     return false;
   // Simply check for nans...
@@ -1145,7 +1145,7 @@ bool validPath(const orunav_generic::PathInterface &path, double maxSteeringAngl
   return true;
 }
 
-bool validPathIncrSteps(const orunav_generic::PathInterface &path, double maxDistIncr, double maxThIncr, double maxSteeringAngleIncr) {
+inline bool validPathIncrSteps(const orunav_generic::PathInterface &path, double maxDistIncr, double maxThIncr, double maxSteeringAngleIncr) {
   double max_dist_incr, max_th_incr, max_steering_angle_incr;
   
   getIncrementalPathDiff(path, max_dist_incr, max_th_incr, max_steering_angle_incr);
@@ -1159,7 +1159,7 @@ bool validPathIncrSteps(const orunav_generic::PathInterface &path, double maxDis
 }
 
 
-bool validSmoothedPath(const orunav_generic::PathInterface &path, 
+inline bool validSmoothedPath(const orunav_generic::PathInterface &path, 
                        const orunav_generic::State2d &start,
                        const orunav_generic::State2d &goal,
                        double maxSteeringAngle,
@@ -1185,7 +1185,7 @@ bool validSmoothedPath(const orunav_generic::PathInterface &path,
 }
 
 // Rather specialized function - use the end part of path to make a backward forward path.
-orunav_generic::Path getRepositioningPath(const orunav_generic::PathInterface &path,
+inline orunav_generic::Path getRepositioningPath(const orunav_generic::PathInterface &path,
                                           const double &dist, double &usedDist) {
 
   orunav_generic::Path ret;
@@ -1227,7 +1227,7 @@ orunav_generic::Path getRepositioningPath(const orunav_generic::PathInterface &p
 
 
 //! Return the total amount of turning in path
-double getTotalTurning(const orunav_generic::PathInterface &path) {
+inline double getTotalTurning(const orunav_generic::PathInterface &path) {
   double tot = 0.;
   for (size_t i = 0; i < path.sizePath()-1; i++)
   {
@@ -1237,7 +1237,7 @@ double getTotalTurning(const orunav_generic::PathInterface &path) {
 }
 
 
-int getDockingPathIdx(const orunav_generic::PathInterface &path, 
+inline int getDockingPathIdx(const orunav_generic::PathInterface &path, 
                       size_t minIdx,
                       double minDockingDistance,
                       double maxDockingDistance) {
@@ -1262,13 +1262,13 @@ int getDockingPathIdx(const orunav_generic::PathInterface &path,
   return -1;
 }
  
-void makeValidPathForTrajectoryProcessing(orunav_generic::Path &path) {
+inline void makeValidPathForTrajectoryProcessing(orunav_generic::Path &path) {
   path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
   path = orunav_generic::minIntermediateDirPathPoints(path);
   //  path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
 }
 
-void minIncrementalDistancePathCoordinatedTimes(orunav_generic::Path &path, 
+inline void minIncrementalDistancePathCoordinatedTimes(orunav_generic::Path &path, 
                                                 orunav_generic::CoordinatedTimes &cts, 
                                                 double minDistance)
 {
@@ -1286,7 +1286,7 @@ void minIncrementalDistancePathCoordinatedTimes(orunav_generic::Path &path,
   cts = c;
 }
 
-void minIntermediateDirPathCoordinatedTimesPoints(orunav_generic::Path &path,
+inline void minIntermediateDirPathCoordinatedTimesPoints(orunav_generic::Path &path,
                                                    orunav_generic::CoordinatedTimes &cts)
 {
   std::vector<size_t> inter_idx;
@@ -1311,14 +1311,14 @@ void minIntermediateDirPathCoordinatedTimesPoints(orunav_generic::Path &path,
 }
 
 // There are some requirement on the path to perform trajectory computations (might be removed in the future though). Since the path and the constraints are directly connected we need to perform all changes to both.
-void makeValidPathCoordinatedTimesForTrajectoryProcessing(orunav_generic::Path &path, orunav_generic::CoordinatedTimes &cts) {
+inline void makeValidPathCoordinatedTimesForTrajectoryProcessing(orunav_generic::Path &path, orunav_generic::CoordinatedTimes &cts) {
   // Make sure that there is some distance separation.
   minIncrementalDistancePathCoordinatedTimes(path, cts, 0.00002);
   // Check that there is atleast two point with the same direction.
   minIntermediateDirPathCoordinatedTimesPoints(path, cts);
 }
 
-double coordinationPairTimeStep(const orunav_generic::CoordinatedTimes &cts, size_t idx) {
+inline double coordinationPairTimeStep(const orunav_generic::CoordinatedTimes &cts, size_t idx) {
   if (cts.size() > idx) {
     return cts[idx+1]-cts[idx];
   }
