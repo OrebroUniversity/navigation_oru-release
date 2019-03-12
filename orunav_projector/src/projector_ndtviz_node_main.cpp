@@ -124,6 +124,7 @@ public:
     // * the end pose
     // * the ebrake and slowdown area
 
+    draw_sweep_area_ = false;
     if (msg->ns == std::string("sweep2") && draw_sweep_area_) {
       // Assume that we have a line strip - type = 4
       if (msg->type == 4) {
@@ -372,6 +373,8 @@ int main(int argc, char** argv) {
 
   ProjectorNDTVizNode p(params);
 
+  sleep(1);
+  glClearColor(.0f,.0f,.0f,1.0f);
 
   ros::spin();
 
