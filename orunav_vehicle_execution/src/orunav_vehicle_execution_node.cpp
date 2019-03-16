@@ -39,6 +39,10 @@
 #include <orunav_msgs/VectorMap.h>
 #include <orunav_msgs/GeoFence.h>
 
+#include <orunav_msgs/ManipulatorReport.h>
+#include <orunav_msgs/ManipulatorCommand.h>
+
+
 #include <orunav_constraint_extract/polygon_constraint.h> // Only used for visualization.
 #include <orunav_constraint_extract/conversions.h>
 #include <orunav_constraint_extract/grid_map.h>
@@ -105,6 +109,8 @@ private:
   ros::Publisher marker_pub_;
   ros::Publisher report_pub_;
 
+  ros::Publisher manipulatorcommand_pub_;
+  
   ros::Subscriber laserscan_sub_;
   ros::Subscriber laserscan2_sub_;
   
@@ -114,6 +120,8 @@ private:
   ros::Subscriber map_sub_;
   ros::Subscriber pallet_poses_sub_;
 
+  ros::Subscriber manipulator_report_sub_;
+  
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
   boost::condition_variable cond_;
@@ -153,6 +161,9 @@ private:
   bool use_forks_;
   std::string model_name_;
 
+  // Manipulator settings
+  bool use_manipulator_;
+  
   // Internal flags
   bool b_shutdown_;
 
@@ -235,6 +246,9 @@ public:
     paramHandle.param<double>("time_to_meter_factor", time_to_meter_factor_, 0.02);
     paramHandle.param<double>("max_tracking_error", max_tracking_error_, 100.);
 
+    paramHandle.param<bool>("use_manipulator", use_manipulator_, false);
+    vehicle_state_.setManipulator(use_manipulator_);
+
     paramHandle.param<bool>("use_vector_map_and_geofence", use_vector_map_and_geofence_, false);
     
     paramHandle.param<bool>("traj_debug", traj_params_.debug, true);
@@ -295,11 +309,19 @@ public:
     command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
     forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
     report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
+    if(vehicle_state_.hasManipulator()) {
+      ROS_WARN("Advertising publisher on /manipulator/command");
+      manipulatorcommand_pub_ = nh_.advertise<orunav_msgs::ManipulatorCommand>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/command"), 1);
+    }
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
     control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
       fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
+    }
+    if (vehicle_state_.hasManipulator()) {
+      ROS_WARN("Subscribing to publisher on /manipulator/command");
+      manipulator_report_sub_ = nh_.subscribe<orunav_msgs::ManipulatorReport>(orunav_generic::getRobotTopicName(robot_id_, "/manipulator/report"), 10, &KMOVehicleExecutionNode::process_manipulator_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
     pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
@@ -410,6 +432,7 @@ public:
   
   void publish_report(const ros::TimerEvent &event) {
     orunav_msgs::RobotReport msg = vehicle_state_.getReport();
+    msg.robot_id = robot_id_;
     report_pub_.publish(msg);
   }
 
@@ -1532,6 +1555,62 @@ public:
     
   }
 
+    void process_manipulator_report(const orunav_msgs::ManipulatorReportConstPtr &msg) {
+      ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: Entering process_manipulator_report");
+      bool completed_target = false;
+      bool move_arms = false;
+
+      VehicleState::ManipulatorOperationState manipulator_operation;
+      VehicleState::OperationState vehicle_operation;
+      
+      orunav_msgs::IliadItemArray item_list;
+
+      ROS_INFO("Processing ManipulatorReport");
+      inputs_mutex_.lock();
+      vehicle_state_.update(msg,completed_target, move_arms,
+			    vehicle_operation, manipulator_operation, item_list);
+
+      if(completed_target) {
+	ROS_INFO("Achieved something here!");
+      }
+      inputs_mutex_.unlock();
+      if(move_arms) {
+	ROS_INFO("[KMOVehicleExecutionNode] %s - moving arms", orunav_node_utils::getIDsString(target_handler_.getLastProcessedID()).c_str());	
+	orunav_msgs::ManipulatorCommand cmd;
+	
+	// setup command
+	cmd.robot_id = robot_id_;
+	
+	if (vehicle_operation == VehicleState::UNWRAP_PALLET) {
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::UNWRAP;
+	  ROS_INFO("Sending UNWRAP_PALLET command");
+	} else if (vehicle_operation == VehicleState::PICK_ITEMS) {
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::PICK_ITEMS;
+	  cmd.item_list = item_list;
+	  ROS_INFO("Sending PICK_ITEMS command");
+	  ROS_INFO_STREAM("Picking item " << static_cast<int>(msg->item_id)  << " of " << item_list.items.size());
+	} else {
+	  cmd.cmd = orunav_msgs::ManipulatorCommand::NO_OPERATION;
+	  ROS_INFO("Sending NO_OPERATION command");
+	}
+// 	// DONE discuss logic... how are the commands received? Mix of perception and coordination with inputs from mission planner?
+// 	if (manipulator_operation == VehicleState::MANIPULATOR_LOAD_ITEM_START) {
+// 	  ROS_INFO("Sending LOAD_ITEM command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_LOAD;
+// 	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNLOAD_ITEM_START) { 
+// 	  ROS_INFO("Sending UNLOAD_ITEM command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNLOAD;
+// 	} else if (manipulator_operation == VehicleState::MANIPULATOR_UNWRAP_PALLET_START) {
+// 	  ROS_INFO("Sending UNWRAP_PALLET command");
+// 	  cmd.cmd = orunav_msgs::ManipulatorCommand::MANIPULATOR_UNWRAP;
+// 	} else {
+// 	  ROS_INFO("Command not recognized!");
+// 	}
+	manipulatorcommand_pub_.publish(cmd);
+      }
+      ROS_ERROR("[ORUNAV_VEHICLE_EXECUTION]: Quitting process_manipulator_report");
+  }
+  
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
     // Turn on the load detection
     orunav_msgs::ObjectPoseEstimation srv;

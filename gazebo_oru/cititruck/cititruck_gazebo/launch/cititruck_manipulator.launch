@@ -1,0 +1,29 @@
+<launch>
+  
+  <arg name="robot_pose_x" default="0"/>
+  <arg name="robot_pose_y" default="0"/>
+  <arg name="robot_pose_z" default="0"/>
+  <arg name="robot_pose_roll" default="0"/>
+  <arg name="robot_pose_pitch" default="0"/>
+  <arg name="robot_pose_yaw" default="0"/>
+  <arg name="robot_name" default="robot1"/> 
+  
+  <include file="$(find gazebo_worlds_oru)/launch/basement_world_paused.launch"/>
+  
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck_manipulator.xacro'" />
+
+  <group ns="$(arg robot_name)">
+      <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cititruck_description)/urdf/cititruck_manipulator.xacro'" />
+
+      <node name="spawn_cititruck_model" pkg="gazebo_ros" type="spawn_model" args="-unpause -urdf -param robot_description -model $(arg robot_name) -x $(arg robot_pose_x) -y $(arg robot_pose_y) -z $(arg robot_pose_z) -R $(arg robot_pose_roll) -P $(arg robot_pose_pitch) -Y $(arg robot_pose_yaw) -ros_namespace /gazebo 
+	    -J $(arg robot_name)::left_arm_a1_joint 1.57 -J $(arg robot_name)::left_arm_a2_joint 0.5 -J $(arg robot_name)::left_arm_a3_joint -1.0 -J $(arg robot_name)::left_arm_a5_joint -0.5 -J $(arg robot_name)::left_arm_a6_joint -1.57 
+	    -J $(arg robot_name)::right_arm_a1_joint 0.12 -J $(arg robot_name)::right_arm_a2_joint 1.13 -J $(arg robot_name)::right_arm_a3_joint -0.7 -J $(arg robot_name)::right_arm_a4_joint -1.85 -J $(arg robot_name)::right_arm_e1_joint -1.6"
+	    respawn="false" output="screen" />
+
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  </group>
+  
+  <!-- This is needed, since the plugin for the kinect camera utilize both the namespace and the tf_previx... -->
+  <node pkg="tf" type="static_transform_publisher" name="kinect_link_broadcaster" args="0 0 0 0 0 0 robot1/kinect_link robot1/robot1/kinect_link 100" />
+
+</launch>
