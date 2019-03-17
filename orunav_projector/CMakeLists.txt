@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(orunav_projector)
-find_package(catkin REQUIRED COMPONENTS rviz roscpp ndt_visualisation orunav_generic orunav_msgs orunav_conversions orunav_geometry tf_conversions)
-catkin_package()
+find_package(catkin REQUIRED COMPONENTS rviz roscpp ndt_visualisation orunav_generic orunav_msgs orunav_conversions orunav_geometry tf_conversions pupil_ros)
+catkin_package(
+CATKIN_DEPENDS rviz roscpp ndt_visualisation orunav_generic orunav_msgs orunav_conversions orunav_geometry tf_conversions pupil_ros
+)
 include_directories(include ${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 ## This plugin includes Qt widgets, so we must include Qt like so:
@@ -31,6 +35,7 @@ add_executable(myviz ${SOURCE_FILES})
 target_link_libraries(myviz ${QT_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(projector_ndtviz_node src/projector_ndtviz_node_main.cpp)
+add_dependencies(projector_ndtviz_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(projector_ndtviz_node ${catkin_LIBRARIES} -lpng)
 
 add_executable(manual_calibration src/manual_calibration_main.cpp)

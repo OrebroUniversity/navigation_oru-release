@@ -9,6 +9,7 @@
 
 #include <visualization_msgs/Marker.h>
 
+#include <pupil_ros/surface_position.h>
 #include <orunav_generic/types.h>
 #include <orunav_generic/utils.h>
 #include <orunav_generic/pose2d.h>
@@ -36,6 +37,7 @@ private:
   ros::Subscriber fork_report_sub_;
   ros::Subscriber marker_sub_;
   ros::Subscriber laserscan_sub_;
+  ros::Subscriber surface_position_sub_;
 
   bool use_forks_;
   int robot_id_;
@@ -50,11 +52,13 @@ private:
   Eigen::Vector3d pos, fp;
   double aspect_ratio;
   laser_geometry::LaserProjection laser_projection_;
-  bool draw_sweep_area_, draw_path_, draw_arrow_, blink_; // defined for blinking action
+  bool draw_sweep_area_, draw_path_, draw_arrow_, blink_{false}; // defined for blinking action
   orunav_geometry::PolygonArrow poly_arrow_;
 
   double secs; // defined for blinking action
 
+  float prev_blink_{0.0};
+  float curr_blink_{0.0};
 public:
   ProjectorNDTVizNode(ros::NodeHandle &paramHandle)
   {
@@ -66,7 +70,6 @@ public:
     paramHandle.param<bool>("draw_sweep_area", draw_sweep_area_, false);
     paramHandle.param<bool>("draw_arrow", draw_arrow_, true);
     paramHandle.param<bool>("draw_path", draw_path_, false);
-    paramHandle.param<bool>("blink_arrow", blink_, true);
 
     // paramHandle.param<double>("pos_x", pos(0), -0.325782);
     // paramHandle.param<double>("pos_y", pos(1), -0.0142168);
@@ -101,6 +104,7 @@ public:
     }
     marker_sub_ = nh_.subscribe<visualization_msgs::Marker>(orunav_generic::getRobotTopicName(robot_id_, "/visualization_marker"), 10, &ProjectorNDTVizNode::process_marker, this);
 
+    surface_position_sub_ = nh_.subscribe<pupil_ros::surface_position>("/pupil_capture/surface", 1, &ProjectorNDTVizNode::surfacePositionCallback, this);
     // laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, "/laser_forkdir_scan"), 10,&ProjectorNDTVizNode::process_laserscan, this);
 
 
@@ -115,6 +119,15 @@ public:
 
     ndt_viz_.setSlowdownRegionTexture(slowdown_texture);
 
+  }
+
+  void surfacePositionCallback(const pupil_ros::surface_positionConstPtr& surface_position) {
+    curr_blink_ = (float) not surface_position->onsrf;
+    float final = 0.8 * prev_blink_  + 0.2 * curr_blink_;
+    prev_blink_ = final;
+    if(final > 0.5) this->blink_ = true;
+    else this->blink_ = false;
+    //this->blink_ = not surface_position->onsrf;
   }
 
   void process_marker(const visualization_msgs::MarkerConstPtr &msg) {
@@ -198,21 +211,23 @@ public:
     }
     //ndt_viz_.addPolygon(pts, 0., 0., 1.);
 
-//std::cout<<"Time   "<<secs<<std::endl;
+    //std::cout<<"Time   "<<secs<<std::endl;
 
- double localSecs = ros::Time::now().toSec();
- double diff = localSecs-secs;
+    double localSecs = ros::Time::now().toSec();
+    double diff = localSecs-secs;
 
- static double changeCol = 1.;
+    static double changeCol = 1.;
 
 
- if(diff > 1 &&  blink_) {
-secs = ros::Time::now().toSec();
-if(changeCol == 0.)
-changeCol = 1.;
-else
-  changeCol = 0.;
- }
+    if(diff > 0.2 &&  blink_) {
+      secs = ros::Time::now().toSec();
+      if(changeCol == 0.)
+        changeCol = 1.;
+      else
+        changeCol = 0.;
+    }
+    if(!blink_)
+      changeCol = 1.;
     //ndt_viz_.addColorArrow(pts, changeCol, 0., 0.);
     ndt_viz_.addColorArrow(pts, changeCol, changeCol, changeCol);	 // RAVI - following the filling style of eBrake region and Slowdown regions
     // the color changing of the arrow is not working when changing the parameters here, but the color changes only when its changed in the
