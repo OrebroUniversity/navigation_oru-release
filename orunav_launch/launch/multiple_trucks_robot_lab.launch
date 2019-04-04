@@ -27,10 +27,14 @@
     <param name="tf_prefix" value="robot1" />
 
     <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
-        <param name="robot_id" value="1" />
+      <param name="robot_id" value="1" />
+      <remap from="/robot1/cmd_vel" to ="/robot1/controller/cmd_vel"/>
     </node>
-   
-    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
+    
+    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch">
+      <arg name="cmd_fork_topic" value="/robot1/controller/cmd_fork" /> 
+      <arg name="topic_prefix"   value="/robot1/control/"/>
+    </include>
 
     <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
       <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
@@ -112,11 +116,15 @@
     <param name="tf_prefix" value="robot2" />
 
     <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
-        <param name="robot_id" value="2" />
+      <param name="robot_id" value="2" />
+      <remap from="/robot2/cmd_vel" to ="/robot2/controller/cmd_vel"/>
     </node>
 
-    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch" />
-
+    <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch">
+      <arg name="cmd_fork_topic" value="/robot2/controller/cmd_fork" /> 
+      <arg name="topic_prefix"   value="/robot2/control/"/>
+    </include>
+    
     <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">
       <!--param name="model" value="CiTiTruck_16_1_4.0_0.2.reduced"/-->
       <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>

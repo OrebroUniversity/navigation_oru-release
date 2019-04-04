@@ -126,7 +126,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/func_gen/")
 
 # Config file
 configure_file ("${SW_CONFIG_FILE}.in"  "${SW_CONFIG_FILE}")
-set_property (DIRECTORY "${PROJECT_SOURCE_DIR}" APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${SW_CONFIG_FILE}")
+#set_property (DIRECTORY "${PROJECT_SOURCE_DIR}" APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${SW_CONFIG_FILE}")
 
 
 # Executable
