@@ -4,19 +4,9 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /Grid1
         - /Grid1/Offset1
-        - /Map1
-        - /Marker1
-        - /TF1
-        - /RobotModel1
-        - /RobotModel3
-        - /MarkerArray1
-        - /MarkerArray2
       Splitter Ratio: 0.5
-    Tree Height: 747
+    Tree Height: 848
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -36,6 +26,8 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: ""
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -62,8 +54,7 @@ Visualization Manager:
       Marker Topic: /robot1/deps
       Name: MarkerArray
       Namespaces:
-        _1-2: true
-        _1-22: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -71,9 +62,7 @@ Visualization Manager:
       Marker Topic: /robot1/status
       Name: MarkerArray
       Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -81,8 +70,7 @@ Visualization Manager:
       Marker Topic: /robot2/deps
       Name: MarkerArray
       Namespaces:
-        _2-1: true
-        _2-22: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -90,9 +78,7 @@ Visualization Manager:
       Marker Topic: /robot2/status
       Name: MarkerArray
       Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -100,7 +86,7 @@ Visualization Manager:
       Marker Topic: /robot3/deps
       Name: MarkerArray
       Namespaces:
-        _3-4: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -108,378 +94,7 @@ Visualization Manager:
       Marker Topic: /robot3/status
       Name: MarkerArray
       Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot4/deps
-      Name: MarkerArray
-      Namespaces:
-        _4-21: true
-        _4-3: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot4/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot5/deps
-      Name: MarkerArray
-      Namespaces:
-        _5-22: true
-        _5-6: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot5/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot6/deps
-      Name: MarkerArray
-      Namespaces:
-        _6-22: true
-        _6-5: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot6/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot7/deps
-      Name: MarkerArray
-      Namespaces:
-        _7-21: true
-        _7-8: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot7/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot8/deps
-      Name: MarkerArray
-      Namespaces:
-        _8-21: true
-        _8-7: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot8/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot9/deps
-      Name: MarkerArray
-      Namespaces:
-        _9-10: true
-        _9-22: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot9/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot10/deps
-      Name: MarkerArray
-      Namespaces:
-        _10-22: true
-        _10-9: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot10/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot11/deps
-      Name: MarkerArray
-      Namespaces:
-        _11-12: true
-        _11-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot11/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot12/deps
-      Name: MarkerArray
-      Namespaces:
-        _12-11: true
-        _12-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot12/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot13/deps
-      Name: MarkerArray
-      Namespaces:
-        _13-14: true
-        _13-22: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot13/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot14/deps
-      Name: MarkerArray
-      Namespaces:
-        _14-13: true
-        _14-22: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot14/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot15/deps
-      Name: MarkerArray
-      Namespaces:
-        _15-16: true
-        _15-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot15/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot16/deps
-      Name: MarkerArray
-      Namespaces:
-        _16-15: true
-        _16-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot16/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot17/deps
-      Name: MarkerArray
-      Namespaces:
-        _17-18: true
-        _17-22: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot17/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot18/deps
-      Name: MarkerArray
-      Namespaces:
-        _18-17: true
-        _18-22: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot18/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot19/deps
-      Name: MarkerArray
-      Namespaces:
-        _19-20: true
-        _19-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot19/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot20/deps
-      Name: MarkerArray
-      Namespaces:
-        _20-19: true
-        _20-21: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot20/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot21/deps
-      Name: MarkerArray
-      Namespaces:
-        _21-11: true
-        _21-12: true
-        _21-16: true
-        _21-3: true
-        _21-4: true
-        _21-7: true
-        _21-8: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot21/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot22/deps
-      Name: MarkerArray
-      Namespaces:
-        _22-10: true
-        _22-14: true
-        _22-2: true
-        _22-6: true
-        _22-9: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot22/status
-      Name: MarkerArray
-      Namespaces:
-        current_envelope: true
-        current_pose: true
-        robot_state: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 0.0700000003
@@ -490,6 +105,7 @@ Visualization Manager:
       Name: Map
       Topic: /map
       Unreliable: false
+      Use Timestamp: false
       Value: true
     - Class: rviz/Marker
       Enabled: true
@@ -512,13 +128,25 @@ Visualization Manager:
           Value: true
         robot1/base_link:
           Value: true
+        robot1/fixed_left_wheel_link:
+          Value: true
+        robot1/fixed_right_wheel_link:
+          Value: true
         robot1/kinect_link:
+          Value: true
+        robot1/kinect_rgb_optical_link:
           Value: true
         robot1/laser_link:
           Value: true
         robot1/left_fork:
           Value: true
+        robot1/odom_enc:
+          Value: true
         robot1/right_fork:
+          Value: true
+        robot1/sd_wheel_link:
+          Value: true
+        robot1/steer_link:
           Value: true
         robot2/base_footprint:
           Value: true
@@ -526,13 +154,25 @@ Visualization Manager:
           Value: true
         robot2/base_link:
           Value: true
+        robot2/fixed_left_wheel_link:
+          Value: true
+        robot2/fixed_right_wheel_link:
+          Value: true
         robot2/kinect_link:
+          Value: true
+        robot2/kinect_rgb_optical_link:
           Value: true
         robot2/laser_link:
           Value: true
         robot2/left_fork:
           Value: true
+        robot2/odom_enc:
+          Value: true
         robot2/right_fork:
+          Value: true
+        robot2/sd_wheel_link:
+          Value: true
+        robot2/steer_link:
           Value: true
         robot3/base_footprint:
           Value: true
@@ -540,13 +180,25 @@ Visualization Manager:
           Value: true
         robot3/base_link:
           Value: true
+        robot3/fixed_left_wheel_link:
+          Value: true
+        robot3/fixed_right_wheel_link:
+          Value: true
         robot3/kinect_link:
+          Value: true
+        robot3/kinect_rgb_optical_link:
           Value: true
         robot3/laser_link:
           Value: true
         robot3/left_fork:
           Value: true
+        robot3/odom_enc:
+          Value: true
         robot3/right_fork:
+          Value: true
+        robot3/sd_wheel_link:
+          Value: true
+        robot3/steer_link:
           Value: true
         world:
           Value: true
@@ -558,6 +210,69 @@ Visualization Manager:
       Tree:
         world:
           map:
+            {}
+          robot1/base_footprint:
+            robot1/base_link:
+              robot1/base_fork:
+                robot1/left_fork:
+                  {}
+                robot1/right_fork:
+                  {}
+              robot1/fixed_left_wheel_link:
+                {}
+              robot1/fixed_right_wheel_link:
+                {}
+              robot1/kinect_link:
+                robot1/kinect_rgb_optical_link:
+                  {}
+              robot1/laser_link:
+                {}
+              robot1/steer_link:
+                robot1/sd_wheel_link:
+                  {}
+          robot1/odom_enc:
+            {}
+          robot2/base_footprint:
+            robot2/base_link:
+              robot2/base_fork:
+                robot2/left_fork:
+                  {}
+                robot2/right_fork:
+                  {}
+              robot2/fixed_left_wheel_link:
+                {}
+              robot2/fixed_right_wheel_link:
+                {}
+              robot2/kinect_link:
+                robot2/kinect_rgb_optical_link:
+                  {}
+              robot2/laser_link:
+                {}
+              robot2/steer_link:
+                robot2/sd_wheel_link:
+                  {}
+          robot2/odom_enc:
+            {}
+          robot3/base_footprint:
+            robot3/base_link:
+              robot3/base_fork:
+                robot3/left_fork:
+                  {}
+                robot3/right_fork:
+                  {}
+              robot3/fixed_left_wheel_link:
+                {}
+              robot3/fixed_right_wheel_link:
+                {}
+              robot3/kinect_link:
+                robot3/kinect_rgb_optical_link:
+                  {}
+              robot3/laser_link:
+                {}
+              robot3/steer_link:
+                robot3/sd_wheel_link:
+                  {}
+          robot3/odom_enc:
             {}
       Update Interval: 0
       Value: true
@@ -600,6 +315,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        kinect_rgb_optical_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         laser_link:
           Alpha: 1
           Show Axes: false
@@ -670,6 +389,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        kinect_rgb_optical_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         laser_link:
           Alpha: 1
           Show Axes: false
@@ -740,6 +463,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        kinect_rgb_optical_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         laser_link:
           Alpha: 1
           Show Axes: false
@@ -776,9 +503,17 @@ Visualization Manager:
       Marker Topic: /robot1/visualization_marker
       Name: Marker
       Namespaces:
+        chunks_dt: true
+        chunks_idx0: true
         critical_point: true
+        driven_ct: true
+        driven_traj: true
+        goal_pose2d: true
+        path_smoother_new_path: true
+        path_subsampled: true
         position: true
         robot_id_str: true
+        start_pose2d: true
         state_str: true
       Queue Size: 100
       Value: true
@@ -787,9 +522,17 @@ Visualization Manager:
       Marker Topic: /robot2/visualization_marker
       Name: Marker
       Namespaces:
+        chunks_dt: true
+        chunks_idx0: true
         critical_point: true
+        driven_ct: true
+        driven_traj: true
+        goal_pose2d: true
+        path_smoother_new_path: true
+        path_subsampled: true
         position: true
         robot_id_str: true
+        start_pose2d: true
         state_str: true
       Queue Size: 100
       Value: true
@@ -798,9 +541,17 @@ Visualization Manager:
       Marker Topic: /robot3/visualization_marker
       Name: Marker
       Namespaces:
+        chunks_dt: true
+        chunks_idx0: true
         critical_point: true
+        driven_ct: true
+        driven_traj: true
+        goal_pose2d: true
+        path_smoother_new_path: true
+        path_subsampled: true
         position: true
         robot_id_str: true
+        start_pose2d: true
         state_str: true
       Queue Size: 100
       Value: true
@@ -823,6 +574,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
+    Default Light: true
     Fixed Frame: world
     Frame Rate: 30
   Name: root
@@ -860,6 +612,7 @@ Visualization Manager:
         Z: -4.43967819
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
       Pitch: 0.80979687
@@ -870,10 +623,10 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1028
+  Height: 1136
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000016a0000037afc0200000007fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000000280000037a000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000037afc0200000004fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000028000001330000006400fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000028000000a30000000000000000fb0000000a00560069006500770073010000016100000241000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f0000003efc0100000002fb0000000800540069006d006501000000000000073f0000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000004ba0000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000016a000003d8fc0200000007fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003a000003d8000000c600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000003d8fc0200000004fb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000003a000001530000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000028000000a30000000000000000fb0000000a0056006900650077007301000001930000027f0000009e00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007420000003efc0100000002fb0000000800540069006d00650100000000000007420000024400fffffffb0000000800540069006d00650100000000000004500000000000000000000004bd000003d800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -882,6 +635,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1855
-  X: 65
-  Y: 24
+  Width: 1858
+  X: 62
+  Y: 27
