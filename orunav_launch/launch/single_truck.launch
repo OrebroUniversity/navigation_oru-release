@@ -30,7 +30,7 @@
   </node>
 
   <!-- ALL ROBOT SPECIFIC TASKS -->
-  <include file="$(find cititruck_launch)/launch/cititruck_sim.launch">
+  <include file="$(find orunav_launch)/launch/cititruck_sim.launch">
     <arg name="robot_id" value="$(arg robot_id)" />
   </include>
 
