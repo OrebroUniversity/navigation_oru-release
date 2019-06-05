@@ -1849,8 +1849,12 @@ public:
 	  else if (vehicle_state_.newVelocityConstraints()) {
             ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
 	    TrajectoryProcessor::Params traj_params = traj_params_;
-	    traj_params.maxVel = vehicle_state_.getMaxLinearVelocityConstraint();
-	    traj_params.maxRotationalVel = vehicle_state_.getMaxRotationalVelocityConstraint();
+	    traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
+	    traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
+
+	    traj_params.maxVel = std::max(traj_params.maxVel, 0.01); // Always allow to drive faster than 1 cm /s.
+	    traj_params.maxRotationalVel = std::max(traj_params.maxRotationalVel, 0.01); // Alway allow to rotate more than 0.01 rad / s.
+	    
 	    bool valid = false;
 	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
             if (!valid) {
