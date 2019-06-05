@@ -64,7 +64,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <tf/transform_listener.h>
 #include <laser_geometry/laser_geometry.h>
-
+#include <std_msgs/Float64MultiArray.h>
 
 void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &name, int id, int color, double scale, ros::Publisher &pub) {
 
@@ -116,6 +116,8 @@ private:
   ros::Subscriber map_sub_;
   ros::Subscriber pallet_poses_sub_;
 
+  ros::Subscriber velocity_constraints_sub_;
+  
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
   boost::condition_variable cond_;
@@ -308,8 +310,9 @@ public:
 
     laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
     laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
-    
 
+    velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10,&KMOVehicleExecutionNode::process_velocity_constraints, this);
+    
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
@@ -1535,6 +1538,20 @@ public:
     
   }
 
+  void process_velocity_constraints(const std_msgs::Float64MultiArrayConstPtr &msg) {
+    if (msg->data.size() != 2) {
+      ROS_ERROR_STREAM("Wrong format on /velocity_constraints topic");
+      return;
+    }
+    double max_linear_velocity_constraint = msg->data[0];
+    double max_rotational_velocity_constraint = msg->data[1];
+    vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint);
+    ROS_INFO_STREAM("New velocity constraint [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "]");
+    if (vehicle_state_.newVelocityConstraints()) {
+      cond_.notify_one();
+    }
+  }
+
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
     // Turn on the load detection
     orunav_msgs::ObjectPoseEstimation srv;
@@ -1829,6 +1846,18 @@ public:
             }
             // Special case - clear the CT's -> however, should check that the CTS are not slower than the slowdown...
           }
+	  else if (vehicle_state_.newVelocityConstraints()) {
+            ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
+	    TrajectoryProcessor::Params traj_params = traj_params_;
+	    traj_params.maxVel = vehicle_state_.getMaxLinearVelocityConstraint();
+	    traj_params.maxRotationalVel = vehicle_state_.getMaxRotationalVelocityConstraint();
+	    bool valid = false;
+	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
+            if (!valid) {
+              continue;
+            }
+	    vehicle_state_.resetNewVelocityConstraint();
+	  }
           else {
             bool valid;
             chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
