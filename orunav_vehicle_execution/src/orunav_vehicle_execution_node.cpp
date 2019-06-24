@@ -64,7 +64,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <tf/transform_listener.h>
 #include <laser_geometry/laser_geometry.h>
-
+#include <std_msgs/Float64MultiArray.h>
 
 void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &name, int id, int color, double scale, ros::Publisher &pub) {
 
@@ -91,10 +91,12 @@ void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &na
   pub.publish(m);
 }
 
+char blue[] = {0x1b, '[', '1', ';', '3', '4', 'm', 0};
 
 class KMOVehicleExecutionNode {
 
 private:
+
   ros::NodeHandle nh_;
   ros::ServiceServer service_compute_;
   ros::ServiceServer service_execute_;
@@ -114,6 +116,8 @@ private:
   ros::Subscriber map_sub_;
   ros::Subscriber pallet_poses_sub_;
 
+  ros::Subscriber velocity_constraints_sub_;
+  
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
   boost::condition_variable cond_;
@@ -291,24 +295,25 @@ public:
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
 
     // Publishers
-    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>(orunav_generic::getRobotTopicName(robot_id_, "/controller/trajectories"),1000);
-    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>(orunav_generic::getRobotTopicName(robot_id_, "/controller/commands"), 1000);
-    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>(orunav_generic::getRobotTopicName(robot_id_, "/fork/command"), 1);
-    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 1);
+    trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>("control/controller/trajectories",1000);
+    command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>("control/controller/commands", 1000);
+    forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>("control/fork/command", 1);
+    report_pub_ = nh_.advertise<orunav_msgs::RobotReport>("control/report", 1);
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map",10,&KMOVehicleExecutionNode::process_map, this);
-    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>(orunav_generic::getRobotTopicName(robot_id_, "/controller/reports"), 10,&KMOVehicleExecutionNode::process_report, this);
+    control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>("control/controller/reports", 10,&KMOVehicleExecutionNode::process_report, this);
     if (use_forks_) {
-      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>(orunav_generic::getRobotTopicName(robot_id_, "/fork/report"), 10, &KMOVehicleExecutionNode::process_fork_report,this);
+      fork_report_sub_ = nh_.subscribe<orunav_msgs::ForkReport>("control/fork/report", 10, &KMOVehicleExecutionNode::process_fork_report,this);
     }
     //    pallet_poses_sub_ = nh_.subscribe<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
-    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses"), 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
+    pallet_poses_sub_ = nh_.subscribe<orunav_msgs::ObjectPose>("pallet_poses", 10, &KMOVehicleExecutionNode::process_pallet_poses,this);
 
-    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic), 10,&KMOVehicleExecutionNode::process_laserscan, this);
-    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(orunav_generic::getRobotTopicName(robot_id_, safety_laser_topic2), 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+    laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
+
+    velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10,&KMOVehicleExecutionNode::process_velocity_constraints, this);
     
-
-    marker_pub_ = nh_.advertise<visualization_msgs::Marker>(orunav_generic::getRobotTopicName(robot_id_, "/visualization_marker"), 10);
+    marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
     heartbeat_fast_visualization_   = nh_.createTimer(ros::Duration(0.1),&KMOVehicleExecutionNode::publish_visualization_fast,this);
@@ -410,6 +415,7 @@ public:
   
   void publish_report(const ros::TimerEvent &event) {
     orunav_msgs::RobotReport msg = vehicle_state_.getReport();
+    msg.robot_id = robot_id_;
     report_pub_.publish(msg);
   }
 
@@ -983,7 +989,7 @@ public:
 
     if (use_forks_) {
       if (ros::Time::now().toSec() - last_process_fork_report_time_.toSec() > 5) {
-        ROS_WARN_STREAM("[KMOVehicleExecution] - fork reports are not available (!), check use_fork flag?!?");
+        ROS_WARN_STREAM_THROTTLE(5, "[KMOVehicleExecution] - fork reports are not available (!), check use_fork flag?!? using topic : " << fork_report_sub_.getTopic());
       }
     }
 
@@ -1213,7 +1219,7 @@ public:
 
   void process_pallet_poses(/*const geometry_msgs::PoseStampedConstPtr &msg*/
                             const orunav_msgs::ObjectPoseConstPtr &msg) {
-
+    ROS_INFO("[MMN] got pallet poses");
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect()) {
       // Add some checks on the pose.
@@ -1532,6 +1538,20 @@ public:
     
   }
 
+  void process_velocity_constraints(const std_msgs::Float64MultiArrayConstPtr &msg) {
+    if (msg->data.size() != 2) {
+      ROS_ERROR_STREAM("Wrong format on /velocity_constraints topic");
+      return;
+    }
+    double max_linear_velocity_constraint = msg->data[0];
+    double max_rotational_velocity_constraint = msg->data[1];
+    vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint);
+    ROS_INFO_STREAM("New velocity constraint [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "]");
+    if (vehicle_state_.newVelocityConstraints()) {
+      cond_.notify_one();
+    }
+  }
+
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
     // Turn on the load detection
     orunav_msgs::ObjectPoseEstimation srv;
@@ -1826,6 +1846,22 @@ public:
             }
             // Special case - clear the CT's -> however, should check that the CTS are not slower than the slowdown...
           }
+	  else if (vehicle_state_.newVelocityConstraints()) {
+            ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
+	    TrajectoryProcessor::Params traj_params = traj_params_;
+	    traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
+	    traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
+
+	    traj_params.maxVel = std::max(traj_params.maxVel, 0.01); // Always allow to drive faster than 1 cm /s.
+	    traj_params.maxRotationalVel = std::max(traj_params.maxRotationalVel, 0.01); // Alway allow to rotate more than 0.01 rad / s.
+	    
+	    bool valid = false;
+	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
+            if (!valid) {
+              continue;
+            }
+	    vehicle_state_.resetNewVelocityConstraint();
+	  }
           else {
             bool valid;
             chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params_, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);

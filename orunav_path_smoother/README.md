@@ -1,0 +1,4 @@
+
+
+roslaunch orunav_path_smoother path_smoother_spatial_test.launch
+rosrun orunav_path_smoother path_smoother_spatial_test _move_constraint:=true

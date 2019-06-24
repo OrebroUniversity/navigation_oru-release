@@ -1,0 +1,2 @@
+To call the service for pallet detection:
+rosrun orunav_pallet_detection_sdf object_est_client 

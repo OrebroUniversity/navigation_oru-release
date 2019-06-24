@@ -13,6 +13,9 @@ public:
 
   VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
     activeTask_.criticalPoint = -1; slowdownCounter_ = 0;
+    newVelocityConstraints_ = false;
+    maxLinearVelocityConstraint_ = 1.;
+    maxRotationalVelocityConstraint_ = 1.;
 }
   
   void update(const orunav_msgs::Task &msg) {
@@ -970,6 +973,29 @@ public:
     timeStep_ = ts;
   }
 
+  bool newVelocityConstraints() const {
+    return newVelocityConstraints_;
+  }
+
+  double getMaxLinearVelocityConstraint() const {
+    return maxLinearVelocityConstraint_;
+  }
+
+  double getMaxRotationalVelocityConstraint() const {
+    return maxRotationalVelocityConstraint_;
+  }
+
+  void setNewVelocityConstraints(double max_linear_vel,
+				double max_rotational_vel) {
+    maxLinearVelocityConstraint_ = max_linear_vel;
+    maxRotationalVelocityConstraint_ = max_rotational_vel;
+    newVelocityConstraints_ = true;
+  }
+
+  void resetNewVelocityConstraint() {
+    newVelocityConstraints_ = false;
+  }
+
 private:
 
   State state_;
@@ -1016,4 +1042,8 @@ private:
 
   double timeStep_;
   int slowdownCounter_;
+
+  double maxLinearVelocityConstraint_;
+  double maxRotationalVelocityConstraint_;
+  bool newVelocityConstraints_;
 };

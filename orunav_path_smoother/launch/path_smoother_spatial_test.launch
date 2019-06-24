@@ -8,7 +8,7 @@
     <param name="move_constraints" value="true" />
   </node>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/click_n_pick.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orunav_path_smoother)/launch/path_smoother_spaital_test.rviz"/>
 
   
   <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">

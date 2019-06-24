@@ -189,14 +189,16 @@ namespace astar_graph_plan
 	  //--------- 
 	  XYTh_GraphNode* getNode(XYTH_t &s)
 	  {
+	    std::cerr << "HELLO!" << std::endl;
 	       std::map<size_t,XYTh_GraphNode*>::iterator it;
 	       
 	       for (it = nodes_m.begin(); it!=nodes_m.end(); ++it)
 	       {
 		    XYTH_t s0 = it->second->getState(); 
-		    if((fabs(s0.x -  s.x) < 0.01) &&
-		       (fabs(s0.y -  s.y) < 0.01) &&
-		       (fabs(NORM_ANG(s0.th - s.th)) < 0.01))
+        if((fabs(s0.x -  s.x) < 1) &&
+           (fabs(s0.y -  s.y) < 1)
+           //(fabs(NORM_ANG(s0.th - s.th)) < 0.01)
+           )
 			 return it->second;
 	       }
 	       

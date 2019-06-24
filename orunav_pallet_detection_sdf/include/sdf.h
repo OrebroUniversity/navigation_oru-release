@@ -95,7 +95,6 @@ namespace sdf
     Eigen::Affine3d transformation;
     /// parameters for determining the geometry of the primitive
     Eigen::Vector4d parameters;
-  
   };
 
   /// SDF of a box. Parameters to the constructor should be dimensions in x y and z (the fourth element of the parameter vector is not used)
