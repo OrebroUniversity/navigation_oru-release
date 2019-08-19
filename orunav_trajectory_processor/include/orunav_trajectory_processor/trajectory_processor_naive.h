@@ -548,8 +548,17 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
   double minDtValidSpeed(const TrajectoryStepNaive &step) const
   {
     double position_diff = step.getPositionDiff();
-    double dt_position = position_diff / _params.maxVel;
-    double dt_rotation = fabs(step.getHeadingDiff()) / _params.maxRotationalVel;
+
+    double max_vel = _params.maxVel;
+    double max_rotational_vel = _params.maxRotationalVel;
+    
+    if (step.dir < 0) { // reversing
+      max_vel = _params.maxVelRev;
+      max_rotational_vel = _params.maxRotationalVelRev;
+    }
+    
+    double dt_position = position_diff / max_vel;
+    double dt_rotation = fabs(step.getHeadingDiff()) / max_rotational_vel;
     double dt_steering = fabs(step.getSteeringDiff()) / _params.maxSteeringAngleVel;
     double dt = dt_position;
     if (dt < dt_rotation)
@@ -561,7 +570,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       {
 	double phi = step.getPhiStep();
 	double drivewheel_diff = position_diff / (cos(phi)*cos(phi)); // This will make it go even slower when turning, should be only cos (and not cos^2).
-	double dt_drivewheel = drivewheel_diff / _params.maxVel;
+	double dt_drivewheel = drivewheel_diff / max_vel;
 	if (dt < dt_drivewheel)
 	  dt = dt_drivewheel;
       }
