@@ -246,7 +246,9 @@ public:
     paramHandle.param<double>("time_step", traj_params_.timeStep, 0.06);
     vehicle_state_.setTimeStep(traj_params_.timeStep);
     paramHandle.param<double>("max_vel", traj_params_.maxVel, 0.1);
+    paramHandle.param<double>("max_vel_rev", traj_params_.maxVelRev, traj_params_.maxVel);
     paramHandle.param<double>("max_rotational_vel", traj_params_.maxRotationalVel, 0.1);
+    paramHandle.param<double>("max_rotational_vel_rev", traj_params_.maxRotationalVelRev, traj_params_.maxRotationalVel);
     paramHandle.param<double>("max_acc", traj_params_.maxAcc, 0.1);
     paramHandle.param<double>("max_steering_angle_vel", traj_params_.maxSteeringAngleVel, 0.8); // Make sure this is high enough - if the trajectory generation are limited to much by this the velocity profile will vary a lot.
     paramHandle.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.1);
@@ -1539,14 +1541,16 @@ public:
   }
 
   void process_velocity_constraints(const std_msgs::Float64MultiArrayConstPtr &msg) {
-    if (msg->data.size() != 2) {
+    if (msg->data.size() != 4) {
       ROS_ERROR_STREAM("Wrong format on /velocity_constraints topic");
       return;
     }
     double max_linear_velocity_constraint = msg->data[0];
     double max_rotational_velocity_constraint = msg->data[1];
-    vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint);
-    ROS_INFO_STREAM("New velocity constraint [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "]");
+    double max_linear_velocity_constraint_rev = msg->data[2];
+    double max_rotational_velocity_constraint_rev = msg->data[3];
+    vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint, max_linear_velocity_constraint_rev, max_rotational_velocity_constraint_rev);
+    ROS_INFO_STREAM("New velocity constraint (fwd) [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "] (rev) [linear: " << msg->data[2] << " | rot: " << msg->data[3] << "]");
     if (vehicle_state_.newVelocityConstraints()) {
       cond_.notify_one();
     }
@@ -1850,10 +1854,16 @@ public:
             ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
 	    TrajectoryProcessor::Params traj_params = traj_params_;
 	    traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
+	    traj_params.maxVelRev = std::min(traj_params.maxVelRev, vehicle_state_.getMaxLinearVelocityConstraintRev());
 	    traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
+	    traj_params.maxRotationalVelRev = std::min(traj_params.maxRotationalVelRev, vehicle_state_.getMaxRotationalVelocityConstraintRev());
 
 	    traj_params.maxVel = std::max(traj_params.maxVel, 0.01); // Always allow to drive faster than 1 cm /s.
+	    traj_params.maxVelRev = std::max(traj_params.maxVelRev, 0.01);
 	    traj_params.maxRotationalVel = std::max(traj_params.maxRotationalVel, 0.01); // Alway allow to rotate more than 0.01 rad / s.
+	    traj_params.maxRotationalVelRev = std::max(traj_params.maxRotationalVelRev, 0.01);
+
+	    ROS_INFO_STREAM("new trajectory params: " << traj_params);
 	    
 	    bool valid = false;
 	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);

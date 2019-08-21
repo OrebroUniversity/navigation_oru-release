@@ -15,3 +15,20 @@ To generate a set of targets a bit randomly you can use:
 > rosrun orunav_vehicle_execution generate_random_targets
 
 to generate a targets.dat file.
+
+To change the max velocities (linear and rotational, forward / reversing) use:
+
+rostopic pub /robot1/velocity_constraints std_msgs/Float64MultiArray "layout:
+  dim:
+  - label: ''
+    size: 4
+    stride: 0
+  data_offset: 0
+data:
+- 0.3 
+- 0.3
+- 0.1
+- 0.1
+"
+
+

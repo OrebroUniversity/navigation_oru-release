@@ -981,14 +981,26 @@ public:
     return maxLinearVelocityConstraint_;
   }
 
+  double getMaxLinearVelocityConstraintRev() const {
+    return maxLinearVelocityConstraintRev_;
+  }
+
   double getMaxRotationalVelocityConstraint() const {
     return maxRotationalVelocityConstraint_;
   }
 
+  double getMaxRotationalVelocityConstraintRev() const {
+    return maxRotationalVelocityConstraintRev_;
+  }
+
   void setNewVelocityConstraints(double max_linear_vel,
-				double max_rotational_vel) {
+				 double max_rotational_vel,
+				 double max_linear_vel_rev,
+				 double max_rotational_vel_rev) {
     maxLinearVelocityConstraint_ = max_linear_vel;
     maxRotationalVelocityConstraint_ = max_rotational_vel;
+    maxLinearVelocityConstraintRev_ = max_linear_vel_rev;
+    maxRotationalVelocityConstraintRev_ = max_rotational_vel_rev;
     newVelocityConstraints_ = true;
   }
 
@@ -1045,5 +1057,7 @@ private:
 
   double maxLinearVelocityConstraint_;
   double maxRotationalVelocityConstraint_;
+  double maxLinearVelocityConstraintRev_;
+  double maxRotationalVelocityConstraintRev_;
   bool newVelocityConstraints_;
 };

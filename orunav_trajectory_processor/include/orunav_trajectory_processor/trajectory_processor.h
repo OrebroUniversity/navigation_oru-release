@@ -24,8 +24,10 @@ class TrajectoryProcessor
   public:
     Params() {
       maxVel = 1.;
+      maxVelRev = maxVel;
       useSteerDriveVel = true; // false;
       maxRotationalVel = 1.;
+      maxRotationalVelRev = maxRotationalVel;
       maxSteeringAngleVel = 1.;
       initVel = 0.;
       endVel = 0.;
@@ -51,8 +53,10 @@ class TrajectoryProcessor
     }
 
     double maxVel;
+    double maxVelRev;
     bool useSteerDriveVel;
     double maxRotationalVel;
+    double maxRotationalVelRev;
     double maxSteeringAngleVel;
     double initVel;
     double endVel;
@@ -79,8 +83,10 @@ class TrajectoryProcessor
     friend std::ostream& operator<<(std::ostream &os, const TrajectoryProcessor::Params &obj)
       {
 	os << "\nmaxVel                   : " << obj.maxVel;
+	os << "\nmaxVelRev                : " << obj.maxVelRev;
 	os << "\nuseSteerDriveVel         : " << obj.useSteerDriveVel;
 	os << "\nmaxRotationalVel         : " << obj.maxRotationalVel;
+	os << "\nmaxRotationalVelRev      : " << obj.maxRotationalVelRev;
 	os << "\nmaxSteeringAngleVel      : " << obj.maxSteeringAngleVel;
 	os << "\ninitVel                  : " << obj.initVel;
 	os << "\nendVel                   : " << obj.endVel;
@@ -110,7 +116,7 @@ class TrajectoryProcessor
     
     template<typename Archive>
       void serialize(Archive& ar, const unsigned version) {
-      ar & maxVel & useSteerDriveVel & maxRotationalVel & maxSteeringAngleVel & initVel & endVel & initSteeringAngleVel & endSteeringAngleVel & maxAcc & maxRotationalAcc & maxSteeringAngleAcc & timeStep & wheelBaseX & wheelBaseY & useInitialState & nbZeroVelControlCommands & minDist & useCoordTimeAccConstraints & useCoordTimeContraintPoints & debug & debugPrefix & creepSpeed & creepDistance & setCreepSpeedAsEndConstraint & citiTruckNbClearSpeedCommands;
+      ar & maxVel & maxVelRev & useSteerDriveVel & maxRotationalVel & maxRotationalVelRev & maxSteeringAngleVel & initVel & endVel & initSteeringAngleVel & endSteeringAngleVel & maxAcc & maxRotationalAcc & maxSteeringAngleAcc & timeStep & wheelBaseX & wheelBaseY & useInitialState & nbZeroVelControlCommands & minDist & useCoordTimeAccConstraints & useCoordTimeContraintPoints & debug & debugPrefix & creepSpeed & creepDistance & setCreepSpeedAsEndConstraint & citiTruckNbClearSpeedCommands;
     }
   };
 
