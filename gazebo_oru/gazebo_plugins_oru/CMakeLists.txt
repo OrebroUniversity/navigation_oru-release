@@ -3,7 +3,7 @@ project(gazebo_plugins_oru)
 add_definitions(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
+  #cmake_modules
   gazebo_msgs 
   roscpp 
   rospy 
