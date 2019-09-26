@@ -10,7 +10,7 @@
 
 #include <gazebo_plugins_oru/gazebo_ros_tippingbody_lifter.h>
 
-#include <gazebo/math/gzmath.hh>
+//#include <gazebo/math/gzmath.hh>
 #include <sdf/sdf.hh>
 
 #include <ros/ros.h>

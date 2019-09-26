@@ -773,6 +773,7 @@ inline size_t getCurrentIdx(const PathInterface &path, const orunav_generic::Pos
     }
   }
   assert(false);
+  return 0;
 }
  
 // This function assumes that the chunks and path starts from the path stepIdx...
