@@ -1,15 +1,20 @@
 <launch>
-  <node pkg="orunav_pallet_detection_sdf" type="pallet_detector_node" name="pallet_detector_node" output="screen">
+  <arg name="robot_id" default="1" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+
+  <node pkg="orunav_pallet_detection_sdf" type="pallet_detector_node" name="pallet_detector_node" output="screen" ns="$(arg tf_prefix)">
   
     <!-- Stream Data -->
     <param name="using_bagfile" value="true"/>
     <param name="pallet_name" value="full_pallet"/>
 
-    <remap from="pointcloud" to ="/camera/depth/points"/>
-    <remap from="depthmap" to ="/camera/depth/image"/>
+    <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
+    <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
+
+    <param name="pallet_sensor_frame_id_prefix" value="/$(arg tf_prefix)/asus_fork_" />
     
-    <param name="ground_depthmap_dir" value="/home/hoang/catkin_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/ground_depth.png"/>
-    <param name="models_dir" value="/home/hoang/catkin_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/"/>
+    <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
+    <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>
 
     <param name="downsample" value="true"/>
     <param name="downsample_ratio" value="0.02"/>
@@ -25,7 +30,7 @@
     <param name="tolerance_Z" value="0.5"/>
 
     <!-- Coarse to Fine Registration -->
-    <param name="ICP_based" value="true"/>
+    <param name="obbicp_based" value="true"/>
     <param name="overlap_dst_thresh" value="0.05"/>
     <param name="overlap_score_thresh" value="0.8"/>
 

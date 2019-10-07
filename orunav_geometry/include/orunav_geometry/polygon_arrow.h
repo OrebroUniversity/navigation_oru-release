@@ -12,14 +12,9 @@ namespace orunav_geometry {
   class PolygonArrow {
   public:
     PolygonArrow() {
-
-      poly_.points.push_back(Eigen::Vector2d(0.0, -0.2));
-      poly_.points.push_back(Eigen::Vector2d(0.6, -0.2));
-      poly_.points.push_back(Eigen::Vector2d(0.6, -0.4));
-      poly_.points.push_back(Eigen::Vector2d(1.0, 0.0));
-      poly_.points.push_back(Eigen::Vector2d(0.6, 0.4));
-      poly_.points.push_back(Eigen::Vector2d(0.6, 0.2));
-      poly_.points.push_back(Eigen::Vector2d(0.0, 0.2));
+      poly_.points.push_back(Eigen::Vector2d(-0.8, -0.4)); // (x,y) - y represents the bottom width of the arrow
+      poly_.points.push_back(Eigen::Vector2d(-0.8, 0.4));
+      poly_.points.push_back(Eigen::Vector2d(0.6, 0.0)); // x represents the length of the arrow.
     }
 
     void update(const orunav_generic::Pose2d &pose)

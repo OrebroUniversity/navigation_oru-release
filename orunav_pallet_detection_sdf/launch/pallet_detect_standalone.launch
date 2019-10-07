@@ -1,15 +1,17 @@
 <launch>
-  <group ns="robot4">
-    <param name="tf_prefix" value="robot4" />
-    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen">
-      
-      <param name="robot_id_" value="4"/>
+  <arg name="robot_id" default="1" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" ns="$(arg tf_prefix)">
+
+      <param name="tf_prefix" value="$(arg tf_prefix)" />
+      <param name="robot_id_" value="$(arg robot_id)"/>
       <param name="full_pallet_name" value="full_pallet"/>
       <param name="half_pallet_name" value="full_pallet"/>
       <param name="using_bagfile" value="false"/>
 
-      <remap from="pointcloud" to ="/robot4/sensors/asus_fork/depth_registered/points"/> 
-      <remap from="depthmap" to ="/robot4/sensors/asus_fork/depth/image"/>
+      <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
+      <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
 
       <param name="depth_frame_id" value="robot4/asus_fork_depth_optical_frame" />
       <param name="base_link_id" value="robot4/base_link" />
@@ -71,7 +73,6 @@
       <!-- =================== OBBICP Based Finish =================== -->
 
     </node>
-  </group>
    
    <!-- Only work for online camera -->
   <node pkg="tf" type="static_transform_publisher" name="robotX_ASUS_4" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 robot4/base_link robot4/asus_fork_link 10"/>
