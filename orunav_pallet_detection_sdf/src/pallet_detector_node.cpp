@@ -48,6 +48,8 @@ class PalletDetectorNode
         double overlap_dst_thresh, overlap_score_thresh;
         std::string ground_depthmap_dir, models_dir;
 
+        std::string pallet_sensor_frame_id_prefix_;
+
         registrationOBBICP *myOBBICP;
         std::vector<ObjectModel> models;
         std::vector<clusterOBBICP> myclusters;
@@ -85,6 +87,7 @@ class PalletDetectorNode
             
             paramHandle.param<std::string>("ground_depthmap_dir", ground_depthmap_dir, "");
             paramHandle.param<std::string>("models_dir", models_dir, "");
+            paramHandle.param<std::string>("pallet_sensor_frame_id_prefix", pallet_sensor_frame_id_prefix_, "camera_");
     
             //pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud", 1, &PalletDetectorNode::process_pointcloud, this);     
             depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 1, &PalletDetectorNode::process_depthmap, this);             
@@ -258,11 +261,11 @@ class PalletDetectorNode
                 Eigen::Affine3d Tcam_offset;
                 try
                 {
-                    tf_listener.lookupTransform("camera_link", "camera_depth_optical_frame", ros::Time(0), transform);
+                    tf_listener.lookupTransform(pallet_sensor_frame_id_prefix_ + "link", pallet_sensor_frame_id_prefix_ + "depth_optical_frame", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
                     
-                    tf_listener.lookupTransform("world", "camera_link", ros::Time(0), transform);
+                    tf_listener.lookupTransform("world", pallet_sensor_frame_id_prefix_ + "link", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
                 }
@@ -290,7 +293,7 @@ class PalletDetectorNode
             myOBBICP->obbDimensionalCheck(models, myclusters, tolerance);
             
             if(!using_bagfile) myCloud->header.frame_id = "world"; 
-            else myCloud->header.frame_id = "camera_depth_optical_frame"; 
+            else myCloud->header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
             
             pointsRGB_pub.publish(*myCloud);
             markersPublish(); 
@@ -304,11 +307,11 @@ class PalletDetectorNode
                 Eigen::Affine3d Tcam_offset;
                 try
                 {
-                    tf_listener.lookupTransform("camera_link", "camera_depth_optical_frame", ros::Time(0), transform);
+                    tf_listener.lookupTransform(pallet_sensor_frame_id_prefix_ + "link", pallet_sensor_frame_id_prefix_ + "depth_optical_frame", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
                     
-                    tf_listener.lookupTransform("world", "camera_link", ros::Time(0), transform);
+                    tf_listener.lookupTransform("world", pallet_sensor_frame_id_prefix_ + "link", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
                 }
@@ -352,7 +355,7 @@ class PalletDetectorNode
             }
 
             if(!using_bagfile) myCloud->header.frame_id = "world"; 
-            else myCloud->header.frame_id = "camera_depth_optical_frame"; 
+            else myCloud->header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
 
             pointsRGB_pub.publish(*myCloud);
             markersPublish();
@@ -368,7 +371,7 @@ class PalletDetectorNode
             geometry_msgs::Point p;
 
             if(!using_bagfile) OBB.header.frame_id = "world"; 
-            else OBB.header.frame_id = "camera_depth_optical_frame";
+            else OBB.header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
             OBB.header.stamp = ros::Time::now();
             OBB.ns = "OBBs";
             OBB.id = 0;

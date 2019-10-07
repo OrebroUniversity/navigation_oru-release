@@ -13,15 +13,13 @@
       <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
       <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
 
-      <param name="depth_frame_id" value="robot4/asus_fork_depth_optical_frame" />
-      <param name="base_link_id" value="robot4/base_link" />
-
-      <param name="pallet_pose_topic" value="/pallet_poses" />
-      <param name="pallet_pose_id" value="robot4/base_link" />
+      <param name="base_link_frame_id" value="$(arg tf_prefix)/base_link" />
+      <param name="global_frame_id" value="/map_laser2d" />
+      <param name="pallet_pose_topic" value="pallet_poses" />
 
     <!-- ==================== SDF Based Start ==================== -->    
 
-      <param name="background_indices_file_name" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/background.dat"/>
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/data/background.dat"/>
       <param name="Dmax" value="0.4"/>
       <param name="visualize" value="true"/>
       <param name="visualize_sdf" value="true"/>
@@ -39,10 +37,10 @@
 
 
     <!-- =================== OBBICP Based Start =================== -->
-      <param name="OBBICP_based_" value="true"/>
+      <param name="obbicp_based" value="true"/>
       
-      <param name="ground_depthmap_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/ground_depth.png"/>
-      <param name="models_dir" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/"/>
+      <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
+      <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>
 
       <param name="downsample" value="true"/>
       <param name="downsample_ratio" value="0.02"/>
@@ -73,8 +71,7 @@
       <!-- =================== OBBICP Based Finish =================== -->
 
     </node>
-   
-   <!-- Only work for online camera -->
-  <node pkg="tf" type="static_transform_publisher" name="robotX_ASUS_4" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 robot4/base_link robot4/asus_fork_link 10"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.698796 0.0449592 1.05285 -0.00709886 0.942529 0.0200659 0.333446 robot2/base_link robot2/asus_fork_link 10"/>
   
 </launch>
