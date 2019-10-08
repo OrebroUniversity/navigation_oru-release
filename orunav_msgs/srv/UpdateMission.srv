@@ -1,4 +1,0 @@
-#ID of robot to abort
-int32 robotID
-orunav_msgs/Path new_path
----
