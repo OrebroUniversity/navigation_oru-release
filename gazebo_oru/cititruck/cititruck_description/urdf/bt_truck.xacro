@@ -312,14 +312,14 @@
 
 
     <joint name="velodyne_base_joint" type="fixed">
-      <origin xyz="${ x + 0.27} ${y_sensor_platform/2.0 - 0.18} ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 0"/> 
+      <origin xyz="1.1187 0.1354 ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 1.594682"/> 
       <parent link="base_link"/>
-      <child link="velodyne_base_link"/>
+      <child link="velodyne_link"/>
     </joint>
 
-    <link name="velodyne_base_link"/>
+    <!--link name="velodyne_base_link"/-- ><!-- removed as extrinsic calibration now exists -->
 
-    <sensor_calibration_assembly sensor_id="velodyne" parent_link="velodyne_base_link" create_final_link="false"/>
+    <!--sensor_calibration_assembly sensor_id="velodyne" parent_link="velodyne_base_link" create_final_link="false"/-->
 
     <link name="velodyne_link">
       <inertial>
