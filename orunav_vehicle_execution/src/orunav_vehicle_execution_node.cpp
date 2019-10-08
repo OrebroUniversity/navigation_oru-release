@@ -1219,8 +1219,7 @@ public:
     return false;
   }
 
-  void process_pallet_poses(/*const geometry_msgs::PoseStampedConstPtr &msg*/
-                            const orunav_msgs::ObjectPoseConstPtr &msg) {
+  void process_pallet_poses(const orunav_msgs::ObjectPoseConstPtr &msg) {
     ROS_INFO("[MMN] got pallet poses");
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect()) {
@@ -1304,7 +1303,8 @@ public:
     
     // Two options.
     // 1) we can modify the trajectory on the fly while driving.
-    // 2) we need to perform a bigger adjustment and try again - for each pickup task we need to have received at least one pallet pose estimate.
+    // 2) we need to perform a bigger adjustment and try again
+    // - for each pickup task we need to have received at least one pallet pose estimate.
 
     orunav_generic::Path path;
     if (compute_active_docking_path(path, pallet_pose)) {
