@@ -317,10 +317,6 @@
       <child link="velodyne_link"/>
     </joint>
 
-    <!--link name="velodyne_base_link"/-- ><!-- removed as extrinsic calibration now exists -->
-
-    <!--sensor_calibration_assembly sensor_id="velodyne" parent_link="velodyne_base_link" create_final_link="false"/-->
-
     <link name="velodyne_link">
       <inertial>
         <mass value="0.01"/>
