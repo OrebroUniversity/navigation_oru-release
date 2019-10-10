@@ -1263,8 +1263,8 @@ public:
       }
       {
         // Send the task to the coordinator
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
-        orunav_msgs::SetTask srv;
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::UpdateTask>("/coordinator/update_task");
+        orunav_msgs::UpdateTask srv;
         srv.request.task = task;
 
         if (client.call(srv)) {
@@ -1321,7 +1321,7 @@ public:
         // Send the task to the coordinator
         orunav_msgs::SetTask srv;
         srv.request.task = task;
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("coodinator/update_task");
         if (client.call(srv)) {
           ROS_INFO("[KMOVehicleExecution] - update_task sucessfull");
         }
