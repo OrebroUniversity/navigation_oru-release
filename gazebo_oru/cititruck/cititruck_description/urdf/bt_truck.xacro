@@ -312,7 +312,7 @@
 
 
     <joint name="velodyne_base_joint" type="fixed">
-      <origin xyz="1.1187 0.1354 ${b1 + 0.6 + z_sensor_bar + 0.14 + 0.09081}" rpy="0 0 1.594682"/> 
+      <origin xyz="1.10127 -0.1121022 1.75" rpy="0.00234404 -0.00292631 1.49467"/> 
       <parent link="base_link"/>
       <child link="velodyne_link"/>
     </joint>
