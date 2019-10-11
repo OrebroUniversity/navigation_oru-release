@@ -779,8 +779,12 @@ public:
 
   void process_depthmap (const sensor_msgs::Image::ConstPtr& msg)
   {
-      ROS_DEBUG_STREAM_THROTTLE(5,"//----------- New Depth Frame Recieved -----------//");
-      
+      if(!active_) {
+          ROS_INFO_STREAM_THROTTLE(5, "Inactive...");
+          return;
+      }
+      ROS_INFO("New depth image received. ACTIVE!");
+
       if(myCloud->size()) myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>); 
 
       cv_bridge::CvImageConstPtr bridge;
