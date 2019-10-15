@@ -44,9 +44,4 @@
 
   </node>
 
-    <!-- Only work for online camera -->
-    <!-- <node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.699715 -0.0449975 0.830627 -0.320076 0.00494382 0.947377 0.00167029 /world /camera_link 10"/>
-    <node pkg="tf" type="static_transform_publisher" name="world_robot1" args="0 0 0 0 0 0 /world /base_link 10"/>
- -->
-
 </launch>

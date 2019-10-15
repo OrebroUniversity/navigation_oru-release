@@ -7,7 +7,7 @@
       <param name="tf_prefix" value="$(arg tf_prefix)" />
       <param name="robot_id_" value="$(arg robot_id)"/>
       <param name="full_pallet_name" value="full_pallet"/>
-      <param name="half_pallet_name" value="full_pallet"/>
+      <param name="half_pallet_name" value="half_pallet_oru"/>
       <param name="using_bagfile" value="false"/>
 
       <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
@@ -72,6 +72,6 @@
 
     </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.698796 0.0449592 1.05285 -0.00709886 0.942529 0.0200659 0.333446 robot2/base_link robot2/asus_fork_link 10"/>
+  <node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/>
   
 </launch>
