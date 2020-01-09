@@ -184,7 +184,7 @@ private:
       srv.request.task = req.task;
       
       if (client.call(srv)) {
-        ROS_INFO("[CoordinatorFakeNode] - execute_task call sucessfull");
+        ROS_INFO("[CoordinatorFakeNode] - execute_task call successful");
       }
       else
       {
@@ -238,7 +238,7 @@ private:
         srv.request.task = task_;
         
         if (client.call(srv)) {
-          ROS_INFO_STREAM("[CoordinatorFakeNode] - " << service_name << " call sucessfull");
+          ROS_INFO_STREAM("[CoordinatorFakeNode] - " << service_name << " call successful");
       }
         else
         {

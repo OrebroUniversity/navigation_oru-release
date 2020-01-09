@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="robot_id" default="1" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+
+  <group ns="$(arg tf_prefix)">
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node">
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/backgrounds/citi1_sim_background.dat"/>
+      <param name="Dmax" value="0.2"/>
+      <param name="visualize" value="true"/>
+      <param name="visualize_sdf" value="true"/>
+      <param name="removeFloor" value="true"/>
+      <param name="sensor_time_offset" value="0.0"/>
+      <remap from="pointcloud" to ="sensors/asus_fork/depth_registered/points"/>
+      <param name="residual_thresh" value="0.01"/>
+      <param name="cov_thresh" value="0.2"/>
+      <param name="only_compute_filter_used" value="true"/>
+      <param name="depth_frame_id" value="robot1/kinect_link" /> <!-- robot1/kinect_link -->
+      <param name="asus_camera" value="false" />
+      <param name="min_nb_matched_points" value="10000" />
+      <param name="min_match_nb_points_ratio" value="0.1" />
+    </node>
+  </group>
+</launch>

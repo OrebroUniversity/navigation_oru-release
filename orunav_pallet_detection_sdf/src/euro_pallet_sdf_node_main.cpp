@@ -105,10 +105,10 @@ private:
     
   bool do_nothing;
 
-  std::string depth_frame_id_;
-  std::string base_link_id_;
+  std::string depth_frame_id_{"depth_frame_default"};
+  std::string base_link_frame_id_;
+  std::string global_frame_id_;
   std::string camera_frame_id_;
-  std::string tf_base_link_;
 
   double floor_distance_thresh_;
   int min_nb_matched_points_;
@@ -141,7 +141,6 @@ private:
   std::string half_pallet_name;
 
   std::string pallet_pose_topic;
-  std::string pallet_pose_id;
 
   bool obbicp_based_;
   bool save_ground_depthmap;
@@ -179,15 +178,14 @@ public:
 
     paramHandle.param<std::string>("full_pallet_name", full_pallet_name, "full_pallet");
     paramHandle.param<std::string>("half_pallet_name", half_pallet_name, "half_pallet");
-    paramHandle.param<std::string>("pallet_pose_topic", pallet_pose_topic, "/pallet_poses");
-    paramHandle.param<std::string>("pallet_pose_id", pallet_pose_id, "robot4/base_link");
+    paramHandle.param<std::string>("pallet_pose_topic", pallet_pose_topic, "pallet_poses");
     
     paramHandle.param<bool>("using_bagfile", using_bagfile, false);
     paramHandle.param<bool>("visual_model", visual_model, true);             
-    paramHandle.param<bool>("OBBICP_based_", obbicp_based_, false);
+    paramHandle.param<bool>("obbicp_based", obbicp_based_, false);
     paramHandle.param<bool>("save_ground_depthmap", save_ground_depthmap, true);
-    paramHandle.param<bool>("deepLearning_based", deepLearning_based, false);
-    paramHandle.param<bool>("ICP_based", ICP_based, true);
+    paramHandle.param<bool>("deep_learning_based", deepLearning_based, false);
+    paramHandle.param<bool>("icp_based", ICP_based, true);
     paramHandle.param<bool>("downsample", downsample, false);
 
     paramHandle.param<double>("background_thresh", background_thresh, 0.05);
@@ -219,17 +217,12 @@ public:
     }
 
     //---------------------- Para For OBBICP Finish  ----------------------//
-
-      pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud",1,
-                          &EuroPalletSDFNode::process_pointcloud,this);  
-
     pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud",1,
                           &EuroPalletSDFNode::process_pointcloud,this);
-    service_ = nh_.advertiseService(orunav_generic::getRobotTopicName(robot_id_, 
-                    "/pallet_estimation_service"), &EuroPalletSDFNode::objectPoseEstimationCB, this);
+    service_ = nh_.advertiseService("pallet_estimation_service", &EuroPalletSDFNode::objectPoseEstimationCB, this);
             
-    paramHandle.param<bool>("visualize",visualize,true);
-    paramHandle.param<bool>("visualize_sdf",visualize_sdf,true);
+    paramHandle.param<bool>("visualize",visualize,false);
+    paramHandle.param<bool>("visualize_sdf",visualize_sdf,false);
         
     //choose which pose estimate to compute
     paramHandle.param<bool>("publish_pose_cum",publish_pose_cum,false);
@@ -253,10 +246,10 @@ public:
         
     paramHandle.param<bool>("do_nothing", do_nothing, false);
 
-    paramHandle.param<std::string>("depth_frame_id", depth_frame_id_, std::string("/kinect_optical_frame"));
-    paramHandle.param<std::string>("base_link_id", base_link_id_, std::string("/base_link"));    
+    paramHandle.param<std::string>("base_link_frame_id", base_link_frame_id_, std::string("base_link"));
     paramHandle.param<std::string>("camera_frame_id", camera_frame_id_, std::string(""));
-    paramHandle.param<std::string>("tf_base_link", tf_base_link_, orunav_generic::getRobotBaseLinkTF(robot_id_));
+    paramHandle.param<std::string>("global_frame_id", global_frame_id_, std::string("/world"));
+
     paramHandle.param<double>("floor_distance_thresh", floor_distance_thresh_, 0.01);
     paramHandle.param<int>("min_nb_matched_points", min_nb_matched_points_, 10000);
     paramHandle.param<double>("min_match_nb_points_ratio", min_match_nb_points_ratio_, 0.2);
@@ -281,7 +274,7 @@ public:
       marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
     }
         
-    pallet_poses_pub_ = nh_.advertise<orunav_msgs::ObjectPose>(orunav_generic::getRobotTopicName(robot_id_, pallet_pose_topic),10);
+    pallet_poses_pub_ = nh_.advertise<orunav_msgs::ObjectPose>(pallet_pose_topic,10);
 
     //    pallet_poses_vis_only_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(orunav_generic::getRobotTopicName(robot_id_, "/pallet_poses_vis_only"),10);
         
@@ -313,9 +306,9 @@ public:
           
       // Find the frame instead... -> this is anyway constant.
       tf::StampedTransform transform;
-      tf_listener.waitForTransform(tf_base_link_, camera_frame_id_, ros::Time::now()+ros::Duration(-2.), ros::Duration(10.0));
+      tf_listener.waitForTransform(base_link_frame_id_, camera_frame_id_, ros::Time::now()+ros::Duration(-2.), ros::Duration(10.0));
       try{
-        tf_listener.lookupTransform(tf_base_link_, camera_frame_id_, ros::Time::now()+ros::Duration(-2.), transform);
+        tf_listener.lookupTransform(base_link_frame_id_, camera_frame_id_, ros::Time::now()+ros::Duration(-2.), transform);
                 
         tf::poseTFToEigen(transform, Tcam_offset);
 
@@ -335,7 +328,7 @@ public:
       // Load the file (a column based text file...) created by the camera calibration node.
       background_indices_ = orunav_generic::loadIntVecTextFile(background_indices_file_name);
     }
-    pose_stamped.header.frame_id = "/world";
+    pose_stamped.header.frame_id = global_frame_id_;
 
     object_type_ = 0;
 
@@ -463,9 +456,9 @@ public:
     orunav_generic::Pose2d vehicle_pose;
     tf::StampedTransform transform;
     Eigen::Affine3d baseToWorld;
-    tf_listener.waitForTransform("world", tf_base_link_, msg->header.stamp,ros::Duration(1.0));
+    tf_listener.waitForTransform(global_frame_id_, base_link_frame_id_, msg->header.stamp,ros::Duration(1.0));
     try{
-      tf_listener.lookupTransform("world", tf_base_link_,msg->header.stamp/* + ros::Duration(sensor_time_offset_)*/, transform);
+      tf_listener.lookupTransform(global_frame_id_, base_link_frame_id_,msg->header.stamp/* + ros::Duration(sensor_time_offset_)*/, transform);
       vehicle_pose(0) = transform.getOrigin().x();
       vehicle_pose(1) = transform.getOrigin().y();
       vehicle_pose(2) = tf::getYaw(transform.getRotation());
@@ -552,11 +545,6 @@ public:
       }
       pointcloud_pub_.publish(cloud);
     }
-      //std::cerr << cloud.size() << "\n";
-
-    //cuong
-    //std::cerr << "cuong:" << "\n";
-    //std::cerr << init_Tcam.matrix() << "\n";
 
     double t1 = orunav_generic::getDoubleTime();
     Eigen::Affine3d aligned_Tcam = sdf::EstimatePalletPosePC(init_Tcam,        //cam pose
@@ -656,11 +644,11 @@ public:
       Eigen::Affine3d Tcam_inv = aligned_Tcam.inverse();
       if (object_type_ == 1) {
         sdf::drawPalletWithTime(Tcam_inv, depth_frame_id_,1,msg->header.stamp,marker_pub_);
-        sdf::drawPallet(pposeTrack,"world",2,marker_pub_);
+        sdf::drawPallet(pposeTrack,global_frame_id_,2,marker_pub_);
       }
       else if (object_type_ == 2) {
         sdf::drawPalletHalfWithTime(Tcam_inv, depth_frame_id_,1,msg->header.stamp,marker_pub_);
-        sdf::drawPalletHalf(pposeTrack,"world",2,marker_pub_);
+        sdf::drawPalletHalf(pposeTrack,global_frame_id_,2,marker_pub_);
       }
       else {
 
@@ -697,16 +685,26 @@ public:
     pposeTrack.matrix() = pose_matrix.cast<double>();
     tf::Transform tf_out;
     tf::poseEigenToTF(pposeTrack, tf_out);
-    pose_stamped.header.frame_id = pallet_pose_id;
-    pose_stamped.pose = sdf::sdf_transformToPose(tf_out);
+
+    tf::StampedTransform worldToBaseLink;
+    tf_listener.waitForTransform(global_frame_id_, base_link_frame_id_, ros::Time(0), ros::Duration(1.0));
+    try{
+        tf_listener.lookupTransform(global_frame_id_, base_link_frame_id_, ros::Time(0), worldToBaseLink);
+    }
+    catch (tf::TransformException ex){
+        ROS_ERROR("[EuroPalletSDF]: %s",ex.what());
+        return;
+    }
+
+    pose_stamped.header.frame_id = global_frame_id_;
+    pose_stamped.pose = sdf::sdf_transformToPose(worldToBaseLink * tf_out);
     
     orunav_msgs::ObjectPose object_pose;
     object_pose.pose = pose_stamped;
     object_pose.object.type = object_type_;
     pallet_poses_pub_.publish(object_pose);
 
-    std::cerr << "\n" << "Homogeneous matrix of closest pallet:" << "\n";
-    std::cerr << pose_matrix << "\n";
+    ROS_INFO_STREAM_THROTTLE(1, "Homogeneous matrix of closest pallet: " << pose_matrix);
 
   }
 
@@ -781,8 +779,12 @@ public:
 
   void process_depthmap (const sensor_msgs::Image::ConstPtr& msg)
   {
-      std::cerr << "\n" << "//----------- New Depth Frame Recieved -----------//" << "\n";
-      
+      if(!active_) {
+          ROS_INFO_STREAM_THROTTLE(5, "Inactive...");
+          return;
+      }
+      ROS_INFO("New depth image received. ACTIVE!");
+
       if(myCloud->size()) myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>); 
 
       cv_bridge::CvImageConstPtr bridge;
@@ -795,7 +797,7 @@ public:
               cv::Mat depth = bridge->image.clone();      
               depth.convertTo(depth, CV_16UC1, 1000.0);
               cv::imwrite(ground_depthmap_dir, depth);
-              std::cerr << "Depth saved to: " << "\n" << ground_depthmap_dir << "\n";
+              ROS_DEBUG_STREAM_THROTTLE(1, ("Depth saved to file: " + ground_depthmap_dir).c_str());
               return;
           }
       }
@@ -806,6 +808,7 @@ public:
       }
 
       depth = bridge->image.clone();
+      depth_frame_id_ = msg->header.frame_id;
       pcl::PointCloud<pcl::PointXYZ> cloud;
       depthToCloud(depth, cloud);
       if(ICP_based) obbicp_pipeline(cloud);
@@ -820,7 +823,7 @@ public:
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
+              tf_listener.lookupTransform(base_link_frame_id_, depth_frame_id_, ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
               pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
@@ -835,7 +838,7 @@ public:
       if(myclusters.size()) myclusters.clear();
       
       if(downsample) myOBBICP->downSample(cloud, cloud, downsample_ratio);
-      std::cerr << "Scene Points after removing ground and downsample: " << cloud.size() << "\n";
+      ROS_DEBUG_STREAM_THROTTLE(5, "Scene Points after removing ground and downsample: " << cloud.size());
       
       myOBBICP->pclEuclideanDistanceSegmentation(cloud, cluster_indices, EC_segThresh, maxSegPoints, minSegPoints);
       if(cluster_indices.size() == 0)
@@ -876,11 +879,11 @@ public:
       if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
       pallet_ready = false;
 
-      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      if(!using_bagfile) myCloud->header.frame_id = base_link_frame_id_; 
       else myCloud->header.frame_id = depth_frame_id_; 
       
       pointsRGB_pub.publish(*myCloud);
-      markersPublish(); 
+      publishMarkers();
   }
 
   void obbicp_pipeline(pcl::PointCloud<pcl::PointXYZ> &cloud)
@@ -891,7 +894,7 @@ public:
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform(base_link_id_, depth_frame_id_, ros::Time(0), transform);
+              tf_listener.lookupTransform(base_link_frame_id_, depth_frame_id_, ros::Time(0), transform);
               tf::poseTFToEigen(transform, Tcam_offset);
               pcl::transformPointCloud (cloud, cloud, Tcam_offset);
               pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
@@ -906,7 +909,7 @@ public:
       if(myclusters.size()) myclusters.clear();
       
       if(downsample) myOBBICP->downSample(cloud, cloud, downsample_ratio);
-      std::cerr << "\n" << "Scene after removing ground and downsample: " << cloud.size() << "\n";
+      ROS_DEBUG_STREAM_THROTTLE(5, "Scene after removing ground and downsample: " << cloud.size());
       
       myOBBICP->pclEuclideanDistanceSegmentation(cloud, cluster_indices, EC_segThresh, maxSegPoints, minSegPoints);
       if(cluster_indices.size() == 0)
@@ -936,13 +939,10 @@ public:
                   pcl::copyPointCloud(myclusters[i].colorModelPoints, clusterRGB);
                   *myCloud += clusterRGB;
 
-                  std::cerr << "\n" << "Pallet pose homogeneous matrix:" << "\n";
-                  std::cerr << myclusters[i].OBB.toOrigin.inverse() << "\n";
+                  ROS_INFO_STREAM_THROTTLE(2, "Pallet pose homogeneous matrix:" << myclusters[i].OBB.toOrigin.inverse());
 
-                  std::cerr << "\n" << "OBB center:" << "\n";
-                  std::cerr << myclusters[i].OBB.center.x << " ";
-                  std::cerr << myclusters[i].OBB.center.y << " ";
-                  std::cerr << myclusters[i].OBB.center.z << "\n"; 
+                  ROS_INFO_STREAM_THROTTLE(2, "OBB center:" << "(" << myclusters[i].OBB.center.x << ","
+                  << myclusters[i].OBB.center.y << " " << myclusters[i].OBB.center.z << ")");
 
                   double dst = myclusters[i].OBB.center.x*myclusters[i].OBB.center.x +
                               myclusters[i].OBB.center.y*myclusters[i].OBB.center.y +
@@ -960,20 +960,20 @@ public:
       if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
       pallet_ready = false;
 
-      if(!using_bagfile) myCloud->header.frame_id = base_link_id_; 
+      if(!using_bagfile) myCloud->header.frame_id = base_link_frame_id_; 
       else myCloud->header.frame_id = depth_frame_id_; 
 
       pointsRGB_pub.publish(*myCloud);
-      markersPublish();
+      publishMarkers();
   }
 
-  void markersPublish()
+  void publishMarkers()
   {
       visualization_msgs::MarkerArray multiMarker;
       visualization_msgs::Marker OBB;
       geometry_msgs::Point p;
       
-      if(!using_bagfile) OBB.header.frame_id = base_link_id_; 
+      if(!using_bagfile) OBB.header.frame_id = base_link_frame_id_; 
       else OBB.header.frame_id = depth_frame_id_;
       OBB.header.stamp = ros::Time::now();
       OBB.ns = "OBBs";
@@ -1077,6 +1077,9 @@ public:
       OBB.lifetime = ros::Duration();
       multiMarker.markers.push_back(OBB);
       markers_pub.publish(multiMarker);
+
+      // publish palet pose:
+
   }
   
   //------------------------------------OBBICP--------------------------------------
