@@ -15,6 +15,7 @@
     <xacro:arg name="asus_name" default="asus"/>
 
     <xacro:arg name="is_uol_variant" default="true"/>
+    <xacro:arg name="use_gpu" default="true"/>
 
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo"/>

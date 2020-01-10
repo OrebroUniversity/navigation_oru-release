@@ -8,6 +8,7 @@
   <xacro:arg name="ls2000_name" default="nav"/>   
   <xacro:arg name="kinect2_name" default=""/>
   <xacro:arg name="kinect1_name" default="kinect"/>
+  <xacro:arg name="use_gpu" default="true"/>
 
   <!-- ros_control plugin -->
   <gazebo>
@@ -64,6 +65,7 @@
   </gazebo>
 
   <!-- SICK safety laser -->
+<xacro:if value="$(arg use_gpu)">
   <gazebo reference="$(arg sick_name)_link">
     <sensor type="gpu_ray" name="$(arg sick_name)_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -103,8 +105,44 @@
       </plugin>
     </sensor>
   </gazebo>
+</xacro:if>
+<!-- unless block should be EXACTLY as the previous but without gpu plugin -->
+<xacro:unless value="$(arg use_gpu)">
+  <gazebo reference="$(arg sick_name)_link">
+    <sensor type="ray" name="$(arg sick_name)_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+          <samples>630</samples>
+          <resolution>1</resolution>
+          <min_angle>-3.1415926</min_angle>
+          <max_angle>3.1415926</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.so">
+        <topicName>$(arg sensor_prefix)$(arg sick_name)</topicName>
+        <frameName>$(arg sick_name)_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+</xacro:unless>
 
-  <!-- navigation laser (LS2000) -->
+<!-- navigation laser (LS2000) -->
+<xacro:if value="$(arg use_gpu)">
   <gazebo reference="$(arg ls2000_name)_link">
     <sensor type="gpu_ray" name="$(arg ls2000_name)_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -137,6 +175,44 @@
       </plugin>
     </sensor>
   </gazebo>
+</xacro:if>
+<!-- unless block should be EXACTLY as the previous but without gpu plugin -->
+<xacro:unless value="$(arg use_gpu)">
+  <gazebo reference="$(arg ls2000_name)_link">
+    <sensor type="ray" name="$(arg ls2000_name)_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>16</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>630</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.1415926</min_angle>
+            <max_angle>3.1415926</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>20.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.so">
+        <topicName>$(arg sensor_prefix)$(arg ls2000_name)</topicName>
+        <frameName>$(arg ls2000_name)_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+</xacro:unless>
+
+  
 
   <!-- standard camera -->
   <!--gazebo reference="kinect_link">
