@@ -33,16 +33,19 @@
   <!-- Robot 1 -->
   <include file="$(find orunav_launch)/launch/cititruck_sim.launch">
     <arg name="robot_id" value="1" />
+    <arg name="use_ct" value="true" />
   </include>
 
   <!-- Robot 2 -->
   <include file="$(find orunav_launch)/launch/cititruck_sim.launch">
     <arg name="robot_id" value="2" />
+    <arg name="use_ct" value="true" />
   </include>
 
   <!-- Robot 3 -->
   <include file="$(find orunav_launch)/launch/cititruck_sim.launch">
     <arg name="robot_id" value="3" />
+    <arg name="use_ct" value="true" />
   </include>
 
 
