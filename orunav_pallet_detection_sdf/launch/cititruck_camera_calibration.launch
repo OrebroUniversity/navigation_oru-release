@@ -5,17 +5,21 @@
 <!-- Verify the TF and check that the origin fits - place an object inbetween the forks wheel and make sure that they corresponds to the world frame in the tf tree. -->
 <!-- Create a background indices snapshot - set save_background_indices to true, this file will be stored in the .ros folder and rename / move it - used as background_indices_file_name in the orunav_pallet_detection_sdf node. -->
 
-<!-- THIS IS WHAT WE WOULD LIKE TO FIND -->
-  <node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 robot4/world /robot4/asus_fork_link 10"/>
+  <!-- THIS IS WHAT WE WOULD LIKE TO FIND -->
+  <!-- node pkg="tf" type="static_transform_publisher" name="robotX_kinect_1" args="0.699653 -0.0449958 0.829989 -0.294465 0.00655594 0.955638 0.00202011 robot4/world /robot4/asus_fork_link 10"/ -->
 
-  <node pkg="orunav_pallet_detection_sdf" type="camera_pose_calib_node" name="camera_pose_calib_node" output="screen">
+  <arg name="robot_id" default="1" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+  <arg name="upside_down" default="true" />
+
+  <node pkg="orunav_pallet_detection_sdf" type="camera_pose_calib_node" name="camera_pose_calib_node" output="screen" ns="$(arg tf_prefix)">
     <!-- <remap from="pointcloud" to ="/camera/depth_registered/points"/> -->   <!-- MUST have registred points to this node -->
-    <remap from="pointcloud" to ="/robot4/sensors/asus_fork/depth/points"/>
-    <remap from="depthmap" to ="/robot4/sensors/asus_fork/depth/image"/>
+    <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
+    <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
 
-    <param name="camera_upSideDown" value="false" />
+    <param name="camera_upSideDown" value="$(arg upside_down)" />
     <param name="save_background_indices" value="false" />
-    <param name="background_indices_file_name_" value="/home/iliad/workspace/iliad_ws/src/navigation_oru/orunav_pallet_detection_sdf/data/background.dat" />
+    <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/data/background.dat"/>
     <param name="use_pallet_to_calib" value="false" />    
     <param name="visualize_sdf" value="true" />
     <param name="visualize" value="true" />

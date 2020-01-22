@@ -13,6 +13,7 @@
     <xacro:arg name="sick_name" default="safety"/>
     <xacro:arg name="ls2000_name" default="nav"/>   
     <xacro:arg name="kinect2_name" default=""/>
+    <xacro:arg name="use_gpu" default="true"/>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find cititruck_description)/urdf/cititruck.gazebo" />
