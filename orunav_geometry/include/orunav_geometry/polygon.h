@@ -30,6 +30,10 @@ namespace orunav_geometry {
 
     void clear();
 
+    Polygon getMovedPolygon(const orunav_generic::Pose2d &pose) const {
+      return Polygon(getMovedPoint2dContainer(*this, pose));
+    }
+
     orunav_generic::Point2dVec points;
   /* private: */
   /*   friend class boost::serialization::access; */
