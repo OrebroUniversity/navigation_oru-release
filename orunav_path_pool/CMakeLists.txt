@@ -26,9 +26,12 @@ endif()
 
 find_package(TinyXML REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS system program_options)
-
 SET(CMAKE_CXX_FLAGS "-std=c++11 -O3")
+
+find_package(Boost REQUIRED COMPONENTS system program_options)
+if (${Boost_VERSION} LESS 106500)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_MATH_DISABLE_FLOAT128")
+endif()
 
 catkin_package(
   INCLUDE_DIRS include
