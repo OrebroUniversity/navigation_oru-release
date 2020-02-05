@@ -169,7 +169,7 @@ class TrajectoryStepNaiveVec : public std::vector<TrajectoryStepNaive>, public o
       for (size_t i = 0; i < this->size(); i++)
 	{
 	  if ((*this)[i].cc_point.isValid()) {
-	    std::cout << "[" << i << "] : cc_point.valid " << std::endl;
+	    //std::cout << "[" << i << "] : cc_point.valid " << std::endl;
 	    ret.push_back(i);
 	  }
 	}
