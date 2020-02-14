@@ -9,6 +9,45 @@
 // Io operations to simple text formats, useful for doing gnuplotting etc. debugging.
 namespace orunav_generic
 {
+  int strcasecmp_withNumbers(const char *void_a, const char *void_b) {
+   const char *a = void_a;
+   const char *b = void_b;
+
+   if (!a || !b) { // if one doesn't exist, other wins by default
+      return a ? 1 : b ? -1 : 0;
+   }
+   if (isdigit(*a) && isdigit(*b)) { // if both start with numbers
+      char *remainderA;
+      char *remainderB;
+      long valA = strtol(a, &remainderA, 10);
+      long valB = strtol(b, &remainderB, 10);
+      if (valA != valB)
+         return valA - valB;
+      // if you wish 7 == 007, comment out the next two lines
+      else if (remainderB - b != remainderA - a) // equal with diff lengths
+         return (remainderB - b) - (remainderA - a); // set 007 before 7
+      else // if numerical parts equal, recurse
+         return strcasecmp_withNumbers(remainderA, remainderB);
+   }
+   if (isdigit(*a) || isdigit(*b)) { // if just one is a number
+      return isdigit(*a) ? -1 : 1; // numbers always come first
+   }
+   while (*a && *b) { // non-numeric characters
+      if (isdigit(*a) || isdigit(*b))
+         return strcasecmp_withNumbers(a, b); // recurse
+      if (tolower(*a) != tolower(*b))
+         return tolower(*a) - tolower(*b);
+      a++;
+      b++;
+   }
+   return *a ? 1 : *b ? -1 : 0;
+}
+
+  bool natural_less(const std::string& lhs, const std::string& rhs)
+  {
+    return strcasecmp_withNumbers(lhs.c_str(), rhs.c_str()) < 0;
+  }
+
   void getFilenamesFromDir(std::vector<std::string> &out, const std::string &directory)
   {
     DIR *dir = NULL;
@@ -40,6 +79,8 @@ namespace orunav_generic
       out.push_back(full_file_name);
     }
     closedir(dir);
+
+    std::sort(out.begin(), out.end(), natural_less);
   }
   
   std::vector<double> loadDoubleVecTextFile(const std::string &fileName) {
@@ -154,6 +195,7 @@ std::vector<orunav_generic::Path> loadPathDirTextFile(const std::string &dirName
   getFilenamesFromDir(file_names, dirName);
   for (unsigned int i = 0; i < file_names.size(); i++)
     {
+      std::cout << "loading : " << file_names[i] << std::endl;
       orunav_generic::Path p = orunav_generic::loadPathTextFile(file_names[i]);
       if (p.sizePath() == 0)
 	{
