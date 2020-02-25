@@ -48,7 +48,7 @@ namespace orunav_generic
     return strcasecmp_withNumbers(lhs.c_str(), rhs.c_str()) < 0;
   }
 
-  void getFilenamesFromDir(std::vector<std::string> &out, const std::string &directory)
+  bool getFilenamesFromDir(std::vector<std::string> &out, const std::string &directory)
   {
     DIR *dir = NULL;
     class dirent *ent;
@@ -57,6 +57,7 @@ namespace orunav_generic
     dir = opendir(directory.c_str());
     if (dir == NULL) {
         std::cerr << "--- failed to open dir : " << directory << std::endl;
+        return false;
     }
     while ((ent = readdir(dir)) != NULL) {
       const std::string file_name = ent->d_name;
@@ -81,6 +82,7 @@ namespace orunav_generic
     closedir(dir);
 
     std::sort(out.begin(), out.end(), natural_less);
+    return true;
   }
   
   std::vector<double> loadDoubleVecTextFile(const std::string &fileName) {
