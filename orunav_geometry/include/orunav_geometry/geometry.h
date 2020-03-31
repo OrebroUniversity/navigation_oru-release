@@ -140,7 +140,7 @@ namespace orunav_geometry {
     size_t pts_size = pts.sizePoint2d();
     assert(pts_size != 0);
     bottomLeft = Eigen::Vector2d(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    topRight = Eigen::Vector2d(std::numeric_limits<double>::min(), std::numeric_limits<double>::min());
+    topRight = Eigen::Vector2d(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
     
     for (size_t i = 0; i < pts_size; i++) {
       if (pts.getPoint2d(i)(0) < bottomLeft(0)) { bottomLeft(0) = pts.getPoint2d(i)(0); }

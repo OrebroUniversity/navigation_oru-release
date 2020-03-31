@@ -4,15 +4,18 @@ This contains a brief guide how to install / run some examples of the ROS-based 
 
 ## Installation instructions
 
-The tools require full ROS installation and one external packages (ACADO). The installation assumes you have Ubuntu 16.04 LTS [ROS Kinetic] or Ubntu 14.04 LTS [ROS Indigo].
+The tools require full ROS installation and one external packages (ACADO). The installation assumes you have Ubuntu 18.04 LTS [ROS Melodic] or Ubuntu 16.04 LTS [ROS Kinetic] (or Ubntu 14.04 LTS [ROS Indigo]).
 
 #### Install ROS:
 
-Please refer to http://wiki.ros.org/kinetic/Installation/Ubuntu
+Please refer to  http://wiki.ros.org/melodic/Installation/Ubuntu or http://wiki.ros.org/kinetic/Installation/Ubuntu
 
 #### Install map server
 
+`$ sudo apt-get install ros-melodic-map-server`
+or
 `$ sudo apt-get install ros-kinetic-map-server`
+
 
 #### Get the navigation_oru source tree:
 
@@ -59,17 +62,6 @@ You need to build this package from source.
 NOTE: the default build type is in DEBUG mode - some packages as the constraint extractor work way faster if they are built in RELEASE mode. Change the build into RELEASE mode by:
 
 `$ catkin_make -DCMAKE_BUILD_TYPE=Release`
-
-
-#### Gazebo simulation environment
-
-NOTE: this should now be encoded directly into the devel/setup.bash script.
-
-Update the GAZEBO_MODEL_PATH variable, add the following to your ~/.bashrc file:
-
-`export GAZEBO_MODEL_PATH=/home/<your_user_name>/catkin_ws/src/navigation_oru/gazebo_oru/gazebo_models_oru/models:$GAZEBO_MODEL_PATH`
-
-This is needed in order to be able to load the different environments (otherwise you get "no namespace found" messages and an empty world).
 
 
 ## A set of examples
