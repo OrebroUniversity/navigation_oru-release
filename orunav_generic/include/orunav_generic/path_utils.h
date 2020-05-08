@@ -9,7 +9,7 @@
 namespace orunav_generic
 {
   
-bool forwardPath(const PathInterface &path)
+inline bool forwardPath(const PathInterface &path)
 {
   assert(path.sizePath() > 1);
   Pose2d p1 = path.getPose2d(0);

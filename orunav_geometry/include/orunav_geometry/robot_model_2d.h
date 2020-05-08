@@ -258,7 +258,7 @@ namespace orunav_geometry {
       if (type == "cititruck") {
         return boost::make_shared<RobotModel2dCiTiTruck>();
       }
-      else if ("cititruck_arm") {
+      else if (type == "cititruck_arm") {
         return boost::make_shared<RobotModel2dCiTiTruckWithArm>();
       }
       else if (type == "snowwhite") {
