@@ -62,6 +62,7 @@
 #include <orunav_trajectory_processor/trajectory_processor_naive.h>
 
 #include <sensor_msgs/LaserScan.h>
+#include <std_msgs/Int32.h>
 #include <tf/transform_listener.h>
 #include <laser_geometry/laser_geometry.h>
 #include <std_msgs/Float64MultiArray.h>
@@ -109,7 +110,7 @@ private:
 
   ros::Subscriber laserscan_sub_;
   ros::Subscriber laserscan2_sub_;
-  
+  ros::Subscriber brake_sub_;
   ros::Subscriber control_report_sub_;
   ros::Subscriber fork_report_sub_;
   ros::Subscriber enc_sub_;
@@ -207,6 +208,7 @@ private:
   double slowdown_drivingslow_lookahead_time_;
   double slowdown_lookahead_time_;
   bool use_safetyregions_;
+  bool use_topic_brake_;
   orunav_geometry::Polygon current_global_ebrake_area_;
   orunav_geometry::Polygon current_global_slowdown_area_;
 
@@ -279,9 +281,11 @@ public:
     paramHandle.param<double>("slowdown_drivingslow_lookahead_time", slowdown_drivingslow_lookahead_time_, 20.);
     paramHandle.param<double>("slowdown_lookahead_time", slowdown_lookahead_time_, 5.);
     paramHandle.param<bool>("use_safetyregions", use_safetyregions_, false);
-    std::string safety_laser_topic, safety_laser_topic2;
+    paramHandle.param<bool>("use_topic_brake", use_topic_brake_, false);
+    std::string safety_laser_topic, safety_laser_topic2, brake_topic_name;
     paramHandle.param<std::string>("safety_laser_topic", safety_laser_topic, std::string("/laser_scan"));
     paramHandle.param<std::string>("safety_laser_topic2", safety_laser_topic2, std::string("/laser_forkdir_scan"));
+    paramHandle.param<std::string>("brake_topic_name", brake_topic_name, std::string("/brake"));
     paramHandle.param<int>("chunk_idx_connect_offset", chunk_idx_connect_offset_, 3);
     paramHandle.param<bool>("draw_sweep_area", draw_sweep_area_, false);
     paramHandle.param<bool>("cts_clear_first_entry_in_pairs", cts_clear_first_entry_in_pairs_, true);
@@ -313,6 +317,9 @@ public:
     laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10,&KMOVehicleExecutionNode::process_laserscan, this);
     laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
 
+    if (use_topic_brake_) {
+      brake_sub_ = nh_.subscribe<std_msgs::Int32>(orunav_generic::getRobotTopicName(robot_id_, brake_topic_name), 10,&KMOVehicleExecutionNode::process_topic_brake, this);
+    }
     velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10,&KMOVehicleExecutionNode::process_velocity_constraints, this);
     
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
@@ -1018,7 +1025,7 @@ public:
 
       if (use_update_task_service_) {
         // Send the task to the coordinator
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/coordinator/update_task");
         orunav_msgs::SetTask srv;
         srv.request.task = vehicle_state_.getTask();
         
@@ -1027,7 +1034,7 @@ public:
         }
         else
         {
-          ROS_ERROR("[KMOVehicleExecution] - Failed to call service: update_task");
+          ROS_ERROR_STREAM("[KMOVehicleExecution] - Failed to call service: " << client.getService());
           return;
         }
         ROS_INFO_STREAM("[KMOVehicleExecution] - update_task return value : " << srv.response.result);
@@ -1536,6 +1543,59 @@ public:
         ROS_INFO_STREAM("normal mode - slowdown area is occupied - entering slowdown mode");
         return;
       }
+    }
+    
+  }
+
+  // MFC. Stop robot while replanning.
+  void process_topic_brake(const std_msgs::Int32ConstPtr &msg) {
+
+    unsigned int brake_status = msg->data;
+    // brake_status
+    // 0:     brake
+    // 1:     slow down
+    // 2:     recover
+    // other: do nothing.
+
+    if (!use_topic_brake_)
+      brake_status = 3;
+
+    switch (brake_status) {
+        case 0:  {  
+                  if (!vehicle_state_.isBraking()) {
+                    ROS_WARN("[%s]: BRAKING - Brake has been activated",ros::this_node::getName().c_str());
+                    sendBrakeCommand();
+                  }
+                  break;
+                 } 
+        case 1:  {                    
+                  if (!vehicle_state_.isDrivingSlowdown()) {
+                    ROS_WARN("[%s]: SLOWING Down - Slow-down has been activated",ros::this_node::getName().c_str());
+                    // Recompute the speed.
+                    vehicle_state_.setDrivingSlowdown(true);
+                    cond_.notify_one();                    
+                  }
+                  break;
+                 } 
+        case 2: {
+                  if (vehicle_state_.isBraking()) {        
+                    ROS_WARN("[%s]: BRAKE RECOVERING - Brake has been released",ros::this_node::getName().c_str());                    
+                    // Recover.
+                    sendRecoverCommand();
+                    // From recovering the state is back to DRIVING.
+                  }
+                  if (vehicle_state_.isDrivingSlowdown()) {
+                    ROS_WARN("[%s]: SLOW DOWN RECOVERING - Slowdown has been released",ros::this_node::getName().c_str());
+                    // Recompute the speed... no point in driving slow.
+                    vehicle_state_.setDrivingSlowdown(false);
+                    cond_.notify_one();
+                  }
+                  break;
+                 }
+        default: {
+                  ROS_WARN("[%s]: Not driving, not doing anything...",ros::this_node::getName().c_str());
+                  break;
+                 }                
     }
     
   }

@@ -152,6 +152,7 @@ threadReturn trajectoryReader::readLoop(threadData *thread_data)
 void trajectoryReader::processTrajectoryChunkVec(
         const orunav_msgs::ControllerTrajectoryChunkVecConstPtr& msg)
 {
+    ROS_INFO("[MPC] trajectory chunks received!");
     for (size_t i = 0; i < msg->chunks.size(); i++) 
     {
       processTrajectoryChunk_(msg->chunks[i]);
@@ -185,6 +186,7 @@ void trajectoryReader::processTrajectoryChunk_(
     // Correctness
     if (msg.robot_id != thdata->parameters.robot_id)
     {
+        ROS_WARN("Trajectory message parser: Wrong robot ID.");
         return;
     }
 

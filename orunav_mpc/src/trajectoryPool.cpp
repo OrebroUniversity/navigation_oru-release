@@ -312,6 +312,8 @@ void trajectoryPool::getActiveTrajectory(
             break;
         }
     }
+    ROS_INFO_STREAM_THROTTLE(2,"[MPC:trajectoryPool] Active traj is: " << traj_replace.id); //<< " chunk: " << index.chunk << " step: " << index.step );
+
 }
 
 
@@ -372,6 +374,7 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
     swMutexScopedLock traj_lock(mutex);
 
     map<trajectoryID, deque<trajectoryChunk> >::iterator it = traj_pool.find(traj_chunk.id);
+    ROS_INFO_STREAM("[MPC:trajectoryPool] Adding trajectory chunk id: " << traj_chunk.id << ", seq.num: " << traj_chunk.sequence_num);
 
     if (it == traj_pool.end())
     {
@@ -379,23 +382,31 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
         {
             // add trajectory
             traj_pool[traj_chunk.id].push_back(traj_chunk);
+            ROS_INFO("[MPC:trajectoryPool] Added first trajectory.");
+
         }
         else
         {
             SW_THROW_MSG("Attempt to append an unknown trajectory.");
+            ROS_WARN("[MPC:trajectoryPool] Attempt to append an unknown trajectory.");
         }
     }
     else
     {
         deque<trajectoryChunk> &traj = it->second;
+        ROS_INFO("[MPC:trajectoryPool] Trajectories present in the queue. Appending");
 
         if ((traj.front().sequence_num <= traj_chunk.sequence_num) &&
                 (traj.back().sequence_num >= traj_chunk.sequence_num))
         {
             // replace
+            ROS_INFO("[MPC:trajectoryPool] replacing trajectory");
+
             unsigned int chunk_index = traj_chunk.sequence_num - traj.front().sequence_num;
             traj[chunk_index] = traj_chunk;
-
+            ROS_INFO_STREAM("[MPC:trajectoryPool] Incoming traj_chunk id: " << traj_chunk.id << " seq. " << traj_chunk.sequence_num <<
+                                            "stored at index: " << chunk_index);
+                
             if (traj_chunk.finalized) {
               // clear the remaining part of the traj_chunks
               traj.erase(traj.begin()+chunk_index+1, traj.end());
@@ -406,17 +417,21 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
             if (traj.back().finalized)
             {
                 SW_THROW_MSG("Attempt to append a finalized trajectory.");
+                ROS_WARN("[MPC:trajectoryPool] Attempt to append a finalized trajectory.");
             }
             else
             {
                 // append
                 traj.push_back(traj_chunk);
+                ROS_INFO("[MPC:trajectoryPool] adding at the end of the traj pool");
+
             }
         }
         else
         {
             // Wrong sequence number
             SW_THROW_MSG("Wrong sequence number of a trajectory chunk.");
+            ROS_WARN("[MPC:trajectoryPool] Wrong sequence number of a trajectory chunk.");
         }
     }
 }
