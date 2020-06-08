@@ -58,7 +58,7 @@ public:
    paramHandle.param<bool>("start_from_current_state", start_from_current_state_, true);
 
    // Listen to the controll messages directly.
-   report_sub_ = nh_.subscribe<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/report"), 10,&VehicleExecutionClientNode::process_report, this);
+   report_sub_ = nh_.subscribe<orunav_msgs::RobotReport>(orunav_generic::getRobotTopicName(robot_id_, "/control/report"), 10,&VehicleExecutionClientNode::process_report, this);
 
    service_next_task_ = nh_.advertiseService(orunav_generic::getRobotTopicName(robot_id_, "/next_task"), &VehicleExecutionClientNode::nextTaskCB, this);
    
