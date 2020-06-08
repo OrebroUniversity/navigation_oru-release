@@ -1018,7 +1018,7 @@ public:
 
       if (use_update_task_service_) {
         // Send the task to the coordinator
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/coordinator/update_task");
         orunav_msgs::SetTask srv;
         srv.request.task = vehicle_state_.getTask();
         
@@ -1027,7 +1027,7 @@ public:
         }
         else
         {
-          ROS_ERROR("[KMOVehicleExecution] - Failed to call service: update_task");
+          ROS_ERROR_STREAM("[KMOVehicleExecution] - Failed to call service: " << client.getService());
           return;
         }
         ROS_INFO_STREAM("[KMOVehicleExecution] - update_task return value : " << srv.response.result);
