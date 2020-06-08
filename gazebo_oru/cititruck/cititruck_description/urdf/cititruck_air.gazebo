@@ -54,7 +54,8 @@
 
   <!-- sick laser forkdir -->
   <gazebo reference="laser_forkdir_link">
-    <sensor type="gpu_ray" name="laser_sensor">
+     <sensor type="gpu_ray" name="laser_sensor">
+<!--    <sensor type="ray" name="laser_sensor">  -->
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>40</update_rate>
@@ -82,7 +83,8 @@
           <stddev>0.01</stddev>
         </noise>
       </ray>
-      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
+        <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_gpu_laser.so">
+      <!-- <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.so"> -->
         <topicName>laser_forkdir_scan</topicName>
         <frameName>laser_forkdir_link</frameName>
       </plugin>
