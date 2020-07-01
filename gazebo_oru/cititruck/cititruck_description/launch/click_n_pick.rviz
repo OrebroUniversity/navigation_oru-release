@@ -259,7 +259,7 @@ Visualization Manager:
     - Class: rviz/SetInitialPose
       Topic: /initialpose
     - Class: rviz/SetGoal
-      Topic: /robot2/goal
+      Topic: /robot1/goal
     - Class: rviz/PublishPoint
       Single click: true
       Topic: /clicked_point
