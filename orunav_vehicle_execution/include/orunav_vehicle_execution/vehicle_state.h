@@ -92,22 +92,22 @@ public:
     // Is the start operation valid?
     if (!validStartOperation()) {
       state_ = TASK_FAILED;
-      ROS_INFO("NOT VALID START OP!!!");
+      ROS_DEBUG("[vehicle_state] NOT VALID START OP!!!");
       return true;
     }
     if (state_ == PERFORMING_START_OPERATION) {
-      ROS_INFO("ALREADY PERFORMING START OP!!!");
+      ROS_DEBUG("[vehicle_state] ALREADY PERFORMING START OP!!!");
       return true;
     }
     if (state_ == WAITING_FOR_TASK || state_ == WAITING_FOR_TASK_INTERNAL) {
       state_ = PERFORMING_START_OPERATION;
-      ROS_INFO("JUST SET PERFORMING START OP!!!");
+      ROS_DEBUG("[vehicle_state] JUST SET PERFORMING START OP!!!");
       if (startOperation_ != NO_OPERATION) {
-	ROS_INFO("NOT NO_OPERATION!!!");
+	      ROS_DEBUG("[vehicle_state] NOT NO_OPERATION!!!");
         return true;
       }
     }
-    ROS_INFO("ALL OTHER CASES!!!");
+    ROS_DEBUG("[vehicle_state] ALL OTHER CASES!!!");
     return false;
   }
 
@@ -124,7 +124,6 @@ public:
   void handleStartOperation(bool &completedTarget, bool &moveForks, bool &load) {
     if (startOperation_ == NO_OPERATION) {
       //      controllerState_ = WAITING;
-      ROS_INFO("SET STATE TO DRIVING!!!!");
       state_ = DRIVING;
       if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
         // Cannot start driving if the support legs is active.
@@ -165,7 +164,7 @@ public:
       }
     }
     if (startOperation_ == ACTIVATE_SUPPORT_LEGS) {
-      ROS_ERROR("Cannot active support legs as start operation");
+      ROS_ERROR("[vehicle_state] Cannot active support legs as start operation");
       //      controllerState_ = WAITING;
       state_ = TASK_FAILED;
       return;
@@ -261,7 +260,8 @@ public:
 
 
   void update(const orunav_msgs::ControllerReportConstPtr &msg, bool &completedTarget, bool &recomputeNewTrajectory, bool useForks = false) {
-    
+    //ROS_WARN("[vehicle_state] report received");
+
     receivedControllerReport_ = true;
     controller_status_ = msg->status;
     currentTime_ = msg->stamp;
@@ -284,8 +284,7 @@ public:
       // FINALIZING -> WAIT -> target completed
       // ACTIVE -> WAIT -> target completed
       if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
-	if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
-
+	      if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
           if (!this->hasActiveTaskCriticalPoint()) {
             completed_target = true;
             if (!useForks) {
@@ -294,49 +293,53 @@ public:
             }
             this->clearTrajectoryChunks();
             this->clearCurrentPath();
-          }
-          else {
+          } else {
             state_ = AT_CRITICAL_POINT;
           }
-	}
-	// BRAKE -> WAIT -> target not completed, recompute the id / send a new trajectory
-	if (prev_controller_status_ == msg->CONTROLLER_STATUS_FAIL) { // Brake
-	  // Need to recompute the trajectory
-	  recomputeNewTrajectory = true;
-	}
+	      }
+        // BRAKE -> WAIT -> target not completed, recompute the id / send a new trajectory
+        if (prev_controller_status_ == msg->CONTROLLER_STATUS_FAIL) { // Brake
+          // Need to recompute the trajectory
+          recomputeNewTrajectory = true;
+        }
       }
     }
     
     // Update the internal state.
-     if (completed_target && useForks) { // This state can only be altered by the fork report callback.
+    if (completed_target && useForks) { // This state can only be altered by the fork report callback.
+      //ROS_WARN("[vehicle_state] completed target and use forks: controllerState is waiting");
       controllerState_ = WAITING;
       state_ = PERFORMING_GOAL_OPERATION;
-    }
-    else if (state_ == PERFORMING_START_OPERATION && useForks) { // This state can only be altered by the fork report callback.
-    }
-    else if (state_ == PERFORMING_START_OPERATION && useForks == false) { 
+    } else if (state_ == PERFORMING_START_OPERATION && useForks) { 
+      // This state can only be altered by the fork report callback.
+    } else if (state_ == PERFORMING_START_OPERATION && useForks == false) { 
       state_ = DRIVING;
-    }
-    else {
+    } else {
       if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
         // Only if no trajectory has been sent and the vehicle is not yet in active state.
-	if (controllerState_ != WAITING_TRAJECTORY_SENT) {
+	      if (controllerState_ != WAITING_TRAJECTORY_SENT) {
           controllerState_ = WAITING;
+          //ROS_WARN("[vehicle_state] controller status was wait and controllerState was not waiting trajectory sent: controllerState is waiting");
         }
       }
       if (controller_status_ == msg->CONTROLLER_STATUS_ACTIVE) {
-        if (controllerState_ != BRAKE_SENT)  // Shouldn't really be any difference ACTIVE / BRAKE_SENT. (remove?)
+        if (controllerState_ != BRAKE_SENT){  // Shouldn't really be any difference ACTIVE / BRAKE_SENT. (remove?)
           controllerState_ = ACTIVE;
+          //ROS_WARN("[vehicle_state] controller status was active and controller state was not brake sent: controllerState is active");
+        }
       }
       if (controller_status_ == msg->CONTROLLER_STATUS_FAIL) {
         controllerState_ = BRAKE;
         // Need to clear the trajectory chunk
+       // ROS_WARN("[vehicle_state] controller status was controller status fail: controllerState is brake");
       }
       if (controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
         controllerState_ = FINALIZING;
+        //ROS_WARN("[vehicle_state] controller status was controller status finalize: controllerState is finalizing");
       }
       if (controller_status_ == msg->CONTROLLER_STATUS_TERMINATE) {
         controllerState_ = ERROR;
+        //ROS_WARN("[vehicle_state] controller status was controller status terminate: controllerState is error");
       }
     }
     if (state_ == AT_CRITICAL_POINT) {
@@ -372,6 +375,7 @@ public:
       drivenTrajectory_.add(currentState2d_, currentControl_);
       drivenTrajectoryTimes_.push_back(msg->stamp.toSec());
     }
+
     if (completed_target) {
       drivenTrajectory_.clear();
       drivenTrajectoryTimes_.clear();
@@ -384,6 +388,17 @@ public:
       return true;
 
     return false;
+  }
+
+  void reset(){
+    clearCurrentPath();
+    clearGoalOperation();
+    clearStartOperation();
+    allBrakeReasonsCleared();
+    clearTrajectoryChunks();
+    clearCoordinatedTimes();
+    clearCurrentPath();
+    controllerState_ = WAITING;
   }
 
   bool isDriving() const { 
@@ -722,7 +737,7 @@ public:
       else {
         // bad critical point index. return the full path
         if (path_.sizePath() != 0)
-          ROS_WARN_STREAM("--- critical point index is outside the path(!) : " << path_.sizePath() << " " << this->getCriticalPointIdx());
+          ROS_WARN_STREAM("[vehicle_state] --- critical point index is outside the path(!) : " << path_.sizePath() << " " << this->getCriticalPointIdx());
       }
     }
     return path_;
@@ -740,7 +755,7 @@ public:
       }
       else {
         // bad critical point index. return the full cts
-        ROS_WARN_STREAM("--- critical point index is outside the cts(!) : " << this->getCriticalPointIdx());
+        ROS_WARN_STREAM("[vehicle_state] --- critical point index is outside the cts(!) : " << this->getCriticalPointIdx());
       }
     }
 

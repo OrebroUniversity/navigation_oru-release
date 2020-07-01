@@ -312,7 +312,7 @@ void trajectoryPool::getActiveTrajectory(
             break;
         }
     }
-    ROS_INFO_STREAM_THROTTLE(2,"[MPC:trajectoryPool] Active traj is: " << traj_replace.id); //<< " chunk: " << index.chunk << " step: " << index.step );
+    //ROS_INFO_STREAM_THROTTLE(2,"[MPC:trajectoryPool] Active traj is: " << traj_replace.id); //<< " chunk: " << index.chunk << " step: " << index.step );
 
 }
 
@@ -374,7 +374,7 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
     swMutexScopedLock traj_lock(mutex);
 
     map<trajectoryID, deque<trajectoryChunk> >::iterator it = traj_pool.find(traj_chunk.id);
-    ROS_INFO_STREAM("[MPC:trajectoryPool] Adding trajectory chunk id: " << traj_chunk.id << ", seq.num: " << traj_chunk.sequence_num);
+    //ROS_INFO_STREAM("[MPC:trajectoryPool] Adding trajectory chunk id: " << traj_chunk.id << ", seq.num: " << traj_chunk.sequence_num);
 
     if (it == traj_pool.end())
     {
@@ -382,7 +382,7 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
         {
             // add trajectory
             traj_pool[traj_chunk.id].push_back(traj_chunk);
-            ROS_INFO("[MPC:trajectoryPool] Added first trajectory.");
+            //ROS_INFO("[MPC:trajectoryPool] Added first trajectory.");
 
         }
         else
@@ -394,18 +394,18 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
     else
     {
         deque<trajectoryChunk> &traj = it->second;
-        ROS_INFO("[MPC:trajectoryPool] Trajectories present in the queue. Appending");
+        //ROS_INFO("[MPC:trajectoryPool] Trajectories present in the queue. Appending");
 
         if ((traj.front().sequence_num <= traj_chunk.sequence_num) &&
                 (traj.back().sequence_num >= traj_chunk.sequence_num))
         {
             // replace
-            ROS_INFO("[MPC:trajectoryPool] replacing trajectory");
+            //ROS_INFO("[MPC:trajectoryPool] replacing trajectory");
 
             unsigned int chunk_index = traj_chunk.sequence_num - traj.front().sequence_num;
             traj[chunk_index] = traj_chunk;
-            ROS_INFO_STREAM("[MPC:trajectoryPool] Incoming traj_chunk id: " << traj_chunk.id << " seq. " << traj_chunk.sequence_num <<
-                                            "stored at index: " << chunk_index);
+            //ROS_INFO_STREAM("[MPC:trajectoryPool] Incoming traj_chunk id: " << traj_chunk.id << " seq. " << traj_chunk.sequence_num <<
+            //                                "stored at index: " << chunk_index);
                 
             if (traj_chunk.finalized) {
               // clear the remaining part of the traj_chunks
@@ -423,7 +423,7 @@ void trajectoryPool::addTrajectoryChunk(const trajectoryChunk & traj_chunk)
             {
                 // append
                 traj.push_back(traj_chunk);
-                ROS_INFO("[MPC:trajectoryPool] adding at the end of the traj pool");
+                //ROS_INFO("[MPC:trajectoryPool] adding at the end of the traj pool");
 
             }
         }
@@ -456,6 +456,7 @@ void trajectoryPool::setActive(const trajectoryID traj_id)
     else
     {
         SW_THROW_MSG("Cannot activate trajectory: no such ID.");
+        ROS_WARN("[MPC:trajectoryPool] Cannot activate trajectory: no such ID: %d",traj_id);
     }
 }
 

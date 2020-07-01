@@ -11,6 +11,8 @@ int32 COMMAND_ACTIVATE = 2
 int32 COMMAND_STARTTIME = 3
 # Recover after failure, ignored if there was no failure.
 int32 COMMAND_RECOVER = 4
+# Abort current tasks and return to idle status
+int32 COMMAND_ABORT = 5
 
 # Status of the controller.
 int32 command
