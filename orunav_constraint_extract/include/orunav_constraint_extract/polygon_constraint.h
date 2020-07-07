@@ -3,18 +3,20 @@
 #include <orunav_constraint_extract/constraints.h>
 #include <orunav_constraint_extract/grid_map.h>
 #include <boost/serialization/split_free.hpp>
+#include "nav_msgs/OccupancyGrid.h"
+#include "ros/ros.h"
 
 namespace constraint_extract {
 
   class PolygonConstraint {
   public:
     PolygonConstraint() { }
-  PolygonConstraint(const Eigen::Vector2d &topLeft, const Eigen::Vector2d &bottomRight, const Eigen::Vector2d &thBounds) : thBounds_(thBounds) {
+    PolygonConstraint(const Eigen::Vector2d &topLeft, const Eigen::Vector2d &bottomRight, const Eigen::Vector2d &thBounds) : thBounds_(thBounds) {
       poly_ = orunav_geometry::getPolygonFromBox(topLeft, bottomRight);
       this->computeWeight();
     }
 
-  PolygonConstraint(orunav_generic::Point2dContainerInterface& pts, const Eigen::Vector2d &thBounds) : thBounds_(thBounds) {
+    PolygonConstraint(orunav_generic::Point2dContainerInterface& pts, const Eigen::Vector2d &thBounds) : thBounds_(thBounds) {
       poly_ = orunav_geometry::Polygon(pts);
     }
     
@@ -38,12 +40,12 @@ namespace constraint_extract {
     // 
     bool findInnerConstraintMatch(const PolygonConstraint &pc) const {
       for (size_t i = 0; i < poly_.sizePoint2d(); i++) {
-	if (orunav_geometry::distSqrPoint2d(this->poly_.getPoint2d(i), pc.poly_.getPoint2d(i)) > 0.01)
-	  return false;
+	      if (orunav_geometry::distSqrPoint2d(this->poly_.getPoint2d(i), pc.poly_.getPoint2d(i)) > 0.01)
+	        return false;
       }
       // Check the angle - we would like to find the first match containing the sweep in the other direction.
       if (this->thBounds_(0) == pc.thBounds_(0) || this->thBounds_(1) == pc.thBounds_(1))
-	return false;
+	      return false;
       return true;
     }
 
@@ -238,6 +240,9 @@ namespace constraint_extract {
 
   class PolygonConstraintsLookup {
   public:
+    ros::NodeHandle n;
+    ros::Publisher map_pub;
+
     class Params {
     public:
       Params() {
@@ -333,7 +338,9 @@ namespace constraint_extract {
     };
 
 
-  PolygonConstraintsLookup(const orunav_geometry::RobotModel2dInterface &m, const orunav_generic::RobotInternalState2d::LoadType &loadType, const PolygonConstraintsLookup::Params &params) : params_(params), model(m), loadType_(loadType), computed_(false) {}
+  PolygonConstraintsLookup(const orunav_geometry::RobotModel2dInterface &m, const orunav_generic::RobotInternalState2d::LoadType &loadType, const PolygonConstraintsLookup::Params &params) : params_(params), model(m), loadType_(loadType), computed_(false) {
+      map_pub = n.advertise<nav_msgs::OccupancyGrid>("/polygon_constraint_occg",10);
+  }
 
 
     inline void addPose2dThSweep(orunav_generic::Pose2dVec &poses, double x, double y, double min_th, double max_th, double th_sweep_incr) const {
@@ -611,7 +618,10 @@ namespace constraint_extract {
       //    std::cout << "------> 1) valid_.size() : " << valid_.size(); 
       std::map<int, PolygonConstraint&> valid = valid_;    
       
-      
+      ROS_INFO_STREAM("[polygon_ponstraint.h]: We have " << valid_.size() << " Polygon Constraints" );
+      map_pub.publish(map);
+      ROS_INFO_STREAM("[polygon_ponstraint.h]: published constraints occ map" );
+
       GridPatchIdx occ_patch = getOccupiedPixelsInLocalPixelCoords(map, pose, largestFootPrint_);
       
       // Sort the grid patch based on the distance to the center (local coords).
@@ -639,76 +649,76 @@ namespace constraint_extract {
 
       // Check all pixels in each iteration -> will only get the iterator to the first one and valid should only contain this element (cannot use skip overlap here).
       {
-	std::map<int, PolygonConstraint&>::iterator it = valid.begin();
-	while (it != valid.end()) {
-	  bool found = true;
-	  const nav_msgs::OccupancyGrid &m = occupancyMaps_[it->first];
-	  for (size_t i = 0; i< occ_patch.size(); i++) {
-	    if (isValidAndOccupied(m, occ_patch[i])) {
-	      found = false;
-	      it++;
-	      break; // for loop
-	    }
-	  }
-	  if (found) {
-	    // Got it.
-	    std::map<int, PolygonConstraint&> tmp;
-	    tmp.insert(std::pair<int, PolygonConstraint&>(it->first, it->second));
-	    valid = tmp;
-	    break; // while loop
-	  }
-	}
-	if (it == valid.end()) {
-	  // Failed to find anything, set valid empty.
-	  valid.clear();
-	}
+      std::map<int, PolygonConstraint&>::iterator it = valid.begin();
+      while (it != valid.end()) {
+        bool found = true;
+        const nav_msgs::OccupancyGrid &m = occupancyMaps_[it->first];
+        for (size_t i = 0; i< occ_patch.size(); i++) {
+          if (isValidAndOccupied(m, occ_patch[i])) {
+            found = false;
+            it++;
+            break; // for loop
+          }
+        }
+        if (found) {
+          // Got it.
+          std::map<int, PolygonConstraint&> tmp;
+          tmp.insert(std::pair<int, PolygonConstraint&>(it->first, it->second));
+          valid = tmp;
+          break; // while loop
+        }
       }
-  
-      if (!params_.skip_overlap) {
-	// Check the contain pose -> step through the valid list and find the first match.
-	// In case nothing is found here... very very bad, or the size of the polygon will become very small (maybe it is better to grow along the path in the next constraints...) anyway this needs to be further elaborated.
-	// Key part here... all constraints are centered around (0,0,0). Find the relative pose here.
-	orunav_generic::Pose2d contain_pose_relative = orunav_generic::subPose2d(pose, containPose);
-	std::map<int, PolygonConstraint&>::iterator it = valid.begin();
-	while (it != valid.end()) {
-	  if (!it->second.isFeasible(contain_pose_relative)) {
-	    std::map<int, PolygonConstraint&>::iterator it_erase = it;
-	    it++; // Keep the iterator defined before erasing.
-	    valid.erase(it_erase);
-	  }
-	  else {
-	    break; // Got it.
-	  }
-	}
+      if (it == valid.end()) {
+        // Failed to find anything, set valid empty.
+        valid.clear();
       }
+          }
       
-      if (valid.empty())
-	return false;
-      
-      result = valid.begin()->second;
-      result.feasiblePose_ = pose;
-      resultIdx = valid.begin()->first;
+          if (!params_.skip_overlap) {
+      // Check the contain pose -> step through the valid list and find the first match.
+      // In case nothing is found here... very very bad, or the size of the polygon will become very small (maybe it is better to grow along the path in the next constraints...) anyway this needs to be further elaborated.
+      // Key part here... all constraints are centered around (0,0,0). Find the relative pose here.
+      orunav_generic::Pose2d contain_pose_relative = orunav_generic::subPose2d(pose, containPose);
+      std::map<int, PolygonConstraint&>::iterator it = valid.begin();
+      while (it != valid.end()) {
+        if (!it->second.isFeasible(contain_pose_relative)) {
+          std::map<int, PolygonConstraint&>::iterator it_erase = it;
+          it++; // Keep the iterator defined before erasing.
+          valid.erase(it_erase);
+        }
+        else {
+          break; // Got it.
+        }
+      }
+          }
+          
+          if (valid.empty())
+      return false;
+          
+          result = valid.begin()->second;
+          result.feasiblePose_ = pose;
+          resultIdx = valid.begin()->first;
 
-      // The constraints are separated into left rotations and right rotations. Look for the first entry which has another rotation sweep in the queue and add that to the constraint.
-      if (params_.use_th_bounds)
-	{
-	  std::cout << "fusing th bounds" << std::endl;
-	  std::map<int, PolygonConstraint&>::iterator it = valid.begin();
-	  it++;
-	  while (it != valid.end()) {
-	    if (result.findInnerConstraintMatch(it->second)) {
-	      std::cout << "fusing the constraints..." << std::endl;
-	      //result.printDebug();
-	      result.fuseConstraint(it->second);
-	      //result.printDebug();
-	      result.moveConstraint(pose);
-	      return true;
-	    }
-	    it++;
-	  }
-	}
-      result.moveConstraint(pose);
-      return true;
+          // The constraints are separated into left rotations and right rotations. Look for the first entry which has another rotation sweep in the queue and add that to the constraint.
+          if (params_.use_th_bounds)
+      {
+        std::cout << "fusing th bounds" << std::endl;
+        std::map<int, PolygonConstraint&>::iterator it = valid.begin();
+        it++;
+        while (it != valid.end()) {
+          if (result.findInnerConstraintMatch(it->second)) {
+            std::cout << "fusing the constraints..." << std::endl;
+            //result.printDebug();
+            result.fuseConstraint(it->second);
+            //result.printDebug();
+            result.moveConstraint(pose);
+            return true;
+          }
+          it++;
+        }
+      }
+          result.moveConstraint(pose);
+          return true;
     }
 
     void sortConstraintsOnCost() { 
