@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="robot_id" default="1" />
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>
@@ -10,8 +11,8 @@
       <param name="half_pallet_name" value="half_pallet_oru"/>
       <param name="using_bagfile" value="false"/>
 
-      <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
-      <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
+      <remap from="pointcloud" to ="sensors/asus_fork/depth_registered/points"/>
+      <remap from="depthmap" to ="sensors/asus_fork/depth/image_raw"/>
 
       <param name="base_link_frame_id" value="$(arg tf_prefix)/base_link" />
       <param name="global_frame_id" value="/map_laser2d" />
@@ -46,16 +47,16 @@
       <param name="downsample_ratio" value="0.02"/>
 
       <!-- For pclEuclideanDistanceSegmentation -->
-      <param name="EC_segThresh" value="0.05"/>
+      <param name="EC_segThresh" value="0.04"/>
       <param name="maxSegPoints" value="9900000"/>
       <param name="minSegPoints" value="100"/>
       <!-- For obbDimensionalCheck -->
       <param name="tolerance_X" value="0.2"/>
       <param name="tolerance_Y" value="0.2"/>
-      <param name="tolerance_Z" value="0.4"/>
+      <param name="tolerance_Z" value="0.5"/>
 
       <!-- Coarse to Fine Registration -->
-      <param name="ICP_based" value="false"/>
+      <param name="icp_based" value="false"/>
       <param name="overlap_dst_thresh" value="0.05"/>
       <param name="overlap_score_thresh" value="0.8"/>
 
@@ -72,6 +73,6 @@
 
     </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/>
+  <!--node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/-->
   
 </launch>

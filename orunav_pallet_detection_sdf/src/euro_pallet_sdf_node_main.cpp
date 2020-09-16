@@ -505,6 +505,22 @@ public:
     
     pcl::fromROSMsg<pcl::PointXYZ>( *msg, cloud);
     
+    // If we have any background data -> the forks
+    if (!background_indices_.empty()) {
+      ROS_INFO("[EuroPalletSDF]: Number of pre-stored background points : %lu", background_indices_.size());
+      pcl::PointCloud<pcl::PointXYZ> cloud_f;
+      pcl::ExtractIndices<pcl::PointXYZ> extract;
+      extract.setInputCloud (cloud.makeShared ());
+      extract.setIndices (boost::make_shared<std::vector<int> > (background_indices_));
+      extract.setNegative (true);
+      extract.setKeepOrganized (true);
+      extract.filter (cloud_f);
+
+      cloud = cloud_f;
+    } else {
+      ROS_INFO("EuroPalletSDF]: background indeces are empty! continuing with full pointcloud");
+    }
+
     if (removeFloor_) {
       // Clear the PC from floor points - TODO take the coefficients from the calibration data and not from a plane estimation model.
       pcl::PointCloud<pcl::PointXYZ> cloud_f;
@@ -525,25 +541,16 @@ public:
       seg.setInputCloud (cloud.makeShared ());
       seg.segment (inliers, coefficients);
             
-            
       pcl::ExtractIndices<pcl::PointXYZ> extract;
       extract.setInputCloud (cloud.makeShared ());
       extract.setIndices (boost::make_shared<std::vector<int> > (inliers.indices));
       extract.setNegative (true);
+      extract.setKeepOrganized (true);
       extract.filter (cloud_f);
             
-      // For simplicily keep the cloud intact -> fill the values .z = -1.
-      /* for (unsigned int i = 0; i < inliers.indices.size(); i++) {
-        cloud[inliers.indices[i]].z = -1;
-      } */
-      // If we have any background data -> the forks
-      if (!background_indices_.empty()) {
-        ROS_INFO("[EuroPalletSDF]: Number of pre-stored background points : %lu", background_indices_.size());
-        for (unsigned int i = 0; i < background_indices_.size(); i++) {
-          cloud[background_indices_[i]].z = -1;
-        }
-      }
-      pointcloud_pub_.publish(cloud);
+      cloud = cloud_f;
+
+      pointcloud_pub_.publish(cloud_f);
     }
 
     double t1 = orunav_generic::getDoubleTime();
@@ -845,6 +852,8 @@ public:
       {
           std::cerr << "No cluster!" << "\n";
           return;
+      } else {
+	  ROS_INFO("[EURpallet] OBB pipeline: Processing %d clusters",cluster_indices.size()); 
       }
       
       myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
@@ -916,7 +925,10 @@ public:
       {
           std::cerr << "No cluster!" << "\n";
           return;
+      } else {
+	  ROS_INFO("[EURpallet] OBBICP pipeline: Processing %d clusters",cluster_indices.size()); 
       }
+
       
       myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
       myOBBICP->getClusters(cloud, cluster_indices, myclusters);
@@ -929,8 +941,8 @@ public:
       bool pallet_ready = false;
 
       // Visualize model matching
-      if(visual_model)
-      {
+      //if(visual_model)
+      //{
           for(int i=0; i < myclusters.size(); i++)
           {
               if(myclusters[i].recognizedObj != "")
@@ -955,7 +967,7 @@ public:
                   }           
               }
           }
-      }
+      //}
 
       if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
       pallet_ready = false;

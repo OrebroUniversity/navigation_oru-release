@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="robot_id" default="1" />
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>

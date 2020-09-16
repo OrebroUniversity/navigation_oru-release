@@ -1230,6 +1230,8 @@ public:
       // Need to move the vehicle state to waiting.
       if (!vehicle_state_.setPerceptionReceived()) {
         ROS_ERROR("failed in setting perception received");
+      } else {
+	ROS_INFO("Vehicle state was set to PerceptionReceived");
       }
 
       // The pose is ok. Send a LOAD request with the pallet pose.
@@ -1261,7 +1263,9 @@ public:
         task = srv.response.task;
         ROS_INFO_STREAM("[KMOVehicleExecution] - compute_task return value : " << srv.response.result);
       }
+      if (use_update_task_service_) 
       {
+	ROS_WARN("[KMOVehicleExecution] Pallet picking via coordinator (make sure it is running)!!");
         // Send the task to the coordinator
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::UpdateTask>("/coordinator/update_task");
         orunav_msgs::UpdateTask srv;
@@ -1277,11 +1281,20 @@ public:
         }
         ROS_INFO_STREAM("[KMOVehicleExecution] - set(update)_task return value : " << srv.response.result);
       }
+      else {
+	ROS_WARN("[KMOVehicleExecution] Bypassing coordinator!!");
+        orunav_msgs::ExecuteTask srv;
+        srv.request.task = task;
+        executeTaskCB(srv.request,
+                      srv.response);
+      }
     }
     
 
     return;
 
+//Code bellow is the old code from several year ago. please keep in case useful 
+#if 0
     if (!vehicle_state_.goalOperationLoadDetect()) {
       ROS_WARN("Receiving pallet pose estimates don't have a load/detect operation to perform");
       return;
@@ -1387,7 +1400,7 @@ public:
         ROS_INFO_STREAM("[KMOVehicleExecution] - set_task return value : " << srv.response.result);
       }
     }
-
+#endif
   }
 
 
