@@ -49,6 +49,7 @@ class PalletDetectorNode
         std::string ground_depthmap_dir, models_dir;
 
         std::string pallet_sensor_frame_id_prefix_;
+        std::string OBB_frame_id;
 
         registrationOBBICP *myOBBICP;
         std::vector<ObjectModel> models;
@@ -88,6 +89,7 @@ class PalletDetectorNode
             paramHandle.param<std::string>("ground_depthmap_dir", ground_depthmap_dir, "");
             paramHandle.param<std::string>("models_dir", models_dir, "");
             paramHandle.param<std::string>("pallet_sensor_frame_id_prefix", pallet_sensor_frame_id_prefix_, "camera_");
+            paramHandle.param<std::string>("OBB_frame_id", OBB_frame_id, "camera_");
     
             //pointcloud_sub_ = nh_.subscribe<sensor_msgs::PointCloud2>("pointcloud", 1, &PalletDetectorNode::process_pointcloud, this);     
             depth_sub_ = nh_.subscribe<sensor_msgs::Image>("depthmap", 1, &PalletDetectorNode::process_depthmap, this);             
@@ -371,7 +373,7 @@ class PalletDetectorNode
             geometry_msgs::Point p;
 
             if(!using_bagfile) OBB.header.frame_id = "world"; 
-            else OBB.header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
+            else OBB.header.frame_id = OBB_frame_id;
             OBB.header.stamp = ros::Time::now();
             OBB.ns = "OBBs";
             OBB.id = 0;
