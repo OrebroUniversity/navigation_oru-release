@@ -3,6 +3,7 @@
 
   <arg name="robot_id" default="1" />
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+  <arg name="sdf_detector" value="false"/>
 
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
@@ -40,7 +41,8 @@
       <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/basement_pallet_targets.dat" />
     </node>
 
-    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen">
+    <!-- =================== SDF Based Start =================== -->
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" if="$(arg sdf_detector)">
       <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/backgrounds/citi1_sim_background.dat"/>
       <param name="Dmax" value="0.2"/>
       <param name="visualize" value="true"/>
@@ -51,7 +53,7 @@
       <remap from="pointcloud" to ="/robot1/sensors/asus_fork/depth_registered/points"/>
       <param name="residual_thresh" value="0.01"/>
       <param name="floor_dist_thresh" value="0.01"/>
-      <param name="cov_thresh" value="0.2"/>
+      <param name="cov_thresh" value="0.10"/>
       <param name="only_compute_filter_used" value="true"/>
       <param name="depth_frame_id" value="robot1/asus_fork_link" /> 
       <param name="asus_camera" value="false" />
@@ -59,11 +61,52 @@
       <param name="min_match_nb_points_ratio" value="0.1" />
       <param name="base_link_frame_id" value="/robot1/base_link" />
       <param name="obbicp_based" value="false"/>
-      <param name="ICP_based" value="false"/>
-
     </node>
-       <!-- =================== OBBICP Based Start =================== -->
-      <!-- =================== OBBICP Based Finish =================== -->
+    <!-- =================== SDF Based Finish =================== -->
+
+    <!-- =================== OBBICP Based Start =================== -->
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" unless="$(arg sdf_detector)" >
+      <param name="pallet_name" value="full_pallet"/>
+      <param name="half_pallet_name" value="half_pallet_oru"/>
+      <param name="base_link_frame_id" value="/robot1/base_link" />
+
+      <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
+      <remap from="depthmap" to ="sensors/asus_fork/depth/image_raw"/>
+
+      <param name="pallet_sensor_frame_id_prefix" value="/$(arg tf_prefix)/asus_fork_" />
+      <param name="OBB_frame_id" value="/$(arg tf_prefix)/asus_fork_rgb_optical_frame" />
+
+      <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
+      <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>
+
+      <param name="downsample" value="true"/>
+      <param name="downsample_ratio" value="0.02"/>
+
+      <!-- For pclEuclideanDistanceSegmentation -->
+      <param name="EC_segThresh" value="0.05"/>
+      <param name="maxSegPoints" value="9900000"/>
+      <param name="minSegPoints" value="100"/>
+
+      <!-- For obbDimensionalCheck -->
+      <param name="tolerance_X" value="0.2"/>
+      <param name="tolerance_Y" value="0.2"/>
+      <param name="tolerance_Z" value="0.5"/>
+
+      <!-- Coarse to Fine Registration -->
+      <param name="obbicp_based" value="true"/>
+      <param name="overlap_dst_thresh" value="0.05"/>
+      <param name="overlap_score_thresh" value="0.8"/>
+
+      <!-- Deep Learning -->
+      <param name="deepLearning_based" value="false"/>
+
+      <param name="save_ground_depthmap" value="false"/>
+      <param name="background_thresh" value="0.1"/>
+
+      <param name="visual_model" value="true"/>
+      <param name="visualize" value="true"/>
+  </node>
+  <!-- =================== OBBICP Based Finish =================== -->
 
   </group>
 

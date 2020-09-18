@@ -690,9 +690,16 @@ public:
   void publish_pallet_pose(const Eigen::Matrix4f& pose_matrix)
   {
     pposeTrack.matrix() = pose_matrix.cast<double>();
-    tf::Transform tf_out;
-    tf::poseEigenToTF(pposeTrack, tf_out);
-
+    
+    //normalize pose to point towards vehicle
+    double pallet_yaw = -normalizeM_PI(pposeTrack.rotation().matrix().eulerAngles(0,1,2)(2));
+    Eigen::Vector3d translation = pposeTrack.translation();
+    translation(2) = 0;
+    
+    pposeTrack = Eigen::Translation3d(translation)
+      *Eigen::AngleAxisd(pallet_yaw, Eigen::Vector3d::UnitZ());
+        
+    //transform to world
     tf::StampedTransform worldToBaseLink;
     tf_listener.waitForTransform(global_frame_id_, base_link_frame_id_, ros::Time(0), ros::Duration(1.0));
     try{
@@ -702,16 +709,32 @@ public:
         ROS_ERROR("[EuroPalletSDF]: %s",ex.what());
         return;
     }
+    Eigen::Affine3d w2b;
+    tf::poseTFToEigen(worldToBaseLink, w2b);
+    pposeTrack = w2b*pposeTrack;
+
+    //visualize pallet
+    translation = pposeTrack.translation();
+    translation(2) = pposeTrack.rotation().matrix().eulerAngles(0,1,2)(2);
+    sdf::drawPallet(pposeTrack,global_frame_id_,1,marker_pub_);
+
+    //making sure this is a proper 2d pose
+    pposeTrack = Eigen::Translation3d(Eigen::Vector3d(translation(0), translation(1), 0))
+      *Eigen::AngleAxisd(translation(2), Eigen::Vector3d::UnitZ());    
+
+    //and publish it out
+    tf::Transform tf_out;
+    tf::poseEigenToTF(pposeTrack, tf_out);
 
     pose_stamped.header.frame_id = global_frame_id_;
-    pose_stamped.pose = sdf::sdf_transformToPose(worldToBaseLink * tf_out);
+    pose_stamped.pose = sdf::sdf_transformToPose(tf_out);
     
     orunav_msgs::ObjectPose object_pose;
     object_pose.pose = pose_stamped;
     object_pose.object.type = object_type_;
     pallet_poses_pub_.publish(object_pose);
 
-    ROS_INFO_STREAM_THROTTLE(1, "Homogeneous matrix of closest pallet: " << pose_matrix);
+    ROS_INFO_STREAM_THROTTLE(1, "Homogeneous matrix of closest pallet: " << pposeTrack.matrix());
 
   }
 
@@ -791,6 +814,7 @@ public:
           return;
       }
       ROS_INFO("New depth image received. ACTIVE!");
+      pose_stamped.header.stamp = msg->header.stamp;
 
       if(myCloud->size()) myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>); 
 
