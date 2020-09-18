@@ -14,7 +14,6 @@
   <node pkg="orunav_vehicle_execution" type="point_n_click_target_client" name="point_n_click_target_client_citi1" output="screen">
     <param name="load_operation" value="true" />
     <param name="load_detect" value="true" />
-    <param name="use_update_task_service" value="false"/> <!-- run with fake coordinator in simulation -->
     <rosparam param="robot_ids">[1]</rosparam>
     <param name="multiple_vehicles" value="true" />
   </node>
@@ -37,7 +36,6 @@
   <param name="tf_prefix" value="robot1" />
   <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="citi1_vehicle_client" output="screen">
       <remap from="report" to="control/report"/>
-      <remap from="/coordinator/update_task" to="/coordinator_fake_node/update_task"/>
       <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/basement_pallet_targets.dat" />
     </node>
 
