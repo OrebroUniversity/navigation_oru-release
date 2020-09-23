@@ -222,6 +222,7 @@ private:
 
   bool real_cititruck_;
   bool no_smoothing_;
+  bool resolve_motion_planning_error_;
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
@@ -291,7 +292,8 @@ public:
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
     paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
     paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
-    
+    paramHandle.param<bool>("resolve_motion_planning_error", resolve_motion_planning_error_, true);
+
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
@@ -731,15 +733,18 @@ public:
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Call to service get_path returns ERROR");
-        return false;
+	if (!resolve_motion_planning_error_) {
+	  return false;
+	}
       }
       
       if (!srv.response.valid) {
-        ROS_WARN("[KMOVehicleExecutionNode] RID:%d - no path found(!), cannot computeTask", robot_id_);
+        ROS_WARN("[KMOVehicleExecutionNode] RID:%d - no path found(!), will attempt to generate another path", robot_id_);
         // Are the start / goal very close?
-        if (getTargetStartGoalDistance(target) > sqrt(2)*0.2) { // assuming grid size of 0.2.
+        if (getTargetStartGoalDistance(target) > sqrt(2)*map.info.resolution) { // if the targets are reasonable apart
           // This indicates that there is some real problems finding the path...
-          res.result = 0; // TODO, add some proper reply codes.
+	  ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - target and goal is to far appart, the motion planner should have found a path", robot_id_);
+	  res.result = 0; // TODO, add some proper reply codes.
           return false;
         }
         // If they are, try to use the driven path (if any) to generate a repositioning path...
