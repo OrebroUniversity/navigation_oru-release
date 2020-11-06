@@ -60,8 +60,32 @@ threadReturn trajectoryReader::readLoop(threadData *thread_data)
 
 
     // process queues
+    swProcessStatus prev_status = thdata->status.get();
     for( ;; )
     {
+        if (prev_status != thdata->status.get()){
+            prev_status = thdata->status.get();
+            
+            if (prev_status == SW_PROCESS_STATUS_WAIT) {
+                ROS_DEBUG("[traj.Reader] status is SW_PROCESS_STATUS_WAIT");
+            }
+            else if (prev_status == SW_PROCESS_STATUS_FAIL) {
+                ROS_DEBUG("[traj.Reader] status is SW_PROCESS_STATUS_FAIL");
+            }
+            else if (prev_status == SW_PROCESS_STATUS_ACTIVE) {
+                ROS_DEBUG("[traj.Reader] status is SW_PROCESS_STATUS_ACTIVE");
+            }
+            else if (prev_status == SW_PROCESS_STATUS_FINALIZE) {
+                ROS_DEBUG("[traj.Reader] status is SW_PROCESS_STATUS_FINALIZE");
+            }
+            else if (prev_status == SW_PROCESS_STATUS_TERMINATE) {
+                ROS_DEBUG("[traj.Reader] status is SW_PROCESS_STATUS_TERMINATE");
+            } else {
+                ROS_DEBUG("[traj.Reader] status is UNKNOWN");
+            }
+    
+        }
+
         if (start_time.sec != 0)
         {
             /* 
@@ -75,7 +99,7 @@ threadReturn trajectoryReader::readLoop(threadData *thread_data)
                 if (ros::Time::now() >= start_time + ros::Duration(SW_START_TIME_ALLOWED_ERROR_SEC))
                 {
                     //thdata->status.set(SW_PROCESS_STATUS_FAIL);
-                    ROS_WARN("Failed to start tracking at the specified time.");
+                    ROS_WARN("[traj.Reader] Failed to start tracking at the specified time.");
                 }
                 //else
                 {
@@ -85,12 +109,12 @@ threadReturn trajectoryReader::readLoop(threadData *thread_data)
                     if (is_active == true)
                     {
                         thdata->traj_pool.unblock();
-                        ROS_INFO("Trajectory pool is unblocked. If there is enough data, tracking starts automatically.");
+                        ROS_DEBUG("[traj.Reader] Trajectory pool is unblocked. If there is enough data, tracking starts automatically.");
                     }
                     else
                     {
                         thdata->status.set(SW_PROCESS_STATUS_FAIL);
-                        ROS_WARN("Cannot start tracking, since the robot is not in the active list.");
+                        ROS_WARN("[traj.Reader] Cannot start tracking, since the robot is not in the active list.");
                     }
                 }
                 start_time = ros::Time(0);
@@ -185,12 +209,13 @@ void trajectoryReader::processTrajectoryChunk_(
     // Correctness
     if (msg.robot_id != thdata->parameters.robot_id)
     {
+        ROS_WARN("[traj.Reader]  Trajectory message parser: Wrong robot ID.");
         return;
     }
 
     if (msg.steps.size() == 0)
     {
-        ROS_WARN("Trajectory message parser: Empty trajectory chunk.");
+        ROS_WARN("[traj.Reader] Trajectory message parser: Empty trajectory chunk.");
         return;
     }
 
@@ -224,7 +249,7 @@ void trajectoryReader::processTrajectoryChunk_(
             }
             else
             {
-                ROS_WARN("Trajectory message parser: Unknown step mode, default is used.");
+                ROS_WARN("[traj.Reader]  Trajectory message parser: Unknown step mode, default is used.");
                 step.mode = SW_STEP_MODE_DEFAULT;
             }
 
@@ -253,7 +278,7 @@ void trajectoryReader::processTrajectoryChunk_(
     catch (const exception &e)
     {  
         SW_LOG_TRAJECTORY(e.what());
-        ROS_WARN("%s", e.what());
+        ROS_WARN("[traj.Reader]  %s", e.what());
     }
 }
 
@@ -285,7 +310,7 @@ void trajectoryReader::initStepConstraints_(
     if ((msg.constraints.bounds_orientation.size() != 0)
         && (msg.constraints.bounds_orientation.size() != 2))
     {
-        ROS_WARN("Trajectory message parser: Malformed bounds on orientation were skipped.");
+        ROS_WARN("[traj.Reader] Trajectory message parser: Malformed bounds on orientation were skipped.");
     }
     else if (msg.constraints.bounds_orientation.size() == 2)
     {
@@ -298,7 +323,7 @@ void trajectoryReader::initStepConstraints_(
     if ((msg.constraints.bounds_steering_velocity.size() != 0)
         && (msg.constraints.bounds_steering_velocity.size() != 2))
     {
-        ROS_WARN("Trajectory message parser: Malformed bounds on steering velocity were skipped.");
+        ROS_WARN("[traj.Reader]  Trajectory message parser: Malformed bounds on steering velocity were skipped.");
     }
     else if (msg.constraints.bounds_steering_velocity.size() == 2)
     {
@@ -311,7 +336,7 @@ void trajectoryReader::initStepConstraints_(
     if ((msg.constraints.bounds_tangential_velocity.size() != 0)
         && (msg.constraints.bounds_tangential_velocity.size() != 2))
     {
-        ROS_WARN("Trajectory message parser: Malformed bounds on tangential velocity were skipped.");
+        ROS_WARN("[traj.Reader]  Trajectory message parser: Malformed bounds on tangential velocity were skipped.");
     }
     else if (msg.constraints.bounds_tangential_velocity.size() == 2)
     {
@@ -324,7 +349,7 @@ void trajectoryReader::initStepConstraints_(
     if ((msg.constraints.bounds_tangential_acceleration.size() != 0)
         && (msg.constraints.bounds_tangential_acceleration.size() != 2))
     {
-        ROS_WARN("Trajectory message parser: Malformed bounds on tangential acceleration were skipped.");
+        ROS_WARN("[traj.Reader]  Trajectory message parser: Malformed bounds on tangential acceleration were skipped.");
     }
     else if (msg.constraints.bounds_tangential_acceleration.size() == 2)
     {
@@ -337,7 +362,7 @@ void trajectoryReader::initStepConstraints_(
     if ((msg.constraints.max_centripetal_acceleration.size() != 0)
         && (msg.constraints.max_centripetal_acceleration.size() != 1))
     {
-        ROS_WARN("Trajectory message parser: Malformed constraint on centripetal acceleration.");
+        ROS_WARN("[traj.Reader] Trajectory message parser: Malformed constraint on centripetal acceleration.");
     }
     else if (msg.constraints.max_centripetal_acceleration.size() == 1)
     {
@@ -368,50 +393,59 @@ void trajectoryReader::actOnCommand(const orunav_msgs::ControllerCommandConstPtr
         if (cmd->command == cmd->COMMAND_BRAKE)
         {
             thdata->status.set(SW_PROCESS_STATUS_FAIL);
-            ROS_INFO("Command = brake: Stopping.");
+            ROS_DEBUG("[traj.Reader] Command = brake: Stopping.");
         }
         else if (cmd->command == cmd->COMMAND_ACTIVATE)
         {
             thdata->traj_pool.setActive(cmd->traj_id);
-            ROS_INFO("Command = activate: Trajectory [%d] is activated.", cmd->traj_id);
+            ROS_DEBUG("[traj.Reader] Command = activate: Trajectory [%d] is activated.", cmd->traj_id);
         }
         else if (cmd->command == cmd->COMMAND_RECOVER)
         {
             thdata->status.recover();
-            ROS_INFO("Command = recover: Executed.");
+            ROS_DEBUG("[traj.Reader] Command = recover: Executed.");
         }
         else if (cmd->command == cmd->COMMAND_STARTTIME)
         {
             if (thdata->traj_pool.isBlocked() == false)
             {
-                ROS_WARN("Command = starttime: Ignored, since the trajectory pool is already unblocked.");
+                ROS_DEBUG("[traj.Reader] Command = starttime: Ignored, since the trajectory pool is already unblocked.");
             }
             else
             {
                 start_time = cmd->start_time;
                 double timeDiff = (ros::Time::now() - start_time).toNSec() * 1e-6;
-                ROS_INFO("[orunav_mpc] Elapsed time since command: %3.3f",timeDiff);
+                ROS_DEBUG("[traj.Reader]  Elapsed time since command: %3.3f",timeDiff);
                 if (start_time < ros::Time::now() - ros::Duration(SW_START_TIME_ALLOWED_ERROR_SEC))
                 {
                     start_time = ros::Time(0);
                     thdata->status.set(SW_PROCESS_STATUS_FAIL);
-                    ROS_WARN("Command = starttime: The specified time is in the past.");
+                    ROS_DEBUG("[traj.Reader] Command = starttime: The specified time is in the past.");
                 }
                 else
                 {
-                    ROS_INFO("Command = starttime: Time is set, waiting.");
+                    ROS_DEBUG("[traj.Reader] Command = starttime: Time is set, waiting.");
                 }
             }
         }
+        else if (cmd->command == cmd->COMMAND_ABORT)
+        {            
+            thdata->traj_pool.clear();
+           
+            thdata->status.recover();
+            
+            ROS_INFO("[traj.Reader] ABORTING TRAJECTORY UoL Style.");
+
+        }
         else 
         {
-            ROS_WARN("Command = ?: An unsupported command is received.");
+            ROS_WARN("[traj.Reader] Command = ?: An unsupported command is received.");
         }
     }
     catch (const exception &e)
     {  
         SW_LOG_TRAJECTORY(e.what());
-        ROS_WARN("%s", e.what());
+        ROS_WARN("[traj.Reader] %s", e.what());
     }
 }
 
