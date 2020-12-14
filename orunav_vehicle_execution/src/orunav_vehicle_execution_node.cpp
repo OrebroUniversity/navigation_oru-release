@@ -150,7 +150,9 @@ private:
   double min_incr_path_dist_;
   int min_nb_path_points_;
   TrajectoryProcessor::Params traj_params_;
+  TrajectoryProcessor::Params traj_params_original_;
   TrajectoryProcessor::Params traj_slowdown_params_;
+  bool overwrite_traj_params_with_velocity_constraints_;
 
   // Forklift settings
   int robot_id_;
@@ -260,7 +262,10 @@ public:
     traj_params_.debug = true;
     traj_params_.debugPrefix = std::string("ct_traj_gen/");
 
+    paramHandle.param<bool>("overwrite_traj_params_with_velocity_constraints", overwrite_traj_params_with_velocity_constraints_, true);
+    traj_params_original_ = traj_params_;
     traj_slowdown_params_ = traj_params_;
+        
     paramHandle.param<double>("max_slowdown_vel", traj_slowdown_params_.maxVel, 0.1);
 
     paramHandle.param<double>("min_docking_distance", min_docking_distance_, 1.0);
@@ -1870,7 +1875,7 @@ public:
           }
 	  else if (vehicle_state_.newVelocityConstraints()) {
             ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
-	    TrajectoryProcessor::Params traj_params = traj_params_;
+	    TrajectoryProcessor::Params traj_params = traj_params_original_;
 	    traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
 	    traj_params.maxVelRev = std::min(traj_params.maxVelRev, vehicle_state_.getMaxLinearVelocityConstraintRev());
 	    traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
@@ -1882,6 +1887,11 @@ public:
 	    traj_params.maxRotationalVelRev = std::max(traj_params.maxRotationalVelRev, 0.01);
 
 	    ROS_INFO_STREAM("new trajectory params: " << traj_params);
+
+	    // Overwrite the default velocity constratins 
+	    if (overwrite_traj_params_with_velocity_constraints_) {
+	      traj_params_ = traj_params;
+	    }
 	    
 	    bool valid = false;
 	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);
