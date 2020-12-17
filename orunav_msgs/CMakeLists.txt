@@ -64,6 +64,7 @@ add_message_files(
    DrillTargetArray.msg
    IliadItem.msg
    IliadItemArray.msg
+   EBrake.msg
 )
 
 ## Generate services in the 'srv' folder

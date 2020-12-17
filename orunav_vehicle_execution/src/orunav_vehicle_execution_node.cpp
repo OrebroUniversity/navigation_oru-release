@@ -38,6 +38,7 @@
 #include <orunav_msgs/ObjectPose.h>
 #include <orunav_msgs/VectorMap.h>
 #include <orunav_msgs/GeoFence.h>
+#include <orunav_msgs/EBrake.h>
 
 #include <orunav_constraint_extract/polygon_constraint.h> // Only used for visualization.
 #include <orunav_constraint_extract/conversions.h>
@@ -117,6 +118,7 @@ private:
   ros::Subscriber pallet_poses_sub_;
 
   ros::Subscriber velocity_constraints_sub_;
+  ros::Subscriber ebrake_sub_;
   
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
@@ -225,6 +227,9 @@ private:
   bool real_cititruck_;
   bool no_smoothing_;
   bool resolve_motion_planning_error_;
+
+  std::set<int> ebrake_id_set_;
+
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
@@ -321,7 +326,7 @@ public:
     laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
 
     velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10,&KMOVehicleExecutionNode::process_velocity_constraints, this);
-    
+    ebrake_sub_ = nh_.subscribe<orunav_msgs::EBrake>(orunav_generic::getRobotTopicName(robot_id_, "/ebrake"), 10,&KMOVehicleExecutionNode::process_ebrake, this);
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
@@ -1572,6 +1577,7 @@ public:
     double max_rotational_velocity_constraint = msg->data[1];
     double max_linear_velocity_constraint_rev = msg->data[2];
     double max_rotational_velocity_constraint_rev = msg->data[3];
+
     vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint, max_linear_velocity_constraint_rev, max_rotational_velocity_constraint_rev);
     ROS_INFO_STREAM("New velocity constraint (fwd) [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "] (rev) [linear: " << msg->data[2] << " | rot: " << msg->data[3] << "]");
     if (vehicle_state_.newVelocityConstraints()) {
@@ -1579,6 +1585,30 @@ public:
     }
   }
 
+  void process_ebrake(const orunav_msgs::EBrakeConstPtr &msg) {
+    
+    if (msg->robot_id != robot_id_) {
+      ROS_ERROR_STREAM("wrong robot_id");
+    }
+
+    // Request to brake or recover?
+    if (msg->recover) {
+      ebrake_id_set_.erase(msg->sender_id);
+      if (ebrake_id_set_.empty()) {
+	sendRecoverCommand();
+      }
+      return;
+    }
+
+    // Are we already in brake state? That is don't send yet another ebrake command but add to the ebrake sender id set.
+    ebrake_id_set_.insert(msg->sender_id);
+    if (vehicle_state_.isBraking()) {
+      return;
+    }
+
+    sendBrakeCommand();
+  }
+  
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
     // Turn on the load detection
     orunav_msgs::ObjectPoseEstimation srv;
@@ -1628,6 +1658,10 @@ public:
     if (!vehicle_state_.allBrakeReasonsCleared()) {
       return;
     }
+    if (!ebrake_id_set_.empty()) {
+      return;
+    }
+    
     ROS_INFO("[KMOVehicleExecutionNode] RID:%d - sending recover command [perception:%d]", robot_id_, (int)perception);
     orunav_msgs::ControllerCommand command;
     command.robot_id = robot_id_;
