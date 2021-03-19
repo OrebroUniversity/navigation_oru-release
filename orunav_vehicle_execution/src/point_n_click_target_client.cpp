@@ -132,7 +132,7 @@ public:
       srv.request.start_from_current_state = true;
       
       if (client.call(srv)) {
-        ROS_INFO("[PointNClickTargetClientNode] - compute_task sucessfull");
+        ROS_INFO("[PointNClickTargetClientNode] - compute_task successful");
       }
       else
       {
@@ -148,9 +148,8 @@ public:
       ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("set_task");
       orunav_msgs::SetTask srv;
       srv.request.task = task;
-      
       if (client.call(srv)) {
-        ROS_INFO("[PointNClickTargetClientNode] - set_task sucessfull");
+        ROS_INFO("[PointNClickTargetClientNode] - set_task successful");
       }
       else
       {

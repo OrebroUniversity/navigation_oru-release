@@ -3,6 +3,7 @@
 
   <arg name="robot_id" default="1" />
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+  <arg name="sdf_detector" value="false"/>
 
   <rosparam command="load" file="$(find orunav_params)/config/global.cfg"/>
   <rosparam command="load" file="$(find orunav_params)/config/citi1_simulation.cfg" />
@@ -23,89 +24,89 @@
   </node>
 
   <!-- ALL ROBOT SPECIFIC TASKS -->
+  <include file="$(find orunav_launch)/launch/cititruck_sim.launch">
+	  <arg name="robot_id" value="$(arg robot_id)" />
+	  <arg name="use_update_task" value="false" />
+  </include>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/click_n_pick.rviz"/>
+
 
   <group ns="robot1">
   <param name="tf_prefix" value="robot1" />
-
-  <node pkg="orunav_mpc" type="controller_node" name="controller" output="screen">
-        <param name="robot_id" value="$(arg robot_id)" />
-	<remap from="/$(arg tf_prefix)/cmd_vel" to ="/$(arg tf_prefix)/controller/cmd_vel"/>
-  </node>
-  <include file="$(find orunav_fork_control)/launch/fork_control_sim.launch"/>
-
-  <node pkg="orunav_motion_planner" type="get_path_service" name="get_path_service" output="screen">		
-    <param name="model" value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced"/>
-    <param name="motion_primitives_directory" value="$(find orunav_motion_planner)/Primitives/" />
-    <param name="lookup_tables_directory" value="$(find orunav_motion_planner)/LookupTables/" /> 
-    <param name="min_incr_path_dist" value="0.2" />
-    <param name="visualize" value="true" />
-  </node>
-
-  <node pkg="orunav_constraint_extract" type="polygonconstraint_service" name="polygonconstraint_service" output="screen">
-    <param name="load_type" value="1" />
-    <param name="model_type" value="2" />
-    <param name="visualize" value="false" />
-    <param name="save_constraints_and_path" value="true" />
-    <param name="lookuptables_file" value="$(find orunav_constraint_extract)/tables/service_lookup_model2load1.dat" />
-    <param name="visualize_outer_constraints" value="false" />
-    <param name="visualize_only_invalid" value="false" />
-    <param name="skip_overlap" value="true" />
-    <param name="save_lookuptables" value="false" />
-  </node>  
-
-  <node pkg="orunav_path_smoother" type="smoothed_path_service" name="smoothed_path_service" output="screen">
-    <param name="visualize" value="true" />
-    <param name="visualize_deep" value="false" />
-    <param name="wheel_base" value="1.190" />
-    <param name="minimize_phi_and_dist" value="true" />
-    <param name="init_controls" value="true" />
-    <param name="use_th_constraints" value="true" />
-    <param name="use_xy_constraints" value="true" />
-    <param name="phi_min" value="-1.0" /> <!-- -0.9 -->
-    <param name="phi_max" value="1.0" />  <!-- 0.9 -->
-    <param name="reassign_constraints" value="true" />
-    <param name="reassign_iters" value="1" />
-    <param name="reassign_min_distance" value="0.1" />
-  </node>  
-
-  <node pkg="orunav_vehicle_execution" type="orunav_vehicle_execution_node" name="orunav_vehicle_execution_node_citi1" output="screen">
-    <param name="visualize" value="true" />
-    <param name="max_tracking_error" value="-1." />
-    <param name="use_forks" value="true" />
-
-    <param name="max_vel" value="0.3" />
-    <param name="max_rotational_vel" value="0.3" />
-    <param name="max_acc" value="0.1" />
-  </node>
-
-    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node">
-      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/backgrounds/citi1_sim_background.dat"/>
-      <param name="Dmax" value="0.2"/>
-      <param name="visualize" value="true"/>
-      <param name="visualize_sdf" value="true"/>
-      <param name="removeFloor" value="true"/>
-      <param name="sensor_time_offset" value="0.0"/>
-      <remap from="pointcloud" to ="kinect_rgb/sensors/kinect2depth_registered/points"/>
-      <param name="residual_thresh" value="0.01"/>
-      <param name="cov_thresh" value="0.2"/>
-      <param name="only_compute_filter_used" value="true"/>
-      <param name="depth_frame_id" value="robot1/kinect_link" /> <!-- robot1/kinect_link -->
-      <param name="asus_camera" value="false" />
-      <param name="min_nb_matched_points" value="10000" />
-      <param name="min_match_nb_points_ratio" value="0.1" />
-    </node>
-
-    <node pkg="orunav_path_smoother" type="smoothed_straight_path_service" name="smoothed_straight_path_service" output="screen">
-      <param name="visualize" value="true" />
-    </node>  
-
-    <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="citi1_vehicle_client" output="screen">
+  <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="citi1_vehicle_client" output="screen">
+      <remap from="report" to="control/report"/>
       <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/basement_pallet_targets.dat" />
     </node>
 
-    
+    <!-- =================== SDF Based Start =================== -->
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" if="$(arg sdf_detector)">
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/backgrounds/citi1_sim_background.dat"/>
+      <param name="Dmax" value="0.2"/>
+      <param name="visualize" value="true"/>
+      <param name="visualize_sdf" value="false"/>
+      <param name="removeFloor" value="true"/>
+      <param name="sensor_time_offset" value="0.0"/>
+      <!--remap from="depthmap" to ="/robot1/sensors/asus_fork/depth/image"/--> 
+      <remap from="pointcloud" to ="/robot1/sensors/asus_fork/depth_registered/points"/>
+      <param name="residual_thresh" value="0.01"/>
+      <param name="floor_dist_thresh" value="0.01"/>
+      <param name="cov_thresh" value="0.10"/>
+      <param name="only_compute_filter_used" value="true"/>
+      <param name="depth_frame_id" value="robot1/asus_fork_link" /> 
+      <param name="asus_camera" value="false" />
+      <param name="min_nb_matched_points" value="10000" />
+      <param name="min_match_nb_points_ratio" value="0.1" />
+      <param name="base_link_frame_id" value="/robot1/base_link" />
+      <param name="obbicp_based" value="false"/>
+    </node>
+    <!-- =================== SDF Based Finish =================== -->
+
+    <!-- =================== OBBICP Based Start =================== -->
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" unless="$(arg sdf_detector)" >
+      <param name="pallet_name" value="full_pallet"/>
+      <param name="half_pallet_name" value="half_pallet_oru"/>
+      <param name="base_link_frame_id" value="/robot1/base_link" />
+
+      <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
+      <remap from="depthmap" to ="sensors/asus_fork/depth/image_raw"/>
+
+      <param name="pallet_sensor_frame_id_prefix" value="/$(arg tf_prefix)/asus_fork_" />
+      <param name="OBB_frame_id" value="/$(arg tf_prefix)/asus_fork_rgb_optical_frame" />
+
+      <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
+      <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>
+
+      <param name="downsample" value="true"/>
+      <param name="downsample_ratio" value="0.02"/>
+
+      <!-- For pclEuclideanDistanceSegmentation -->
+      <param name="EC_segThresh" value="0.05"/>
+      <param name="maxSegPoints" value="9900000"/>
+      <param name="minSegPoints" value="100"/>
+
+      <!-- For obbDimensionalCheck -->
+      <param name="tolerance_X" value="0.2"/>
+      <param name="tolerance_Y" value="0.2"/>
+      <param name="tolerance_Z" value="0.5"/>
+
+      <!-- Coarse to Fine Registration -->
+      <param name="obbicp_based" value="true"/>
+      <param name="overlap_dst_thresh" value="0.05"/>
+      <param name="overlap_score_thresh" value="0.8"/>
+
+      <!-- Deep Learning -->
+      <param name="deepLearning_based" value="false"/>
+
+      <param name="save_ground_depthmap" value="false"/>
+      <param name="background_thresh" value="0.1"/>
+
+      <param name="visual_model" value="true"/>
+      <param name="visualize" value="true"/>
+  </node>
+  <!-- =================== OBBICP Based Finish =================== -->
+
   </group>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cititruck_description)/launch/click_n_pick.rviz"/>
-
+  
 </launch>

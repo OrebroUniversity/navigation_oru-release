@@ -194,9 +194,11 @@ namespace orunav_generic {
   
   class Paths : public std::vector<Path>, public PathsInterface {
   public:
-    size_t sizePaths() { return this->size(); }
+    size_t sizePaths() const { return this->size(); }
     PathInterface& getPath(size_t idx) { return (*this)[idx]; }
     const PathInterface& getPath(size_t idx) const { return (*this)[idx]; }
+    void addPaths(const Paths &p) { this->insert(this->end(), p.begin(), p.end()); }
+    void addPath(const Path &p) { this->push_back(p); }
   };
 
   class Trajectory : public TrajectoryInterface

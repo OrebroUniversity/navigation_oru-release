@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="robot_id" default="1" />
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>
@@ -9,9 +10,10 @@
     <param name="pallet_name" value="full_pallet"/>
 
     <remap from="pointcloud" to ="sensors/asus_fork/depth/points"/>
-    <remap from="depthmap" to ="sensors/asus_fork/depth/image"/>
+    <remap from="depthmap" to ="sensors/asus_fork/depth/image_raw"/>
 
     <param name="pallet_sensor_frame_id_prefix" value="/$(arg tf_prefix)/asus_fork_" />
+    <param name="OBB_frame_id" value="/$(arg tf_prefix)/asus_fork_rgb_optical_frame" />
     
     <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
     <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>

@@ -186,7 +186,6 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 
   void addPathInterface(const orunav_generic::PathInterface &path)
   {
-     std::cout << "---- orunav_generic::validPathForTrajectoryProcessing(path):" << orunav_generic::validPathForTrajectoryProcessing(path) << std::endl;
     if (!orunav_generic::validPathForTrajectoryProcessing(path)) {
       std::cerr << "trajectory_processor : invalid path(!) - should never happen" << std::endl;
     }

@@ -505,6 +505,22 @@ public:
     
     pcl::fromROSMsg<pcl::PointXYZ>( *msg, cloud);
     
+    // If we have any background data -> the forks
+    if (!background_indices_.empty()) {
+      ROS_INFO("[EuroPalletSDF]: Number of pre-stored background points : %lu", background_indices_.size());
+      pcl::PointCloud<pcl::PointXYZ> cloud_f;
+      pcl::ExtractIndices<pcl::PointXYZ> extract;
+      extract.setInputCloud (cloud.makeShared ());
+      extract.setIndices (boost::make_shared<std::vector<int> > (background_indices_));
+      extract.setNegative (true);
+      extract.setKeepOrganized (true);
+      extract.filter (cloud_f);
+
+      cloud = cloud_f;
+    } else {
+      ROS_INFO("EuroPalletSDF]: background indeces are empty! continuing with full pointcloud");
+    }
+
     if (removeFloor_) {
       // Clear the PC from floor points - TODO take the coefficients from the calibration data and not from a plane estimation model.
       pcl::PointCloud<pcl::PointXYZ> cloud_f;
@@ -525,25 +541,16 @@ public:
       seg.setInputCloud (cloud.makeShared ());
       seg.segment (inliers, coefficients);
             
-            
       pcl::ExtractIndices<pcl::PointXYZ> extract;
       extract.setInputCloud (cloud.makeShared ());
       extract.setIndices (boost::make_shared<std::vector<int> > (inliers.indices));
       extract.setNegative (true);
+      extract.setKeepOrganized (true);
       extract.filter (cloud_f);
             
-      // For simplicily keep the cloud intact -> fill the values .z = -1.
-      /* for (unsigned int i = 0; i < inliers.indices.size(); i++) {
-        cloud[inliers.indices[i]].z = -1;
-      } */
-      // If we have any background data -> the forks
-      if (!background_indices_.empty()) {
-        ROS_INFO("[EuroPalletSDF]: Number of pre-stored background points : %lu", background_indices_.size());
-        for (unsigned int i = 0; i < background_indices_.size(); i++) {
-          cloud[background_indices_[i]].z = -1;
-        }
-      }
-      pointcloud_pub_.publish(cloud);
+      cloud = cloud_f;
+
+      pointcloud_pub_.publish(cloud_f);
     }
 
     double t1 = orunav_generic::getDoubleTime();
@@ -683,9 +690,16 @@ public:
   void publish_pallet_pose(const Eigen::Matrix4f& pose_matrix)
   {
     pposeTrack.matrix() = pose_matrix.cast<double>();
-    tf::Transform tf_out;
-    tf::poseEigenToTF(pposeTrack, tf_out);
-
+    
+    //normalize pose to point towards vehicle
+    double pallet_yaw = -normalizeM_PI(pposeTrack.rotation().matrix().eulerAngles(0,1,2)(2));
+    Eigen::Vector3d translation = pposeTrack.translation();
+    translation(2) = 0;
+    
+    pposeTrack = Eigen::Translation3d(translation)
+      *Eigen::AngleAxisd(pallet_yaw, Eigen::Vector3d::UnitZ());
+        
+    //transform to world
     tf::StampedTransform worldToBaseLink;
     tf_listener.waitForTransform(global_frame_id_, base_link_frame_id_, ros::Time(0), ros::Duration(1.0));
     try{
@@ -695,16 +709,32 @@ public:
         ROS_ERROR("[EuroPalletSDF]: %s",ex.what());
         return;
     }
+    Eigen::Affine3d w2b;
+    tf::poseTFToEigen(worldToBaseLink, w2b);
+    pposeTrack = w2b*pposeTrack;
+
+    //visualize pallet
+    translation = pposeTrack.translation();
+    translation(2) = pposeTrack.rotation().matrix().eulerAngles(0,1,2)(2);
+    sdf::drawPallet(pposeTrack,global_frame_id_,1,marker_pub_);
+
+    //making sure this is a proper 2d pose
+    pposeTrack = Eigen::Translation3d(Eigen::Vector3d(translation(0), translation(1), 0))
+      *Eigen::AngleAxisd(translation(2), Eigen::Vector3d::UnitZ());    
+
+    //and publish it out
+    tf::Transform tf_out;
+    tf::poseEigenToTF(pposeTrack, tf_out);
 
     pose_stamped.header.frame_id = global_frame_id_;
-    pose_stamped.pose = sdf::sdf_transformToPose(worldToBaseLink * tf_out);
+    pose_stamped.pose = sdf::sdf_transformToPose(tf_out);
     
     orunav_msgs::ObjectPose object_pose;
     object_pose.pose = pose_stamped;
     object_pose.object.type = object_type_;
     pallet_poses_pub_.publish(object_pose);
 
-    ROS_INFO_STREAM_THROTTLE(1, "Homogeneous matrix of closest pallet: " << pose_matrix);
+    ROS_INFO_STREAM_THROTTLE(1, "Homogeneous matrix of closest pallet: " << pposeTrack.matrix());
 
   }
 
@@ -784,6 +814,7 @@ public:
           return;
       }
       ROS_INFO("New depth image received. ACTIVE!");
+      pose_stamped.header.stamp = msg->header.stamp;
 
       if(myCloud->size()) myCloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>); 
 
@@ -845,6 +876,8 @@ public:
       {
           std::cerr << "No cluster!" << "\n";
           return;
+      } else {
+	  ROS_INFO("[EURpallet] OBB pipeline: Processing %d clusters",cluster_indices.size()); 
       }
       
       myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
@@ -916,7 +949,10 @@ public:
       {
           std::cerr << "No cluster!" << "\n";
           return;
+      } else {
+	  ROS_INFO("[EURpallet] OBBICP pipeline: Processing %d clusters",cluster_indices.size()); 
       }
+
       
       myOBBICP->colorSegments(cloud, cluster_indices, *myCloud);
       myOBBICP->getClusters(cloud, cluster_indices, myclusters);
@@ -929,8 +965,8 @@ public:
       bool pallet_ready = false;
 
       // Visualize model matching
-      if(visual_model)
-      {
+      //if(visual_model)
+      //{
           for(int i=0; i < myclusters.size(); i++)
           {
               if(myclusters[i].recognizedObj != "")
@@ -955,7 +991,7 @@ public:
                   }           
               }
           }
-      }
+      //}
 
       if(pallet_ready) publish_pallet_pose(pallet_pose_matrix);
       pallet_ready = false;

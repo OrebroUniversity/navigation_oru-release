@@ -1,3 +1,4 @@
 #ID of robot to abort
 int32 robotID
 ---
+bool success   # indicate successful run of triggered service

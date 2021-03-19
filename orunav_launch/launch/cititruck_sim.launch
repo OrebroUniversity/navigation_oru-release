@@ -1,7 +1,10 @@
+<?xml version="1.0"?>
 <launch>
 
   <arg name="robot_id" default="1"/>
   <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+  <arg name="use_ct" default="false"/>
+  <arg name="use_update_task" default="true"/>
 
   <group ns="$(arg tf_prefix)">
     <param name="tf_prefix" value="$(arg tf_prefix)" />
@@ -108,6 +111,9 @@
       <param name="max_acc" value="0.1" />
 
       <param name="chunk_idx_connect_offset" value="1"/>
+      <param name="use_ct" value="$(arg use_ct)" />
+      <param name="use_update_task_service" value="$(arg use_update_task)"/> <!-- run with fake coordinator in simulation -->
+
     </node>
 
   </group>

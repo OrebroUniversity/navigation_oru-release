@@ -10,9 +10,10 @@
     <!-- Arguments used in cititruck.gazebo -->
     <xacro:arg name="controller_prefix" default=""/>
     <xacro:arg name="sensor_prefix" default=""/>
-    <xacro:arg name="sick_name" default="safety"/>
+    <xacro:arg name="sick_name" default="laser"/>
     <xacro:arg name="ls2000_name" default="nav"/>   
     <xacro:arg name="kinect2_name" default=""/>
+    <xacro:arg name="kinect1_name" default=""/>
     <xacro:arg name="use_gpu" default="true"/>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
@@ -298,7 +299,7 @@
       </joint>
 
       <!-- Sick laser -->
-      <link name="laser_link">
+      <link name="$(arg sick_name)_link">
 	<collision>
 	  <origin xyz="0 0 0" rpy="0 0 0"/>
 	  <geometry>
@@ -324,12 +325,12 @@
 	<axis xyz="0 1 0" />
 	<origin xyz="1.4 0 0.02" rpy="3.14159 0 0"/>
 	<parent link="base_link"/>
-	<child link="laser_link"/>
+	<child link="$(arg sick_name)_link"/>
       </joint>
 
 
       <!-- Kinect -->      
-      <link name="kinect_link">
+      <link name="$(arg kinect1_name)_link">
 	<collision>
 	  <origin xyz="0 0 0" rpy="0 0 0"/>
 	  <geometry>
@@ -358,15 +359,15 @@
  	<origin xyz="0.5 0 0.7" rpy="0 2.5 0"/> <!-- 0 2.5 0 -->
 <!--  	<origin xyz="0.5 0 0.7" rpy="0 3.14159 0"/> -->
 	<parent link="base_link"/>
-	<child link="kinect_link"/>
+	<child link="$(arg kinect1_name)_link"/>
       </joint>
       
-      <link name="kinect_rgb_optical_link"/>
+      <link name="$(arg kinect1_name)_rgb_optical_frame"/>
       <joint name="kinect_optical_joint" type="fixed">
         <axis xyz="0 1 0" />
         <origin xyz="0.0 0.0 0.0" rpy="${-pi/2} 0 ${-pi/2}"/> 
-        <parent link="kinect_link"/>
-        <child link="kinect_rgb_optical_link"/>
+        <parent link="$(arg kinect1_name)_link"/>
+        <child link="$(arg kinect1_name)_rgb_optical_frame"/>
       </joint>
 
   

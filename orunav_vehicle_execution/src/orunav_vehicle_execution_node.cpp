@@ -38,6 +38,7 @@
 #include <orunav_msgs/ObjectPose.h>
 #include <orunav_msgs/VectorMap.h>
 #include <orunav_msgs/GeoFence.h>
+#include <orunav_msgs/EBrake.h>
 
 #include <orunav_constraint_extract/polygon_constraint.h> // Only used for visualization.
 #include <orunav_constraint_extract/conversions.h>
@@ -117,6 +118,7 @@ private:
   ros::Subscriber pallet_poses_sub_;
 
   ros::Subscriber velocity_constraints_sub_;
+  ros::Subscriber ebrake_sub_;
   
   boost::mutex map_mutex_, inputs_mutex_, current_mutex_, run_mutex_;
   boost::thread client_thread_;
@@ -150,7 +152,9 @@ private:
   double min_incr_path_dist_;
   int min_nb_path_points_;
   TrajectoryProcessor::Params traj_params_;
+  TrajectoryProcessor::Params traj_params_original_;
   TrajectoryProcessor::Params traj_slowdown_params_;
+  bool overwrite_traj_params_with_velocity_constraints_;
 
   // Forklift settings
   int robot_id_;
@@ -222,6 +226,10 @@ private:
 
   bool real_cititruck_;
   bool no_smoothing_;
+  bool resolve_motion_planning_error_;
+
+  std::set<int> ebrake_id_set_;
+
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
@@ -259,7 +267,10 @@ public:
     traj_params_.debug = true;
     traj_params_.debugPrefix = std::string("ct_traj_gen/");
 
+    paramHandle.param<bool>("overwrite_traj_params_with_velocity_constraints", overwrite_traj_params_with_velocity_constraints_, true);
+    traj_params_original_ = traj_params_;
     traj_slowdown_params_ = traj_params_;
+        
     paramHandle.param<double>("max_slowdown_vel", traj_slowdown_params_.maxVel, 0.1);
 
     paramHandle.param<double>("min_docking_distance", min_docking_distance_, 1.0);
@@ -291,7 +302,8 @@ public:
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
     paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
     paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
-    
+    paramHandle.param<bool>("resolve_motion_planning_error", resolve_motion_planning_error_, true);
+
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
@@ -314,7 +326,7 @@ public:
     laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10,&KMOVehicleExecutionNode::process_laserscan, this);
 
     velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10,&KMOVehicleExecutionNode::process_velocity_constraints, this);
-    
+    ebrake_sub_ = nh_.subscribe<orunav_msgs::EBrake>(orunav_generic::getRobotTopicName(robot_id_, "/ebrake"), 10,&KMOVehicleExecutionNode::process_ebrake, this);
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     heartbeat_slow_visualization_   = nh_.createTimer(ros::Duration(1.0),&KMOVehicleExecutionNode::publish_visualization_slow,this);
@@ -731,15 +743,18 @@ public:
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Call to service get_path returns ERROR");
-        return false;
+	if (!resolve_motion_planning_error_) {
+	  return false;
+	}
       }
       
       if (!srv.response.valid) {
-        ROS_WARN("[KMOVehicleExecutionNode] RID:%d - no path found(!), cannot computeTask", robot_id_);
+        ROS_WARN("[KMOVehicleExecutionNode] RID:%d - no path found(!), will attempt to generate another path", robot_id_);
         // Are the start / goal very close?
-        if (getTargetStartGoalDistance(target) > sqrt(2)*0.2) { // assuming grid size of 0.2.
+        if (getTargetStartGoalDistance(target) > sqrt(2)*map.info.resolution) { // if the targets are reasonable apart
           // This indicates that there is some real problems finding the path...
-          res.result = 0; // TODO, add some proper reply codes.
+	  ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - target and goal is to far appart, the motion planner should have found a path", robot_id_);
+	  res.result = 0; // TODO, add some proper reply codes.
           return false;
         }
         // If they are, try to use the driven path (if any) to generate a repositioning path...
@@ -1018,7 +1033,7 @@ public:
 
       if (use_update_task_service_) {
         // Send the task to the coordinator
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/update_task");
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/coordinator/update_task");
         orunav_msgs::SetTask srv;
         srv.request.task = vehicle_state_.getTask();
         
@@ -1027,7 +1042,7 @@ public:
         }
         else
         {
-          ROS_ERROR("[KMOVehicleExecution] - Failed to call service: update_task");
+          ROS_ERROR_STREAM("[KMOVehicleExecution] - Failed to call service: " << client.getService());
           return;
         }
         ROS_INFO_STREAM("[KMOVehicleExecution] - update_task return value : " << srv.response.result);
@@ -1230,6 +1245,8 @@ public:
       // Need to move the vehicle state to waiting.
       if (!vehicle_state_.setPerceptionReceived()) {
         ROS_ERROR("failed in setting perception received");
+      } else {
+	ROS_INFO("Vehicle state was set to PerceptionReceived");
       }
 
       // The pose is ok. Send a LOAD request with the pallet pose.
@@ -1261,7 +1278,9 @@ public:
         task = srv.response.task;
         ROS_INFO_STREAM("[KMOVehicleExecution] - compute_task return value : " << srv.response.result);
       }
+      if (use_update_task_service_) 
       {
+	ROS_WARN("[KMOVehicleExecution] Pallet picking via coordinator (make sure it is running)!!");
         // Send the task to the coordinator
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::UpdateTask>("/coordinator/update_task");
         orunav_msgs::UpdateTask srv;
@@ -1277,11 +1296,20 @@ public:
         }
         ROS_INFO_STREAM("[KMOVehicleExecution] - set(update)_task return value : " << srv.response.result);
       }
+      else {
+	ROS_WARN("[KMOVehicleExecution] Bypassing coordinator!!");
+        orunav_msgs::ExecuteTask srv;
+        srv.request.task = task;
+        executeTaskCB(srv.request,
+                      srv.response);
+      }
     }
     
 
     return;
 
+//Code bellow is the old code from several year ago. please keep in case useful 
+#if 0
     if (!vehicle_state_.goalOperationLoadDetect()) {
       ROS_WARN("Receiving pallet pose estimates don't have a load/detect operation to perform");
       return;
@@ -1387,7 +1415,7 @@ public:
         ROS_INFO_STREAM("[KMOVehicleExecution] - set_task return value : " << srv.response.result);
       }
     }
-
+#endif
   }
 
 
@@ -1549,6 +1577,7 @@ public:
     double max_rotational_velocity_constraint = msg->data[1];
     double max_linear_velocity_constraint_rev = msg->data[2];
     double max_rotational_velocity_constraint_rev = msg->data[3];
+
     vehicle_state_.setNewVelocityConstraints(max_linear_velocity_constraint, max_rotational_velocity_constraint, max_linear_velocity_constraint_rev, max_rotational_velocity_constraint_rev);
     ROS_INFO_STREAM("New velocity constraint (fwd) [linear: " << msg->data[0] << " | rot: " << msg->data[1] << "] (rev) [linear: " << msg->data[2] << " | rot: " << msg->data[3] << "]");
     if (vehicle_state_.newVelocityConstraints()) {
@@ -1556,6 +1585,30 @@ public:
     }
   }
 
+  void process_ebrake(const orunav_msgs::EBrakeConstPtr &msg) {
+    
+    if (msg->robot_id != robot_id_) {
+      ROS_ERROR_STREAM("wrong robot_id");
+    }
+
+    // Request to brake or recover?
+    if (msg->recover) {
+      ebrake_id_set_.erase(msg->sender_id);
+      if (ebrake_id_set_.empty()) {
+	sendRecoverCommand();
+      }
+      return;
+    }
+
+    // Are we already in brake state? That is don't send yet another ebrake command but add to the ebrake sender id set.
+    ebrake_id_set_.insert(msg->sender_id);
+    if (vehicle_state_.isBraking()) {
+      return;
+    }
+
+    sendBrakeCommand();
+  }
+  
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target) {
     // Turn on the load detection
     orunav_msgs::ObjectPoseEstimation srv;
@@ -1605,6 +1658,10 @@ public:
     if (!vehicle_state_.allBrakeReasonsCleared()) {
       return;
     }
+    if (!ebrake_id_set_.empty()) {
+      return;
+    }
+    
     ROS_INFO("[KMOVehicleExecutionNode] RID:%d - sending recover command [perception:%d]", robot_id_, (int)perception);
     orunav_msgs::ControllerCommand command;
     command.robot_id = robot_id_;
@@ -1852,7 +1909,7 @@ public:
           }
 	  else if (vehicle_state_.newVelocityConstraints()) {
             ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
-	    TrajectoryProcessor::Params traj_params = traj_params_;
+	    TrajectoryProcessor::Params traj_params = traj_params_original_;
 	    traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
 	    traj_params.maxVelRev = std::min(traj_params.maxVelRev, vehicle_state_.getMaxLinearVelocityConstraintRev());
 	    traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
@@ -1864,6 +1921,11 @@ public:
 	    traj_params.maxRotationalVelRev = std::max(traj_params.maxRotationalVelRev, 0.01);
 
 	    ROS_INFO_STREAM("new trajectory params: " << traj_params);
+
+	    // Overwrite the default velocity constratins 
+	    if (overwrite_traj_params_with_velocity_constraints_) {
+	      traj_params_ = traj_params;
+	    }
 	    
 	    bool valid = false;
 	    chunks_data = computeTrajectoryChunksCASE2(vehicle_state_, traj_params, chunk_idx, path_idx, path_chunk_distance, valid, use_ct_);

@@ -28,6 +28,9 @@ endif()
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system program_options thread)
+if (${Boost_VERSION} LESS 106500)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_MATH_DISABLE_FLOAT128")
+endif()
 
 #SET(CMAKE_CXX_FLAGS "-std=c++11 -O3")
   add_definitions(-std=c++11)

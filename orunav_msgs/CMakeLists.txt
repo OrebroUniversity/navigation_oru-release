@@ -64,6 +64,7 @@ add_message_files(
    DrillTargetArray.msg
    IliadItem.msg
    IliadItemArray.msg
+   EBrake.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -106,6 +107,7 @@ generate_messages(
 )
 
 catkin_package(
+  CATKIN_DEPENDS message_runtime
 )
 
 ###########
