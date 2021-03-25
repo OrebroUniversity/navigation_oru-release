@@ -758,7 +758,7 @@ public:
       float cx = 319.5; float cy = 239.5; float fx = 580.0; float fy = 580.0;
       cv::Mat ground_depthImg;
       ground_depthImg = cv::imread(ground_depthmap_dir, -1);
-      ground_depthImg.convertTo(ground_depthImg, CV_32FC1, 0.001);
+      ground_depthImg.convertTo(ground_depthImg, CV_32FC1, 1.0); //0.001 is mm scale, 1 is m scale
       for(int row = 0; row < depthImg.rows; row++)
       {
           for(int col = 0; col < depthImg.cols; col++)       
@@ -766,9 +766,9 @@ public:
               if(isnan(depthImg.at<float>(row, col))) continue;
               if(isnan(ground_depthImg.at<float>(row, col))) continue;
 
-              double depth = depthImg.at<float>(row, col);
+              double depth = depthImg.at<float>(row, col)/1000.0; // 1 is mm scale, 1000 is m scale
               unsigned char semantic = semantic_image.at<unsigned char>(row, col);
-              double groundDepth = ground_depthImg.at<float>(row, col);
+              double groundDepth = ground_depthImg.at<float>(row, col)/1000.0; // 1 is mm scale, 1000 is m scale
               
               pcl::PointXYZRGB point;
               point.x = (col-cx) * depth / fx;
@@ -826,7 +826,7 @@ public:
           if(save_ground_depthmap)
           {
               cv::Mat depth = bridge->image.clone();      
-              depth.convertTo(depth, CV_16UC1, 1000.0);
+              depth.convertTo(depth, CV_16UC1, 1.0); // 1000 mm scale, 1 m scale
               cv::imwrite(ground_depthmap_dir, depth);
               ROS_DEBUG_STREAM_THROTTLE(1, ("Depth saved to file: " + ground_depthmap_dir).c_str());
               return;
@@ -927,10 +927,25 @@ public:
           Eigen::Affine3d Tcam_offset;
           try
           {
-              tf_listener.lookupTransform(base_link_frame_id_, depth_frame_id_, ros::Time(0), transform);
-              tf::poseTFToEigen(transform, Tcam_offset);
-              pcl::transformPointCloud (cloud, cloud, Tcam_offset);
-              pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+	    
+	    tf_listener.lookupTransform(base_link_frame_id_, depth_frame_id_, ros::Time(0), transform);
+	    //tf_listener.lookupTransform("/world", depth_frame_id_, ros::Time(0), transform);
+	    tf::poseTFToEigen(transform, Tcam_offset);
+	    pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+	    pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+	    std::cerr <<"DBG transform from " <<  base_link_frame_id_ << " to " << depth_frame_id_ <<"\n";
+	    
+	    /* From the standalone node:
+	    tf_listener.lookupTransform(pallet_sensor_frame_id_prefix_ + "link", depth_frame_id_, ros::Time(0), transform);
+	    tf::poseTFToEigen(transform, Tcam_offset);
+	    pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+	    pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+            
+	    tf_listener.lookupTransform("world", pallet_sensor_frame_id_prefix_ + "link", ros::Time(0), transform);
+	    tf::poseTFToEigen(transform, Tcam_offset);
+	    pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+	    pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
+	    */
           }
           catch (tf::TransformException ex)
           {

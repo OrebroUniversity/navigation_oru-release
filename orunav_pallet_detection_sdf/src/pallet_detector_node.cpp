@@ -125,7 +125,7 @@ class PalletDetectorNode
             float cx = 319.5; float cy = 239.5; float fx = 580.0; float fy = 580.0;
             cv::Mat ground_depthImg;
             ground_depthImg = cv::imread(ground_depthmap_dir, -1);
-            ground_depthImg.convertTo(ground_depthImg, CV_32FC1, 0.001);
+            ground_depthImg.convertTo(ground_depthImg, CV_32FC1, 1.0); // should be 0.001 for mm scale, 1.0 for metre
             for(int row = 0; row < depthImg.rows; row++)
             {
                 for(int col = 0; col < depthImg.cols; col++)       
@@ -133,8 +133,8 @@ class PalletDetectorNode
                     if(isnan(depthImg.at<float>(row, col))) continue;
                     if(isnan(ground_depthImg.at<float>(row, col))) continue;
 
-                    double depth = depthImg.at<float>(row, col);
-                    double groundDepth = ground_depthImg.at<float>(row, col);
+                    double depth = depthImg.at<float>(row, col)/1000.0; // should be 1000 for metre scale, 1 for mm scale
+                    double groundDepth = ground_depthImg.at<float>(row, col)/1000.0;  // should be 1000 for metre scale, 1 for mm scale
                     
                     pcl::PointXYZRGB point;
                     point.x = (col-cx) * depth / fx;
@@ -236,7 +236,7 @@ class PalletDetectorNode
                 if(save_ground_depthmap)
                 {
                     cv::Mat depth = bridge->image.clone();      
-                    depth.convertTo(depth, CV_16UC1, 1000.0);
+                    depth.convertTo(depth, CV_16UC1, 1.0); // Should be 1.0 for metre scale, 1000 for mm
                     cv::imwrite(ground_depthmap_dir, depth);
                     std::cerr << "Depth saved to: " << "\n" << ground_depthmap_dir << "\n";
                     return;
@@ -296,7 +296,7 @@ class PalletDetectorNode
             
             if(!using_bagfile) myCloud->header.frame_id = "world"; 
             else myCloud->header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
-            
+
             pointsRGB_pub.publish(*myCloud);
             markersPublish(); 
         }
@@ -312,10 +312,12 @@ class PalletDetectorNode
                     tf_listener.lookupTransform(pallet_sensor_frame_id_prefix_ + "link", pallet_sensor_frame_id_prefix_ + "depth_optical_frame", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+		    pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
                     
                     tf_listener.lookupTransform("world", pallet_sensor_frame_id_prefix_ + "link", ros::Time(0), transform);
                     tf::poseTFToEigen(transform, Tcam_offset);
                     pcl::transformPointCloud (cloud, cloud, Tcam_offset);
+		    pcl::transformPointCloud (*myCloud, *myCloud, Tcam_offset);
                 }
                 catch (tf::TransformException ex)
                 {
@@ -357,7 +359,11 @@ class PalletDetectorNode
             }
 
             if(!using_bagfile) myCloud->header.frame_id = "world"; 
-            else myCloud->header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
+            else
+	      myCloud->header.frame_id = pallet_sensor_frame_id_prefix_ + "depth_optical_frame";
+
+	    std::cerr << "Scene Points after removing ground and downsample #2: " << myCloud->size() << "\n";
+       	    
 
             pointsRGB_pub.publish(*myCloud);
             markersPublish();
