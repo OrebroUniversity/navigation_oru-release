@@ -111,7 +111,7 @@ namespace orunav_conversions
   orunav_msgs::Path createPathMsgFromPathInterface(const orunav_generic::PathInterface &path)
 {
   orunav_msgs::Path p;
-  for (unsigned int i = 0; i < path.sizePath(); i++)
+  for (size_t i = 0; i < path.sizePath(); i++)
     {
       orunav_msgs::PoseSteering ps;
       ps.pose.orientation = tf::createQuaternionMsgFromYaw(path.getPose2d(i)(2));

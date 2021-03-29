@@ -1008,6 +1008,16 @@ public:
     newVelocityConstraints_ = false;
   }
 
+  bool abortTaskAtCriticalPoint() {
+    if (state_ != AT_CRITICAL_POINT) {
+      return false;
+    }
+    this->clearTrajectoryChunks();
+    this->clearCurrentPath();
+    state_ = WAITING_FOR_TASK;
+    return true;
+  }
+
 private:
 
   State state_;
