@@ -97,13 +97,13 @@ public:
     
     srv.request.target = target;
     srv.request.start_from_current_state = true;
-    
+
     if (client.call(srv)) {
       ROS_INFO("[VehicleExecutionClientNode] - compute_task sucessfull");
     }
     else
     {
-      ROS_ERROR("[VehicleExecutionClientNode] - Failed to call service: compute_task");
+      ROS_ERROR_STREAM("[VehicleExecutionClientNode] - Failed to call service: " << client.getService() );
       return false;
     }
     task = srv.response.task;

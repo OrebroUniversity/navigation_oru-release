@@ -195,6 +195,12 @@ void* startLogger (void *thread_data_ptr)
 /***************** Main *****************************/
 int main(int argc, char** argv)
 {
+#ifdef SW_BUILD_SIMULATION
+  std::cout << "SW_BUILD_SIMULATION == ON\n";
+#else
+    std::cout << "SW_BUILD_SIMULATION == OFF\n";
+#endif
+  
     ros::init (argc, argv, "sw_controller", ros::init_options::NoSigintHandler);
 
     threadData thread_data;
