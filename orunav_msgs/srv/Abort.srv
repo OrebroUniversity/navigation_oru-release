@@ -1,4 +1,5 @@
-#ID of robot to abort
-int32 robotID
+int32 robotID	# ID of robot to abort
+bool force	# force abort in the robot current position without checking the kinematic feasibility of the brake (to be used after having pushed manually the e-brake)
 ---
-bool success   # indicate successful run of triggered service
+bool success   	# indicate successful run of triggered service
+string message # informational, e.g. for error messages
