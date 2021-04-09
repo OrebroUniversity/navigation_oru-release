@@ -687,7 +687,7 @@ public:
       ros::ServiceClient vm_client = nh_.serviceClient<orunav_msgs::GetVectorMap>("get_vector_map");
       if (vm_client.call(vm_srv))
       {
-        ROS_INFO("[KMOVehicleExecutionNode] - get_vector_map sucessful");
+        ROS_INFO("[KMOVehicleExecutionNode] - get_vector_map successful");
       }
       else
       {
@@ -701,7 +701,7 @@ public:
       ros::ServiceClient gf_client = nh_.serviceClient<orunav_msgs::GetGeoFence>("get_geo_fence");
       if (gf_client.call(gf_srv))
       {
-        ROS_INFO("[KMOVehicleExecutionNode] - get_geo_fence sucessful");
+        ROS_INFO("[KMOVehicleExecutionNode] - get_geo_fence successful");
       }
       else
       {
@@ -953,7 +953,7 @@ public:
 
       if (client.call(srv))
       {
-        ROS_INFO("[KMOVehicleExecutionNode] - deltatvec_service sucessfull");
+        ROS_INFO("[KMOVehicleExecutionNode] - deltatvec_service successful");
       }
       else
       {
@@ -1106,7 +1106,7 @@ public:
 
         if (client.call(srv))
         {
-          ROS_INFO("[KMOVehicleExecution] - update_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - update_task successful");
         }
         else
         {
@@ -1351,7 +1351,7 @@ public:
         if (computeTaskCB(srv.request,
                           srv.response))
         {
-          ROS_INFO("[KMOVehicleExecution] - compute_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - compute_task successful");
         }
         else
         {
@@ -1371,7 +1371,7 @@ public:
 
         if (client.call(srv))
         {
-          ROS_INFO("[KMOVehicleExecution] - set(update)_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - set(update)_task successful");
         }
         else
         {
@@ -1435,7 +1435,7 @@ public:
         srv.request.task = task;
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("coodinator/update_task");
         if (client.call(srv)) {
-          ROS_INFO("[KMOVehicleExecution] - update_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - update_task successful");
         }
         else
         {
@@ -1472,7 +1472,7 @@ public:
 
         if (computeTaskCB(srv.request,
                           srv.response)) {
-          ROS_INFO("[KMOVehicleExecution] - compute_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - compute_task successful");
         }
         else
         {
@@ -1489,7 +1489,7 @@ public:
         srv.request.task = task;
 
         if (client.call(srv)) {
-          ROS_INFO("[KMOVehicleExecution] - set_task sucessfull");
+          ROS_INFO("[KMOVehicleExecution] - set_task successful");
         }
         else
         {
@@ -2148,7 +2148,7 @@ public:
       else
       {
         ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
-        ROS_ERROR("[KMOVehicleExecutionNode] - in wong STATE(!) - should never happen");
+        ROS_ERROR("[KMOVehicleExecutionNode] - in wrong STATE(!) - should never happen");
       }
 
       //-----------------------------------------------------------------
