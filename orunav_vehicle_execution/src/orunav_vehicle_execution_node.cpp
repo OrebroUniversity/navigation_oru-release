@@ -111,6 +111,7 @@ private:
   ros::Publisher forkcommand_pub_;
   ros::Publisher marker_pub_;
   ros::Publisher report_pub_;
+  ros::Publisher planningmap_pub_;
 
   ros::Subscriber laserscan_sub_;
   ros::Subscriber laserscan2_sub_;
@@ -316,6 +317,8 @@ public:
     command_pub_ = nh_.advertise<orunav_msgs::ControllerCommand>("control/controller/commands", 1000);
     forkcommand_pub_ = nh_.advertise<orunav_msgs::ForkCommand>("control/fork/command", 1);
     report_pub_ = nh_.advertise<orunav_msgs::RobotReport>("control/report", 1);
+    planningmap_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("debug/planner_map", 1, true);
+    
     // Subscribers
     map_sub_ = nh_.subscribe<nav_msgs::OccupancyGrid>("/map", 10, &KMOVehicleExecutionNode::process_map, this);
     control_report_sub_ = nh_.subscribe<orunav_msgs::ControllerReport>("control/controller/reports", 10, &KMOVehicleExecutionNode::process_report, this);
@@ -771,6 +774,7 @@ public:
       if (!use_vector_map_and_geofence_)
       {
         srv.request.map = map;
+	planningmap_pub_.publish(map);
       }
 
       srv.request.target = target;
@@ -779,6 +783,8 @@ public:
       {
         srv.request.vector_map = vector_map_;
         srv.request.geofence = geofence_;
+	planningmap_pub_.publish(vector_map_);
+	ROS_WARN_STREAM("Using geofence map.");
       }
 
       // Update the target goal pose and map based on the load operations
