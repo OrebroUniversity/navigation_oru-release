@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robot_id" default="2" />
+  <arg name="tf_prefix" value="robot$(arg robot_id)"/>
+
+    <node pkg="orunav_pallet_detection_sdf" type="euro_pallet_sdf_node" name="euro_pallet_sdf_node" output="screen" ns="$(arg tf_prefix)">
+
+      <param name="tf_prefix" value="$(arg tf_prefix)" />
+      <param name="robot_id_" value="$(arg robot_id)"/>
+      <param name="full_pallet_name" value="full_pallet"/>
+      <param name="half_pallet_name" value="half_pallet_oru"/>
+      <param name="using_bagfile" value="false"/>
+
+      <remap from="pointcloud" to ="sensors/asus_fork/depth_registered/points"/>
+      <remap from="depthmap" to ="sensors/asus_fork/depth/image_raw"/>
+
+      <param name="base_link_frame_id" value="$(arg tf_prefix)/base_link" />
+      <param name="global_frame_id" value="/map_laser2d" />
+      <param name="pallet_pose_topic" value="pallet_poses" />
+
+    <!-- ==================== SDF Based Start ==================== -->    
+
+      <param name="background_indices_file_name" value="$(find orunav_pallet_detection_sdf)/data/background.dat"/>
+      <param name="Dmax" value="0.4"/>
+      <param name="visualize" value="false"/>
+      <param name="visualize_sdf" value="true"/>
+      <param name="removeFloor" value="true"/>
+      <param name="sensor_time_offset" value="0.0"/>
+      <param name="residual_thresh" value="0.01"/>
+      <param name="cov_thresh" value="0.2"/>
+      <param name="only_compute_filter_used" value="true"/>
+      <param name="asus_camera" value="true" />
+      <param name="min_nb_matched_points" value="10000" />
+      <param name="min_match_nb_points_ratio" value="0.1" />
+      <param name="floor_distance_thresh" value="0.02"/>
+    
+    <!-- ==================== SDF Based Finish ==================== -->
+
+
+    <!-- =================== OBBICP Based Start =================== -->
+      <param name="obbicp_based" value="true"/>
+      
+      <param name="ground_depthmap_dir" value="$(find orunav_pallet_detection_sdf)/data/ground_depth.png"/>
+      <param name="models_dir" value="$(find orunav_pallet_detection_sdf)/data/"/>
+
+      <param name="downsample" value="true"/>
+      <param name="downsample_ratio" value="0.02"/>
+
+      <!-- For pclEuclideanDistanceSegmentation -->
+      <param name="EC_segThresh" value="0.04"/>
+      <param name="maxSegPoints" value="9900000"/>
+      <param name="minSegPoints" value="100"/>
+      <!-- For obbDimensionalCheck -->
+      <param name="tolerance_X" value="0.2"/>
+      <param name="tolerance_Y" value="0.2"/>
+      <param name="tolerance_Z" value="0.5"/>
+
+      <!-- Coarse to Fine Registration -->
+      <param name="icp_based" value="true"/> <!-- was false -->
+      <param name="overlap_dst_thresh" value="0.05"/>
+      <param name="overlap_score_thresh" value="0.8"/>
+
+      <!-- Deep Learning -->
+      <param name="deepLearning_based" value="false"/> 
+      <remap from="semanticmap" to ="deepSeg/semantic_image"/>
+
+      <param name="save_ground_depthmap" value="false"/>
+      <param name="background_thresh" value="0.1"/>
+
+      <param name="visual_model" value="true"/>
+
+      <!-- =================== OBBICP Based Finish =================== -->
+
+    </node>
+
+  <!--node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/-->
+
+  <node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibrated" args="0.699369 0.0449877 1.04253 -0.0036974 0.94864 0.0110947 0.316142 /robot2/base_link /robot2/asus_fork_base_link 10"/>
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.697179 -0.0448123 1.21826 -0.369287 0.042435 0.928193 0.016883 /robot3/base_link /robot3/asus_fork_link 10"/> -->
+
+  
+
+  <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="vehicle_client" output="screen" ns="$(arg tf_prefix)">
+    <param name="tf_prefix" value="$(arg tf_prefix)" />
+    <param name="robot_id" value="$(arg robot_id)"/>
+    <remap from="report" to="control/report"/>
+    <!-- <remap from="compute_task" to="robot$(arg robot_id)/compute_task"/> -->
+    <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/robotlab_test_targets.dat" />
+  </node>
+
+
+  
+</launch>
+
