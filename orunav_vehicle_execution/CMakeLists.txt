@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(orunav_vehicle_execution)
 
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
