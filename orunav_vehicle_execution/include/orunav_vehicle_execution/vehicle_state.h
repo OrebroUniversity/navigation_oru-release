@@ -11,7 +11,9 @@ public:
 
   enum PerceptionState { PERCEPTION_INACTIVE = 1, PERCEPTION_ACTIVE = 2 };
 
-  VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE; brakeReasonPerception_ = false; brakeReasonCTS_ = false; 
+  enum BrakeReason { SENSOR = 1, TRACKING_ERROR, SERVICE_CALL, TOPIC_CALL };
+  
+  VehicleState() { state_ = WAITING_FOR_TASK; controllerState_ = UNKNOWN; forkState_ = FORK_POSITION_UNKNOWN; startOperation_ = NO_OPERATION; goalOperation_ = NO_OPERATION; prev_controller_status_ = -1; controller_status_ = -1; currentTrajectoryChunkIdx_ = 0; currentTrajectoryChunkStepIdx_ = 0; currentTrajectoryChunkEstIdx_ = 0; stepIdx_ = 0; isDocking_ = false; carryingLoad_ = false; currentPathIdx_ = 0; trajectoryChunksStartTime_ = 0.; dockingFailed_ = false; receivedControllerReport_ = false; receivedForkReport_ = false; validState2d_ = false; validControl_ = false; resendTrajectory_ = false; currentTime_ = ros::Time(0); perceptionState_ = PERCEPTION_INACTIVE;  
     activeTask_.criticalPoint = -1; slowdownCounter_ = 0;
     newVelocityConstraints_ = false;
     maxLinearVelocityConstraint_ = 1.;
@@ -383,6 +385,9 @@ public:
     if (controllerState_ == WAITING || controllerState_ == ACTIVE)
       return true;
 
+    if (brakeSentUsingServiceCall())
+      return true;
+    
     return false;
   }
 
@@ -425,25 +430,25 @@ public:
     controllerState_ = WAITING_TRAJECTORY_SENT;
   }
 
-  void brakeSent(bool perception = true) {
-    controllerState_ = BRAKE_SENT;
-    if (perception)
-      brakeReasonPerception_ = true;
-    else
-      brakeReasonCTS_ = true;
+  void brakeSent(BrakeReason reason) {
+    active_brake_reasons_.insert(reason);
   }
 
-  void brakeClear(bool perception = true) {
-    if (perception)
-      brakeReasonPerception_ = false;
-    else
-      brakeReasonCTS_ = false;
+  void brakeClear(BrakeReason reason) {
+    auto it=active_brake_reasons_.find(reason);
+    if (it != active_brake_reasons_.end()) {
+      active_brake_reasons_.erase(it);
+    }
   }
 
   bool allBrakeReasonsCleared() const {
-    return (brakeReasonPerception_ == false && brakeReasonCTS_ == false);
+    return (active_brake_reasons_.empty());
   }
 
+  bool brakeSentUsingServiceCall() const {
+    return (active_brake_reasons_.count(BrakeReason::SERVICE_CALL) != 0);
+  }
+  
   ControllerState getControllerState() const { 
     return controllerState_; 
   }
@@ -1059,9 +1064,6 @@ private:
 
   orunav_generic::RobotInternalState2d internalState2d_;
 
-  bool brakeReasonPerception_;
-  bool brakeReasonCTS_;
-
   double timeStep_;
   int slowdownCounter_;
 
@@ -1070,4 +1072,6 @@ private:
   double maxLinearVelocityConstraintRev_;
   double maxRotationalVelocityConstraintRev_;
   bool newVelocityConstraints_;
+
+  std::set<BrakeReason> active_brake_reasons_;
 };
