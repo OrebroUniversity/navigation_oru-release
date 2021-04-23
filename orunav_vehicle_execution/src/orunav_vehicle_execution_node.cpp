@@ -39,6 +39,7 @@
 #include <orunav_msgs/VectorMap.h>
 #include <orunav_msgs/GeoFence.h>
 #include <orunav_msgs/EBrake.h>
+#include <orunav_msgs/BrakeTask.h>
 
 #include <orunav_constraint_extract/polygon_constraint.h> // Only used for visualization.
 #include <orunav_constraint_extract/conversions.h>
@@ -103,6 +104,7 @@ private:
   ros::NodeHandle nh_;
   ros::ServiceServer service_compute_;
   ros::ServiceServer service_execute_;
+  ros::ServiceServer service_brake_;
 
   ros::Publisher trajectorychunk_pub_;
   ros::Publisher command_pub_;
@@ -198,7 +200,7 @@ private:
   int docking_max_nb_opt_points_;
 
   // Coordination parameters
-  bool use_ct_;
+  bool use_ct_; // This is probably obsolete.
   bool provide_dts_; // If the use_ct is not set, compute the dts anyway to provide this information to the coordinator.
 
   // Motion planner parameters
@@ -298,7 +300,7 @@ public:
     paramHandle.param<bool>("cts_clear_first_entry_in_pairs", cts_clear_first_entry_in_pairs_, true);
     paramHandle.param<bool>("use_ahead_brake", use_ahead_brake_, false);
     paramHandle.param<bool>("visualize_sweep_and_constraints", visualize_sweep_and_constraints_, false);
-    paramHandle.param<bool>("use_update_task_service", use_update_task_service_, true);
+    paramHandle.param<bool>("use_update_task_service", use_update_task_service_, false);
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
     paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
     paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
@@ -307,6 +309,7 @@ public:
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
+    service_brake_ = nh_.advertiseService("brake_task", &KMOVehicleExecutionNode::brakeTaskCB, this);
 
     // Publishers
     trajectorychunk_pub_ = nh_.advertise<orunav_msgs::ControllerTrajectoryChunkVec>("control/controller/trajectories", 1000);
@@ -1054,6 +1057,14 @@ public:
     return true;
   }
 
+  bool brakeTaskCB(orunav_msgs::BrakeTask::Request &req,
+		   orunav_msgs::BrakeTask::Response &res)
+  {
+    res.current_path_idx = vehicle_state_.getCurrentPathIdx();
+    sendBrakeCommand(VehicleState::BrakeReason::SERVICE_CALL);
+    return true;
+  }
+  
   // Processing callbacks from subscriptions
   void process_map(const nav_msgs::OccupancyGrid::ConstPtr &msg)
   {
@@ -1124,9 +1135,6 @@ public:
         executeTaskCB(srv.request,
                       srv.response);
       }
-    }
-    else
-    {
     }
 
     if (completed_target)
@@ -1313,7 +1321,7 @@ public:
 
   void process_pallet_poses(const orunav_msgs::ObjectPoseConstPtr &msg)
   {
-    ROS_INFO("[MMN] got pallet poses");
+    ROS_INFO("[KMOVehicleExecution] got pallet poses");
     // If we're not about to pick a pallet up that we need to detect - no need process this further.
     if (vehicle_state_.goalOperationLoadDetect())
     {
@@ -1633,7 +1641,7 @@ public:
       ROS_INFO_STREAM("Sending BRAKE - laser reading in e-brake zone detected");
       if (!vehicle_state_.isBraking())
       {
-        sendBrakeCommand();
+        sendBrakeCommand(VehicleState::BrakeReason::SENSOR);
       }
       return;
     }
@@ -1643,7 +1651,7 @@ public:
       {
 
         // Recover.
-        sendRecoverCommand();
+        sendRecoverCommand(VehicleState::BrakeReason::SENSOR);
         ROS_INFO_STREAM("braking - slowdown area is cleared - recovering");
         // From recovering the state is back to DRIVING.
       }
@@ -1703,7 +1711,7 @@ public:
       ebrake_id_set_.erase(msg->sender_id);
       if (ebrake_id_set_.empty())
       {
-        sendRecoverCommand();
+        sendRecoverCommand(VehicleState::BrakeReason::TOPIC_CALL);
       }
       return;
     }
@@ -1714,8 +1722,7 @@ public:
     {
       return;
     }
-
-    sendBrakeCommand();
+    sendBrakeCommand(VehicleState::BrakeReason::TOPIC_CALL);
   }
 
   bool turnOnPalletEstimation(const orunav_msgs::RobotTarget &target)
@@ -1754,20 +1761,20 @@ public:
     return true;
   }
 
-  void sendBrakeCommand(bool perception = true)
+  void sendBrakeCommand(VehicleState::BrakeReason reason)
   {
     ROS_INFO("[KMOVehicleExecutionNode] RID:%d - sending brake command", robot_id_);
     orunav_msgs::ControllerCommand command;
     command.robot_id = robot_id_;
     command.command = command.COMMAND_BRAKE;
     command_pub_.publish(command);
-    vehicle_state_.brakeSent(perception);
+    vehicle_state_.brakeSent(reason);
     usleep(5000);
   }
 
-  void sendRecoverCommand(bool perception = true)
+  void sendRecoverCommand(VehicleState::BrakeReason reason)
   {
-    vehicle_state_.brakeClear(perception);
+    vehicle_state_.brakeClear(reason);
     if (!vehicle_state_.allBrakeReasonsCleared())
     {
       return;
@@ -1777,7 +1784,7 @@ public:
       return;
     }
 
-    ROS_INFO("[KMOVehicleExecutionNode] RID:%d - sending recover command [perception:%d]", robot_id_, (int)perception);
+    ROS_INFO("[KMOVehicleExecutionNode] RID:%d - sending recover command", robot_id_);
     orunav_msgs::ControllerCommand command;
     command.robot_id = robot_id_;
     command.command = command.COMMAND_RECOVER;
@@ -1792,7 +1799,7 @@ public:
     if (trackingError > max_tracking_error_)
     {
       ROS_INFO("[KMOVehicleExecutionNode] RID:%d - tracking error too high (%f > %f) - BRAKE.", robot_id_, trackingError, max_tracking_error_);
-      sendBrakeCommand();
+      sendBrakeCommand(VehicleState::BrakeReason::TRACKING_ERROR);
     }
   }
 
@@ -2003,7 +2010,6 @@ public:
       else if (vehicle_state_.isActive())
       {
         ROS_INFO("[KMOVehicleExecutionNode] - CASE2, need to send an updated trajectory for goalID %d", current_target_.goal_id);
-        bool send_brake;
         unsigned int path_idx;
         // idx when we can safely connect
         unsigned int chunk_idx = vehicle_state_.getCurrentTrajectoryChunkIdx() + chunk_idx_connect_offset_; // This is the earliest we can connect to.
@@ -2082,6 +2088,7 @@ public:
               continue;
             }
           }
+	  #if 0
           if (use_ct_ && use_ahead_brake_)
           {
             double ahead_time;
@@ -2090,11 +2097,12 @@ public:
               ROS_WARN_STREAM("[VehicleExecutionNode] - is ahead : " << ahead_time);
               if (ahead_time > 3.)
               {
-                sendBrakeCommand(false); // CTS
+		//                sendBrakeCommand(false); // CTS
               }
               continue;
             }
           }
+	  #endif
           ROS_INFO_STREAM("[VehicleExecutionNode] - distance between the connected path state and the chunk_idx used : " << path_chunk_distance);
           // Check the distance > threshold (could also be to check what control input is required to bring it from state chunk to state path and to check if this is reasonable rather then a simple distance check...).
           vehicle_state_.setCurrentPathIdx(path_idx);
@@ -2145,10 +2153,21 @@ public:
       ///////////////////////////////////////////////////////////////////
       // CASE 4:
       ///////////////////////////////////////////////////////////////////
+      else if (vehicle_state_.brakeSentUsingServiceCall()) {
+        ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
+	sendRecoverCommand(VehicleState::BrakeReason::SERVICE_CALL);
+	usleep(100000);
+	vehicle_state_.setResendTrajectory(true);
+	continue;
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // CASE 5:
+      ///////////////////////////////////////////////////////////////////
       else
       {
-        ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
-        ROS_ERROR("[KMOVehicleExecutionNode] - in wrong STATE(!) - should never happen");
+        ROS_INFO("[KMOVehicleExecutionNode] - CASE5, goalID is %d", current_target_.goal_id);
+	ROS_ERROR("[KMOVehicleExecutionNode] - in wrong STATE(!) - should never happen");
       }
 
       //-----------------------------------------------------------------
