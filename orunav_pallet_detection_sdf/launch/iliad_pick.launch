@@ -76,15 +76,15 @@
   <!--node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/-->
 
   <!-- <node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibration" args="0.699491 0.0449904 1.03351 -0.00295308 0.958306 0.00991033 0.285556 /robot2/base_link /robot2/asus_fork_base_link 10"/> -->
-  <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.697179 -0.0448123 1.21826 -0.369287 0.042435 0.928193 0.016883 /robot3/base_link /robot3/asus_fork_link 10"/>
-
+  <!-- <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.697179 -0.0448123 1.21826 -0.369287 0.042435 0.928193 0.016883 /robot3/base_link /robot3/asus_fork_link 10"/> -->
+  <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.700055 -0.0449999 1.24427 -0.264921 -0.00114694 0.964269 -0.000315107 /robot3/base_link /robot3/asus_fork_link 10"/>
 
   <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="vehicle_client" output="screen" ns="$(arg tf_prefix)">
     <param name="tf_prefix" value="$(arg tf_prefix)" />
     <param name="robot_id" value="$(arg robot_id)"/>
     <remap from="report" to="control/report"/>
     <remap from="compute_task" to="robot$(arg robot_id)/compute_task"/>
-    <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/robotlab_test_targets.dat" />
+    <param name="targets_file_name" value="$(find orunav_vehicle_execution)/targets/orkla_targets.dat" />
   </node>
 
 
