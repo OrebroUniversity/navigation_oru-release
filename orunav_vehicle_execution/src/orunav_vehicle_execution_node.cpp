@@ -1096,8 +1096,8 @@ public:
     inputs_mutex_.lock();
 
     //    controller_status_ = msg->status;
-    bool completed_target, recompute_new_trajectory;
-    vehicle_state_.update(msg, completed_target, recompute_new_trajectory, use_forks_);
+    bool completed_target;
+    vehicle_state_.update(msg, completed_target, use_forks_);
     inputs_mutex_.unlock();
 
     updateSafetyZones();
