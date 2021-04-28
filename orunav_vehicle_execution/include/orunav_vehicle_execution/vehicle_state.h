@@ -1012,9 +1012,9 @@ public:
   void resetNewVelocityConstraint() {
     newVelocityConstraints_ = false;
   }
-
-  bool abortTaskAtCriticalPoint() {
-    if (state_ != AT_CRITICAL_POINT) {
+  
+  bool abortTask() {
+    if (isActive()) {
       return false;
     }
     this->clearTrajectoryChunks();

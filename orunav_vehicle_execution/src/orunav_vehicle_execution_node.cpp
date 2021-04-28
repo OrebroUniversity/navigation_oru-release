@@ -2000,7 +2000,7 @@ public:
         {
           ROS_WARN_STREAM("[KMOVehicleExecutionNode] CASE1 - couldn't compute trajectory, path size is to small... (path idx : " << path_idx << ", crit point : " << vehicle_state_.getCriticalPointIdx() << ")");
           // Move from "at critical point" to "waiting for task". Currently this is how the coordinator is aborting the current task.
-          vehicle_state_.abortTaskAtCriticalPoint();
+          vehicle_state_.abortTask();
           continue;
         }
         vehicle_state_.setCurrentPathIdx(path_idx);
