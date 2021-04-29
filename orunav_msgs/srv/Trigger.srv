@@ -1,4 +1,4 @@
-#ID of robot to replan for
+#ID of robot to trigger the action
 int32 robotID
 ---
 bool success   # indicate successful run of triggered service

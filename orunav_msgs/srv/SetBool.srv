@@ -1,0 +1,3 @@
+int32 robotID	# ID of robot
+bool data # e.g. for enabling / disabling
+---
