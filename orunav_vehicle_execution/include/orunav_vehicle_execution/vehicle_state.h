@@ -262,7 +262,7 @@ public:
   }
 
 
-  void update(const orunav_msgs::ControllerReportConstPtr &msg, bool &completedTarget, bool &recomputeNewTrajectory, bool useForks = false) {
+  void update(const orunav_msgs::ControllerReportConstPtr &msg, bool &completedTarget, bool useForks = false) {
     
     receivedControllerReport_ = true;
     controller_status_ = msg->status;
@@ -278,7 +278,6 @@ public:
     validState2d_ = true;
 
     completedTarget = false;
-    recomputeNewTrajectory = false;
     bool completed_target = false;
     // Find out the transitions between the states in the controller. This is used to determine if the system completed the target or not.
     if (controller_status_ != prev_controller_status_) {
@@ -300,11 +299,6 @@ public:
           else {
             state_ = AT_CRITICAL_POINT;
           }
-	}
-	// BRAKE -> WAIT -> target not completed, recompute the id / send a new trajectory
-	if (prev_controller_status_ == msg->CONTROLLER_STATUS_FAIL) { // Brake
-	  // Need to recompute the trajectory
-	  recomputeNewTrajectory = true;
 	}
       }
     }
@@ -1012,9 +1006,9 @@ public:
   void resetNewVelocityConstraint() {
     newVelocityConstraints_ = false;
   }
-
-  bool abortTaskAtCriticalPoint() {
-    if (state_ != AT_CRITICAL_POINT) {
+  
+  bool abortTask() {
+    if (isActive()) {
       return false;
     }
     this->clearTrajectoryChunks();

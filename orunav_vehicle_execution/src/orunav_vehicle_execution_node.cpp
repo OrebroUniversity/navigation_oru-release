@@ -1096,8 +1096,8 @@ public:
     inputs_mutex_.lock();
 
     //    controller_status_ = msg->status;
-    bool completed_target, recompute_new_trajectory;
-    vehicle_state_.update(msg, completed_target, recompute_new_trajectory, use_forks_);
+    bool completed_target;
+    vehicle_state_.update(msg, completed_target, use_forks_);
     inputs_mutex_.unlock();
 
     updateSafetyZones();
@@ -1108,39 +1108,6 @@ public:
       ROS_ERROR("Resending the trajectory(!)");
       vehicle_state_.setResendTrajectory(false);
       cond_.notify_one();
-    }
-
-    if (recompute_new_trajectory && start_driving_after_recover_)
-    {
-      ROS_INFO("Need to recompute new trajectory from current pose (recovering from brake)");
-
-      if (use_update_task_service_)
-      {
-        // Send the task to the coordinator
-        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::SetTask>("/coordinator/update_task");
-        orunav_msgs::SetTask srv;
-        srv.request.task = vehicle_state_.getTask();
-
-        if (client.call(srv))
-        {
-          ROS_INFO("[KMOVehicleExecution] - update_task successful");
-        }
-        else
-        {
-          ROS_ERROR_STREAM("[KMOVehicleExecution] - Failed to call service: " << client.getService());
-          return;
-        }
-        ROS_INFO_STREAM("[KMOVehicleExecution] - update_task return value : " << srv.response.result);
-      }
-
-      else
-      {
-        orunav_msgs::ExecuteTask srv;
-        srv.request.task = vehicle_state_.getTask();
-        srv.request.task.update = false; // Resend a new task...
-        executeTaskCB(srv.request,
-                      srv.response);
-      }
     }
 
     if (completed_target)
@@ -2000,7 +1967,7 @@ public:
         {
           ROS_WARN_STREAM("[KMOVehicleExecutionNode] CASE1 - couldn't compute trajectory, path size is to small... (path idx : " << path_idx << ", crit point : " << vehicle_state_.getCriticalPointIdx() << ")");
           // Move from "at critical point" to "waiting for task". Currently this is how the coordinator is aborting the current task.
-          vehicle_state_.abortTaskAtCriticalPoint();
+          vehicle_state_.abortTask();
           continue;
         }
         vehicle_state_.setCurrentPathIdx(path_idx);
