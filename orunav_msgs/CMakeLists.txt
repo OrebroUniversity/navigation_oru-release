@@ -87,8 +87,8 @@ add_service_files(
   GetPolygonFootPrint.srv
   SetDelay.srv
   SetPenetrationRate.srv
-  RePlan.srv
-  Abort.srv
+  SetBool.srv
+  Trigger.srv
   BrakeTask.srv
 )
 

@@ -1349,6 +1349,7 @@ public:
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::UpdateTask>("/coordinator/update_task");
         orunav_msgs::UpdateTask srv;
         srv.request.task = task;
+	srv.request.task.update = false;
 
         if (client.call(srv))
         {
