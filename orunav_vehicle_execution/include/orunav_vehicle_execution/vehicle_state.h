@@ -181,6 +181,7 @@ public:
     if (goalOperation_ == NO_OPERATION) {
       state_ = WAITING_FOR_TASK;
       //      controllerState_ = WAITING;
+      moveForks = false;
       completedTarget = true;
       return;
     }
@@ -192,6 +193,7 @@ public:
       if (!isWaitingTrajectoryEmpty()) {
 	//The robot hasn't reached the picking pose
 	state_ = DRIVING;
+	moveForks = false;
 	completedTarget = false;
 	return;
       }
@@ -204,6 +206,7 @@ public:
       }
       state_ = PERFORMING_GOAL_OPERATION;
       moveForks = true;
+      completedTarget = false;
       load = true;
       return;
     }
