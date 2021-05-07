@@ -135,6 +135,7 @@ public:
       return;
     }  
 
+    //FIXME There is some incoherence here (see goalOperation LOAD).
     // Scenarios - if operation is UNLOAD -> the forks state should be at FORK_POSITION_LOW to continue
     //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
     //           - if operation is ACTIVATE_SUPPORT_LEGS   -> now allowed (if only one operation should be sent we should instead provide it as a goal operation (with an empty path).
@@ -188,6 +189,12 @@ public:
     //           - if operation is LOAD   -> the forks state should be at FORK_POSITION_HIGH to continue
     //           - if operation is ACTIVATE_SUPPORT_LEGS   -> the forks state should be at FORK_POSITION_SUPPORT_LEGS to continue
     if (goalOperation_ == LOAD) {
+      if (!isWaitingTrajectoryEmpty()) {
+	//The robot hasn't reached the picking pose
+	state_ = DRIVING;
+	completedTarget = false;
+	return;
+      }
       if (forkState_ == FORK_POSITION_HIGH) {
         state_ = WAITING_FOR_TASK;
         //	controllerState_ = WAITING;
@@ -195,12 +202,10 @@ public:
 	carryingLoad_ = true;
 	return;
       }
-      else {
-        state_ = PERFORMING_GOAL_OPERATION;
-	moveForks = true;
-	load = true;
-	return;
-      }
+      state_ = PERFORMING_GOAL_OPERATION;
+      moveForks = true;
+      load = true;
+      return;
     }
     if (goalOperation_ == UNLOAD) {
       if (forkState_ == FORK_POSITION_LOW || !this->isCarryingLoad()) {
@@ -232,7 +237,11 @@ public:
         return;
       }
     }
-
+    //Move the forks down to load the pallet (if necessary)
+    if (goalOperation_ = LOAD_DETECT) {
+      if (forkState_ != FORK_POSITION_LOW) moveForks = true;
+      return;
+    }
   }
 
   void update(const orunav_msgs::ForkReportConstPtr &msg, bool &completedTarget, bool &moveForks, bool &load, OperationState &operation) {
