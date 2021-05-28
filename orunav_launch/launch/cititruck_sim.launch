@@ -113,7 +113,10 @@
       <param name="chunk_idx_connect_offset" value="1"/>
       <param name="use_ct" value="$(arg use_ct)" />
       <param name="use_update_task_service" value="$(arg use_update_task)"/> <!-- run with fake coordinator in simulation -->
-
+      <param name="max_linear_vel_pallet_picking" value="0.2"/>
+      <param name="max_rotational_vel_pallet_picking" value="0.2"/>
+      <param name="max_linear_vel_rev_pallet_picking" value="0.1"/>
+      <param name="max_rotational_vel_rev_pallet_picking" value="0.1"/>
     </node>
 
   </group>
