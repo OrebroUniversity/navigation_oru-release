@@ -68,6 +68,21 @@
 #include <laser_geometry/laser_geometry.h>
 #include <std_msgs/Float64MultiArray.h>
 
+
+void updateTrajParamsWithVelocityConstraints(TrajectoryProcessor::Params &traj_params, const VehicleState &vehicle_state)  {
+  traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state.getMaxLinearVelocityConstraint());
+  traj_params.maxVelRev = std::min(traj_params.maxVelRev, vehicle_state.getMaxLinearVelocityConstraintRev());
+  traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state.getMaxRotationalVelocityConstraint());
+  traj_params.maxRotationalVelRev = std::min(traj_params.maxRotationalVelRev, vehicle_state.getMaxRotationalVelocityConstraintRev());
+  
+  traj_params.maxVel = std::max(traj_params.maxVel, 0.01); // Always allow to drive faster than 1 cm /s.
+  traj_params.maxVelRev = std::max(traj_params.maxVelRev, 0.01);
+  traj_params.maxRotationalVel = std::max(traj_params.maxRotationalVel, 0.01); // Alway allow to rotate more than 0.01 rad / s.
+  traj_params.maxRotationalVelRev = std::max(traj_params.maxRotationalVelRev, 0.01);
+}
+  
+
+
 void drawPointCloud(const sensor_msgs::PointCloud &points, const std::string &name, int id, int color, double scale, ros::Publisher &pub)
 {
 
@@ -233,6 +248,11 @@ private:
 
   std::set<int> ebrake_id_set_;
 
+  double max_linear_vel_pallet_picking_;
+  double max_rotational_vel_pallet_picking_;
+  double max_linear_vel_rev_pallet_picking_;
+  double max_rotational_vel_rev_pallet_picking_;
+  
 public:
   KMOVehicleExecutionNode(ros::NodeHandle &paramHandle)
   {
@@ -307,6 +327,11 @@ public:
     paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
     paramHandle.param<bool>("resolve_motion_planning_error", resolve_motion_planning_error_, true);
 
+    paramHandle.param<double>("max_linear_vel_pallet_picking", max_linear_vel_pallet_picking_, 0.1);
+    paramHandle.param<double>("max_rotational_vel_pallet_picking", max_rotational_vel_pallet_picking_, 0.1);
+    paramHandle.param<double>("max_linear_vel_rev_pallet_picking", max_linear_vel_rev_pallet_picking_, max_linear_vel_pallet_picking_);
+    paramHandle.param<double>("max_rotational_vel_rev_pallet_picking", max_rotational_vel_rev_pallet_picking_, max_rotational_vel_pallet_picking_);
+    
     // Services
     service_compute_ = nh_.advertiseService("compute_task", &KMOVehicleExecutionNode::computeTaskCB, this);
     service_execute_ = nh_.advertiseService("execute_task", &KMOVehicleExecutionNode::executeTaskCB, this);
@@ -1329,6 +1354,9 @@ public:
         srv.request.start_from_current_state = true; // in this case we're fine since we're standing still.
         srv.request.target.goal_op.operation = srv.request.target.goal_op.LOAD;
 
+	ROS_INFO_STREAM( "New velocity constraints for slow picking: (" << max_linear_vel_pallet_picking_ << "," << max_rotational_vel_pallet_picking_ << "," << max_linear_vel_rev_pallet_picking_ << "," << max_rotational_vel_rev_pallet_picking_ << ")");
+	vehicle_state_.setNewVelocityConstraints(max_linear_vel_pallet_picking_, max_rotational_vel_pallet_picking_, max_linear_vel_rev_pallet_picking_, max_rotational_vel_rev_pallet_picking_);
+	
         if (computeTaskCB(srv.request,
                           srv.response))
         {
@@ -2027,16 +2055,7 @@ public:
           {
             ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
             TrajectoryProcessor::Params traj_params = traj_params_original_;
-            traj_params.maxVel = std::min(traj_params.maxVel, vehicle_state_.getMaxLinearVelocityConstraint());
-            traj_params.maxVelRev = std::min(traj_params.maxVelRev, vehicle_state_.getMaxLinearVelocityConstraintRev());
-            traj_params.maxRotationalVel = std::min(traj_params.maxRotationalVel, vehicle_state_.getMaxRotationalVelocityConstraint());
-            traj_params.maxRotationalVelRev = std::min(traj_params.maxRotationalVelRev, vehicle_state_.getMaxRotationalVelocityConstraintRev());
-
-            traj_params.maxVel = std::max(traj_params.maxVel, 0.01); // Always allow to drive faster than 1 cm /s.
-            traj_params.maxVelRev = std::max(traj_params.maxVelRev, 0.01);
-            traj_params.maxRotationalVel = std::max(traj_params.maxRotationalVel, 0.01); // Alway allow to rotate more than 0.01 rad / s.
-            traj_params.maxRotationalVelRev = std::max(traj_params.maxRotationalVelRev, 0.01);
-
+	    updateTrajParamsWithVelocityConstraints(traj_params, vehicle_state_);
             ROS_INFO_STREAM("new trajectory params: " << traj_params);
 
             // Overwrite the default velocity constratins
@@ -2112,7 +2131,23 @@ public:
           vehicle_state_.setCoordinatedTimes(cts);
         }
         ROS_INFO("Computing trajectory");
-        chunks_data = computeTrajectoryChunksCASE3(vehicle_state_, traj_params_, use_ct_);
+	if (vehicle_state_.newVelocityConstraints()) {
+	  ROS_INFO_STREAM("[KMOVehicleExecution] - got new velocity constraints");
+	  TrajectoryProcessor::Params traj_params = traj_params_original_;
+	  updateTrajParamsWithVelocityConstraints(traj_params, vehicle_state_);
+	  
+	  ROS_INFO_STREAM("new trajectory params: " << traj_params);
+	  
+	  // Overwrite the default velocity constratins
+	  if (overwrite_traj_params_with_velocity_constraints_) {
+	    traj_params_ = traj_params;
+	  }
+	  chunks_data = computeTrajectoryChunksCASE3(vehicle_state_, traj_params, use_ct_);
+	  vehicle_state_.resetNewVelocityConstraint();
+	}
+	else {
+	  chunks_data = computeTrajectoryChunksCASE3(vehicle_state_, traj_params_, use_ct_);
+	}
         ROS_INFO("Computing trajectory - done");
 
         // Do we need to perform any operations at start? (note this is the only case when we should do any start operations...).
