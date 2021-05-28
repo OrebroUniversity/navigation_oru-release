@@ -58,7 +58,7 @@
       <!-- Coarse to Fine Registration -->
       <param name="icp_based" value="true"/> <!-- was false -->
       <param name="overlap_dst_thresh" value="0.05"/>
-      <param name="overlap_score_thresh" value="0.8"/>
+      <param name="overlap_score_thresh" value="0.7"/> <!-- was 0.8 for the 2019 model -->
 
       <!-- Deep Learning -->
       <param name="deepLearning_based" value="false"/> 
