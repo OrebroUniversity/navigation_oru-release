@@ -446,10 +446,6 @@ public:
       active_brake_reasons_.erase(it);
     }
   }
-
-  int getNbActiveBrakeReasons() const {
-    return active_brake_reasons_.size();
-  }
   
   bool allBrakeReasonsCleared() const {
     return (active_brake_reasons_.empty());
@@ -927,7 +923,7 @@ public:
     msg.status = state_;
     msg.state = orunav_conversions::createPoseSteeringMsgFromState2d(currentState2d_);
     msg.sequence_num = currentPathIdx_;
-    msg.nb_active_brake_reasons = getNbActiveBrakeReasons();
+    msg.nb_active_brake_reasons = active_brake_reasons_.count(BrakeReason::SERVICE_CALL);
     return msg;
   }
 
