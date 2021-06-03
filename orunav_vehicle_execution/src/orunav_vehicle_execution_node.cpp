@@ -1043,12 +1043,11 @@ public:
     }
     
     if (req.task.update && vehicle_state_.brakeSentUsingServiceCall()) {
-        ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling a RECOVER.");
+        ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling RECOVER.");
 	sendRecoverCommand(VehicleState::BrakeReason::SERVICE_CALL);
 	usleep(100000);
 	vehicle_state_.setResendTrajectory(true);
-	continue;
-      }
+    }
 
     // Any start operation?
     if (req.task.target.start_op.operation != req.task.target.start_op.NO_OPERATION)
@@ -2170,6 +2169,15 @@ public:
 
       ///////////////////////////////////////////////////////////////////
       // CASE 4:
+      ///////////////////////////////////////////////////////////////////
+      else if (vehicle_state_.brakeSentUsingServiceCall()) {
+	ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
+	ROS_ERROR("[KMOVehicleExecutionNode] - waiting the recovery will be triggered.");
+	continue;
+      }
+      
+       ///////////////////////////////////////////////////////////////////
+      // CASE 5:
       ///////////////////////////////////////////////////////////////////
       else
       {
