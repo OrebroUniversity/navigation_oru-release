@@ -1551,6 +1551,7 @@ public:
         cmd.state.position_z = 0.0;
       }
       forkcommand_pub_.publish(cmd);
+      ROS_INFO("[KMOVehicleExecutionNode] - set height %f", cmd.state.position_z ) ;
     }
   }
 
