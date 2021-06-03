@@ -28,6 +28,9 @@ int32 AT_CRITICAL_POINT = 8
 # Status of the robot.
 int32 status
 
+# Number of active brake reasons (=0 no brake is active)
+int32 nb_active_brake_reasons
+
 #####################
 
 # The current state
