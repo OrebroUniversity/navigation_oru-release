@@ -1043,12 +1043,11 @@ public:
     }
     
     if (req.task.update && vehicle_state_.brakeSentUsingServiceCall()) {
-        ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling a RECOVER.");
+        ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling RECOVER.");
 	sendRecoverCommand(VehicleState::BrakeReason::SERVICE_CALL);
 	usleep(100000);
 	vehicle_state_.setResendTrajectory(true);
-	continue;
-      }
+    }
 
     // Any start operation?
     if (req.task.target.start_op.operation != req.task.target.start_op.NO_OPERATION)
