@@ -2169,6 +2169,15 @@ public:
       ///////////////////////////////////////////////////////////////////
       // CASE 4:
       ///////////////////////////////////////////////////////////////////
+      else if (vehicle_state_.brakeSentUsingServiceCall()) {
+	ROS_INFO("[KMOVehicleExecutionNode] - CASE4, goalID is %d", current_target_.goal_id);
+	ROS_ERROR("[KMOVehicleExecutionNode] - waiting the recovery will be triggered.");
+	continue;
+      }
+      
+       ///////////////////////////////////////////////////////////////////
+      // CASE 4:
+      ///////////////////////////////////////////////////////////////////
       else
       {
         ROS_INFO("[KMOVehicleExecutionNode] - CASE5, goalID is %d", current_target_.goal_id);
