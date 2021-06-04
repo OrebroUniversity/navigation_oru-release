@@ -74,6 +74,49 @@ namespace orunav_geometry {
     Polygon wo_load;
   };
 
+  class RobotModel2dBtTruck : public RobotModel2dInterface {
+  public:
+    RobotModel2dBtTruck() {
+      wo_load.points.push_back(Eigen::Vector2d(2.40, 0.49)); //fl
+      wo_load.points.push_back(Eigen::Vector2d(2.40, -0.49)); //fr
+      wo_load.points.push_back(Eigen::Vector2d(-0.38, -0.45)); //rr
+      wo_load.points.push_back(Eigen::Vector2d(-0.38, 0.45)); //rl
+      
+      w_load.points.push_back(Eigen::Vector2d(2.40, 0.49));
+      w_load.points.push_back(Eigen::Vector2d(2.40, -0.49));
+      w_load.points.push_back(Eigen::Vector2d(-0.38, -0.45));
+      w_load.points.push_back(Eigen::Vector2d(-0.38, 0.45));
+      
+      w_load2.points.push_back(Eigen::Vector2d(2.40, 0.49));
+      w_load2.points.push_back(Eigen::Vector2d(2.40, -0.49));
+      w_load2.points.push_back(Eigen::Vector2d(-0.38, -0.45));
+      w_load2.points.push_back(Eigen::Vector2d(-0.38, 0.45));
+    }
+    virtual const Polygon& getBoundingRegion(const orunav_generic::RobotInternalState2d &s) const {
+      switch (s.loadType) {
+      case orunav_generic::RobotInternalState2d::NO_LOAD: 
+	return wo_load;
+	break;
+      case orunav_generic::RobotInternalState2d::EUR_PALLET:
+	// TODO!!!!
+	return w_load;
+	break;
+      case orunav_generic::RobotInternalState2d::HALF_PALLET:
+	// TODO!!!!
+	return w_load2;
+	break;
+      default:
+	assert(false);
+	return w_load;
+	break;
+      }
+    }
+  private:
+    Polygon w_load;
+    Polygon w_load2;
+    Polygon wo_load;
+  };
+  
   class RobotModel2dCiTiTruckWithArm : public RobotModel2dInterface {
   public:
     RobotModel2dCiTiTruckWithArm() {
@@ -248,7 +291,9 @@ namespace orunav_geometry {
       case 5:
 	return &model5;
       case 6:
-  return &model6;
+	return &model6;
+      case 7:
+	return &model7;
       default:
 	return &model1;
       }
@@ -273,6 +318,9 @@ namespace orunav_geometry {
       else if (type == "hrp") {
         return boost::make_shared<RobotModel2dHRP>();
       }
+      else if (type == "bttruck") {
+        return boost::make_shared<RobotModel2dBtTruck>();
+      }
       else {
         assert(false);
       }
@@ -287,6 +335,7 @@ namespace orunav_geometry {
     orunav_geometry::RobotModel2dPitViper model4;
     orunav_geometry::RobotModel2dXa15 model5;
     orunav_geometry::RobotModel2dHRP model6;
+    orunav_geometry::RobotModel2dBtTruck model7;
   };
 
   class RobotModel2dWithState : public orunav_generic::Point2dContainerInterface, public orunav_generic::Point2dCollisionCheckInterface {
