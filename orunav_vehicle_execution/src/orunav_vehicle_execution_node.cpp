@@ -381,7 +381,7 @@ public:
       {
         model_ = &model_pitviper;
       }
-      else if (model_name_ == std::string("bttruck"))
+      else if (model_name_ == std::string("bt"))
       {
         model_ = &model_bt;
       }
