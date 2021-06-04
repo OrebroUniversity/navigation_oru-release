@@ -201,6 +201,7 @@ private:
   orunav_geometry::RobotModel2dCiTiTruck model1;
   orunav_geometry::RobotModel2dCiTiTruckWithArm model2;
   orunav_geometry::RobotModel2dPitViper model_pitviper; // TODO - this should be removed and placed in ac.
+  orunav_geometry::RobotModel2dBtTruck model_bt;
   orunav_geometry::RobotModel2dInterface *model_;
 
   // Docking params
@@ -379,6 +380,10 @@ public:
       if (model_name_ == std::string("pitviper"))
       {
         model_ = &model_pitviper;
+      }
+      else if (model_name_ == std::string("bttruck"))
+      {
+        model_ = &model_bt;
       }
     }
 
