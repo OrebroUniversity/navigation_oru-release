@@ -291,7 +291,9 @@ namespace orunav_geometry {
       case 5:
 	return &model5;
       case 6:
-  return &model6;
+	return &model6;
+      case 7:
+	return &model7;
       default:
 	return &model1;
       }
@@ -316,6 +318,9 @@ namespace orunav_geometry {
       else if (type == "hrp") {
         return boost::make_shared<RobotModel2dHRP>();
       }
+      else if (type == "bttruck") {
+        return boost::make_shared<RobotModel2dBtTruck>();
+      }
       else {
         assert(false);
       }
@@ -330,6 +335,7 @@ namespace orunav_geometry {
     orunav_geometry::RobotModel2dPitViper model4;
     orunav_geometry::RobotModel2dXa15 model5;
     orunav_geometry::RobotModel2dHRP model6;
+    orunav_geometry::RobotModel2dBtTruck model7;
   };
 
   class RobotModel2dWithState : public orunav_generic::Point2dContainerInterface, public orunav_generic::Point2dCollisionCheckInterface {
