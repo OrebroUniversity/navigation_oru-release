@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ros/console.h>
 #include <Eigen/Core>
 #include <nav_msgs/OccupancyGrid.h>
 #include <orunav_conversions/conversions.h>
@@ -41,10 +42,14 @@ inline void pixelToMetricOccupancyGrid(const nav_msgs::OccupancyGrid &msg, const
  }
 
 inline bool validPixelOccupancyGrid(const nav_msgs::OccupancyGrid &map, const Eigen::Vector2i &pixel) {
-  if (pixel(0) < 0 || pixel(0) >= (int)map.info.width)
+  if (pixel(0) < 0 || pixel(0) >= (int)map.info.width) {
+    ROS_INFO_STREAM_THROTTLE(1, "WE found a spurious x_pixel, (" << pixel(0) << ","<< pixel(1)<< ")");
     return false;
-  if (pixel(1) < 0 || pixel(1) >= (int)map.info.height)
+  }
+  if (pixel(1) < 0 || pixel(1) >= (int)map.info.height) {
+    ROS_INFO_STREAM_THROTTLE(1, "WE found a spurious y_pixel, (" << pixel(0) << ","<< pixel(1)<< ")");
     return false;
+  }
   return true;
 }
 
@@ -75,14 +80,14 @@ inline bool isOccupied(const nav_msgs::OccupancyGrid &map, const Eigen::Vector2i
   //assert(validPixelOccupancyGrid(map, pixel));
   if (!validPixelOccupancyGrid(map, pixel))
     return true;
-  if (map.data[getOccupancyGridIdx(map, pixel)] > 51)
+  if (map.data[getOccupancyGridIdx(map, pixel)] > 0 || map.data[getOccupancyGridIdx(map, pixel)] == -1) //was 51
     return true;
   return false;
 }
 
  inline bool isValidAndOccupied(const nav_msgs::OccupancyGrid &map, const Eigen::Vector2i &pixel) {
    if (validPixelOccupancyGrid(map,pixel)) {
-     if (map.data[getOccupancyGridIdx(map, pixel)] > 51) {
+     if (map.data[getOccupancyGridIdx(map, pixel)] > 0 || map.data[getOccupancyGridIdx(map, pixel)] == -1) { // was 51
        return true;
      }
    }
