@@ -77,18 +77,18 @@ namespace orunav_geometry {
   class RobotModel2dBtTruck : public RobotModel2dInterface {
   public:
     RobotModel2dBtTruck() {
-      wo_load.points.push_back(Eigen::Vector2d(2.40, 0.49)); //fl
-      wo_load.points.push_back(Eigen::Vector2d(2.40, -0.49)); //fr
+      wo_load.points.push_back(Eigen::Vector2d(2.30, 0.45)); //fl
+      wo_load.points.push_back(Eigen::Vector2d(2.30, -0.45)); //fr
       wo_load.points.push_back(Eigen::Vector2d(-0.38, -0.45)); //rr
       wo_load.points.push_back(Eigen::Vector2d(-0.38, 0.45)); //rl
       
-      w_load.points.push_back(Eigen::Vector2d(2.40, 0.49));
-      w_load.points.push_back(Eigen::Vector2d(2.40, -0.49));
+      w_load.points.push_back(Eigen::Vector2d(2.30, 0.45));
+      w_load.points.push_back(Eigen::Vector2d(2.30, -0.45));
       w_load.points.push_back(Eigen::Vector2d(-0.38, -0.45));
       w_load.points.push_back(Eigen::Vector2d(-0.38, 0.45));
       
-      w_load2.points.push_back(Eigen::Vector2d(2.40, 0.49));
-      w_load2.points.push_back(Eigen::Vector2d(2.40, -0.49));
+      w_load2.points.push_back(Eigen::Vector2d(2.30, 0.45));
+      w_load2.points.push_back(Eigen::Vector2d(2.30, -0.45));
       w_load2.points.push_back(Eigen::Vector2d(-0.38, -0.45));
       w_load2.points.push_back(Eigen::Vector2d(-0.38, 0.45));
     }
