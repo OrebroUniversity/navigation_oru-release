@@ -292,64 +292,66 @@ public:
     completedTarget = false;
     bool completed_target = false;
     // Find out the transitions between the states in the controller. This is used to determine if the system completed the target or not.
-    if (controller_status_ != prev_controller_status_) {
-      // State has changed.
-      // FINALIZING -> WAIT -> target completed
-      // ACTIVE -> WAIT -> target completed
-      if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
-	if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
+    if (prev_controller_status_ != -1) {
+      if (controller_status_ != prev_controller_status_) {
+	// State has changed.
+	// FINALIZING -> WAIT -> target completed
+	// ACTIVE -> WAIT -> target completed
+	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
+	  if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
 
-          if (!this->hasActiveTaskCriticalPoint()) {
-            completed_target = true;
-            if (!useForks) {
-              completedTarget = completed_target;
-              state_ = WAITING_FOR_TASK;
-            }
-            this->clearTrajectoryChunks();
-            this->clearCurrentPath();
-          }
-          else {
-            state_ = AT_CRITICAL_POINT;
-          }
+	    if (!this->hasActiveTaskCriticalPoint()) {
+	      completed_target = true;
+	      if (!useForks) {
+		completedTarget = completed_target;
+		state_ = WAITING_FOR_TASK;
+	      }
+	      this->clearTrajectoryChunks();
+	      this->clearCurrentPath();
+	    }
+	    else {
+	      state_ = AT_CRITICAL_POINT;
+	    }
+	  }
 	}
       }
-    }
-    
-    // Update the internal state.
-     if (completed_target && useForks) { // This state can only be altered by the fork report callback.
-      controllerState_ = WAITING;
-      state_ = PERFORMING_GOAL_OPERATION;
-    }
-    else if (state_ == PERFORMING_START_OPERATION && useForks) { // This state can only be altered by the fork report callback.
-    }
-    else if (state_ == PERFORMING_START_OPERATION && useForks == false) { 
-      state_ = DRIVING;
-    }
-    else {
-      if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
-        // Only if no trajectory has been sent and the vehicle is not yet in active state.
-	if (controllerState_ != WAITING_TRAJECTORY_SENT) {
-          controllerState_ = WAITING;
-        }
+      
+      // Update the internal state.
+      if (completed_target && useForks) { // This state can only be altered by the fork report callback.
+	controllerState_ = WAITING;
+	state_ = PERFORMING_GOAL_OPERATION;
       }
-      if (controller_status_ == msg->CONTROLLER_STATUS_ACTIVE) {
-        if (controllerState_ != BRAKE_SENT)  // Shouldn't really be any difference ACTIVE / BRAKE_SENT. (remove?)
-          controllerState_ = ACTIVE;
+      else if (state_ == PERFORMING_START_OPERATION && useForks) { // This state can only be altered by the fork report callback.
       }
-      if (controller_status_ == msg->CONTROLLER_STATUS_FAIL) {
-        controllerState_ = BRAKE;
-        // Need to clear the trajectory chunk
+      else if (state_ == PERFORMING_START_OPERATION && useForks == false) { 
+	state_ = DRIVING;
       }
-      if (controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
-        controllerState_ = FINALIZING;
+      else {
+	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
+	  // Only if no trajectory has been sent and the vehicle is not yet in active state.
+	  if (controllerState_ != WAITING_TRAJECTORY_SENT) {
+	    controllerState_ = WAITING;
+	  }
+	}
+	if (controller_status_ == msg->CONTROLLER_STATUS_ACTIVE) {
+	  if (controllerState_ != BRAKE_SENT)  // Shouldn't really be any difference ACTIVE / BRAKE_SENT. (remove?)
+	    controllerState_ = ACTIVE;
+	}
+	if (controller_status_ == msg->CONTROLLER_STATUS_FAIL) {
+	  controllerState_ = BRAKE;
+	  // Need to clear the trajectory chunk
+	}
+	if (controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
+	  controllerState_ = FINALIZING;
+	}
+	if (controller_status_ == msg->CONTROLLER_STATUS_TERMINATE) {
+	  controllerState_ = ERROR;
+	}
       }
-      if (controller_status_ == msg->CONTROLLER_STATUS_TERMINATE) {
-        controllerState_ = ERROR;
-      }
-    }
-    if (state_ == AT_CRITICAL_POINT) {
-      if (controllerState_ == ACTIVE) {
-        state_ = DRIVING;
+      if (state_ == AT_CRITICAL_POINT) {
+	if (controllerState_ == ACTIVE) {
+	  state_ = DRIVING;
+	}
       }
     }
 
