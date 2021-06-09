@@ -684,7 +684,7 @@ public:
                      orunav_msgs::ComputeTask::Response &res)
   {
     orunav_msgs::ComputeTaskStatus msg;
-    msg.task_id = req.task_id;
+    msg.task_id = req.target.task_id;
     msg.status = orunav_msgs::ComputeTaskStatus::COMPUTE_TASK_START;
     compute_status_pub_.publish(msg);
     
