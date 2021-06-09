@@ -360,7 +360,7 @@ public:
     laserscan_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic, 10, &KMOVehicleExecutionNode::process_laserscan, this);
     laserscan2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(std::string("sensors/") + safety_laser_topic2, 10, &KMOVehicleExecutionNode::process_laserscan, this);
 
-    velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 10, &KMOVehicleExecutionNode::process_velocity_constraints, this);
+    velocity_constraints_sub_ = nh_.subscribe<std_msgs::Float64MultiArray>(orunav_generic::getRobotTopicName(robot_id_, "/velocity_constraints"), 1, &KMOVehicleExecutionNode::process_velocity_constraints, this);
     ebrake_sub_ = nh_.subscribe<orunav_msgs::EBrake>(orunav_generic::getRobotTopicName(robot_id_, "/ebrake"), 10, &KMOVehicleExecutionNode::process_ebrake, this);
     marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
