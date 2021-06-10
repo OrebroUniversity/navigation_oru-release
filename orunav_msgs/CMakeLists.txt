@@ -65,6 +65,7 @@ add_message_files(
    IliadItem.msg
    IliadItemArray.msg
    EBrake.msg
+   ComputeTaskStatus.msg
 )
 
 ## Generate services in the 'srv' folder
