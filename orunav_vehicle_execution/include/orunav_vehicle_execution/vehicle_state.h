@@ -299,18 +299,20 @@ public:
 	// ACTIVE -> WAIT -> target completed
 	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
 	  if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
-
 	    if (!this->hasActiveTaskCriticalPoint()) {
 	      completed_target = true;
 	      if (!useForks) {
 		completedTarget = completed_target;
 		state_ = WAITING_FOR_TASK;
+		ROS_INFO_STREAM("Detected active->wait transition. Going to waiting for task.");
 	      }
 	      this->clearTrajectoryChunks();
 	      this->clearCurrentPath();
+	      ROS_INFO_STREAM("Detected active->wait transition. Clearing chunks.");
 	    }
 	    else {
 	      state_ = AT_CRITICAL_POINT;
+	      ROS_INFO_STREAM("Detected active->wait transition. At critical point.");
 	    }
 	  }
 	}
