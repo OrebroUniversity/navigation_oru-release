@@ -288,6 +288,26 @@ public:
     }
     currentState2d_ = state;
     validState2d_ = true;
+    
+    // Keep the chunk idx up to date
+    if (!trajectoryChunks_.empty()) {
+      // Update the current chunk idx when it's driving. 
+      currentTrajectoryChunkEstIdx_ = orunav_generic::getCurrentChunkIdx(trajectoryChunks_, state.getPose2d(), currentTrajectoryChunkEstIdx_);
+      // The controller will report zero as the sequence number whenever the controller is done tracking but before the complete_target flag is switched.
+      if (currentTrajectoryChunkIdx_ < msg->traj_chunk_sequence_num) {
+        currentTrajectoryChunkIdx_ = msg->traj_chunk_sequence_num;
+      }
+      currentTrajectoryChunkStepIdx_ = msg->traj_step_sequence_num;
+      // if (abs(currentTrajectoryChunkEstIdx_ - currentTrajectoryChunkIdx_) > 0) {
+      //   ROS_INFO_STREAM("ChunkIdx difference : " << currentTrajectoryChunkEstIdx_ - currentTrajectoryChunkIdx_);
+      // }
+    }
+
+    // Keep the current path idx up to date.
+    if (path_.sizePath() > 0) {
+      orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
+      currentPathIdx_ = orunav_generic::getCurrentIdx(path_, state.getPose2d(), currentPathIdx_);
+    }
 
     completedTarget = false;
     bool completed_target = false;
@@ -297,19 +317,22 @@ public:
 	// State has changed.
 	// FINALIZING -> WAIT -> target completed
 	// ACTIVE -> WAIT -> target completed
-	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
-	  if (!this->hasActiveTaskCriticalPoint() && prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
-	    completed_target = true;
-	    if (!useForks) {
-	      completedTarget = completed_target;
-	      state_ = WAITING_FOR_TASK;
-	      ROS_INFO_STREAM("Detected finalize->wait transition (no forks). Mission is completed.");
+	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
+	  if (!this->hasActiveTaskCriticalPoint()) {
+	    if (currentPathIdx_ == path_.sizePath()-1) {
+		completed_target = true;
+		if (!useForks) {
+		  completedTarget = completed_target;
+		  state_ = WAITING_FOR_TASK;
+		  ROS_INFO_STREAM("Detected active/finalize->wait transition (no forks). Mission is completed.");
+		}
+		else ROS_INFO_STREAM("Detected active/finalize->wait transition (use forks). Navigation completed ... going to perform goal operation.");
+		this->clearTrajectoryChunks();
+		this->clearCurrentPath();
 	    }
-	    else ROS_INFO_STREAM("Detected finalize->wait transition (use forks). Navigation completed ... going to perform goal operation.");
-	    this->clearTrajectoryChunks();
-	    this->clearCurrentPath();
+	    else ROS_INFO_STREAM("Detected active/finalize->wait transition but mission is not completed yet. Keeping the same state.");
 	  }
-	  else if (this->hasActiveTaskCriticalPoint() && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
+	  else {
 	    state_ = AT_CRITICAL_POINT;
 	    ROS_INFO_STREAM("Detected active/finalize->wait transition with active critical points.");
 	  }
@@ -356,26 +379,6 @@ public:
     }
 
     prev_controller_status_ = controller_status_;
-
-    // Keep the chunk idx up to date
-    if (!trajectoryChunks_.empty()) {
-      // Update the current chunk idx when it's driving. 
-      currentTrajectoryChunkEstIdx_ = orunav_generic::getCurrentChunkIdx(trajectoryChunks_, state.getPose2d(), currentTrajectoryChunkEstIdx_);
-      // The controller will report zero as the sequence number whenever the controller is done tracking but before the complete_target flag is switched.
-      if (currentTrajectoryChunkIdx_ < msg->traj_chunk_sequence_num) {
-        currentTrajectoryChunkIdx_ = msg->traj_chunk_sequence_num;
-      }
-      currentTrajectoryChunkStepIdx_ = msg->traj_step_sequence_num;
-      // if (abs(currentTrajectoryChunkEstIdx_ - currentTrajectoryChunkIdx_) > 0) {
-      //   ROS_INFO_STREAM("ChunkIdx difference : " << currentTrajectoryChunkEstIdx_ - currentTrajectoryChunkIdx_);
-      // }
-    }
-
-    // Keep the current path idx up to date.
-    if (path_.sizePath() > 0) {
-      orunav_generic::State2d state = orunav_conversions::createState2dFromControllerStateMsg(msg->state);
-      currentPathIdx_ = orunav_generic::getCurrentIdx(path_, state.getPose2d(), currentPathIdx_);
-    }
 
     // Update driven trajectory
     if (controller_status_ != msg->CONTROLLER_STATUS_WAIT) {
