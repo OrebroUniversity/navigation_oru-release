@@ -298,22 +298,20 @@ public:
 	// FINALIZING -> WAIT -> target completed
 	// ACTIVE -> WAIT -> target completed
 	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT) {
-	  if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
-	    if (!this->hasActiveTaskCriticalPoint()) {
-	      completed_target = true;
-	      if (!useForks) {
-		completedTarget = completed_target;
-		state_ = WAITING_FOR_TASK;
-		ROS_INFO_STREAM("Detected active->wait transition. Going to waiting for task.");
-	      }
-	      this->clearTrajectoryChunks();
-	      this->clearCurrentPath();
-	      ROS_INFO_STREAM("Detected active->wait transition. Clearing chunks.");
+	  if (!this->hasActiveTaskCriticalPoint() && prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE) {
+	    completed_target = true;
+	    if (!useForks) {
+	      completedTarget = completed_target;
+	      state_ = WAITING_FOR_TASK;
+	      ROS_INFO_STREAM("Detected finalize->wait transition (no forks). Mission is completed.");
 	    }
-	    else {
-	      state_ = AT_CRITICAL_POINT;
-	      ROS_INFO_STREAM("Detected active->wait transition. At critical point.");
-	    }
+	    else ROS_INFO_STREAM("Detected finalize->wait transition (use forks). Navigation completed ... going to perform goal operation.");
+	    this->clearTrajectoryChunks();
+	    this->clearCurrentPath();
+	  }
+	  else if (this->hasActiveTaskCriticalPoint() && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
+	    state_ = AT_CRITICAL_POINT;
+	    ROS_INFO_STREAM("Detected active/finalize->wait transition with active critical points.");
 	  }
 	}
       }
