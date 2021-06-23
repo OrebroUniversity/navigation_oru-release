@@ -309,9 +309,9 @@ public:
 	    this->clearTrajectoryChunks();
 	    this->clearCurrentPath();
 	  }
-	  else if (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE) {
+	  else if (this->hasActiveTaskCriticalPoint() && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
 	    state_ = AT_CRITICAL_POINT;
-	    ROS_INFO_STREAM("Detected active->wait transition. At critical point.");
+	    ROS_INFO_STREAM("Detected active/finalize->wait transition with active critical points.");
 	  }
 	}
       }
