@@ -319,7 +319,7 @@ public:
 	// ACTIVE -> WAIT -> target completed
 	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
 	  if (!this->hasActiveTaskCriticalPoint()) {
-	    if (currentPathIdx_ == path_.sizePath()-1) {
+	    if (currentPathIdx_ == path_.sizePath()-1 || goalOperation_ == LOAD) {
 		completed_target = true;
 		if (!useForks) {
 		  completedTarget = completed_target;
