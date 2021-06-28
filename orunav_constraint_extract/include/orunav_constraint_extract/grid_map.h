@@ -80,14 +80,14 @@ inline bool isOccupied(const nav_msgs::OccupancyGrid &map, const Eigen::Vector2i
   //assert(validPixelOccupancyGrid(map, pixel));
   if (!validPixelOccupancyGrid(map, pixel))
     return true;
-  if (map.data[getOccupancyGridIdx(map, pixel)] > 90 || map.data[getOccupancyGridIdx(map, pixel)] == -1) //was 51
+  if (map.data[getOccupancyGridIdx(map, pixel)] >= 99 || map.data[getOccupancyGridIdx(map, pixel)] == -1) //was 51
     return true;
   return false;
 }
 
  inline bool isValidAndOccupied(const nav_msgs::OccupancyGrid &map, const Eigen::Vector2i &pixel) {
    if (validPixelOccupancyGrid(map,pixel)) {
-     if (map.data[getOccupancyGridIdx(map, pixel)] > 90 || map.data[getOccupancyGridIdx(map, pixel)] == -1) { // was 51
+     if (map.data[getOccupancyGridIdx(map, pixel)] >= 99 || map.data[getOccupancyGridIdx(map, pixel)] == -1) { // was 51
        return true;
      }
    }
