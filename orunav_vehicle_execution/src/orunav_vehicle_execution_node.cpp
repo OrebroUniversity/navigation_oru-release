@@ -807,6 +807,7 @@ public:
 
     if (req.extra_obstacles.size() > 0)
     {
+      ROS_WARN_STREAM( "extra obstacles: " << req.extra_obstacles.size() );
       // If we have extra obstacles, let's add them to the map
       //crate polygon poly via test/polygon2_test.cpp
       for (int i = 0; i < req.extra_obstacles.size(); i++)
