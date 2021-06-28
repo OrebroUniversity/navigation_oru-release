@@ -30,8 +30,9 @@ namespace orunav_geometry {
       border.points.push_back(Eigen::Vector2d(-0.6, -0.4));
       border.points.push_back(Eigen::Vector2d(-0.6, 0.4));
 
-      pick_poses.push_back(orunav_generic::Pose2d(1.2, 0., 0.));
-      pick_poses.push_back(orunav_generic::Pose2d(-1.2, 0., M_PI));
+      pick_poses.push_back(orunav_generic::Pose2d(2.2, 0., 0.)); // was 1.2 = one pallet length, but that risks making 'way to short path'
+      pick_poses.push_back(orunav_generic::Pose2d(-2.2, 0., M_PI)); // was 1.2 = one pallet length
+      pick_poses.push_back(orunav_generic::Pose2d(1.2, 0., 0.)); // Chitt - adding to imporve pallet picking?
 
       pick_poses_close.push_back(orunav_generic::Pose2d(0.6, 0., 0.));
       pick_poses_close.push_back(orunav_generic::Pose2d(-0.6, 0., M_PI));

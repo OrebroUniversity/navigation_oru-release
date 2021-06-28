@@ -783,7 +783,10 @@ public:
       constraint_extract::addPolygonToOccupancyMap(pm.getPosePolygon(), map, 100);
       // Update the tgt pose, this will currently use the first suggested pose.
       orunav_generic::Pose2d pickup_pose;
-      pickup_pose = pm.getPickupPoses().getPose2d(0); // For a pallet - this will contain two poses...
+      if (req.target.goal_op.operation == req.target.goal_op.LOAD_DETECT)
+	pickup_pose = pm.getPickupPoses().getPose2d(0); // For a pallet - this will contain two poses...
+      else // i.e. LOAD
+	pickup_pose = pm.getPickupPoses().getPose2d(2); 
       ROS_INFO("Will pick up some goods. Changing the goal pose - ");
       ROS_INFO("(from) Goal :  [%f,%f,%f](%f)", req.target.goal.pose.position.x, req.target.goal.pose.position.y, tf::getYaw(req.target.goal.pose.orientation), req.target.goal.steering);
       target.goal.pose = orunav_conversions::createMsgFromPose2d(pickup_pose);
@@ -1107,7 +1110,6 @@ public:
     if (req.task.update && vehicle_state_.brakeSentUsingServiceCall()) {
         ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling RECOVER.");
 	sendRecoverCommand(VehicleState::BrakeReason::SERVICE_CALL);
-	usleep(100000);
 	vehicle_state_.setResendTrajectory(true);
     }
 
@@ -1116,6 +1118,7 @@ public:
     {
       ROS_WARN("start operation requested(!)");
     }
+    ROS_INFO_STREAM( "executeTaskCB goal operation: " << req.task.target.goal_op.operation );
 
     // // Detect the load while driving - turn on the detection?
     // if (req.task.target.goal_op.operation == req.task.target.goal_op.LOAD_DETECT_DRIVING) {
@@ -1611,6 +1614,10 @@ public:
       {
         cmd.state.position_z = 0.1;
       }
+      //else if (operation == VehicleState::UNLOAD)
+      //{
+      //  cmd.state.position_z = -0.1;
+      //}
       else if (operation == VehicleState::ACTIVATE_SUPPORT_LEGS)
       {
         cmd.state.position_z = -0.1;

@@ -81,12 +81,12 @@ public:
       ROS_ERROR("ACTIVATE_SUPPORT_LEGS not allowed as start operation...");
       return false;
     }
-    if (startOperation_ == NO_OPERATION) {
+    /*if (startOperation_ == NO_OPERATION) {
       if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
         ROS_ERROR("FORK_POSITION_SUPPORT_LEGS not allowed fork state to start operation");
         return false;
       }
-    }
+      }*/
     return true;
   }
 
@@ -128,10 +128,10 @@ public:
       //      controllerState_ = WAITING;
       ROS_INFO("SET STATE TO DRIVING!!!!");
       state_ = DRIVING;
-      if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
+      /*if (forkState_ == FORK_POSITION_SUPPORT_LEGS) {
         // Cannot start driving if the support legs is active.
         state_ = TASK_FAILED;
-      }
+	}*/
       return;
     }  
 
@@ -319,7 +319,7 @@ public:
 	// ACTIVE -> WAIT -> target completed
 	if (controller_status_ == msg->CONTROLLER_STATUS_WAIT && (prev_controller_status_ == msg->CONTROLLER_STATUS_ACTIVE || prev_controller_status_ == msg->CONTROLLER_STATUS_FINALIZE)) {
 	  if (!this->hasActiveTaskCriticalPoint()) {
-	    if (currentPathIdx_ == path_.sizePath()-1) {
+	    if (currentPathIdx_ == path_.sizePath()-1 || goalOperation_ == LOAD) {
 		completed_target = true;
 		if (!useForks) {
 		  completedTarget = completed_target;
