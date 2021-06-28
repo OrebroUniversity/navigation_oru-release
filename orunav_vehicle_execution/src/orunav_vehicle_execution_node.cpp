@@ -1109,7 +1109,6 @@ public:
     if (req.task.update && vehicle_state_.brakeSentUsingServiceCall()) {
         ROS_INFO("[KMOVehicleExecutionNode] - Update and execute task. Calling RECOVER.");
 	sendRecoverCommand(VehicleState::BrakeReason::SERVICE_CALL);
-	usleep(100000);
 	vehicle_state_.setResendTrajectory(true);
     }
 
