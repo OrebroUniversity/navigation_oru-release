@@ -75,9 +75,9 @@
 
   <!--node pkg="tf" type="static_transform_publisher" name="robot2_asus" args="0.699379 0.0449883 1.02123 -0.00363908 0.947651 0.0108071 0.319104 /robot2/base_link robot2/asus_fork_link 10"/-->
 
-  <!-- <node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibration" args="0.699491 0.0449904 1.03351 -0.00295308 0.958306 0.00991033 0.285556 /robot2/base_link /robot2/asus_fork_base_link 10"/> -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.697179 -0.0448123 1.21826 -0.369287 0.042435 0.928193 0.016883 /robot3/base_link /robot3/asus_fork_link 10"/> -->
-  <node pkg="tf" type="static_transform_publisher" name="robot3_forkcam_calibration" args="0.700055 -0.0449999 1.24427 -0.264921 -0.00114694 0.964269 -0.000315107 /robot3/base_link /robot3/asus_fork_link 10"/>
+  <!--node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibrated" args="0.699512 0.0449923 1.04958 -0.00285009 0.950984 0.00876858 0.309102 /robot2/base_link /robot2/asus_fork_base_link 10"/ -->
+  <!-- node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibrated" args="0.699369 0.0449877 1.04253 -0.0036974 0.94864 0.0110947 0.316142 /robot2/base_link /robot2/asus_fork_base_link 10" -->
+  <node pkg="tf" type="static_transform_publisher" name="robot2_forkcam_calibrated" args="0.699212 0.0449781 1.06009 -0.00458089 0.955806 0.0149139 0.293582 /robot2/base_link /robot2/asus_fork_base_link 10" />
 
 
   <node pkg="orunav_vehicle_execution" type="vehicle_execution_client" name="vehicle_client" output="screen" ns="$(arg tf_prefix)">
