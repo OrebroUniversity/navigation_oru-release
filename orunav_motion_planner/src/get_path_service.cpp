@@ -8,6 +8,9 @@
 #include <orunav_motion_planner/PathFinder.h>
 #include <orunav_motion_planner/VehicleMission.h>
 
+#include <orunav_motion_planner/DualSteerModel.h>
+#include <orunav_motion_planner/DualSteerConfiguration.h>
+
 #include <iostream>
 #include <string>
 
@@ -30,8 +33,8 @@ private:
   std::string motion_prim_dir_;
   std::string lookup_tables_dir_;
   std::string maps_dir_;
-  CarModel* car_model_;
-  
+  //CarModel* car_model_;
+  DualSteerModel* DualSteer_model_;
   bool visualize_;
   
   ros::Publisher marker_pub_;
@@ -57,7 +60,8 @@ public:
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
-      car_model_ = new CarModel(model);
+      //car_model_ = new CarModel(model);
+      DualSteer_model_ = new DualSteerModel(model);
 
       ROS_INFO_STREAM("[GetPathService] - Using model : " << model << "\n");
 
@@ -78,7 +82,7 @@ public:
 
   ~GetPathService()
     {
-      delete car_model_;
+      delete DualSteer_model_;
       ROS_INFO_STREAM("[GetPathService] - shutting down\n");
     }
 
@@ -115,7 +119,7 @@ public:
     if (req.max_planning_time > 0.) 
       pf->setTimeBound(req.max_planning_time);
     
-    VehicleMission vm(car_model_,
+    VehicleMission vm(DualSteer_model_,
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
     
@@ -217,9 +221,9 @@ public:
 
 int main(int argc, char** argv) {
 
-  ros::init(argc, argv, "get_path_service");
-  ros::NodeHandle parameters("~");
-  GetPathService gps(parameters, ros::this_node::getName());
+ ros::init(argc, argv, "get_path_service");
+ ros::NodeHandle parameters("~");
+ GetPathService gps(parameters, ros::this_node::getName());
 
-  ros::spin();
+ ros::spin();
 }

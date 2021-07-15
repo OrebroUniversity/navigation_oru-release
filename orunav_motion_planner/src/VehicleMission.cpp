@@ -14,7 +14,8 @@
 #include "orunav_motion_planner/CarConfiguration.h"
 #include "orunav_motion_planner/UnicycleConfiguration.h"
 #include "orunav_motion_planner/LHDConfiguration.h"
-
+#include <orunav_motion_planner/DualSteerModel.h>
+#include <orunav_motion_planner/DualSteerConfiguration.h>
 
 
 // init the static counter

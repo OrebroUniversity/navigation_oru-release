@@ -65,6 +65,7 @@ void PathFinder::selectSubMap(double xfrom, double yfrom, double xto, double yto
 
 void PathFinder::addMission(VehicleMission* m) {
 	missions_.push_back(m);
+
 }
 
 void PathFinder::enableDataGatheringForVehicleHT() {

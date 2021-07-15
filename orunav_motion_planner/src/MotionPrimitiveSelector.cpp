@@ -172,6 +172,10 @@ void MotionPrimitiveSelector::mergeNodes(){
 
 void MotionPrimitiveSelector::identifyMinimumSupersets(){
 	// go over all the nodes, except for the first one
+	std::string str = std::string(" --> ");
+	char info[90];
+	sprintf(info, "Expanded node # %lu :", selectorNodes_.size() );
+	str.append(std::string(info));
 	for (unsigned int i = 1; i < selectorNodes_.size(); i++) {
 		// clear the marks of all the previous nodes
 		for (int j = i-1; j >= 0; j--)
@@ -187,6 +191,7 @@ void MotionPrimitiveSelector::identifyMinimumSupersets(){
 			// if the node is not marked, and it is a superset
 			else if (contains(selectorNodes_[j].primitives_, selectorNodes_[i].primitives_)){
 				// add an edge from i to j
+				//str.append("|");
 				selectorNodes_[i].subsumingNodes_.push_back(&selectorNodes_[j]);
 				// mark all the subsuming nodes of j (which, by transitivity, would be supersets of i)
 				for (unsigned int k = 0; k < selectorNodes_[j].subsumingNodes_.size(); k++) {
@@ -195,6 +200,7 @@ void MotionPrimitiveSelector::identifyMinimumSupersets(){
 			}
 		}
 	}
+	writeLogLine(str, "PrimitiveSelector Gen", WP::LOG_FILE);
 }
 
 
@@ -202,16 +208,25 @@ std::vector<MotionPrimitiveData*> MotionPrimitiveSelector::getValidPrimitives(Wo
 		short int startXcell, short int startYcell) {
 	std::vector<MotionPrimitiveData*> primitives;
 	primitives.clear();
-
+	std::string str = std::string(" --> ");
 	// assume there are no collisions
+	int Cc = 0;
+	int collision = 0;
+	char info[90];
+	sprintf(info, "Expanded node # %lu :", selectorNodes_.size() );
+	str.append(std::string(info));
 	for (unsigned int i = 0; i < selectorNodes_.size(); i++) {
 		selectorNodes_[i].marked_ = false;
 
 		// Check if any of the subsuming nodes have been marked
+		char info2[90];
+		sprintf(info2, "\n\t[Expanded Subnode # %lu ]", selectorNodes_[i].subsumingNodes_.size() );
+		//str.append(std::string(info2));
 		for (unsigned int j = 0; j < selectorNodes_[i].subsumingNodes_.size(); j++) {
 			// if a subsuming node is marked
 			if (selectorNodes_[i].subsumingNodes_[j]->marked_) {
 				// the primitives listed in the current node are invalid: mark the current node as well
+				Cc++;
 				selectorNodes_[i].marked_ = true;
 				// at least one subsuming node is marked, no reason to check the others
 				break;
@@ -224,16 +239,26 @@ std::vector<MotionPrimitiveData*> MotionPrimitiveSelector::getValidPrimitives(Wo
 				// check to see if nodes[i].cells[j] IS BLOCKED
 				if (w->getCollisionDetector()->isBlocked(startXcell + cells[j].x_cell, startYcell + cells[j].y_cell)) {
 					// the primitives listed in the current node node are invalid, so mark the current node node
-					selectorNodes_[i].marked_ = true;
+					str.append("\n\t Collision ");
+					collision++;
+					//selectorNodes_[i].marked_ = true;
 					break;	// At least one cell is blocked, no reason to check the others
 				}
 			}
 		}
 		// If the node is not marked and has only one primitive
+		//char info2[90];
+		//sprintf(info2,"[PS %lu]\n", selectorNodes_[i].primitives_.size());
+		//str.append(info2);
 		if (selectorNodes_[i].marked_ == false && selectorNodes_[i].primitives_.size() == 1) {
 			// Add it to the list of applicable primitives
+			str.append("\n 1 primitive");
 			primitives.push_back(selectorNodes_[i].primitives_[0]);
 		}
 	}
+	char info3[90];
+	sprintf(info3,"\n\t[Primitives Size %lu, scartate %d, collision %d]", primitives.size(), Cc, collision);
+	str.append(info3);
+	writeLogLine(str, "PrimitiveSelector", WP::LOG_FILE);
 	return primitives;
 }

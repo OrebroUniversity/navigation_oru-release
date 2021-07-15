@@ -100,6 +100,12 @@ PathNode::~PathNode() {
 
 std::vector<Node*> PathNode::generateChildren() {
 	std::vector<Node*> children;
+	
+	std::string str = std::string("PathNode ");
+	char info[90];
+	sprintf(info, "Method %d :", WP::NODE_EXPANSION_METHOD);
+	str.append(std::string(info));
+	writeLogLine(str, "PathNode", WP::LOG_FILE);
 
 
 	if(WP::NODE_EXPANSION_METHOD == WP::NodeExpansionMethod::NAIVE) {
@@ -112,7 +118,7 @@ std::vector<Node*> PathNode::generateChildren() {
 		// -- remove the positions of the other vehicles from the map
 
 		for (std::vector<Configuration*>::iterator confit = currentConfigurations_.begin(); confit != currentConfigurations_.end(); confit++) {
-
+			
 			std::vector<Configuration*> newConfigurations = (*confit)->generateNewConfigurations();
 			std::vector<Configuration*> oldConfigurations;
 			oldConfigurations.clear();
