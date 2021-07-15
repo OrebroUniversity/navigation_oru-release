@@ -9,7 +9,7 @@
 
 // initialization of the world parameters
 
-int WP::LOG_LEVEL = 1;
+int WP::LOG_LEVEL = 6;
 std::string WP::LOG_FILE = std::string("stdout");
 bool WP::SAVE_FINAL_VISUALIZATION_TO_FILE = false;
 

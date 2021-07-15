@@ -10,9 +10,9 @@
     file="$(find orunav_params)/config/citi1_simulation.cfg" />
 
   <include
-    file="$(find cititruck_gazebo)/launch/cititruck_basement.launch" />
+    file="$(find cititruck_gazebo)/launch/cititruck_empty.launch" />
   <include
-    file="$(find gazebo_worlds_oru)/launch/basement_map_server.launch" />
+    file="$(find gazebo_worlds_oru)/launch/empty_map_server.launch" />
   <!--include file="$(find orunav_mpc)/launch/citi1_simulation.launch"/ -->
 
   <node pkg="orunav_vehicle_execution"

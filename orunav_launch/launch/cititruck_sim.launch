@@ -34,7 +34,8 @@
     <node pkg="orunav_motion_planner" type="get_path_service"
           name="get_path_service" output="screen">
       <param name="model"
-             value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced" />
+            value="CiTiTruck_Expanded10+20_16_1_4.0_0.2.reduced" />
+
       <param name="motion_primitives_directory"
              value="$(find orunav_motion_planner)/Primitives/" />
       <param name="lookup_tables_directory"

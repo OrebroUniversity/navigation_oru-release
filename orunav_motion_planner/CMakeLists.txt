@@ -63,6 +63,8 @@ add_executable(get_path_service src/get_path_service.cpp
   src/CollisionDetector.cpp
   src/Configuration.cpp
   src/DiscWorldVisualizer.cpp
+  src/DualSteerConfiguration.cpp
+  src/DualSteerModel.cpp
   src/LHDConfiguration.cpp
   src/LHDModel.cpp
   src/MapGenerators.cpp
@@ -78,6 +80,7 @@ add_executable(get_path_service src/get_path_service.cpp
   src/World.cpp
   src/WorldOccupancyMap.cpp
   src/WorldParameters.cpp
+
 )
 add_dependencies(get_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(get_path_service
@@ -90,6 +93,8 @@ add_dependencies(get_path_client ${catkin_EXPORTED_TARGETS})
 target_link_libraries(get_path_client
   ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS}
 )
+
+
 
 #############
 ## Install ##
