@@ -7,15 +7,7 @@
 
 #include "orunav_motion_planner/DualSteerModel.h"
 
-DualSteerModel::DualSteerModel(std::string modelPrimitivesFilename[], int set) : VehicleModel(modelPrimitivesFilename, set) {
-	// initialization, then overwritten by the data read from the primitives file
-	carFrontLength_ = 0;
-	carBackLength_ = 0;
-	carMaxSteeringAngle_ = 0;
-	sets = set;
-	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
-	this->loadPrimitiveLookupTable(0);
-}
+
 
 DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilename, int set) : VehicleModel(modelPrimitivesFilename, set) {
 	// initialization, then overwritten by the data read from the primitives file
@@ -25,7 +17,8 @@ DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenam
 	sets = set;
 	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
 	for(int count; count < sets; count++){
-	this->loadPrimitiveLookupTable(count);
+		currentSet = count;
+		this->loadPrimitiveLookupTable();
 	}
 }
 DualSteerModel::~DualSteerModel() {
@@ -58,8 +51,8 @@ std::vector<cellPosition*> DualSteerModel::getCellsOccupiedInPosition(vehicleSim
 		return cellsOccByPos;
 }
 
-void DualSteerModel::loadPrimitiveLookupTable(int set) {
-
+void DualSteerModel::loadPrimitiveLookupTable() {
+	int set = currentSet;
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;
@@ -233,7 +226,7 @@ void DualSteerModel::loadPrimitiveLookupTable(int set) {
 	f.open(motionPrimitiveAdditionalDataFilenameS_[set].c_str(), std::ifstream::in);
 	// if it is not open, let's generate it and open it again
 	if (!f.is_open()) {
-		this->generatePrimitiveAdditionalData(set);
+		this->generatePrimitiveAdditionalData();
 	} else {
 		while (f.good()) {
 			getline(f, line);
@@ -328,8 +321,8 @@ void DualSteerModel::loadPrimitiveLookupTable(int set) {
 	this->prepareMotionPrimitiveSelectorTable();
 }
 
-void DualSteerModel::generatePrimitiveAdditionalData(int set) {
-
+void DualSteerModel::generatePrimitiveAdditionalData() {
+	int set = currentSet;
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;

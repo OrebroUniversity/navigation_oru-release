@@ -34,7 +34,7 @@ private:
   std::string lookup_tables_dir_;
   std::string maps_dir_;
   //CarModel* car_model_;
-  DualSteerModel* DualSteer_model_;
+  DualSteerModel* dualSteer_model_;
   bool visualize_;
   
   ros::Publisher marker_pub_;
@@ -61,10 +61,10 @@ public:
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
       //std::string models{model,model};
-      std::array<std::string,5> models{model,"HX_4WS_4wsMINI","HX_4WS_crabMINI","",""};
+      std::array<std::string,5> models{model,"HX_4WS_4wsMINI","HX_4WS_crabNew","",""};
       
       //car_model_ = new CarModel(model);
-      DualSteer_model_ = new DualSteerModel(models,3);
+      dualSteer_model_ = new DualSteerModel(models,3);
 
       ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[0] << "\n");
       ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[1] << "\n");
@@ -86,7 +86,8 @@ public:
 
   ~GetPathService()
     {
-      delete DualSteer_model_;
+      //delete car_model_;
+      delete dualSteer_model_;
       ROS_INFO_STREAM("[GetPathService] - shutting down\n");
     }
 
@@ -123,7 +124,7 @@ public:
     if (req.max_planning_time > 0.) 
       pf->setTimeBound(req.max_planning_time);
     
-    VehicleMission vm(DualSteer_model_,
+    VehicleMission vm(dualSteer_model_,
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
     

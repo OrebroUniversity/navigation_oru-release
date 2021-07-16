@@ -28,6 +28,7 @@ class DualSteerModel: public VehicleModel {
 	double carMaxSteeringAngle_;
 	/** number of primitives set */
 	int sets;
+	int currentSet;
 
 protected:
 
@@ -37,12 +38,13 @@ protected:
 	 * Implementation of the virtual function. Generates the file that contains the
 	 * additional data of the motion primitives (length, occupancy)
 	 */
-	void generatePrimitiveAdditionalData(int set);
+	
+	void generatePrimitiveAdditionalData();
 
 	/**
 	 * Implementation of the virtual function. Load motion primitives
 	 */
-	void loadPrimitiveLookupTable(int set);
+	void loadPrimitiveLookupTable();
 
 public:
 

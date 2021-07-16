@@ -93,8 +93,8 @@ protected:
 	/**
 	 * Purely virtual function. Load motion primitives.
 	 */
-	//virtual void loadPrimitiveLookupTable() = 0;
-	virtual void loadPrimitiveLookupTable(int set) = 0;
+	virtual void loadPrimitiveLookupTable() = 0;
+	//virtual void loadPrimitiveLookupTable(int set) = 0;
 
 	/**
 	 * Once the modelMotionPrimitivesLT_ has been loaded, we can calculate the modelMotionPrimitivesSelector_
@@ -105,8 +105,8 @@ protected:
 	 * Purely virtual function. Generates the file that contains the
 	 * additional data of the motion primitives (length, occupancy)
 	 */
-	//virtual void generatePrimitiveAdditionalData() = 0;
-	virtual void generatePrimitiveAdditionalData(int set) = 0;
+	virtual void generatePrimitiveAdditionalData() = 0;
+	//virtual void generatePrimitiveAdditionalData(int set) = 0;
 
 	/**
 	 * Correct the distances among primitives to fully support the 8-axis symmetry
@@ -170,7 +170,6 @@ public:
 	 */
 	VehicleModel(std::string modelPrimitivesFilename);
 
-	VehicleModel(std::string modelPrimitivesFilename[],int set);
 	VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS,int set);
 	 
 
