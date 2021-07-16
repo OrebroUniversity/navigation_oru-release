@@ -26,18 +26,23 @@ class DualSteerModel: public VehicleModel {
 	double carBackLength_;
 	/** The car max steering angle, in radians */
 	double carMaxSteeringAngle_;
+	/** number of primitives set */
+	int sets;
 
 protected:
-	/**
+
+	/** The name of the file containing the motion primitives */
+	
+/**
 	 * Implementation of the virtual function. Generates the file that contains the
 	 * additional data of the motion primitives (length, occupancy)
 	 */
-	void generatePrimitiveAdditionalData();
+	void generatePrimitiveAdditionalData(int set);
 
 	/**
 	 * Implementation of the virtual function. Load motion primitives
 	 */
-	void loadPrimitiveLookupTable();
+	void loadPrimitiveLookupTable(int set);
 
 public:
 
@@ -48,8 +53,9 @@ public:
 	 * of the Car are contained in the model primitives file
 	 * @param modelPrimitivesFilename The name of the file of the motion primitives, without path!
 	 */
-	DualSteerModel(std::string modelPrimitivesFilename);
-
+	DualSteerModel(std::string modelPrimitivesFilename[], int set);
+	
+	DualSteerModel(std::array<std::string,5>  modelPrimitivesFilename, int set);
 	virtual ~DualSteerModel();
 
 	/**
@@ -78,6 +84,21 @@ public:
 	 * @returns the car max steering angle, in radians
 	 */
 	double getCarMaxSteeringAngle();
+
+	/**
+	/**
+	 * Retrieve the motion primitives from the primitive lookup table
+	 * @param orientationID The orientation ID of the starting configuration
+	 * @param steeringID The steering ID of the starting configuration, 0 by default
+	 * @returns a vector of motion primitives motionPrimitiveData
+	 */
+	std::vector<MotionPrimitiveData*> getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID);
+
+	/**
+	/**
+	 *defines the heuristics with which to choose the sets of primitives to use
+	 */
+	std::vector<int>  selectSet();
 
 };
 

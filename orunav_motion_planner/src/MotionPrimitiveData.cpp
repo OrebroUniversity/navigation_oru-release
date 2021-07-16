@@ -17,6 +17,8 @@ MotionPrimitiveData::MotionPrimitiveData() {
 	finalOrientID_ = 0;
 	startSteeringID_ = 0;
 	finalSteeringID_ = 0;
+	startSteeringIDr_ = 0;
+	finalSteeringIDr_ = 0;
 	xOffset_ = 0;
 	yOffset_ = 0;
 	traj_.clear();

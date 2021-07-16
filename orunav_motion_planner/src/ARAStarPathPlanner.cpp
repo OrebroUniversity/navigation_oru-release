@@ -63,7 +63,7 @@ std::vector<Node*> ARAStarPathPlanner::solve() {
 	}
 
 	boost::posix_time::time_duration timeElapsed(boost::posix_time::microsec_clock::local_time() - startingTime_);
-
+	
 	// while we can improve the solution and we still have time, continue
 	while (WP::HEURISTIC_VALUE_MULTIPLIER > 1 && (timeElapsed.total_seconds() < secondsToCalculatePath_)) {
 
@@ -112,8 +112,9 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 	PathNode* candidate;
 	// we do not extract the candidate until we know that it will be used -- use this instead of the openListSize,
 	// because in the openList there might be only a node marked as not to be extracted
+	int CandidateCount;
 	while (this->getFValueOfExtractionCandidate() >= 0) {
-
+		CandidateCount++;
 		timeElapsed = boost::posix_time::microsec_clock::local_time() - startingTime_;
 
 		// check if we cannot improve over the previous solution or if we have exhausted the time limit
@@ -147,7 +148,7 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 		}
 
 		if (WP::LOG_LEVEL >= 5) {
-			candidate->print();
+			//candidate->print();
 		}
 		// check if we reached the goal
 		if (candidate->equalContent(goalNode_)) {
@@ -155,8 +156,8 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 			sol = this->clonePath(candidate);
 			if (WP::LOG_LEVEL >= 2) {
 				char line[150];
-				sprintf(line, "Open list: %d \tExpanded list: %d", openListSize(), expandedListSize());
-				writeLogLine(line, "ARAStarPathPlanner", WP::LOG_FILE);
+				sprintf(line, "Open list: %d \tExpanded list: %d, CandidateCount: %d", openListSize(), expandedListSize(), CandidateCount);
+				writeLogLine(line, "GOAL ARAStarPathPlanner ", WP::LOG_FILE);
 			}
 			// exit the loop
 			break;
@@ -207,7 +208,7 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 		if (WP::LOG_LEVEL >= 2 && progress == 10000) {
 			char line[150];
 			sprintf(line, "Open list: %d \tExpanded list: %d", openListSize(), expandedListSize());
-			writeLogLine(line, "ARAStarPathPlanner", WP::LOG_FILE);
+			writeLogLine(line, "ARAStarPathPlanner 10000cicle", WP::LOG_FILE);
 			progress = 0;
 		}
 		progress += 1;

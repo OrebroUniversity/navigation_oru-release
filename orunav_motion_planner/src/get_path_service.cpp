@@ -60,10 +60,14 @@ public:
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
+      //std::string models{model,model};
+      std::array<std::string,5> models{model,"HX_4WS_4wsMINI","HX_4WS_crabMINI","",""};
+      
       //car_model_ = new CarModel(model);
-      DualSteer_model_ = new DualSteerModel(model);
+      DualSteer_model_ = new DualSteerModel(models,3);
 
-      ROS_INFO_STREAM("[GetPathService] - Using model : " << model << "\n");
+      ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[0] << "\n");
+      ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[1] << "\n");
 
       
 

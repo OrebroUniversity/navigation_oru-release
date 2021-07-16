@@ -144,6 +144,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 
 	// solve the problem: check if to use A* or ARA*
 	std::vector<Node*> solution;
+	timeBound_ = 0; //force to use A*
 	if (timeBound_ > 0) {
 		if (WP::LOG_LEVEL >= 1) {
 			char line[50];
@@ -177,12 +178,14 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 
 	if (WP::LOG_LEVEL >= 2) {
 		PathNode* pn;
+		writeLogLine("SOLUTION", "PathFinder", WP::LOG_FILE);
 		for (std::vector<Node*>::iterator it = solution.begin(); it != solution.end(); it++) {
 			pn = dynamic_cast<PathNode*>(*it);
 			pn->print();
 		}
+		writeLogLine("END SOLUTION", "PathFinder", WP::LOG_FILE);
 	}
-
+	
 	// prepare the result to return, extracting the Configurations. Cleanup
 	PathNode* pn;
 	unsigned short int numberOfVehicles = missions_.size();
@@ -195,7 +198,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 		}
 		delete pn;
 	}
-
+	
 	// remove duplicate Configurations from the results
 	std::vector<Configuration*> tmp;
 	for (unsigned short int i = 0; i < numberOfVehicles; i ++) {
@@ -215,7 +218,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 		result[i].clear();
 		result[i] = tmp;
 	}
-
+	
 	return result;
 }
 

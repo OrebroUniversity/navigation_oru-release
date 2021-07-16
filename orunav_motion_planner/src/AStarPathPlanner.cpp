@@ -108,9 +108,9 @@ std::vector<Node*> AStarPathPlanner::solve() {
 	/** @todo ->>> remove!!!! */
 	//boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::local_time());
 	//boost::posix_time::time_duration timeElapsed;
-
+	int nodesExplored = 0;
 	while (solutionFound == false) {
-
+		nodesExplored++;
 		// garbage collection
 		if (WP::ALLOW_GARBAGE_COLLECTION && this->expandedListSize() % 10000 == 0) {
 			unsigned long int before = this->openListSize();
@@ -183,8 +183,8 @@ std::vector<Node*> AStarPathPlanner::solve() {
 			sol = this->clonePath(candidate);
 			if (WP::LOG_LEVEL >= 2) {
 				char line[150];
-				sprintf(line, "Open list: %d \tExpanded list: %d", openListSize(), expandedListSize());
-				writeLogLine(line, "AStarPathPlanner", WP::LOG_FILE);
+				sprintf(line, "Open list: %d \tExpanded list: %d, node Explored %d", openListSize(), expandedListSize(), nodesExplored);
+				writeLogLine(line, "GOAL AStarPathPlanner", WP::LOG_FILE);
 			}
 			// exit the loop
 			break;

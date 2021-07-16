@@ -36,11 +36,15 @@ protected:
 	uint8_t finalOrientID_;
 	/** The final steering angle ID of this primitive */
 	uint8_t finalSteeringID_;
+	/** The final rerar steering angle ID of this primitive */
+	uint8_t finalSteeringIDr_;
 
 	/** The angle ID of the starting orientation */
 	uint8_t startOrientID_;
 	/** The angle ID of the starting steering */
 	uint8_t startSteeringID_;
+/** The angle ID of the rear starting steering */
+	uint8_t startSteeringIDr_;
 
 	/** The cell offset of the primitive from the initial pose to the goal pose on the x axis */
 	short int xOffset_;

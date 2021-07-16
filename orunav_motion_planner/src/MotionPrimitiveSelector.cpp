@@ -212,9 +212,9 @@ std::vector<MotionPrimitiveData*> MotionPrimitiveSelector::getValidPrimitives(Wo
 	// assume there are no collisions
 	int Cc = 0;
 	int collision = 0;
-	char info[90];
-	sprintf(info, "Expanded node # %lu :", selectorNodes_.size() );
-	str.append(std::string(info));
+	//char info[90];
+	//sprintf(info, "Expanded node # %lu :", selectorNodes_.size() );
+	//str.append(std::string(info));
 	for (unsigned int i = 0; i < selectorNodes_.size(); i++) {
 		selectorNodes_[i].marked_ = false;
 
@@ -239,7 +239,7 @@ std::vector<MotionPrimitiveData*> MotionPrimitiveSelector::getValidPrimitives(Wo
 				// check to see if nodes[i].cells[j] IS BLOCKED
 				if (w->getCollisionDetector()->isBlocked(startXcell + cells[j].x_cell, startYcell + cells[j].y_cell)) {
 					// the primitives listed in the current node node are invalid, so mark the current node node
-					str.append("\n\t Collision ");
+					//str.append("\n\t Collision ");
 					collision++;
 					//selectorNodes_[i].marked_ = true;
 					break;	// At least one cell is blocked, no reason to check the others
@@ -252,13 +252,13 @@ std::vector<MotionPrimitiveData*> MotionPrimitiveSelector::getValidPrimitives(Wo
 		//str.append(info2);
 		if (selectorNodes_[i].marked_ == false && selectorNodes_[i].primitives_.size() == 1) {
 			// Add it to the list of applicable primitives
-			str.append("\n 1 primitive");
+			//str.append("\n 1 primitive");
 			primitives.push_back(selectorNodes_[i].primitives_[0]);
 		}
 	}
-	char info3[90];
-	sprintf(info3,"\n\t[Primitives Size %lu, scartate %d, collision %d]", primitives.size(), Cc, collision);
-	str.append(info3);
-	writeLogLine(str, "PrimitiveSelector", WP::LOG_FILE);
+	//char info3[90];
+	//sprintf(info3,"\n\t[Primitives Size %lu, scartate %d, collision %d]", primitives.size(), Cc, collision);
+	//str.append(info3);
+	//writeLogLine(str, "PrimitiveSelector", WP::LOG_FILE);
 	return primitives;
 }

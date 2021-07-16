@@ -7,14 +7,27 @@
 
 #include "orunav_motion_planner/DualSteerModel.h"
 
-DualSteerModel::DualSteerModel(std::string modelPrimitivesFilename) : VehicleModel(modelPrimitivesFilename) {
+DualSteerModel::DualSteerModel(std::string modelPrimitivesFilename[], int set) : VehicleModel(modelPrimitivesFilename, set) {
 	// initialization, then overwritten by the data read from the primitives file
 	carFrontLength_ = 0;
 	carBackLength_ = 0;
 	carMaxSteeringAngle_ = 0;
-	this->loadPrimitiveLookupTable();
+	sets = set;
+	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
+	this->loadPrimitiveLookupTable(0);
 }
 
+DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilename, int set) : VehicleModel(modelPrimitivesFilename, set) {
+	// initialization, then overwritten by the data read from the primitives file
+	carFrontLength_ = 0;
+	carBackLength_ = 0;
+	carMaxSteeringAngle_ = 0;
+	sets = set;
+	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
+	for(int count; count < sets; count++){
+	this->loadPrimitiveLookupTable(count);
+	}
+}
 DualSteerModel::~DualSteerModel() {
 }
 
@@ -45,16 +58,16 @@ std::vector<cellPosition*> DualSteerModel::getCellsOccupiedInPosition(vehicleSim
 		return cellsOccByPos;
 }
 
-void DualSteerModel::loadPrimitiveLookupTable() {
+void DualSteerModel::loadPrimitiveLookupTable(int set) {
 
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;
-		logLine << "Loading motion primitives:  " << motionPrimitivesFilename_;
-		writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
+		logLine << "Loading motion primitives: " << motionPrimitivesFilenameS_[set];
+		writeLogLine(logLine.str(), "\x1B[34mDualSteerModel \034[0m", WP::LOG_FILE);
 	}
 	std::string line;
-	std::ifstream f(motionPrimitivesFilename_.c_str(), std::ifstream::in);
+	std::ifstream f(motionPrimitivesFilenameS_[set].c_str(), std::ifstream::in);
 
 	// the cost multiplier of the primitive (e.g., when moving backwards).
 	// set to 1 by default
@@ -185,7 +198,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 					// check the number of intermediate poses to read for this particular primitive
 					std::stringstream ss(line);
 					// NOTE: we assume already normalized angles
-					ss >> sp->x >> sp->y >> sp->orient >> sp->steering;
+					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringr;
 					primitiveTrajectory.push_back(sp);
 				}
 				// add the trajectory
@@ -193,13 +206,13 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 
 				// check where to put this primitive : check if the starting angles (steering and orientation) are present in the lookup table
 				motionPrimitivesLookup::iterator it;
-				it = modelMotionPrimitivesLT_.find(
+				it = modelMotionPrimitivesLTS_[set].find(
 						std::pair<uint8_t, uint8_t>(primData->getStartingOrientationID(), primData->getStartingSteeringID()));
-				if (it == modelMotionPrimitivesLT_.end()) {
+				if (it == modelMotionPrimitivesLTS_[set].end()) {
 					// no match: create a new entry
 					std::vector<MotionPrimitiveData*> primitiveList;
 					primitiveList.push_back(primData);
-					modelMotionPrimitivesLT_.insert(motionPrimitivesLookupEntry(
+					modelMotionPrimitivesLTS_[set].insert(motionPrimitivesLookupEntry(
 							std::pair<uint8_t, uint8_t>(primData->getStartingOrientationID(), primData->getStartingSteeringID()),
 							primitiveList));
 				} else {
@@ -217,10 +230,10 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	double longestPrimitiveReach = 0;
 
 	// now let's see if the file of additional data is there
-	f.open(motionPrimitiveAdditionalDataFilename_.c_str(), std::ifstream::in);
+	f.open(motionPrimitiveAdditionalDataFilenameS_[set].c_str(), std::ifstream::in);
 	// if it is not open, let's generate it and open it again
 	if (!f.is_open()) {
-		this->generatePrimitiveAdditionalData();
+		this->generatePrimitiveAdditionalData(set);
 	} else {
 		while (f.good()) {
 			getline(f, line);
@@ -242,9 +255,9 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 			iss >> primitiveID;
 
 			// check if the primitive is present in the lookup table
-			motionPrimitivesLookup::iterator motionit = modelMotionPrimitivesLT_.find(std::pair<uint8_t, uint8_t>(orientID,steeringID));
+			motionPrimitivesLookup::iterator motionit = modelMotionPrimitivesLTS_[set].find(std::pair<uint8_t, uint8_t>(orientID,steeringID));
 
-			if (motionit == modelMotionPrimitivesLT_.end()) {
+			if (motionit == modelMotionPrimitivesLTS_[set].end()) {
 				std::ostringstream logLine;
 				logLine << "WARNING: motion primitive not found in data!! -- " <<
 						(unsigned) orientID << "," << (unsigned) steeringID << "," << primitiveID;
@@ -309,10 +322,13 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	f.close();
 
 	// once all the primitives have been loaded, we need to prepare the selector table
+	
+	modelMotionPrimitivesLT_ = modelMotionPrimitivesLTS_[set];
+	modelMotionPrimitivesSelectorLT_ = modelMotionPrimitivesSelectorLTS_[set];
 	this->prepareMotionPrimitiveSelectorTable();
 }
 
-void DualSteerModel::generatePrimitiveAdditionalData() {
+void DualSteerModel::generatePrimitiveAdditionalData(int set) {
 
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
@@ -324,13 +340,13 @@ void DualSteerModel::generatePrimitiveAdditionalData() {
 	int counter = 0;
 
 	// iterate over the existing primitives and generate the additional data
-	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it++) {
+	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
 
 		counter ++;
 		// load the file with the primitives
 		if (WP::LOG_LEVEL >= 1) {
 			std::ostringstream logLine;
-			logLine << "Generating additional data [" << counter << "/" << modelMotionPrimitivesLT_.size() << "]";
+			logLine << "Generating additional data [" << counter << "/" << modelMotionPrimitivesLTS_[set].size() << "]";
 			writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
 		}
 
@@ -383,11 +399,12 @@ void DualSteerModel::generatePrimitiveAdditionalData() {
 		}
 	}
 	// adjust the distances for the 8-axis symmetry
+	modelMotionPrimitivesLT_ = modelMotionPrimitivesLTS_[set];
 	this->adjustPrimitiveDistancesWith8AxisSymmetry();
 	// save
 	std::ofstream f;
-	f.open(motionPrimitiveAdditionalDataFilename_.c_str(), std::ios::app);
-	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it++) {
+	f.open(motionPrimitiveAdditionalDataFilenameS_[set].c_str(), std::ios::app);
+	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
 		std::vector<MotionPrimitiveData*> mprimdata = (*it).second;
 		for (std::vector<MotionPrimitiveData*>::iterator primit = mprimdata.begin(); primit != mprimdata.end(); primit++) {
 
@@ -422,4 +439,57 @@ double DualSteerModel::getCarBackLength() {
 
 double DualSteerModel::getCarMaxSteeringAngle() {
 	return carMaxSteeringAngle_;
+}
+
+std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID) {
+	std::vector<MotionPrimitiveData*> primitiveSet;
+	std::string str = "\n";
+	std::vector<int> setToUse;
+	setToUse = this ->selectSet();
+	for (unsigned vec = 0; vec < setToUse.size(); vec++){
+		int set = setToUse[vec];
+		motionPrimitivesLookup::iterator it;
+		it = modelMotionPrimitivesLTS_[set].find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
+		if (it == modelMotionPrimitivesLTS_[set].end()) {
+			char info[150];
+			sprintf(info, "set %d : KEY NOT FOUND in [%d,%d]\n", set, orientationID,steeringID );
+			str.append(std::string(info));
+		} else {
+			char info[150];
+			sprintf(info, "set %d : primitives %lu in [%d,%d]\n", set, (*it).second.size(), orientationID,steeringID );
+			str.append(std::string(info));
+			for (unsigned i=0; i<(*it).second.size(); i++)
+    			primitiveSet.push_back( (*it).second.at(i) );
+		}	
+	}
+	char info[150];
+	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
+	str.append(std::string(info));
+	writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
+	return primitiveSet;
+}
+
+std::vector<int> DualSteerModel:: selectSet(){
+	std:: vector<int> selectedSet;
+	//condition for set 0
+	if(sets>0 && false){
+		selectedSet.push_back(0);
+	}
+	//condition for set 1
+	if(sets >1 && false){
+		selectedSet.push_back(1);
+	}
+	//condition for set 2
+	if(sets >2 && true){
+		selectedSet.push_back(2);
+	}
+	//condition for set 4
+	if(sets >3 && false){
+		selectedSet.push_back(3);
+	}
+	//condition for set 5
+	if(sets >4 && false){
+		selectedSet.push_back(4);
+	}
+	return selectedSet;
 }

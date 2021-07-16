@@ -91,8 +91,20 @@ public:
 		orient = po;
 		steering = ps;
 	}
+
+	void initVehicleSimplePoint(double px, double py, double po, double ps, double pr) {
+		x = px;
+		y = py;
+		orient = po;
+		steering = ps;
+		steeringr = pr;
+	}
+
 	/** The steering angle of a vehicle traversing the point */
 	double steering;
+
+	/** The rear steering angle of a vehicle traversing the point */
+	double steeringr;
 };
 
 

@@ -101,15 +101,11 @@ PathNode::~PathNode() {
 std::vector<Node*> PathNode::generateChildren() {
 	std::vector<Node*> children;
 	
-	std::string str = std::string("PathNode ");
-	char info[90];
-	sprintf(info, "Method %d :", WP::NODE_EXPANSION_METHOD);
-	str.append(std::string(info));
-	writeLogLine(str, "PathNode", WP::LOG_FILE);
+
 
 
 	if(WP::NODE_EXPANSION_METHOD == WP::NodeExpansionMethod::NAIVE) {
-
+		//writeLogLine("GENERATE CHILDREN NAIVE", "Path Node", WP::LOG_FILE);
 		// successor generation: general case
 		// for n robots and b available actions per robot, we expand n*b nodes
 		// -- select configuration to expand

@@ -31,6 +31,58 @@ VehicleModel::VehicleModel(std::string modelPrimitivesFilename) {
 	newEntriesInHT_ = false;
 }
 
+
+VehicleModel::VehicleModel(std::string modelPrimitivesFilenameS[],int set) {
+	// temporary values
+	width_ = -1;
+	length_ = -1;
+	vehicleGranularity_ = -1;
+	interferenceRange_ = -1;
+
+	// by default, we consider a single steering angle and a single partition
+	steeringAngleCardinality_ = 1;
+	steeringAnglePartitions_ = 1;
+	orientationAngles_ = 1;
+	// the files with primitives, additional data and heuristic values
+	for (int i=0; i < set; i ++){
+		motionPrimitivesFilenameS_[i] = std::string();
+		motionPrimitiveAdditionalDataFilenameS_[i] = std::string();
+		heuristicLTFilenameS_[i] = std::string();
+		(motionPrimitivesFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".mprim");
+		(motionPrimitiveAdditionalDataFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".adat");
+		(heuristicLTFilenameS_[i].append(WP::TABLES_DIR)).append(modelPrimitivesFilenameS[i]).append(".hst");
+		// load heuristic table
+		loadHeuristicTable(heuristicLTFilenameS_[i]);
+		newEntriesInHT_ = false;
+	}
+}
+
+VehicleModel::VehicleModel(std::array<std::string,5>  modelPrimitivesFilenameS,int set) {
+	// temporary values
+	width_ = -1;
+	length_ = -1;
+	vehicleGranularity_ = -1;
+	interferenceRange_ = -1;
+
+	// by default, we consider a single steering angle and a single partition
+	steeringAngleCardinality_ = 1;
+	steeringAnglePartitions_ = 1;
+	orientationAngles_ = 1;
+	// the files with primitives, additional data and heuristic values
+	for (int i=0; i < set; i ++){
+		motionPrimitivesFilenameS_[i] = std::string();
+		motionPrimitiveAdditionalDataFilenameS_[i] = std::string();
+		heuristicLTFilenameS_[i] = std::string();
+		(motionPrimitivesFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".mprim");
+		(motionPrimitiveAdditionalDataFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".adat");
+		(heuristicLTFilenameS_[i].append(WP::TABLES_DIR)).append(modelPrimitivesFilenameS[i]).append(".hst");
+		// load heuristic table
+		loadHeuristicTable(heuristicLTFilenameS_[i]);
+		newEntriesInHT_ = false;
+	}
+}
+
+
 VehicleModel::~VehicleModel() {
 	// save the table we used
 	if (newEntriesInHT_) {

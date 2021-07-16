@@ -29,7 +29,7 @@ double WP::CALCULATION_APPROXIMATION_ERROR = 0.001;
 double WP::OCCUPANCY_THRESHOLD = 0.5;
 
 int WP::DECIMAL_APPROXIMATION = 4;
-WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::EPFSG;
+WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::NAIVE ; //EPFSG;
 
 
 void WP::setExpansionMethod(WP::NodeExpansionMethod method) {
