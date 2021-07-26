@@ -197,7 +197,7 @@ namespace orunav_generic {
     }
     Pose2dVec poses;
     std::vector<double> steeringAngles;
-    std::vector<double> steeringAnglesRear{0};//Cecchi_add
+    std::vector<double> steeringAnglesRear;//Cecchi_add
     
     //void clear() { poses.clear(); steeringAngles.clear(); }
     void addPathPoint(const Pose2d &pose, const double &steeringAngle) { poses.push_back(pose); steeringAngles.push_back(steeringAngle);steeringAnglesRear.push_back(0.); }

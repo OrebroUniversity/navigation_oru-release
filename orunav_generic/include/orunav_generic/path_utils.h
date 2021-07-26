@@ -410,10 +410,10 @@ inline orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, d
   assert(len != 0);
   assert(dt > 0);
   orunav_generic::State2d current_state(traj, 0);
-  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0), traj.getSteeringAngleRear(0)); //Cecchi_add
+  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0));//, traj.getSteeringAngleRear(0)); //Cecchi_add
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) {
-    std::cout << "test Chrash!" << traj.getSteeringVelRear(i) << std::endl;
-    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));//Cecchi_add
+    //std::cout << "test Chrash!" << traj.getSteeringVelRear(i) << std::endl;
+    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i));//, traj.getSteeringVelRear(i));//Cecchi_add
     current_state.addControlStep(ctrl, len, dt);
     path.addState2dInterface(current_state);
   }

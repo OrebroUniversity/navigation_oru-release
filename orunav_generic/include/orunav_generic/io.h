@@ -297,10 +297,10 @@ namespace orunav_generic
 	    << traj.getPose2d(i)(1) << " "
 	    << traj.getPose2d(i)(2) << " "
 	    << traj.getSteeringAngle(i) << " "
-      << traj.getSteeringAngleRear(i) << " "
+      //<< traj.getSteeringAngleRear(i) << " "
 	    << traj.getDriveVel(i) << " "
-	    << traj.getSteeringVel(i) << " "
-      << traj.getSteeringVelRear(i) << std::endl;
+      //<< traj.getSteeringVelRear(i) << " "
+	    << traj.getSteeringVel(i) << std::endl;
       }	  //Cecchi_aad
     ofs.close();
   }
