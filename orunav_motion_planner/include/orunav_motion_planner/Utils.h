@@ -83,6 +83,7 @@ public:
 	/** Default initialization */
 	vehicleSimplePoint() : simplePoint() {
 		steering = 0;
+		steeringRear = 0;
 	}
 	/** Initialize the vehicleSimplePoint */
 	void initVehicleSimplePoint(double px, double py, double po, double ps) {
@@ -90,21 +91,22 @@ public:
 		y = py;
 		orient = po;
 		steering = ps;
+		steeringRear = 0;
 	}
 
-	void initVehicleSimplePoint(double px, double py, double po, double ps, double pr) {
+	void initVehicleSimplePoint(double px, double py, double po, double ps, double pr) { //Cecchi_add
 		x = px;
 		y = py;
 		orient = po;
 		steering = ps;
-		steeringr = pr;
+		steeringRear = pr;
 	}
 
 	/** The steering angle of a vehicle traversing the point */
 	double steering;
 
 	/** The rear steering angle of a vehicle traversing the point */
-	double steeringr;
+	double steeringRear;//Cecchi_add
 };
 
 
@@ -119,6 +121,7 @@ struct waypoint {
 	double y;
 	/** The steering angle, in radians */
 	double steeringAngle;
+	double steeringAngleRear; //Cecchi_add
 	/** Distance from the beginning of the path, in meters */
 	double distanceFromStartOfPath;
 	/** Print waypoint */

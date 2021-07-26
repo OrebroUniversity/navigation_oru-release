@@ -833,7 +833,7 @@ public:
       if (!use_vector_map_and_geofence_)
       {
         srv.request.map = map;
-	planningmap_pub_.publish(map);
+	      planningmap_pub_.publish(map);
       }
 
       srv.request.target = target;
@@ -842,8 +842,8 @@ public:
       {
         srv.request.vector_map = vector_map_;
         srv.request.geofence = geofence_;
-	planningmap_pub_.publish(vector_map_);
-	ROS_WARN_STREAM("Using geofence map.");
+        planningmap_pub_.publish(vector_map_);
+        ROS_WARN_STREAM("Using geofence map.");
       }
 
       // Update the target goal pose and map based on the load operations
@@ -855,17 +855,17 @@ public:
       if (client.call(srv))
       {
         ROS_INFO("[KMOVehicleExecutionNode] - get_path successful");
-	msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_SERVICE_SUCCESS;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_SERVICE_SUCCESS;
+        compute_status_pub_.publish(msg);
       }
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Call to service get_path returns ERROR");
         if (!resolve_motion_planning_error_)
         {
-	  res.result = 0;
-	  msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_SERVICE_FAILED;
-	  compute_status_pub_.publish(msg);
+          res.result = 0;
+          msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_SERVICE_FAILED;
+          compute_status_pub_.publish(msg);
           return false;
         }
       }
@@ -880,7 +880,7 @@ public:
           ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - target and goal is to far appart, the motion planner should have found a path", robot_id_);
           res.result = 0;
           msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_FAILED;
-	  compute_status_pub_.publish(msg);
+	        compute_status_pub_.publish(msg);
           return false;
         }
         // If they are, try to use the driven path (if any) to generate a repositioning path...
@@ -889,12 +889,14 @@ public:
         {
           ROS_WARN("[KMOVehicleExecutionNode] RID:%d - failed to compute repositioning path", robot_id_);
           res.result = 0;
-	  msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_REPOSITIONING_FAILED;
-	  compute_status_pub_.publish(msg);
+          msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_REPOSITIONING_FAILED;
+          compute_status_pub_.publish(msg);
           return false;
         }
         ROS_INFO("[KMOVehicleExecutionNode] - computed repositioning path based on previous path");
       }
+      
+      std::cout << "PANICO";
       path = orunav_conversions::createPathFromPathMsgUsingTargetsAsFirstLast(srv.response.path);
     }
     // Remove duplicate points in the path.
@@ -902,7 +904,7 @@ public:
     // Make it less dense... important for the smoothing steps.
     //    path = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
     path = orunav_generic::minIncrementalDistanceMinNbPointsPath(path, min_incr_path_dist_, min_nb_path_points_);
-    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath());
+    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath() << " SteeringR "  << path.getSteeringAngleRear(5) );//Cecchi_add
 
     // Perform smoothing
     orunav_msgs::GetPolygonConstraints srv_constraints;
@@ -912,6 +914,7 @@ public:
     srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+    no_smoothing_ = true;//Cecchi_add NO smoothing 
     if (!no_smoothing_)
     {
 
@@ -953,9 +956,9 @@ public:
         if (client.call(srv))
         {
           ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_path - successfull");
-	  msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_SERVICE_SUCCESS;
-	  compute_status_pub_.publish(msg);
-	}
+            msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_SERVICE_SUCCESS;
+            compute_status_pub_.publish(msg);
+          }
         else
         {
           ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: GetSmoothedPath");

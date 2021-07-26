@@ -104,6 +104,7 @@ class SplitIndex
   }
 
   orunav_generic::Trajectory getTrajectory() const {
+    std::cout<<"TU?"<<std::endl;
     return _traj;
   }
 
@@ -496,6 +497,7 @@ class PathSmootherDynamic : public PathSmootherInterface
 
       std::cout << "PATH SMOOTHER : constraints.size() : " << constraints.size() << std::endl;
       std::cout << "PATH SMOOTHER : path_orig.sizePath() : " << path_orig.sizePath() << std::endl;
+      std::cout << "PATH SMOOTHER : path_orig.STEERING : " << path_orig.getSteeringAngle(0) << " " << path_orig.getSteeringAngleRear(0) << std::endl;
 
       if (use_pose_constraints) {
 	std::cout << "----- will use spatial constraints -----" << std::endl;
@@ -577,6 +579,9 @@ class PathSmootherDynamic : public PathSmootherInterface
       traj.setSteeringAngle(start.getSteeringAngle(), 0);
       traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
       traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
+      std::cout << "------ e NOO E NOO : -------- " << params << std::endl;
+      //traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add
+      //traj.setSteeringAngleRear(goal.getSteeringAngleRear(), traj.sizePath()-1);//Cecchi_add
 
       std::cout << "updating the start and end pose : " << std::endl;
       assert(orunav_generic::validPath(traj, M_PI));
@@ -585,7 +590,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       if (!params.use_incremental)
       {
-	return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
+	      return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
       }
 
       // Run the iterative approach
@@ -600,21 +605,23 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::vector<constraint_extract::PolygonConstraintsVec> constraints_vec = si.getConstraintsVec(constraints);
 
       for (int i = 0; i < si.size(); i++) { 
-	orunav_generic::Trajectory t = si.getTrajectory(i);
-	stop_time = dt * t.sizeTrajectory()-1;
-	std::cout << "stop_time : " << stop_time << std::endl;
-	std::cout << "================================================" << std::endl;
-	std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
-	std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
- 	orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); 
-	std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
-	si.setTrajectory(i, ts);
+        orunav_generic::Trajectory t = si.getTrajectory(i);
+        stop_time = dt * t.sizeTrajectory()-1;
+        std::cout << "stop_time : " << stop_time << std::endl;
+        std::cout << "================================================" << std::endl;
+        std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
+        std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
+        orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); 
+        std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
+        si.setTrajectory(i, ts);
       }
+      std::cout<<"END3???" << std::endl;
       return si.getTrajectory();
     }
 
   orunav_generic::Path smooth(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints) {
     orunav_generic::Path p(smoothTraj(path_orig, start, goal, constraints));
+    std::cout<<"END4???" << std::endl;
     return p;
   }
 

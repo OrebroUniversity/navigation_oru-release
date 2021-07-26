@@ -65,7 +65,7 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
   Path ret;
   if (path.sizePath() == 0)
     return ret;
-  ret.addPathPoint(path.getPose2d(0), path.getSteeringAngle(0));
+  ret.addPathPoint(path.getPose2d(0), path.getSteeringAngle(0), path.getSteeringAngleRear(0));//Cecchi_add
   idx.push_back(0);
   Pose2d back = path.getPose2d(path.sizePath()-1);
   for (size_t i = 1; i < path.sizePath()-1; i++)
@@ -73,12 +73,12 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
     double d1 = getDistBetween(ret.poses.back(), path.getPose2d(i));
     double d2 = getDistBetween(back, path.getPose2d(i));
     if (d1 > minDist && d2 > minDist) {
-      ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
+      ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i));//Cecchi_add
       idx.push_back(i);
     }
   }
   size_t tmp = static_cast<size_t> (path.sizePath()-1);
-  ret.addPathPoint(path.getPose2d(tmp), path.getSteeringAngle(tmp));
+  ret.addPathPoint(path.getPose2d(tmp), path.getSteeringAngle(tmp),path.getSteeringAngleRear(tmp));//Cecchi_add
   idx.push_back(tmp);
   return ret;
 }
@@ -410,14 +410,11 @@ inline orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, d
   assert(len != 0);
   assert(dt > 0);
   orunav_generic::State2d current_state(traj, 0);
-  
-  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0));
-
+  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0), traj.getSteeringAngleRear(0)); //Cecchi_add
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) {
-    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i));;
-
+    std::cout << "test Chrash!" << traj.getSteeringVelRear(i) << std::endl;
+    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));//Cecchi_add
     current_state.addControlStep(ctrl, len, dt);
-
     path.addState2dInterface(current_state);
   }
   assert(path.sizePath() == traj.sizePath()+1);
@@ -641,7 +638,7 @@ inline Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vect
       ret.addState2dInterface(interp_s);
       j++;
     }
-    ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
+    ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i));//Cecchi_add
   }
   return ret;
   

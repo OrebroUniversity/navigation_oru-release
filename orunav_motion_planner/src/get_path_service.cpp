@@ -61,13 +61,13 @@ public:
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
       //std::string models{model,model};
-      std::array<std::string,5> models{model,"HX_4WS_4wsMINI","HX_4WS_crabNew","",""};
-      
+      std::array<std::string,5> models{"xa_4ws_crab_littleAngles_ZeroCost",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab","xa_4ws_bs"}; //Cecchi_add
       //car_model_ = new CarModel(model);
-      dualSteer_model_ = new DualSteerModel(models,3);
-
-      ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[0] << "\n");
-      ROS_INFO_STREAM("\x1B[34m[GetPathService] - Using model : \034[0m" << models[1] << "\n");
+      int sets = 2;
+      dualSteer_model_ = new DualSteerModel(models,sets);//Cecchi_add
+      for(int i = 0; i < sets; i++){
+       ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");//Cecchi_add
+      }
 
       
 
@@ -157,14 +157,18 @@ public:
           
           orunav_generic::State2d state(orunav_generic::Pose2d(it2->x+map_offset_x,
                                                                it2->y+map_offset_y,
-                                                               orientation), it2->steering);
-          path.addState2dInterface(state);
+                                                               orientation), it2->steering, it2->steeringRear); //Cecchi_add
           
-        }
+          //std::cout << "[PathService] pose" << it2->steering << " " << it2->steeringRear <<" ";
+          path.addState2dInterface(state);  
+        }       
+       
       }
     }
 
     ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
+    ROS_INFO_STREAM("[GetPathService] - ######### : " << path.getSteeringAngleRear(10));
+
 
     // Cleanup
     delete pf;
@@ -186,8 +190,9 @@ public:
       // First requirement (that the points are separated by a minimum distance).
       orunav_generic::Path path_min_dist = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
       // Second requirment (path states are not allowed to change direction of motion without any intermediate points).
+      std::cout << "test2!!" << path_min_dist.getSteeringAngleRear(15)<<std::endl;
       orunav_generic::Path path_dir_change = orunav_generic::minIntermediateDirPathPoints(path_min_dist);
-
+      std::cout << "test3!!" << path_dir_change.getSteeringAngleRear(15)<<std::endl;
       res.path = orunav_conversions::createPathMsgFromPathInterface(path_dir_change);
       res.path.target_start = tgt.start;
       res.path.target_goal = tgt.goal;
@@ -200,7 +205,6 @@ public:
         orunav_generic::Pose2d goal_pose(tgt.goal.pose.position.x,
                                          tgt.goal.pose.position.y,
                                          tf::getYaw(tgt.goal.pose.orientation));
-        
         orunav_rviz::drawPose2d(start_pose, 0, 0, 1., "start_pose2d", marker_pub_);
         orunav_rviz::drawPose2d(goal_pose, 0, 2, 1., "goal_pose2d", marker_pub_);
         orunav_rviz::drawPose2dContainer(orunav_generic::minIncrementalDistancePath(path_dir_change, 0.2), "path_subsampled", 1, marker_pub_);
@@ -216,6 +220,7 @@ public:
       }
       return true;
     }
+    ;
     return false;
     
   }

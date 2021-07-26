@@ -98,6 +98,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	int primID = -1;
 
 	if (f.is_open()) {
+		writeLogLine("readingData", "\x1B[36mDualSteerModel \036[0m", WP::LOG_FILE);
 		while (f.good()) {
 			getline(f, line);
 
@@ -191,7 +192,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 					// check the number of intermediate poses to read for this particular primitive
 					std::stringstream ss(line);
 					// NOTE: we assume already normalized angles
-					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringr;
+					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringRear;
 					primitiveTrajectory.push_back(sp);
 				}
 				// add the trajectory
@@ -334,7 +335,7 @@ void DualSteerModel::generatePrimitiveAdditionalData() {
 
 	// iterate over the existing primitives and generate the additional data
 	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
-
+		writeLogLine("addDAta", "\x1B[34mDualSteerModel \034[0m", WP::LOG_FILE);
 		counter ++;
 		// load the file with the primitives
 		if (WP::LOG_LEVEL >= 1) {
@@ -465,11 +466,11 @@ std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8
 std::vector<int> DualSteerModel:: selectSet(){
 	std:: vector<int> selectedSet;
 	//condition for set 0
-	if(sets>0 && false){
+	if(sets>0 && true){
 		selectedSet.push_back(0);
 	}
 	//condition for set 1
-	if(sets >1 && false){
+	if(sets >1 && true){
 		selectedSet.push_back(1);
 	}
 	//condition for set 2
@@ -477,11 +478,11 @@ std::vector<int> DualSteerModel:: selectSet(){
 		selectedSet.push_back(2);
 	}
 	//condition for set 4
-	if(sets >3 && false){
+	if(sets >3 && true){
 		selectedSet.push_back(3);
 	}
 	//condition for set 5
-	if(sets >4 && false){
+	if(sets >4 && true){
 		selectedSet.push_back(4);
 	}
 	return selectedSet;

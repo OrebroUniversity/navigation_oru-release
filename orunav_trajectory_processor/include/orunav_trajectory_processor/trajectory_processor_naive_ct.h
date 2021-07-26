@@ -35,7 +35,6 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
   }
 
   orunav_generic::Trajectory getTrajectory() {
-
     if (_params.debug) {
       orunav_generic::saveDoubleVecTextFile(this->_coordinatedTimes, _params.debugPrefix + std::string("tpnct_input.ct"));
       orunav_generic::savePathTextFile(this->_path, _params.debugPrefix + std::string("tpnct_input.path"));
@@ -43,7 +42,6 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     if (_coordinatedTimes.empty()) { // No coordination times - no need with any special handling.
       return getTrajectoryNoCoordination();
     }
-
     if (_startIdx == 0) { // Starting from beginning? no special handling. - this is where CASE 2 will end up...
       // CANNOT DO THIS TO CLOSE TO THE END!!!
       // if (orunav_generic::coordinationPairTimeStep(_coordinatedTimes, _startIdx) > 3.) {
@@ -122,12 +120,17 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
   orunav_generic::Trajectory getTrajectoryNoCoordination() {
     std::cerr << "getTrajectoryNoCoordination()" << std::endl;
     TrajectoryProcessorNaive gen;
+    std::cout << "test1" << std::endl;
     gen.setParams(this->_params);
+    std::cout << "test2" << std::endl;
     gen.addPathInterface(_path);
+    std::cout << "test3" << std::endl;
     gen.addControlConstraintPoints(this->_controlConstraintPoints);
+    std::cout << "test4" << std::endl;
     gen.addControlConstraintPointAsStart(_startIdx, _startIdxControl);
-    
+    std::cout << "test5" << std::endl;
     orunav_generic::Trajectory traj = gen.getTrajectory();
+    std::cout << "test6" << std::endl;
     this->setGlobalPathTimes(gen);
     std::cerr << "getTrajectoryNoCoordination() - end" << std::endl;
     return traj;

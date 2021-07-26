@@ -97,6 +97,7 @@ std::vector<vehicleSimplePoint> Configuration::getTrajectory() {
 			sp.y = startY + (*it)->y;
 			sp.orient = (*it)->orient;
 			sp.steering = (*it)->steering;
+			sp.steeringRear = (*it)->steeringRear;//Cecchi_add
 			trajectory.push_back(sp);
 		}
 	} else {

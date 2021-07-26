@@ -111,6 +111,9 @@ public:
     return getWheelAngleFromRotationPoint(pos_, rotationPoint);
   }
 
+
+
+
   double getVelocityFactor(const Eigen::Vector2d &rotationPoint, const Eigen::Vector2d &velocityPoint) const {
     return getWheelVelocityFactorFromRotationAndVelocityPoint(pos_, rotationPoint, velocityPoint);
   }

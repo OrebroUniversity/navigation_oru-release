@@ -34,7 +34,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
   }
 
   void computeDts()
-    {
+    { 
       setupSteps(_steps);
       assignDs(_steps);
       assignDir(_steps);
@@ -46,20 +46,22 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       // The onlything that are missing now is the acceleration constraints.
       assignAccelerationConstraints(_steps);
       //      assignLastDtNonZero(_steps);
-
       // Update the control steps, only used for visualizing the correct steps.
       assignControlSteps(_steps);
 
       if (_params.debug) {
 	_steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
-	orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt");
+  std::cout << "Test 5193" << std::endl;
+	//orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
+  std::cout << "Test 5194" << std::endl;
       }
     }
   
   orunav_generic::Trajectory getTrajectory() {
+    std::cout << "Test 51" << std::endl;
     computeDts();
-
     // Need the global time for the interpolation
+    std::cout << "Test 52" << std::endl;
     assignTotalTime(_steps);
     if (this->useCoordinatedTimes()) {
       //Assigning coordination times --- START ----
@@ -69,12 +71,12 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       	assignControlSteps(_steps);    // Compute the current speed, not including acceleration constraint nor control point constraints, note this is only using ds and dt.
       	assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
       	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
-	
+      std::cout << "Test 53" << std::endl;
 	// This sometimes works a bit better (but not always).
 	if (_params.useCoordTimeContraintPoints) {
 	  assignControlConstraintPointsFromCT(_steps);
 	}
-	
+	std::cout << "Test 54" << std::endl;
 	// Reassign points.
       	assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
       	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
@@ -82,24 +84,27 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       	// Update the control steps, only used for visualizing the correct steps.
       	assignControlSteps(_steps);
 	assignTotalTime(_steps);
-
+  std::cout << "Test 55" << std::endl;
 	if (_params.debug) {
 	  _steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
 	  orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt");
 	}
+  std::cout << "Test 56" << std::endl;
 	assignCoordinationTimes(_steps); // This will modify the dt's, do ths assigning one more time, this now is using the mean velocities around the coordinated points.
       }
       assignTotalTime(_steps);
       if (_params.debug) {
 	// Save all path points that have coordination times.
+  std::cout << "Test 57" << std::endl;
 	orunav_generic::savePathTextFile(this->coordinationPathPoints(), _params.debugPrefix + "naive_trajectoryXY_coordination_times.txt");
       }
     }
-    
+    std::cout << "Test 58" << std::endl;
     TrajectoryStepNaiveVec output = createNaiveTrajectoryFixedDt(_steps, _params.timeStep);
     
     if (_params.citiTruckNbClearSpeedCommands > 0) {
       // Clear the velocity of the last trajectory points...
+      std::cout << "Test 59" << std::endl;
       int start_clear_idx = output.size() - _params.citiTruckNbClearSpeedCommands - _params.nbZeroVelControlCommands;
       if (start_clear_idx > 0) {
 	for (size_t i = start_clear_idx; i < output.size(); i++) {
@@ -111,11 +116,17 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     if (_params.debug) {
       std::cout << "DBG: output.size(): " << output.size() << std::endl;
       assignDs(output);
+      std::cout << "testB1" << std::endl;
       output.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory_fixed_dt.txt"));
+      std::cout << "testB2" << std::endl;
       orunav_generic::saveTrajectoryTextFile(output.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectory_fixed_dtXY.txt");
+      std::cout << "testB3" << std::endl;
       orunav_generic::Path fwd_sim = orunav_generic::forwardSimulation(output.convertNaiveStepsToTrajectory(), _params.wheelBaseX, _params.timeStep);
+      std::cout << "testB4" << std::endl;
       orunav_generic::savePathTextFile(fwd_sim, _params.debugPrefix + "naive_trajectory_fixed_dt_fwd_simXY.txt");
+      std::cout << "testB5" << std::endl;
     }
+    std::cout << "testB6" << std::endl;
     return output.convertNaiveStepsToTrajectory();
   }
 
@@ -244,7 +255,8 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     assert(useCoordinatedTimes());
     for (size_t i = _startIdx; i < _path.sizePath(); i++) {
       if (_coordinatedTimes[i] >= 0.) {
-	ret.addPathPoint(_path.getPose2d(i), _path.getSteeringAngle(i));
+        std::cout << "Test 552" << std::endl;
+	ret.addPathPoint(_path.getPose2d(i), _path.getSteeringAngle(i), _path.getSteeringAngleRear(i));//Cecchi_add
       }
     }
     return ret;

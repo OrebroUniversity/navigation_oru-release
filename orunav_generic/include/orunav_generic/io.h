@@ -176,7 +176,16 @@ namespace orunav_generic
 
 	orunav_generic::Pose2d pose;
 	double steering_angle;
-	if (sscanf(line.c_str(), "%lf %lf %lf %lf",
+  //Cecchi_add
+  double steering_angleRear;
+  if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf",
+		  &pose(0), &pose(1), &pose(2), &steering_angle,&steering_angleRear) == 5)
+	  {
+	    path.addPathPoint(pose, steering_angle,steering_angleRear);
+	    nb_steps++;
+	  }
+  // was oly this if below
+	else if (sscanf(line.c_str(), "%lf %lf %lf %lf",
 		  &pose(0), &pose(1), &pose(2), &steering_angle) == 4)
 	  {
 	    path.addPathPoint(pose, steering_angle);
@@ -221,7 +230,8 @@ namespace orunav_generic
 	ofs << path.getPose2d(i)(0) << " "
 	    << path.getPose2d(i)(1) << " "
 	    << path.getPose2d(i)(2) << " "
-	    << path.getSteeringAngle(i) << std::endl;
+	    << path.getSteeringAngle(i) << " "
+      << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
       }	  
     ofs.close();
   }
@@ -282,13 +292,16 @@ namespace orunav_generic
     
     for (unsigned int i = 0; i < traj.sizePath(); i++)
       {
+        std::cout << "Test 519155" << std::endl;
 	ofs << traj.getPose2d(i)(0) << " "
 	    << traj.getPose2d(i)(1) << " "
 	    << traj.getPose2d(i)(2) << " "
 	    << traj.getSteeringAngle(i) << " "
+      << traj.getSteeringAngleRear(i) << " "
 	    << traj.getDriveVel(i) << " "
-	    << traj.getSteeringVel(i) << std::endl;
-      }	  
+	    << traj.getSteeringVel(i) << " "
+      << traj.getSteeringVelRear(i) << std::endl;
+      }	  //Cecchi_aad
     ofs.close();
   }
 

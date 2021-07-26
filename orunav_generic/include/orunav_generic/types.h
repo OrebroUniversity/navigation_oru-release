@@ -2,6 +2,8 @@
 
 #include <orunav_generic/interfaces.h>
 
+#include <iostream>
+#include <string>
 namespace orunav_generic {
 
   class RobotInternalState2d {
@@ -72,19 +74,24 @@ namespace orunav_generic {
   class Control : public ControlInterface
   {
   public:
-  Control() : v(0.), w(0.) { }
+  Control() : v(0.), w(0.), wr(0.) { }
   Control(double fwdVel, double rotVel) : v(fwdVel), w(rotVel) {}
+  Control(double fwdVel, double rotVel, double rotVelRear) : v(fwdVel), w(rotVel), wr(rotVelRear) {}
     virtual double getFwdVel() const { return v; }
     virtual void setFwdVel(double fwdVel) { this->v = fwdVel; }
     virtual double getRotVel() const { return w; }
     virtual void setRotVel(double rotVel)  { this->w = rotVel; }
+    virtual double getRotVelRear() const { return wr; }//Cecchi_add
+    virtual void setRotVelRear(double rotVelr)  { this->wr = rotVelr; }//Cecchi_add
+    
     Control scale(double s) const { 
       Control ret; 
-      ret.v = s*this->v; ret.w = s*this->w; 
+      ret.v = s*this->v; ret.w = s*this->w; ret.wr = s*this->wr;//Cecchi_add
       return ret; 
     }
     double v;
     double w;
+    double wr; //Cecchi_add
   };
   
   //! State2d implementation
@@ -95,13 +102,16 @@ namespace orunav_generic {
     State2d() { steeringAngle = 0.; }
     State2d(double x, double y, double th, double phi) { pose[0] = x; pose[1] = y; pose[2] = th; steeringAngle = phi; }
     State2d(const Pose2d &p, const double &s) { pose = p; steeringAngle = s; }
+    State2d(const Pose2d &p, const double &s1, const double &s2) { pose = p; steeringAngle = s1; steeringAngleRear = s2; } //Cecchi_add
     State2d(const State2dInterface &s) { pose = s.getPose2d(); steeringAngle = s.getSteeringAngle(); }
-    State2d(const PathInterface &path, size_t idx) { pose = path.getPose2d(idx); steeringAngle = path.getSteeringAngle(idx); }
+    State2d(const PathInterface &path, size_t idx) { pose = path.getPose2d(idx); steeringAngle = path.getSteeringAngle(idx); steeringAngleRear = path.getSteeringAngleRear(idx);}//Cecchi_add
     
     virtual Pose2d getPose2d() const { return pose; }
     virtual void setPose2d(const Pose2d& p) { this->pose = p; }
     virtual double getSteeringAngle() const { return steeringAngle; }
     virtual void setSteeringAngle(double s) { this->steeringAngle = s; }
+    virtual double getSteeringAngleRear() const { return steeringAngleRear; }//Cecchi_add
+    virtual void setSteeringAngleRear(double s) { this->steeringAngleRear = s; }//Cecchi_add
     // l is the distance between the fixed axis and the steering wheel.
     virtual double getCurvature(double l) { return (tan(this->steeringAngle)/l); }
     virtual void setCurvature(double curvature, double l) { this->steeringAngle = atan(curvature*l); }
@@ -112,6 +122,7 @@ namespace orunav_generic {
       pose(1) += sin(pose(2)) * control.getFwdVel() * dt;
       pose(2) += (tan(steeringAngle)) * control.getFwdVel() * dt / len;
       steeringAngle += control.getRotVel() * dt;
+      steeringAngleRear += control.getRotVelRear() * dt;//Cecchi_add
     } 
     
     Control getControlStep(const State2dInterface &nextState, double dt)
@@ -120,8 +131,10 @@ namespace orunav_generic {
       double dist = getDistBetween(this->getPose2d(), nextState.getPose2d());
       double fwd_vel = dist / dt * getDirection(this->getPose2d(), nextState.getPose2d());
       double rot_vel = /*angles::normalize_angle*/(nextState.getSteeringAngle() - this->getSteeringAngle()) / dt;// * getDirection(this->getPose2d(), nextState.getPose2d());
+      double rot_velRear = /*angles::normalize_angle*/(nextState.getSteeringAngleRear() - this->getSteeringAngleRear()) / dt;//Cecchi_add
       ret.setFwdVel(fwd_vel);
       ret.setRotVel(rot_vel);
+      ret.setRotVelRear(rot_velRear);//Cecchi_add
       return ret;
     }
     
@@ -131,23 +144,26 @@ namespace orunav_generic {
       double dist = getDist(this->getPose2d());
       double fwd_vel = dist / dt * getDirectionIncr(this->getPose2d());
       double rot_vel = angles::normalize_angle(this->getSteeringAngle()) / dt;
+      double rot_velRear = angles::normalize_angle(this->getSteeringAngleRear()) / dt;//Cecchi_add
       ret.setFwdVel(fwd_vel);
       ret.setRotVel(rot_vel);
+      ret.setRotVelRear(rot_velRear);//Cecchi_add
       return ret;
     }
     
     State2d scale(double s) const {
       State2d ret;
-      ret.pose = s*this->pose; ret.steeringAngle = s*this->steeringAngle; 
+      ret.pose = s*this->pose; ret.steeringAngle = s*this->steeringAngle; ret.steeringAngleRear = s*this->steeringAngleRear; //Cecchi_add
     return ret;
     }
     
     orunav_generic::Pose2d pose;
     double steeringAngle;
+    double steeringAngleRear{0.};//Cecchi_add
   
     friend std::ostream& operator<<(std::ostream &os, const State2d &obj)
       {
-	os << "(" << obj.pose(0) << " " << obj.pose(1) << " " << obj.pose(2) << ")[" << obj.steeringAngle << "]";
+	os << "(" << obj.pose(0) << " " << obj.pose(1) << " " << obj.pose(2) << ")[" << obj.steeringAngle <<  "]";//" " << obj.getSteeringAngleRear?
 	return os;
       }
     
@@ -166,31 +182,57 @@ namespace orunav_generic {
   public:
     Path() { }
     Path(const PathInterface &path) {
-      for (size_t i = 0; i < path.sizePath(); i++) {
-	this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
+    for (size_t i = 0; i < path.sizePath(); i++) {
+ 
+      //std::cout<<"si"<<std::endl;
+      if (steeringAnglesRear.size() != 0 ){
+      this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i)); //Cecchi AngleRear? steeringAnglesRear.push_back(steeringAngleRear)
+      }
+      else {
+        std::cout<<"NO"<<std::endl;
+        this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
+      }
+  
       }
     }
     Pose2dVec poses;
     std::vector<double> steeringAngles;
+    std::vector<double> steeringAnglesRear;//Cecchi_add
     
-    void clear() { poses.clear(); steeringAngles.clear(); }
-    void addPathPoint(const Pose2d &pose, const double &steeringAngle) { poses.push_back(pose); steeringAngles.push_back(steeringAngle); }
-    void addPathPointInterface(const Pose2dInterface &pose, const SteeringAngleInterface& steeringAngle) { this->addPathPoint(pose.getPose2d(), steeringAngle.getSteeringAngle()); }
-    void addState2dInterface(const State2dInterface &state) { this->addPathPointInterface(state, state); }
+    //void clear() { poses.clear(); steeringAngles.clear(); }
+    void addPathPoint(const Pose2d &pose, const double &steeringAngle) { poses.push_back(pose); steeringAngles.push_back(steeringAngle);steeringAnglesRear.push_back(0.); }
+    void addPathPointInterface(const Pose2dInterface &pose, const SteeringAngleInterface& steeringAngle) { this->addPathPoint( pose.getPose2d(), steeringAngle.getSteeringAngle() ); }
+    //void addState2dInterface(const State2dInterface &state) { this->addPathPointInterface(state, state); }
+
+    //Cecchi_add :
+    void clear() { poses.clear(); steeringAngles.clear(); steeringAnglesRear.clear();}
+    void addPathPoint(const Pose2d &pose, const double &steeringAngle, const double &steeringAngleRear) { 
+      poses.push_back(pose); steeringAngles.push_back(steeringAngle);steeringAnglesRear.push_back(steeringAngleRear);
+       std::cout << "\x1B[33m[Trajectory] - Pose : \033[0m" << steeringAngle << " " << steeringAngleRear << "\n"; 
+       }
+    void addPathPointInterface(const Pose2dInterface &pose, const SteeringAngleInterface& steeringAngle, const SteeringAngleInterface& steeringAngleRear) { this->addPathPoint(pose.getPose2d(), steeringAngle.getSteeringAngle(),steeringAngleRear.getSteeringAngleRear()); }
+    void addState2dInterface(const State2dInterface &state) { this->addPathPointInterface(state, state,state); }//Cecchi_add
 
     // Interfaces
     virtual Pose2d getPose2d(size_t idx) const { return poses.getPose2d(idx); }
     virtual void setPose2d(const Pose2d& p, size_t idx) { poses[idx] = p; }
     virtual size_t sizePose2d() const { return poses.sizePose2d(); }
-    
+    //Cecchi_add :
+    virtual double getSteeringAngleRear(size_t idx) const { return steeringAnglesRear[idx]; }
+    virtual void setSteeringAngleRear(double s, size_t idx) { steeringAnglesRear[idx] = s; }
+    virtual size_t sizeSteeringAngleRear() const { return steeringAnglesRear.size(); }
+
     virtual double getSteeringAngle(size_t idx) const { return steeringAngles[idx]; }
     virtual void setSteeringAngle(double s, size_t idx) { steeringAngles[idx] = s; }
     virtual size_t sizeSteeringAngle() const { return steeringAngles.size(); }
     
-
+    
+                                                                                                                                                                        
     State2d getState2d(size_t idx) const { return State2d(*this, idx); }
-    void setState2d(const State2dInterface &s, size_t idx) { poses[idx] = s.getPose2d(); steeringAngles[idx] = s.getSteeringAngle(); }
+    //void setState2d(const State2dInterface &s, size_t idx) { poses[idx] = s.getPose2d(); steeringAngles[idx] = s.getSteeringAngle(); }
+    void setState2d(const State2dInterface &s, size_t idx) { poses[idx] = s.getPose2d(); steeringAngles[idx] = s.getSteeringAngle(); steeringAnglesRear[idx] = s.getSteeringAngleRear();} //Cecchi_add
   };
+  
   
   class Paths : public std::vector<Path>, public PathsInterface {
   public:
@@ -213,20 +255,28 @@ namespace orunav_generic {
     
     Pose2dVec poses;
     std::vector<double> steeringAngles;
+    std::vector<double> steeringAnglesRear;//Cecchi_add
     std::vector<double> driveVels;
     std::vector<double> steeringVels;
+    std::vector<double> steeringVelsRear;//Cecchi_add
+
     
     void clear() { poses.clear(); steeringAngles.clear(); driveVels.clear(); steeringVels.clear();  }
     void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle, const double &fwdVel, const double &rotVel) {
       poses.push_back(pose); steeringAngles.push_back(steeringAngle); driveVels.push_back(fwdVel); steeringVels.push_back(rotVel);
     }
+    void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle,const double &steeringAngleRear, const double &fwdVel, const double &rotVel) {
+      poses.push_back(pose); steeringAngles.push_back(steeringAngle); steeringAnglesRear.push_back(steeringAngleRear);driveVels.push_back(fwdVel); steeringVels.push_back(rotVel);
+    }//Cecchi_add
+    
     void add(const State2dInterface& state, const ControlInterface &control) {
       poses.push_back(state.getPose2d());
       steeringAngles.push_back(state.getSteeringAngle());
+      steeringAnglesRear.push_back(state.getSteeringAngleRear());//Cecchi_add
       driveVels.push_back(control.getFwdVel());
       steeringVels.push_back(control.getRotVel());
     }
-
+  
     // Interfaces
     virtual Pose2d getPose2d(size_t idx) const { return poses.getPose2d(idx); }
     virtual void setPose2d(const Pose2d& p, size_t idx) { poses.setPose2d(p,idx); }
@@ -236,11 +286,20 @@ namespace orunav_generic {
     virtual void setSteeringAngle(double s, size_t idx)  { steeringAngles[idx] = s; }
     virtual size_t sizeSteeringAngle() const { return steeringAngles.size(); }
 
+    //Cecchi_add :
+    virtual double getSteeringAngleRear(size_t idx) const { return steeringAnglesRear[idx]; }
+    virtual void setSteeringAngleRear(double s, size_t idx)  { steeringAnglesRear[idx] = s; }
+    virtual size_t sizeSteeringAngleRear() const { return steeringAnglesRear.size(); }
+
+
     virtual double getDriveVel(size_t idx) const { return driveVels[idx]; }
     virtual void setDriveVel(double v, size_t idx) { driveVels[idx] = v; }
 
     virtual double getSteeringVel(size_t idx) const { return steeringVels[idx]; }
     virtual void setSteeringVel(double w, size_t idx) { steeringVels[idx] = w; }
+    //Cecchi_add
+    virtual double getSteeringVelRear(size_t idx) const {return steeringVelsRear[idx]; }
+    virtual void setSteeringVelRear(double wr, size_t idx) { steeringVelsRear[idx] = wr; }
     
     
     State2d getState2d(size_t idx) const { State2d s(getPose2d(idx), getSteeringAngle(idx)); return s; }
