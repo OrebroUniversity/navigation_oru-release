@@ -185,19 +185,19 @@ namespace orunav_generic {
     for (size_t i = 0; i < path.sizePath(); i++) {
  
       //std::cout<<"si"<<std::endl;
-      if (steeringAnglesRear.size() != 0 ){
-      this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i)); //Cecchi AngleRear? steeringAnglesRear.push_back(steeringAngleRear)
-      }
-      else {
-        std::cout<<"NO"<<std::endl;
+      //if (steeringAnglesRear.size() != 0 ){
+      //this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i)); //Cecchi AngleRear? steeringAnglesRear.push_back(steeringAngleRear)
+      //}
+      //else {
+      //  std::cout<<"NO"<<std::endl;
         this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
-      }
+      //}
   
       }
     }
     Pose2dVec poses;
     std::vector<double> steeringAngles;
-    std::vector<double> steeringAnglesRear;//Cecchi_add
+    std::vector<double> steeringAnglesRear{0};//Cecchi_add
     
     //void clear() { poses.clear(); steeringAngles.clear(); }
     void addPathPoint(const Pose2d &pose, const double &steeringAngle) { poses.push_back(pose); steeringAngles.push_back(steeringAngle);steeringAnglesRear.push_back(0.); }
