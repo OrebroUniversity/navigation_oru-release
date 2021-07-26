@@ -52,7 +52,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       if (_params.debug) {
 	_steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
   std::cout << "Test 5193" << std::endl;
-	//orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
+	orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
   std::cout << "Test 5194" << std::endl;
       }
     }

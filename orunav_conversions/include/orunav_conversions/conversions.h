@@ -156,7 +156,7 @@ namespace orunav_conversions
       orunav_generic::Path p;
       p.addPathPoint(createPose2dFromMsg(path.target_start.pose), path.target_start.steering, path.target_start.steeringRear);//Cecchi_add
       for (unsigned int i = 1; i < path.path.size()-1; i++) {
-        std::cout << "!2!" << path.path[i].steeringRear <<std::endl;
+        //std::cout << "!2!" << path.path[i].steeringRear <<std::endl;
 	p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering, path.path[i].steeringRear);//Cecchi_add
       }
       p.addPathPoint(createPose2dFromMsg(path.target_goal.pose), path.target_goal.steering,path.target_goal.steeringRear);//Cecchi_add

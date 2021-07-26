@@ -188,9 +188,10 @@ public:
     res.valid = solution_found;
     if (solution_found) {
       // First requirement (that the points are separated by a minimum distance).
+      std::cout << "test1!! AAAA " << path.getSteeringAngleRear(15)<<std::endl;
       orunav_generic::Path path_min_dist = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
       // Second requirment (path states are not allowed to change direction of motion without any intermediate points).
-      std::cout << "test2!!" << path_min_dist.getSteeringAngleRear(15)<<std::endl;
+      std::cout << "test2!! AAAA " << path_min_dist.getSteeringAngleRear(15)<<std::endl;
       orunav_generic::Path path_dir_change = orunav_generic::minIntermediateDirPathPoints(path_min_dist);
       std::cout << "test3!!" << path_dir_change.getSteeringAngleRear(15)<<std::endl;
       res.path = orunav_conversions::createPathMsgFromPathInterface(path_dir_change);

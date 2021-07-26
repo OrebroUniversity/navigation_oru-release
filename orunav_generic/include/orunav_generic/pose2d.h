@@ -191,7 +191,7 @@ namespace orunav_generic
 
      //! Matrix inversion using SVD.
      // TODO - move to another location.
-     inline Eigen::MatrixXd pseudoInverse(Eigen::MatrixXd &mat)
+    inline Eigen::MatrixXd pseudoInverse(Eigen::MatrixXd &mat)
      {
 	  // Calculate using the SVD.
 	  Eigen::JacobiSVD<Eigen::MatrixXd> svd(mat, Eigen::ComputeThinU | Eigen::ComputeThinV);

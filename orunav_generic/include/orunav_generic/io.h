@@ -289,20 +289,20 @@ namespace orunav_generic
     st << fileName; // << "_" << msg.robot_id << "-" << msg.goal_id << ".path";
     std::string file_name = st.str();
     std::ofstream ofs(file_name.c_str());
-    
+    std::cout << "Test 519155 TEST" << std::endl;
     for (unsigned int i = 0; i < traj.sizePath(); i++)
       {
-        std::cout << "Test 519155" << std::endl;
-	ofs << traj.getPose2d(i)(0) << " "
+        
+	    ofs << traj.getPose2d(i)(0) << " "
 	    << traj.getPose2d(i)(1) << " "
 	    << traj.getPose2d(i)(2) << " "
 	    << traj.getSteeringAngle(i) << " "
-      //<< traj.getSteeringAngleRear(i) << " "
 	    << traj.getDriveVel(i) << " "
-      //<< traj.getSteeringVelRear(i) << " "
 	    << traj.getSteeringVel(i) << std::endl;
       }	  //Cecchi_aad
+    std::cout << "Test 5193 TEST" << std::endl;
     ofs.close();
+    std::cout << "Test 5192 TEST" << std::endl;
   }
 
   inline void saveTrajectoryChunksTextFile(const TrajectoryChunksInterface &chunks, const std::string &fileName) {

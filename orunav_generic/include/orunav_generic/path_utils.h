@@ -65,6 +65,7 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
   Path ret;
   if (path.sizePath() == 0)
     return ret;
+    std::cout << "p1" << std::endl;
   ret.addPathPoint(path.getPose2d(0), path.getSteeringAngle(0), path.getSteeringAngleRear(0));//Cecchi_add
   idx.push_back(0);
   Pose2d back = path.getPose2d(path.sizePath()-1);
@@ -73,12 +74,15 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
     double d1 = getDistBetween(ret.poses.back(), path.getPose2d(i));
     double d2 = getDistBetween(back, path.getPose2d(i));
     if (d1 > minDist && d2 > minDist) {
+      std::cout << "p2" << std::endl;
       ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i));//Cecchi_add
       idx.push_back(i);
     }
   }
   size_t tmp = static_cast<size_t> (path.sizePath()-1);
+  std::cout << "p3" << std::endl;
   ret.addPathPoint(path.getPose2d(tmp), path.getSteeringAngle(tmp),path.getSteeringAngleRear(tmp));//Cecchi_add
+  std::cout << "p4" << std::endl;
   idx.push_back(tmp);
   return ret;
 }
@@ -410,15 +414,24 @@ inline orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, d
   assert(len != 0);
   assert(dt > 0);
   orunav_generic::State2d current_state(traj, 0);
-  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0));//, traj.getSteeringAngleRear(0)); //Cecchi_add
+  std::cout << "Fs1 :"<<traj.sizeSteeringAngleRear()<< std::endl;
+  path.addPathPoint(traj.getPose2d(0), traj.getSteeringAngle(0), traj.getSteeringAngleRear(0)); //Cecchi_add
+   std::cout << "Fs12 :"<<traj.sizeSteeringAngleRear()<< std::endl;
+   std::cout << "Fs13 :"<<traj.sizeTrajectory()<< std::endl;
+   
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) {
     //std::cout << "test Chrash!" << traj.getSteeringVelRear(i) << std::endl;
-    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i));//, traj.getSteeringVelRear(i));//Cecchi_add
+    std::cout << "Fs14"<< std::endl;
+    std::cout << "Fs2"<< traj.getSteeringVelRear(i) << std::endl; /// COLPA SUA
+    orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));//Cecchi_add
+    std::cout << "Fs3"<< std::endl;
     current_state.addControlStep(ctrl, len, dt);
+    std::cout << "Fs4"<< std::endl;
     path.addState2dInterface(current_state);
   }
+  std::cout << "Fs5"<< std::endl;
   assert(path.sizePath() == traj.sizePath()+1);
-
+  std::cout << "Fs6"<< std::endl;
   return path;
 }
 
@@ -587,16 +600,19 @@ inline Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vect
   // Need to compute the direction of change.
   inter_idx.clear();
   std::vector<bool> dir(path.sizePath()-1);
+  std::cout << "p5.." << path.getSteeringAngleRear(15) << std::endl;
   for (size_t i = 0; i < path.sizePath()-1; i++) {
     dir[i] = forwardDirection(path.getPose2d(i), path.getPose2d(i+1));
+
   }
-   
+   std::cout << "p6" << std::endl;
   // Check if we have any intermediate differences (e.g. false, false, true, false, false) - true is only occuring once.
   // Need to pick up (false, true, true...) as well as (..., true, true, false) etc.
   bool d = false;
   size_t last_change = 0;
   //  std::vector<size_t> inter_idx;
   for (size_t i = 0; i < dir.size(); i++) {
+    std::cout << "p60" << std::endl;
     if (i == 0)
       d = dir[0];
     else {
@@ -617,17 +633,20 @@ inline Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vect
   }
   // Sort out the last case (..., true, true, false).
   if (dir.size() > 1) {
+    std::cout << "p61" << std::endl;
     if (dir[dir.size()-1] != dir[dir.size()-2])
       inter_idx.push_back(dir.size());
   }
 
   if (inter_idx.empty()) {
+    std::cout << "p62" <<  path.getSteeringAngleRear(15) <<std::endl;
     return Path(path);
   }
-
+  std::cout << "p63" << std::endl;
   Path ret;
   // Need to add in 'interpolated' points.
   size_t j = 0;
+  std::cout << "p7" << std::endl;
   for (size_t i = 0; i < path.sizePath(); i++) {
     if (i == inter_idx[j]) {
       // Add an interpolated one between i and the last path point.
@@ -638,6 +657,7 @@ inline Path minIntermediateDirPathPointsIdx(const PathInterface &path, std::vect
       ret.addState2dInterface(interp_s);
       j++;
     }
+    std::cout << "p8" << std::endl;
     ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i));//Cecchi_add
   }
   return ret;
@@ -1261,7 +1281,9 @@ inline int getDockingPathIdx(const orunav_generic::PathInterface &path,
 }
  
 inline void makeValidPathForTrajectoryProcessing(orunav_generic::Path &path) {
+  std::cout << "PP1" << std::endl;
   path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
+  std::cout << "PP2" << std::endl;
   path = orunav_generic::minIntermediateDirPathPoints(path);
   //  path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
 }

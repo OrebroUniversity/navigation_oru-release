@@ -896,13 +896,15 @@ public:
         ROS_INFO("[KMOVehicleExecutionNode] - computed repositioning path based on previous path");
       }
       
-      std::cout << "PANICO";
+      //std::cout << "PANICO"<<std::endl;
       path = orunav_conversions::createPathFromPathMsgUsingTargetsAsFirstLast(srv.response.path);
     }
     // Remove duplicate points in the path.
+    std::cout << "PANICO1"<<std::endl;
     orunav_generic::makeValidPathForTrajectoryProcessing(path);
     // Make it less dense... important for the smoothing steps.
     //    path = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
+    std::cout << "PANICO2"<<std::endl;
     path = orunav_generic::minIncrementalDistanceMinNbPointsPath(path, min_incr_path_dist_, min_nb_path_points_);
     ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath() << " SteeringR "  << path.getSteeringAngleRear(5) );//Cecchi_add
 
