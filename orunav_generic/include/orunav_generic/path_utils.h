@@ -69,12 +69,13 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
   ret.addPathPoint(path.getPose2d(0), path.getSteeringAngle(0), path.getSteeringAngleRear(0));//Cecchi_add
   idx.push_back(0);
   Pose2d back = path.getPose2d(path.sizePath()-1);
+  std::cout << "p2" << std::endl;
   for (size_t i = 1; i < path.sizePath()-1; i++)
   {
     double d1 = getDistBetween(ret.poses.back(), path.getPose2d(i));
     double d2 = getDistBetween(back, path.getPose2d(i));
     if (d1 > minDist && d2 > minDist) {
-      std::cout << "p2" << std::endl;
+      //std::cout << "p2" << std::endl;
       ret.addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i));//Cecchi_add
       idx.push_back(i);
     }
@@ -421,12 +422,9 @@ inline orunav_generic::Path forwardSimulation(const TrajectoryInterface &traj, d
    
   for (size_t i = 0; i < traj.sizeTrajectory(); i++) {
     //std::cout << "test Chrash!" << traj.getSteeringVelRear(i) << std::endl;
-    std::cout << "Fs14"<< std::endl;
-    std::cout << "Fs2"<< traj.getSteeringVelRear(i) << std::endl; /// COLPA SUA
+    std::cout << "Fs2 :"<< traj.getSteeringVelRear(i) << std::endl; /// COLPA SUA
     orunav_generic::Control ctrl(traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));//Cecchi_add
-    std::cout << "Fs3"<< std::endl;
     current_state.addControlStep(ctrl, len, dt);
-    std::cout << "Fs4"<< std::endl;
     path.addState2dInterface(current_state);
   }
   std::cout << "Fs5"<< std::endl;
