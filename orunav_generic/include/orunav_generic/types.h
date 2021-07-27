@@ -99,7 +99,7 @@ namespace orunav_generic {
   {
   public:
     
-    State2d() { steeringAngle = 0.; }
+    State2d() { steeringAngle = 0.;  steeringAngleRear = 0.; }//Cecchi_add_
     State2d(double x, double y, double th, double phi) { pose[0] = x; pose[1] = y; pose[2] = th; steeringAngle = phi; }
     State2d(const Pose2d &p, const double &s) { pose = p; steeringAngle = s; }
     State2d(const Pose2d &p, const double &s1, const double &s2) { pose = p; steeringAngle = s1; steeringAngleRear = s2; } //Cecchi_add
@@ -268,8 +268,8 @@ namespace orunav_generic {
     void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle, const double &fwdVel, const double &rotVel) {
       poses.push_back(pose); steeringAngles.push_back(steeringAngle); driveVels.push_back(fwdVel); steeringVels.push_back(rotVel);
     }
-    void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle,const double &steeringAngleRear, const double &fwdVel, const double &rotVel) {
-      poses.push_back(pose); steeringAngles.push_back(steeringAngle); steeringAnglesRear.push_back(steeringAngleRear);driveVels.push_back(fwdVel); steeringVels.push_back(rotVel); //steeringVelsRear.push_back(rotVelRear);
+    void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle,const double &steeringAngleRear, const double &fwdVel, const double &rotVel,const double &rotVelRear) {
+      poses.push_back(pose); steeringAngles.push_back(steeringAngle); steeringAnglesRear.push_back(steeringAngleRear);driveVels.push_back(fwdVel); steeringVels.push_back(rotVel); steeringVelsRear.push_back(rotVelRear);
     }//Cecchi_add
     
     void add(const State2dInterface& state, const ControlInterface &control) {
@@ -278,6 +278,7 @@ namespace orunav_generic {
       steeringAnglesRear.push_back(state.getSteeringAngleRear());//Cecchi_add
       driveVels.push_back(control.getFwdVel());
       steeringVels.push_back(control.getRotVel());
+      steeringVelsRear.push_back(control.getRotVelRear()); //Cecchi_add_
     }
   
     // Interfaces

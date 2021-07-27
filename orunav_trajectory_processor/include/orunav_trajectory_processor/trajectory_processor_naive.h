@@ -112,7 +112,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 	}
       }
     }
-    
+    _params.debug = false;//CECCHI_NO
     if (_params.debug) {
       std::cout << "DBG: output.size(): " << output.size() << std::endl;
       assignDs(output);
@@ -147,7 +147,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 	  double used_dt;
 	  
 	  if (!interpolateControlStep(steps, time, time + dt, control_step, used_dt)) {
-	    std::cerr << "control_step.v : " << control_step.v << ", control_step.w : " << control_step.w << std::endl;
+	    std::cerr << "control_step.v : " << control_step.v << ", control_step.w : " << control_step.w  << std::endl; //Cecchi_add_??
 	      assert(false);
 	  }
 	  
