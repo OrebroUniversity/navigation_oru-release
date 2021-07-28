@@ -174,6 +174,7 @@ void minIncrementalDistancePathConstraints(orunav_generic::Path &path,
                                            double minDistance)
 {
   std::vector<size_t> idx;
+  std::cout<<"Min1"<<std::endl;
   path = orunav_generic::minIncrementalDistancePathIdx(path, minDistance, idx);
 
   constraint_extract::PolygonConstraintsVec c;

@@ -10,7 +10,7 @@
 class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_generic::DeltaTInterface
 {
  public:
- TrajectoryProcessorNaiveCT() : _startIdx(0), _startIdxControl(0.,0.), _startIdxTime(-1.) { }
+ TrajectoryProcessorNaiveCT() : _startIdx(0), _startIdxControl(0.,0.,0.), _startIdxTime(-1.) { }//Cecchi_add-
 
   void addPathInterface(const orunav_generic::PathInterface &path)
   {
@@ -111,7 +111,8 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     for (size_t i = 0; i < _controlConstraintPoints.size(); i++) {
       std::cout << "constraint[" << i << "] : idx : " << _controlConstraintPoints[i].first;
       std::cout << " control.v " << _controlConstraintPoints[i].second.v;
-      std::cout << " control.w " << _controlConstraintPoints[i].second.w << std::endl;
+      std::cout << " control.w " << _controlConstraintPoints[i].second.w; //<< std::endl;
+      std::cout << " control.wr " << _controlConstraintPoints[i].second.wr << std::endl;//Cecchi_add-
     }
   }
   
@@ -120,17 +121,13 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
   orunav_generic::Trajectory getTrajectoryNoCoordination() {
     std::cerr << "getTrajectoryNoCoordination()" << std::endl;
     TrajectoryProcessorNaive gen;
-    std::cout << "test1" << std::endl;
     gen.setParams(this->_params);
     std::cout << "test2" << std::endl;
     gen.addPathInterface(_path);
-    std::cout << "test3" << std::endl;
     gen.addControlConstraintPoints(this->_controlConstraintPoints);
-    std::cout << "test4" << std::endl;
     gen.addControlConstraintPointAsStart(_startIdx, _startIdxControl);
     std::cout << "test5" << std::endl;
     orunav_generic::Trajectory traj = gen.getTrajectory();
-    std::cout << "test6" << std::endl;
     this->setGlobalPathTimes(gen);
     std::cerr << "getTrajectoryNoCoordination() - end" << std::endl;
     return traj;

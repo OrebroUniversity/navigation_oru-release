@@ -300,9 +300,7 @@ namespace orunav_generic
 	    << traj.getDriveVel(i) << " "
 	    << traj.getSteeringVel(i) << std::endl;
       }	  //Cecchi_aad
-    std::cout << "Test 5193 TEST" << std::endl;
     ofs.close();
-    std::cout << "Test 5192 TEST" << std::endl;
   }
 
   inline void saveTrajectoryChunksTextFile(const TrajectoryChunksInterface &chunks, const std::string &fileName) {
