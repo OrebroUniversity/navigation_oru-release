@@ -463,7 +463,7 @@ inline orunav_generic::Trajectory selectTrajectoryIndexes(const TrajectoryInterf
 						    std::vector<int> indexes) {
   orunav_generic::Trajectory ret;
   for (size_t i = 0; i < indexes.size(); i++) {
-    ret.addTrajectoryPoint(traj.getPose2d(indexes[i]),traj.getSteeringAngle(indexes[i]), traj.getDriveVel(indexes[i]), traj.getSteeringVel(indexes[i]));
+    ret.addTrajectoryPoint(traj.getPose2d(indexes[i]),traj.getSteeringAngle(indexes[i]),traj.getSteeringAngleRear(indexes[i]), traj.getDriveVel(indexes[i]), traj.getSteeringVel(indexes[i]),traj.getSteeringVelRear(indexes[i])); //Cecchi_add
   }
   return ret;
 

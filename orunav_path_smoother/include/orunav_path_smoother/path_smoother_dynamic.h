@@ -8,6 +8,7 @@
 #include <orunav_generic/path_utils.h>
 #include <orunav_trajectory_processor/trajectory_processor_naive.h>
 #include <orunav_constraint_extract/polygon_constraint.h>
+//#include <orunav_motion_planner/WorldParameters.h> //Cecchi_add
 
 //! Helper class to divide trajectories into subsections.
 class SplitIndex
@@ -590,7 +591,12 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       if (!params.use_incremental)
       {
-	      return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
+        //if (WP::VEHICLE_TYPE == WP::vehicleType::XA_4WS){
+          std::cout << "######################################## \n SMOOTH 4WS \n #####################################";
+          return smoothBS_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
+        //}
+        //else{
+	      //return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); }
       }
 
       // Run the iterative approach
@@ -611,7 +617,8 @@ class PathSmootherDynamic : public PathSmootherInterface
         std::cout << "================================================" << std::endl;
         std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
         std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
-        orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); 
+         std::cout << "######################################## \n SMOOTH 4WS \n #####################################";
+        orunav_generic::Trajectory ts = smoothBS_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); //Cecchi_add
         std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
         si.setTrajectory(i, ts);
       }
@@ -654,20 +661,23 @@ class PathSmootherDynamic : public PathSmootherInterface
 	//	u_init = convertTrajectoryToACADOControlVariablesGrid(orunav_generic::setFixedControlValuesW(traj, 0.), 0.0, dt);
 	setFixedACADOControlVariablesGridRear(u_init, 0., 0.,0.);
       }
-
+      double beta;
+      double lf = params.wheel_base/2;
+      double lr = params.wheel_base/2;
       ACADO::DifferentialEquation f(start_time, stop_time);
       ACADO::DifferentialState        x,y,th,phi,phiRear;     // the differential states
       ACADO::Control                  v, w, wr;     // the control input u
-
-      f << dot(x) == cos(th)*v;
-      f << dot(y) == sin(th)*v;
-      f << dot(th) == tan(phi)*v/params.wheel_base; // 0.68 = L
+      //beta = atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base);
+      f << dot(x) == cos(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;
+      f << dot(y) == sin(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;
+      //f << dot(th) == tan(phi)*v/params.wheel_base; // 0.68 = L
+      f << dot(th) == v*cos(atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*( tan(phi)+tan(phiRear) )/params.wheel_base;
       f << dot(phi) == w;
       f << dot(phiRear) == wr;
       
       ACADO::OCP ocp(q_init);
       if (params.minimize_phi_and_dist) {
-	ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w);
+	ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w + params.weight_steering_control*wr*wr);
       }
       else {
 	ocp.minimizeMayerTerm(1.);

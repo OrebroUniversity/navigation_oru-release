@@ -916,7 +916,7 @@ public:
     srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
-    //no_smoothing_ = true;//Cecchi_add NO smoothing 
+    no_smoothing_ = true;//Cecchi_add NO smoothing 
     if (!no_smoothing_)
     {
 
