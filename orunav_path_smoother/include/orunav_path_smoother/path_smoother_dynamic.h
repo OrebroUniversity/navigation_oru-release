@@ -488,7 +488,7 @@ class PathSmootherDynamic : public PathSmootherInterface
 
 
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
-//const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
+  //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
       // Always always...
       //     ACADO_clearStaticCounters();
@@ -636,4 +636,222 @@ class PathSmootherDynamic : public PathSmootherInterface
   /* ACADO::DifferentialState        x,y,th,phi;     // the differential states */
   /* ACADO::Control                  v, w;     // the control input u */
   
+
+
+  // Cecchi_add
+  //All ACADO calls goes here.
+  orunav_generic::Trajectory smoothBS_(const orunav_generic::Trajectory &traj, const constraint_extract::PolygonConstraintsVec &constraints, double dt, double start_time, double stop_time, bool use_pose_constraints)
+    {
+      // Always always...
+      ACADO_clearStaticCounters();
+
+      std::cout << "Setting up constraints -- start" << std::endl;
+
+      ACADO::VariablesGrid q_init = convertPathToACADOStateVariableGridRear(traj, 0.0, dt);
+      
+      ACADO::VariablesGrid u_init = convertTrajectoryToACADOControlVariablesGridRear(traj, 0.0, dt);
+      if (params.w_zero) {
+	//	u_init = convertTrajectoryToACADOControlVariablesGrid(orunav_generic::setFixedControlValuesW(traj, 0.), 0.0, dt);
+	setFixedACADOControlVariablesGridRear(u_init, 0., 0.,0.);
+      }
+
+      ACADO::DifferentialEquation f(start_time, stop_time);
+      ACADO::DifferentialState        x,y,th,phi,phiRear;     // the differential states
+      ACADO::Control                  v, w, wr;     // the control input u
+
+      f << dot(x) == cos(th)*v;
+      f << dot(y) == sin(th)*v;
+      f << dot(th) == tan(phi)*v/params.wheel_base; // 0.68 = L
+      f << dot(phi) == w;
+      f << dot(phiRear) == wr;
+      
+      ACADO::OCP ocp(q_init);
+      if (params.minimize_phi_and_dist) {
+	ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w);
+      }
+      else {
+	ocp.minimizeMayerTerm(1.);
+      }
+      ocp.subjectTo(f);
+      // Enforce the the start / end pose.
+
+      ocp.subjectTo(ACADO::AT_START, x == traj.getPose2d(0)(0));
+      ocp.subjectTo(ACADO::AT_START, y == traj.getPose2d(0)(1));
+      ocp.subjectTo(ACADO::AT_START, th == traj.getPose2d(0)(2));
+      ocp.subjectTo(ACADO::AT_START, phi == traj.getSteeringAngle(0));
+      ocp.subjectTo(ACADO::AT_START, phiRear == traj.getSteeringAngleRear(0));
+
+      //ocp.subjectTo(ACADO::AT_START, v == 0);
+      //ocp.subjectTo(ACADO::AT_START, w == 0);
+      
+      ocp.subjectTo(ACADO::AT_END, x == traj.getPose2d(traj.sizePath()-1)(0));
+      ocp.subjectTo(ACADO::AT_END, y == traj.getPose2d(traj.sizePath()-1)(1));
+      ocp.subjectTo(ACADO::AT_END, th == traj.getPose2d(traj.sizePath()-1)(2));
+      ocp.subjectTo(ACADO::AT_END, phi == traj.getSteeringAngle(traj.sizePath()-1));
+      ocp.subjectTo(ACADO::AT_END, phiRear == traj.getSteeringAngleRear(traj.sizePath()-1));
+      //ocp.subjectTo(ACADO::AT_END, v == 0);
+      //ocp.subjectTo(ACADO::AT_END, w == 0);
+            
+      //      if (params.use_v_constraints)
+      //	ocp.subjectTo( params.v_min <= v <= params.v_max );
+      //      if (params.use_w_constraints)
+      //	ocp.subjectTo( params.w_min <= w <= params.w_max );
+      ocp.subjectTo( params.phi_min <= phi <= params.phi_max );
+      ocp.subjectTo( params.phi_min <= phiRear <= params.phi_max );
+      
+      if (use_pose_constraints) {
+	assert(constraints.size() == traj.sizePath());
+	for (size_t i = 0; i < constraints.size(); i++) {
+	  if (i % params.use_constraints_modulus == 0 || i == constraints.size()-1) {
+	    // Use this constraint
+	    //	    std::cout << "Using constraint # : " << i << std::endl;
+	  }
+	  else {
+	    continue;
+	  }
+	  // Orientation
+	  if (params.use_th_constraints) {
+	    // Check for normalization problems that could occur here... simply make sure that we have a bounds that the current th is within.
+	    double lb_th, ub_th;
+	    computeThBounds(constraints[i].getThBounds()[0], constraints[i].getThBounds()[1], traj.getPose2d(i)(2), lb_th, ub_th);
+	    ocp.subjectTo(i, lb_th <= th <= ub_th);
+	  }
+	  // Position
+	  if (params.use_xy_constraints) {
+	    std::vector<double> A0, A1, b;
+	    constraints[i].getInnerConstraint().getMatrixFormAsVectors(A0, A1, b);
+	    assert(A0.size() == A1.size());
+	    assert(A0.size() == b.size());
+	    size_t size = A0.size();
+	    for (size_t j = 0; j < size; j++)
+	      ocp.subjectTo(i, A0[j]*x + A1[j]*y <= b[j]);
+	  }
+	}
+      }
+      
+      std::cout << "Setting up constraints -- end" << std::endl;
+      
+
+      std::cout << "Optimization -- start" << std::endl;
+      ACADO::OptimizationAlgorithm algorithm(ocp);
+      // ACADO params -- 
+      if (!params.use_multiple_shooting)
+	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::SINGLE_SHOOTING ); // For the non-objective -> there is not any difference.
+      else
+	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
+      {
+	int ret;
+	algorithm.get( ACADO::DISCRETIZATION_TYPE, ret);
+	if (ret == ACADO::SINGLE_SHOOTING) {
+	  std::cout << "SINGLE_SHOOTING will be used" << std::endl;
+	}
+	if (ret == ACADO::MULTIPLE_SHOOTING) {
+	  std::cout << "MULTIPLE_SHOOTING will be used" << std::endl;
+	}
+      }
+
+      algorithm.set( ACADO::MAX_NUM_INTEGRATOR_STEPS, 100 ); // For the integrator.
+      algorithm.set( ACADO::MAX_NUM_ITERATIONS, params.nb_iter_steps ); 
+      algorithm.set( ACADO::PRINTLEVEL, ACADO::HIGH );
+      algorithm.set( ACADO::PRINT_SCP_METHOD_PROFILE, BT_TRUE );
+      //      algorithm.set( ACADO::USE_REFERENCE_PREDICTION, ACADO::BT_FALSE );
+      // if (params.use_condensing)
+      //   algorithm.set( ACADO::USE_CONDENSING, ACADO::BT_TRUE ); // Important!
+      // else 
+      //   algorithm.set( ACADO::USE_CONDENSING, ACADO::BT_FALSE );
+      // {
+      //   int ret;
+      //   algorithm.get( ACADO::USE_CONDENSING, ret);
+      //   if (ret == ACADO::BT_TRUE) {
+      //     std::cout << "CONDENSING will be used" << std::endl;
+      //   }
+      //   if (ret == ACADO::BT_FALSE) {
+      //     std::cout << "CONDENSING will NOT be used" << std::endl;
+      //   }
+      // }
+
+      algorithm.set( ACADO::USE_REALTIME_ITERATIONS, BT_FALSE ); // Important!
+      algorithm.set( ACADO::KKT_TOLERANCE, params.kkt_tolerance );
+      algorithm.set( ACADO::INTEGRATOR_TOLERANCE, params.integrator_tolerance );
+            
+      
+      std::cout << "Initialize variables" << std::endl;
+      if (params.init_states)
+	algorithm.initializeDifferentialStates( q_init );
+      if (params.init_controls)
+	algorithm.initializeControls( u_init );
+     
+      std::cout << "Setting up states / control variables" << std::endl;
+      ACADO::VariablesGrid states, controls;
+      std::cout << "-1" << std::endl;
+      algorithm.getDifferentialStates(states);
+      std::cout << "-2" << std::endl;
+      algorithm.getControls(controls);
+      std::cout << "-3" << std::endl;
+      
+      algorithm.getDifferentialStates("states_init.txt");
+      std::cout << "-4" << std::endl;
+      algorithm.getControls("controls_init.txt");
+      std::cout << "-5" << std::endl;
+      
+
+      if (params.visualize) {
+	ACADO::GnuplotWindow window4(ACADO::PLOT_AT_START);
+	window4.addSubplot( x, "x - init" );
+	window4.addSubplot( y, "y - init" );
+	window4.addSubplot( th, "th - init" );
+	window4.addSubplot( phi, "phi - init" );
+  window4.addSubplot( phiRear, "phiRear - init" );
+	window4.addSubplot( v, "v - init" );
+	window4.addSubplot( w, "w - init" );
+  window4.addSubplot( wr, "wr - init" );
+	
+	ACADO::GnuplotWindow window2(ACADO::PLOT_AT_EACH_ITERATION);
+	window2.addSubplot( x, "x - iter..." );
+	window2.addSubplot( y, "y - iter..." );
+	window2.addSubplot( th, "th - iter..." );
+	window2.addSubplot( phi, "phi - iter..." );
+  window2.addSubplot( phiRear, "phiRear - iter..." );
+	window2.addSubplot( v, "v - iter..." );
+	window2.addSubplot( w, "w - iter..." );
+  window2.addSubplot( wr, "wr - iter..." );
+
+	algorithm << window2;
+	algorithm << window4;
+      }
+
+      std::cout << "Solve - running..." << std::endl;
+      algorithm.solve();
+      std::cout << "Optimization -- end" << std::endl;
+      
+      algorithm.getDifferentialStates(states);
+      algorithm.getControls(controls);
+      algorithm.getDifferentialStates("states_final.txt");
+      algorithm.getControls("controls_final.txt");
+
+      if (params.visualize) {
+	ACADO::GnuplotWindow window;
+	window.addSubplot( q_init(0), "x - provided" );
+	window.addSubplot( q_init(1), "y - provided" );
+	window.addSubplot( q_init(2), "th - provided" );
+	window.addSubplot( q_init(3), "phi - povided" );
+	window.addSubplot( u_init(0), "v - provided" );
+	window.addSubplot( u_init(1), "w - provided" );
+	window.plot();
+	
+        
+	ACADO::GnuplotWindow window3;
+	window3.addSubplot( states(0), "x - final" );
+	window3.addSubplot( states(1), "y - final" );
+	window3.addSubplot( states(2), "th - final" );
+	window3.addSubplot( states(3), "phi - final" );
+	window3.addSubplot( controls(0), "v - final" );
+	window3.addSubplot( controls(1), "w - final" );
+	window3.plot();
+    }
+
+      //      return convertACADOStateVariableGridToPath(states);
+            return convertACADOStateControlVariableGridToTrajectoryRear(states, controls);
+  }
+
 };
