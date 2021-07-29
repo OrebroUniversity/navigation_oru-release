@@ -60,14 +60,16 @@ public:
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
-      //std::string models{model,model};
-      std::array<std::string,5> models{"xa_4ws_bs","xa_4ws_crab_littleAngles_ZeroCost",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
       //car_model_ = new CarModel(model);
-      int sets = 1;
+
+      //Dual steer start
+      std::array<std::string,5> models{"xa_4ws_bs_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
+      int sets = 2;
       dualSteer_model_ = new DualSteerModel(models,sets);//Cecchi_add
       for(int i = 0; i < sets; i++){
-       ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");//Cecchi_add
-      }
+      ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");}//Cecchi_add
+      //Dual steer end
+
 
       
 

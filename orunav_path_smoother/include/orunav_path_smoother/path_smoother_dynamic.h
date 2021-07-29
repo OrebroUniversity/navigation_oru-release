@@ -577,12 +577,12 @@ class PathSmootherDynamic : public PathSmootherInterface
       // Make sure to normalize the start and end pose - this is done by updating the start and end trajectory state, this should be done after the velocities are computed.
       traj.setPose2d(start.getPose2d(), 0);
       traj.setSteeringAngle(start.getSteeringAngle(), 0);
+      traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add.
       traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
       traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
+      traj.setSteeringAngleRear(goal.getSteeringAngleRear(), traj.sizePath()-1);//Cecchi_add.
       std::cout << "------ e NOO E NOO : -------- " << params << std::endl;
-      //traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add
-      //traj.setSteeringAngleRear(goal.getSteeringAngleRear(), traj.sizePath()-1);//Cecchi_add
-
+      
       std::cout << "updating the start and end pose : " << std::endl;
       assert(orunav_generic::validPath(traj, M_PI));
       orunav_generic::removeThNormalization(traj); // Force the start point and end point to not be normalized.
