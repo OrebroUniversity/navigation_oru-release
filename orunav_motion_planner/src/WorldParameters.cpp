@@ -29,11 +29,15 @@ double WP::CALCULATION_APPROXIMATION_ERROR = 0.001;
 double WP::OCCUPANCY_THRESHOLD = 0.5;
 
 int WP::DECIMAL_APPROXIMATION = 4;
-WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::NAIVE ; //EPFSG;
-
+WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::EPFSG; //NAIVE ; // Cecchi_modify
+WP::VehicleType WP::VEHICLE_TYPE = WP::VehicleType::CAR ; // Cecchi_add
 
 void WP::setExpansionMethod(WP::NodeExpansionMethod method) {
 	WP::NODE_EXPANSION_METHOD = method;
+}
+
+void WP::setVehicleType(WP::VehicleType vehicle){
+	WP::VEHICLE_TYPE = vehicle;
 }
 
 void WP::setPrimitivesDir(std::string dir) {

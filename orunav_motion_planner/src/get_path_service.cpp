@@ -66,8 +66,12 @@ public:
       std::array<std::string,5> models{"xa_4ws_bs_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
       int sets = 2;
       dualSteer_model_ = new DualSteerModel(models,sets);//Cecchi_add
+      WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
+      WP::setVehicleType(WP::VehicleType::XA_4WS);
       for(int i = 0; i < sets; i++){
+      std::cout << " vehicle type:" << WP::VEHICLE_TYPE << " " << WP::NODE_EXPANSION_METHOD << std::endl;
       ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");}//Cecchi_add
+      
       //Dual steer end
 
 

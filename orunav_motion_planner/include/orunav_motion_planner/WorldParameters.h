@@ -24,6 +24,14 @@ class WP {
 public:
 
 	/**
+	 * Define the vehicle tipe */ 
+	typedef enum	VehicleType {
+		CAR 	= 0,  //!< car like vehicle
+		XA_4WS 	= 1  //!< XA_4WS
+	} VehicleType; //Cecchi_add
+
+
+	/**
 	 * Define the available node expansion method the planner can use in successor generation
 	 */
 	typedef enum NodeExpansionMethod {
@@ -37,6 +45,8 @@ public:
 	/** Select the expansion method for successor generation */
 	static NodeExpansionMethod NODE_EXPANSION_METHOD;
 
+	/** Select the evehicle type for successor generation */
+	static VehicleType VEHICLE_TYPE;//Cecchi_add
 
 
 	/** Log level for extra console output (0,1,2,3) */
@@ -85,6 +95,13 @@ public:
 	 * @param method The expansion method to use
 	 */
 	static void setExpansionMethod(WP::NodeExpansionMethod method);
+
+
+		/**
+	 * Change the Vehicle type
+	 * @param method The vehicle type to use
+	 */
+	static void setVehicleType(WP::VehicleType vehicle);
 
 	/**
 	 * Change the directory where the motion primitives are stored
