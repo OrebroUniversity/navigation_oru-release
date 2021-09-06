@@ -489,8 +489,10 @@ class PathSmootherDynamic : public PathSmootherInterface
 
 
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
-  //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
+    //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
+      bool BS = true; //Cecchi_add
+      if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
       // Always always...
       //     ACADO_clearStaticCounters();
 
@@ -578,11 +580,13 @@ class PathSmootherDynamic : public PathSmootherInterface
       // Make sure to normalize the start and end pose - this is done by updating the start and end trajectory state, this should be done after the velocities are computed.
       traj.setPose2d(start.getPose2d(), 0);
       traj.setSteeringAngle(start.getSteeringAngle(), 0);
-      traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add.
+
       traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
       traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
+      if (BS == true){
+      traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add.
       traj.setSteeringAngleRear(goal.getSteeringAngleRear(), traj.sizePath()-1);//Cecchi_add.
-      std::cout << "------ e NOO E NOO : -------- " << params << std::endl;
+      }
       
       std::cout << "updating the start and end pose : " << std::endl;
       assert(orunav_generic::validPath(traj, M_PI));
@@ -591,12 +595,12 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       if (!params.use_incremental)
       {
-        //if (WP::VEHICLE_TYPE == WP::vehicleType::XA_4WS){
-          std::cout << "######################################## \n SMOOTH 4WS \n #####################################";
+        if (BS == true) {
+          std::cout << "######################################## \n SMOOTH 4WS 1 \n #####################################";
           return smoothBS_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
-        //}
-        //else{
-	      //return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); }
+        }
+        else{
+	          return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); }
       }
 
       // Run the iterative approach
@@ -617,10 +621,17 @@ class PathSmootherDynamic : public PathSmootherInterface
         std::cout << "================================================" << std::endl;
         std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
         std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
-         std::cout << "######################################## \n SMOOTH 4WS \n #####################################";
-        orunav_generic::Trajectory ts = smoothBS_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); //Cecchi_add
-        std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
-        si.setTrajectory(i, ts);
+        
+        if (BS = true){
+          std::cout << "######################################## \n SMOOTH 4WS 2 \n #####################################";
+          orunav_generic::Trajectory ts = smoothBS_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); //Cecchi_add
+          std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
+          si.setTrajectory(i, ts);}
+        else {
+          orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints);
+          std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
+          si.setTrajectory(i, ts);
+          }        
       }
       std::cout<<"END3???" << std::endl;
       return si.getTrajectory();
@@ -644,9 +655,12 @@ class PathSmootherDynamic : public PathSmootherInterface
   /* ACADO::Control                  v, w;     // the control input u */
   
 
-
+  //##########################################################################
+  //#########################################################################
   // Cecchi_add
   //All ACADO calls goes here.
+
+
   orunav_generic::Trajectory smoothBS_(const orunav_generic::Trajectory &traj, const constraint_extract::PolygonConstraintsVec &constraints, double dt, double start_time, double stop_time, bool use_pose_constraints)
     {
       // Always always...

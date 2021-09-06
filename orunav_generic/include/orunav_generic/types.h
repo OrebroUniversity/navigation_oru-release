@@ -189,7 +189,7 @@ namespace orunav_generic {
       this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i),path.getSteeringAngleRear(i)); //Cecchi AngleRear? steeringAnglesRear.push_back(steeringAngleRear)
       }
       else {
-       std::cout<<"NO-Rear"<<std::endl;
+       //std::cout<<"NO-Rear"<<std::endl;
         this->addPathPoint(path.getPose2d(i), path.getSteeringAngle(i));
       }
   

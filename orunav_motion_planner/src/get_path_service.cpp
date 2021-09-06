@@ -63,7 +63,7 @@ public:
       //car_model_ = new CarModel(model);
 
       //Dual steer start
-      std::array<std::string,5> models{"xa_4ws_bs_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
+      std::array<std::string,5> models{"xa_4ws_Rear_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
       int sets = 2;
       dualSteer_model_ = new DualSteerModel(models,sets);//Cecchi_add
       WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
