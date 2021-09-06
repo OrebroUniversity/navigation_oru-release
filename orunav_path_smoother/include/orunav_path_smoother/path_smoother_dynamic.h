@@ -491,7 +491,7 @@ class PathSmootherDynamic : public PathSmootherInterface
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
     //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
-      bool BS = true; //Cecchi_add
+      bool BS = true; //Cecchi_add - always true!
       if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
       // Always always...
       //     ACADO_clearStaticCounters();
