@@ -491,7 +491,7 @@ class PathSmootherDynamic : public PathSmootherInterface
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
     //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
-      bool BS = true; //Cecchi_add
+      bool BS = false; //Cecchi_add
       if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
       // Always always...
       //     ACADO_clearStaticCounters();
@@ -503,7 +503,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::cout << "PATH SMOOTHER : path_orig.STEERING : " << path_orig.getSteeringAngle(0) << " " << path_orig.getSteeringAngleRear(0) << std::endl;
 
       if (use_pose_constraints) {
-	std::cout << "----- will use spatial constraints -----" << std::endl;
+	      std::cout << "----- will use spatial constraints -----" << std::endl;
       }
 
       // Use the traj processor to get a reasonable estimate of the T.
@@ -515,9 +515,13 @@ class PathSmootherDynamic : public PathSmootherInterface
 	p.maxVel = 0.5;
 	p.maxAcc = 0.2;
 	p.wheelBaseX = params.wheel_base;
+   std::cout << "::1" << std::endl;
 	gen.setParams(p);
+  std::cout << "::2" << std::endl;
 	gen.addPathInterface(path_orig);
+  std::cout << "::3" << std::endl;
 	traj_gen = gen.getTrajectory(); 
+  std::cout << "::4" << std::endl;
 	T = orunav_generic::getTotalTime(gen);
       }
       // Get the min / max time from the trajectory
@@ -526,24 +530,24 @@ class PathSmootherDynamic : public PathSmootherInterface
       unsigned int orig_size = path_orig.sizePath();
       int skip_points = orig_size / params.max_nb_opt_points - 1;
       if (skip_points < 0)
-	skip_points = 0;
+	    skip_points = 0;
       double dt = 0.06 * (1 + skip_points);
       orunav_generic::Path path;
       if (params.even_point_dist) {
-	double min_dist = orunav_generic::getTotalDistance(path_orig) / params.max_nb_opt_points;
-	if (min_dist < params.min_dist)
-	  min_dist = params.min_dist;
-	path = orunav_generic::minIncrDistancePath(path_orig, min_dist);
+	      double min_dist = orunav_generic::getTotalDistance(path_orig) / params.max_nb_opt_points;
+	      if (min_dist < params.min_dist)
+	        min_dist = params.min_dist;
+	        path = orunav_generic::minIncrDistancePath(path_orig, min_dist);
       }
       else {
-	path = orunav_generic::subSamplePath(path_orig, skip_points);
+	      path = orunav_generic::subSamplePath(path_orig, skip_points);
       }
       if (params.use_total_time) {
-	dt = T / path.sizePath(); 
+	      dt = T / path.sizePath(); 
       }
 
       if (use_pose_constraints) {
-	path = path_orig;
+	      path = path_orig;
       }
 
       std::cout << "Used dt : " << dt << std::endl;
@@ -552,9 +556,10 @@ class PathSmootherDynamic : public PathSmootherInterface
       orunav_generic::Trajectory traj = orunav_generic::convertPathToTrajectoryWithoutModel(path, dt);
       assert(orunav_generic::validPath(traj, M_PI));
       if (orunav_generic::validPath(traj, M_PI))
-        std::cerr << "Non-normalized path(!) - should never happen" << std::endl;
+        std::cerr << "ever happen" << std::endl;
       orunav_generic::removeThNormalization(traj);
       assert(orunav_generic::validPath(traj, M_PI));
+     
       
       double start_time = 0.0;
       unsigned int size = traj.sizeTrajectory();
@@ -564,11 +569,11 @@ class PathSmootherDynamic : public PathSmootherInterface
 	PathSmootherDynamic::Params params_orig = params;
 	if (params.init_controls || params.get_speed) {
 	  orunav_generic::getMinMaxVelocities(traj, params.v_min, params.v_max, params.w_min, params.w_max);
-	}
+  }
 	else {
 	  // Using the generated trajectory (from the traj processsor)
 	  orunav_generic::getMinMaxVelocities(traj_gen, params.v_min, params.v_max, params.w_min, params.w_max);
-	}
+  }
 	// This is used to smooth a straight path which otherwise will have a w_min = w_max = 0.
 	if (params.keep_w_bounds) {
 	  params.w_min = params_orig.w_min;
@@ -596,7 +601,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       if (!params.use_incremental)
       {
         if (BS == true) {
-          std::cout << "######################################## \n SMOOTH 4WS 1 \n #####################################";
+          std::cout << "######################################## \n SMOOTH 4WS  \n #####################################";
           return smoothBS_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
         }
         else{
@@ -682,8 +687,8 @@ class PathSmootherDynamic : public PathSmootherInterface
       ACADO::DifferentialState        x,y,th,phi,phiRear;     // the differential states
       ACADO::Control                  v, w, wr;     // the control input u
       //beta = atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base);
-      f << dot(x) == cos(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;
-      f << dot(y) == sin(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;
+      f << dot(x) == cos(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*cos(th);
+      f << dot(y) == sin(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*sin(th);
       //f << dot(th) == tan(phi)*v/params.wheel_base; // 0.68 = L
       f << dot(th) == v*cos(atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*( tan(phi)+tan(phiRear) )/params.wheel_base;
       f << dot(phi) == w;
