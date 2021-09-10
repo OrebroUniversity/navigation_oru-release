@@ -83,7 +83,7 @@ public:
 	/** Default initialization */
 	vehicleSimplePoint() : simplePoint() {
 		steering = 0;
-		steeringRear = 0;
+		steeringRear = 0;//Cecchi_add_planner
 	}
 	/** Initialize the vehicleSimplePoint */
 	void initVehicleSimplePoint(double px, double py, double po, double ps) {
@@ -91,7 +91,7 @@ public:
 		y = py;
 		orient = po;
 		steering = ps;
-		steeringRear = 0;
+		steeringRear = 0;//Cecchi_add_planner
 	}
 
 	void initVehicleSimplePoint(double px, double py, double po, double ps, double pr) { //Cecchi_add
@@ -99,7 +99,7 @@ public:
 		y = py;
 		orient = po;
 		steering = ps;
-		steeringRear = pr;
+		steeringRear = pr;//Cecchi_add_planner
 	}
 
 	/** The steering angle of a vehicle traversing the point */

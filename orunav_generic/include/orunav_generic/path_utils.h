@@ -86,7 +86,7 @@ inline Path minIncrementalDistancePathIdx(const PathInterface &path, double minD
 
 inline Path minIncrementalDistancePath(const PathInterface &path, double minDist) {
   std::vector<size_t> idx;
-  std::cout<<"Min2"<<std::endl;
+  //std::cout<<"Min2"<<std::endl;
   return minIncrementalDistancePathIdx(path, minDist, idx);
 }
 
@@ -1268,9 +1268,7 @@ inline int getDockingPathIdx(const orunav_generic::PathInterface &path,
 }
  
 inline void makeValidPathForTrajectoryProcessing(orunav_generic::Path &path) {
-  std::cout << "PP1" << std::endl;
   path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
-  std::cout << "PP2" << std::endl;
   path = orunav_generic::minIntermediateDirPathPoints(path);
   //  path = orunav_generic::minIncrementalDistancePath(path, 0.00002);
 }
@@ -1280,7 +1278,6 @@ inline void minIncrementalDistancePathCoordinatedTimes(orunav_generic::Path &pat
                                                 double minDistance)
 {
   std::vector<size_t> idx;
-  std::cout<<"Min3"<<std::endl;
   path = orunav_generic::minIncrementalDistancePathIdx(path, minDistance, idx);
 
   if (cts.empty())

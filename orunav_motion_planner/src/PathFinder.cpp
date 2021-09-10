@@ -144,7 +144,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 
 	// solve the problem: check if to use A* or ARA*
 	std::vector<Node*> solution;
-	timeBound_ = 0; //force to use A*
+	//timeBound_ = 0; //Cecchi_planner force to use A*
 	if (timeBound_ > 0) {
 		if (WP::LOG_LEVEL >= 1) {
 			char line[50];

@@ -16,7 +16,7 @@ DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenam
 	carMaxSteeringAngle_ = 0;
 	sets = set;
 	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
-	for(int count; count < sets; count++){
+	for(int count; count < sets; count++){ //for each set
 		currentSet = count;
 		this->loadPrimitiveLookupTable();
 	}
@@ -192,7 +192,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 					// check the number of intermediate poses to read for this particular primitive
 					std::stringstream ss(line);
 					// NOTE: we assume already normalized angles
-					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringRear;
+					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringRear; //Cecchi_add
 					primitiveTrajectory.push_back(sp);
 				}
 				// add the trajectory
@@ -333,7 +333,7 @@ void DualSteerModel::generatePrimitiveAdditionalData() {
 
 	int counter = 0;
 
-	// iterate over the existing primitives and generate the additional data
+	// iterate over the existing primitives and generate the additional data  //Cecchi_add_data
 	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
 		writeLogLine("addDAta", "\x1B[34mDualSteerModel \034[0m", WP::LOG_FILE);
 		counter ++;

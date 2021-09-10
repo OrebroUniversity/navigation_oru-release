@@ -35,36 +35,27 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 
   void computeDts()
     { 
-      std::cout << "::30.0.0" << std::endl;
+      
       setupSteps(_steps);
-      std::cout << "::30.0.0" << std::endl;
       assignDs(_steps);
-      std::cout << "::30.0.0" << std::endl;
       assignDir(_steps);
-      std::cout << "::30.0.0" << std::endl;
       assignMinDtValidSpeed(_steps); // Add the min/max velocity constraints.
       assignCreepSpeed(_steps);
-      std::cout << "::30.0.0" << std::endl;
       assignControlSteps(_steps);    // Compute the current speed, not including acceleration constraint nor control point constraints, note this is only using ds and dt.
-      std::cout << "::30.0.0" << std::endl;
       assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
-      std::cout << "::30.0.0" << std::endl;
       assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
       // The onlything that are missing now is the acceleration constraints.
       assignAccelerationConstraints(_steps);
       //      assignLastDtNonZero(_steps);
       // Update the control steps, only used for visualizing the correct steps.
       assignControlSteps(_steps);
-  std::cout << "::30.0.0" << std::endl;
       if (_params.debug) {
 	_steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
-  std::cout << "::30.0.1" << std::endl;
 	orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
       }
     }
   
   orunav_generic::Trajectory getTrajectory() {
-    std::cout << "::30.0" << std::endl;
     computeDts();
     // Need the global time for the interpolation
     assignTotalTime(_steps);

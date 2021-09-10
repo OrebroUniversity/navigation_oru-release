@@ -289,7 +289,6 @@ namespace orunav_generic
     st << fileName; // << "_" << msg.robot_id << "-" << msg.goal_id << ".path";
     std::string file_name = st.str();
     std::ofstream ofs(file_name.c_str());
-    std::cout << "Test 519155 TEST" << std::endl;
     for (unsigned int i = 0; i < traj.sizePath(); i++)
       {
         

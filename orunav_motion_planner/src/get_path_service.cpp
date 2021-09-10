@@ -33,8 +33,8 @@ private:
   std::string motion_prim_dir_;
   std::string lookup_tables_dir_;
   std::string maps_dir_;
-  //CarModel* car_model_;
   DualSteerModel* dualSteer_model_;
+  //CarModel* car_model_;
   bool visualize_;
   
   ros::Publisher marker_pub_;
@@ -60,10 +60,12 @@ public:
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
-      //car_model_ = new CarModel(model);
-
+      // bool BS = false; //Cecchi_add - 
+      // if (BS ==true){ DualSteerModel* dualSteer_model_;}
+      // else{ CarModel* car_model_;}
+      // if (BS ==true){ 
       //Dual steer start
-      std::array<std::string,5> models{"xa_4ws_bs_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
+      std::array<std::string,5> models{"xa_4ws_Rear_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
       int sets = 2;
       dualSteer_model_ = new DualSteerModel(models,sets);//Cecchi_add
       WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
@@ -71,9 +73,11 @@ public:
       for(int i = 0; i < sets; i++){
       std::cout << " vehicle type:" << WP::VEHICLE_TYPE << " " << WP::NODE_EXPANSION_METHOD << std::endl;
       ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");}//Cecchi_add
-      
       //Dual steer end
-
+      //}
+      //else{ 
+      //car_model_ = new CarModel(model);
+        //}
 
       
 
@@ -92,8 +96,13 @@ public:
 
   ~GetPathService()
     {
-      //delete car_model_;
-      delete dualSteer_model_;
+      // if (BS ==true){ 
+         delete dualSteer_model_;
+      //   }
+      // else{ 
+       // delete car_model_;
+        //}
+      
       ROS_INFO_STREAM("[GetPathService] - shutting down\n");
     }
 
@@ -130,10 +139,17 @@ public:
     if (req.max_planning_time > 0.) 
       pf->setTimeBound(req.max_planning_time);
     
+
+    // if (BS ==true){
     VehicleMission vm(dualSteer_model_,
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
-    
+    // }
+    // else{
+      // VehicleMission vm(car_model_,
+      //                 tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
+      //                 tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
+    //}
 
     pf->addMission(&vm);
     if (req.max_planning_time > 0)
@@ -165,7 +181,7 @@ public:
                                                                it2->y+map_offset_y,
                                                                orientation), it2->steering, it2->steeringRear); //Cecchi_add
           
-          //std::cout << "[PathService] pose" << it2->steering << " " << it2->steeringRear <<" ";
+          //s << "[PathService] pose" << it2->steering << " " << it2->steeringRear <<" ";
           path.addState2dInterface(state);  
         }       
        
@@ -196,7 +212,6 @@ public:
       // First requirement (that the points are separated by a minimum distance).
       orunav_generic::Path path_min_dist = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
       // Second requirment (path states are not allowed to change direction of motion without any intermediate points).
-      std::cout << "test2!! AAAA " << path_min_dist.getSteeringAngleRear(15)<<std::endl;
       orunav_generic::Path path_dir_change = orunav_generic::minIntermediateDirPathPoints(path_min_dist);
       res.path = orunav_conversions::createPathMsgFromPathInterface(path_dir_change);
       res.path.target_start = tgt.start;

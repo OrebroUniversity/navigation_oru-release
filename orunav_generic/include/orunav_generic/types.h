@@ -208,10 +208,10 @@ namespace orunav_generic {
     void clear() { poses.clear(); steeringAngles.clear(); steeringAnglesRear.clear();}
     void addPathPoint(const Pose2d &pose, const double &steeringAngle, const double &steeringAngleRear) { 
       poses.push_back(pose); steeringAngles.push_back(steeringAngle);steeringAnglesRear.push_back(steeringAngleRear);
-      if (p == 15){
-       std::cout << "\x1B[33m[Trajectory] - Pose : \033[0m" << steeringAngle << " " << steeringAngleRear << "\n"; p=0;}
-       else {p++;}
-       }
+      // if (p == 15){
+      //  std::cout << "\x1B[33m[Trajectory] - Pose : \033[0m" << steeringAngle << " " << steeringAngleRear << "\n"; p=0;}
+      //  else {p++;}
+        }
     void addPathPointInterface(const Pose2dInterface &pose, const SteeringAngleInterface& steeringAngle, const SteeringAngleInterface& steeringAngleRear) { this->addPathPoint(pose.getPose2d(), steeringAngle.getSteeringAngle(),steeringAngleRear.getSteeringAngleRear()); }
     void addState2dInterface(const State2dInterface &state) { this->addPathPointInterface(state, state,state); }//Cecchi_add
 

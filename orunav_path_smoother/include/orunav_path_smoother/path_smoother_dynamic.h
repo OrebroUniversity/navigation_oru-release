@@ -105,7 +105,7 @@ class SplitIndex
   }
 
   orunav_generic::Trajectory getTrajectory() const {
-    std::cout<<"TU?"<<std::endl;
+    //std::cout<<"TU?"<<std::endl;
     return _traj;
   }
 
@@ -286,7 +286,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       // Always always...
       ACADO_clearStaticCounters();
 
-      std::cout << "Setting up constraints -- start" << std::endl;
+      std::cout << "Setting up constraints -- start  CAR" << std::endl;
 
       ACADO::VariablesGrid q_init = convertPathToACADOStateVariableGrid(traj, 0.0, dt);
       
@@ -491,8 +491,9 @@ class PathSmootherDynamic : public PathSmootherInterface
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
     //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
-      bool BS = true; //Cecchi_add - always true!
+      bool BS = true; //Cecchi_add - 
       if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
+      else{std::cout << "======= CAR smoother ======" << std::endl;}
       // Always always...
       //     ACADO_clearStaticCounters();
 
@@ -515,13 +516,10 @@ class PathSmootherDynamic : public PathSmootherInterface
 	p.maxVel = 0.5;
 	p.maxAcc = 0.2;
 	p.wheelBaseX = params.wheel_base;
-   std::cout << "::1" << std::endl;
 	gen.setParams(p);
-  std::cout << "::2" << std::endl;
 	gen.addPathInterface(path_orig);
-  std::cout << "::3" << std::endl;
+  std::cout << "----- Traj1 -----" << std::endl;
 	traj_gen = gen.getTrajectory(); 
-  std::cout << "::4" << std::endl;
 	T = orunav_generic::getTotalTime(gen);
       }
       // Get the min / max time from the trajectory
@@ -553,6 +551,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::cout << "Used dt : " << dt << std::endl;
 
       //orunav_generic::removeThNormalization(path);
+      std::cout << "----- Traj2 -----" << std::endl;
       orunav_generic::Trajectory traj = orunav_generic::convertPathToTrajectoryWithoutModel(path, dt);
       assert(orunav_generic::validPath(traj, M_PI));
       if (orunav_generic::validPath(traj, M_PI))
@@ -568,10 +567,12 @@ class PathSmootherDynamic : public PathSmootherInterface
       if (params.update_v_w_bounds) {
 	PathSmootherDynamic::Params params_orig = params;
 	if (params.init_controls || params.get_speed) {
+    std::cout << "----- Traj2b -----" << std::endl;
 	  orunav_generic::getMinMaxVelocities(traj, params.v_min, params.v_max, params.w_min, params.w_max);
   }
 	else {
 	  // Using the generated trajectory (from the traj processsor)
+    std::cout << "----- Traj1b -----" << std::endl;
 	  orunav_generic::getMinMaxVelocities(traj_gen, params.v_min, params.v_max, params.w_min, params.w_max);
   }
 	// This is used to smooth a straight path which otherwise will have a w_min = w_max = 0.
@@ -588,10 +589,10 @@ class PathSmootherDynamic : public PathSmootherInterface
 
       traj.setPose2d(goal.getPose2d(), traj.sizePath()-1);
       traj.setSteeringAngle(goal.getSteeringAngle(), traj.sizePath()-1);
-      //if (BS == true){
+      if (BS == true){
       traj.setSteeringAngleRear(start.getSteeringAngleRear(), 0);//Cecchi_add.
       traj.setSteeringAngleRear(goal.getSteeringAngleRear(), traj.sizePath()-1);//Cecchi_add.
-      //}
+      }
       
       std::cout << "updating the start and end pose : " << std::endl;
       assert(orunav_generic::validPath(traj, M_PI));
@@ -601,13 +602,14 @@ class PathSmootherDynamic : public PathSmootherInterface
       if (!params.use_incremental)
       {
         if (BS == true) {
-          std::cout << "######################################## \n SMOOTH 4WS  \n #####################################";
+          std::cout << "######################################## \n SMOOTH 4WS  \n #####################################\n";
           return smoothBS_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
         }
         else{
+          std::cout << "######################################## \n SMOOTH CAR  \n #####################################\n";
 	          return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); }
       }
-
+     
       // Run the iterative approach
       // Keep the start and goal fixed (as previous) but divide the section to chunks and optimize over the cunks. The start of the next chunk is located in the previous chunk.
       SplitIndex::Params si_params;
@@ -620,6 +622,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::vector<constraint_extract::PolygonConstraintsVec> constraints_vec = si.getConstraintsVec(constraints);
 
       for (int i = 0; i < si.size(); i++) { 
+        std::cout << "----- Traj3 -----" << std::endl;
         orunav_generic::Trajectory t = si.getTrajectory(i);
         stop_time = dt * t.sizeTrajectory()-1;
         std::cout << "stop_time : " << stop_time << std::endl;
@@ -627,24 +630,23 @@ class PathSmootherDynamic : public PathSmootherInterface
         std::cout << "t.sizeTrajectory() : " << t.sizeTrajectory() << std::endl;
         std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
         
-        if (BS = true){
+        if (BS == true){
           std::cout << "######################################## \n SMOOTH 4WS 2 \n #####################################";
           orunav_generic::Trajectory ts = smoothBS_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); //Cecchi_add
           std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
           si.setTrajectory(i, ts);}
         else {
+           std::cout << "######################################## \n SMOOTH CAR 2  \n #####################################";
           orunav_generic::Trajectory ts = smooth_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints);
           std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
           si.setTrajectory(i, ts);
           }        
       }
-      std::cout<<"END3???" << std::endl;
       return si.getTrajectory();
     }
 
   orunav_generic::Path smooth(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints) {
     orunav_generic::Path p(smoothTraj(path_orig, start, goal, constraints));
-    std::cout<<"END4???" << std::endl;
     return p;
   }
 
@@ -737,33 +739,33 @@ class PathSmootherDynamic : public PathSmootherInterface
       ocp.subjectTo( -1 <= k <= 1 );
       
       if (use_pose_constraints) {
-	assert(constraints.size() == traj.sizePath());
-	for (size_t i = 0; i < constraints.size(); i++) {
-	  if (i % params.use_constraints_modulus == 0 || i == constraints.size()-1) {
+	      assert(constraints.size() == traj.sizePath());
+	      for (size_t i = 0; i < constraints.size(); i++) {
+	        if (i % params.use_constraints_modulus == 0 || i == constraints.size()-1) {
 	    // Use this constraint
 	    //	    std::cout << "Using constraint # : " << i << std::endl;
-	  }
-	  else {
-	    continue;
-	  }
-	  // Orientation
-	  if (params.use_th_constraints) {
-	    // Check for normalization problems that could occur here... simply make sure that we have a bounds that the current th is within.
-	    double lb_th, ub_th;
-	    computeThBounds(constraints[i].getThBounds()[0], constraints[i].getThBounds()[1], traj.getPose2d(i)(2), lb_th, ub_th);
-	    ocp.subjectTo(i, lb_th <= th <= ub_th);
-	  }
+          }
+          else {
+            continue;
+          }
+	    // Orientation
+	      if (params.use_th_constraints) {
+        // Check for normalization problems that could occur here... simply make sure that we have a bounds that the current th is within.
+        double lb_th, ub_th;
+        computeThBounds(constraints[i].getThBounds()[0], constraints[i].getThBounds()[1], traj.getPose2d(i)(2), lb_th, ub_th);
+        ocp.subjectTo(i, lb_th <= th <= ub_th);
+      }
 	  // Position
-	  if (params.use_xy_constraints) {
-	    std::vector<double> A0, A1, b;
-	    constraints[i].getInnerConstraint().getMatrixFormAsVectors(A0, A1, b);
-	    assert(A0.size() == A1.size());
-	    assert(A0.size() == b.size());
-	    size_t size = A0.size();
-	    for (size_t j = 0; j < size; j++)
-	      ocp.subjectTo(i, A0[j]*x + A1[j]*y <= b[j]);
-	  }
-	}
+      if (params.use_xy_constraints) {
+        std::vector<double> A0, A1, b;
+        constraints[i].getInnerConstraint().getMatrixFormAsVectors(A0, A1, b);
+        assert(A0.size() == A1.size());
+        assert(A0.size() == b.size());
+        size_t size = A0.size();
+        for (size_t j = 0; j < size; j++)
+          ocp.subjectTo(i, A0[j]*x + A1[j]*y <= b[j]);
+      }
+    }
       }
       
       std::cout << "Setting up constraints -- end" << std::endl;
