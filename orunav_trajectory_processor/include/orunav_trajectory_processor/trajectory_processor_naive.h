@@ -46,7 +46,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
       // The onlything that are missing now is the acceleration constraints.
       assignAccelerationConstraints(_steps);
-      //      assignLastDtNonZero(_steps);
+      // assignLastDtNonZero(_steps);
       // Update the control steps, only used for visualizing the correct steps.
       assignControlSteps(_steps);
       if (_params.debug) {
@@ -59,24 +59,20 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     computeDts();
     // Need the global time for the interpolation
     assignTotalTime(_steps);
-    std::cout << "::30.1" << std::endl;
     if (this->useCoordinatedTimes()) {
-      std::cout << "::30.2" << std::endl;
       //Assigning coordination times --- START ----
       assignCoordinationTimes(_steps); // This will modify the dt's.
       if (_params.useCoordTimeAccConstraints)
       { // Recompute the points based on the new dt's, this is just to make sure that the control point is updated.
-      	std::cout << "::30.5" << std::endl;
         assignControlSteps(_steps);    // Compute the current speed, not including acceleration constraint nor control point constraints, note this is only using ds and dt.
-      	std::cout << "::30.4" << std::endl;
         assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
       	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
 	// This sometimes works a bit better (but not always).
 	if (_params.useCoordTimeContraintPoints) {
-    std::cout << "::30.5" << std::endl;
+    
 	  assignControlConstraintPointsFromCT(_steps);
 	}
-  std::cout << "::30" << std::endl;
+  
 	// Reassign points.
       	assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
       	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
@@ -84,7 +80,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       	// Update the control steps, only used for visualizing the correct steps.
       	assignControlSteps(_steps);
 	assignTotalTime(_steps);
-  std::cout << "::31" << std::endl;
+  
 	if (_params.debug) {
 	  _steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
 	  orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt");
@@ -94,16 +90,16 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       assignTotalTime(_steps);
       if (_params.debug) {
 	// Save all path points that have coordination times.
-  std::cout << "::32" << std::endl;
+  
 	orunav_generic::savePathTextFile(this->coordinationPathPoints(), _params.debugPrefix + "naive_trajectoryXY_coordination_times.txt");
       }
     }
-    std::cout << "::33" << std::endl;
+    
     TrajectoryStepNaiveVec output = createNaiveTrajectoryFixedDt(_steps, _params.timeStep);
-    std::cout << "::34" << std::endl;
+    
     if (_params.citiTruckNbClearSpeedCommands > 0) {
       // Clear the velocity of the last trajectory points...
-      std::cout << "Test 59" << std::endl;
+      
       int start_clear_idx = output.size() - _params.citiTruckNbClearSpeedCommands - _params.nbZeroVelControlCommands;
       if (start_clear_idx > 0) {
 	for (size_t i = start_clear_idx; i < output.size(); i++) {
@@ -266,17 +262,17 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     bool use_ct = this->useCoordinatedTimes();
     for (size_t i = _startIdx; i < _path.sizePath(); i++)
       {
-	TrajectoryStepNaive s;
-	s.s_point = orunav_generic::State2d(_path, i);
-	if (use_ct)
-	  s.ct_point = _coordinatedTimes[i];
+        TrajectoryStepNaive s;
+        s.s_point = orunav_generic::State2d(_path, i);
+        if (use_ct)
+          s.ct_point = _coordinatedTimes[i];
 
-	if (i == _startIdx)
-	  {
-	    // Just add it
-	    steps.push_back(s);
-	    continue;
-	  }
+        if (i == _startIdx)
+          {
+            // Just add it
+            steps.push_back(s);
+            continue;
+          }
 
 	double dist = orunav_generic::getDistBetween(steps.back().s_point.getPose2d(), _path.getPose2d(i));
 	if (dist < _params.minDist)

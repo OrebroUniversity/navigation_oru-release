@@ -687,7 +687,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       double lr = params.wheel_base/2;
       ACADO::DifferentialEquation f(start_time, stop_time);
       ACADO::DifferentialState        x,y,th,phi,phiRear;     // the differential states
-      ACADO::Control                  v, w, k; //wr;     // the control input u
+      ACADO::Control                  v, w, wr;     // the control input u
       //beta = atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base);
       //f << dot(x) == cos(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*cos(th);
       //f << dot(y) == sin(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*sin(th);
@@ -699,7 +699,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       f << dot(y) == sin(th+phiRear)*v;
       f << dot(th) == v*sin(phi-phiRear)/(params.wheel_base*cos(phi));
       f << dot(phi) == w;
-      f << dot(phiRear) == -k*phi;
+      f << dot(phiRear) == wr;
 
 
       
@@ -736,7 +736,7 @@ class PathSmootherDynamic : public PathSmootherInterface
       //	ocp.subjectTo( params.w_min <= w <= params.w_max );
       ocp.subjectTo( params.phi_min <= phi <= params.phi_max );
       ocp.subjectTo( params.phi_min <= phiRear <= params.phi_max );
-      ocp.subjectTo( -1 <= k <= 1 );
+      
       
       if (use_pose_constraints) {
 	      assert(constraints.size() == traj.sizePath());
@@ -843,8 +843,8 @@ class PathSmootherDynamic : public PathSmootherInterface
   window4.addSubplot( phiRear, "phiRear - init" );
 	window4.addSubplot( v, "v - init" );
 	window4.addSubplot( w, "w - init" );
-  //window4.addSubplot( wr, "wr - init" ); //cecchi_rear
-  window4.addSubplot( k, "k - init" );
+  window4.addSubplot( wr, "wr - init" ); //cecchi_rear
+  
 	
 	ACADO::GnuplotWindow window2(ACADO::PLOT_AT_EACH_ITERATION);
 	window2.addSubplot( x, "x - iter..." );
@@ -854,8 +854,8 @@ class PathSmootherDynamic : public PathSmootherInterface
   window2.addSubplot( phiRear, "phiRear - iter..." );
 	window2.addSubplot( v, "v - iter..." );
 	window2.addSubplot( w, "w - iter..." );
-  //window2.addSubplot( wr, "wr - iter..." ); //cecchi_rear
-  window2.addSubplot( k, "k - iter..." );
+  window2.addSubplot( wr, "wr - iter..." ); //cecchi_rear
+  
 
 	algorithm << window2;
 	algorithm << window4;
