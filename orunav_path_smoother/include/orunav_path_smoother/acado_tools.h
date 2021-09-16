@@ -213,6 +213,7 @@ inline orunav_generic::Trajectory convertACADOStateControlVariableGridToTrajecto
     double wr = controls(i,2);
     traj.addTrajectoryPoint(orunav_generic::Pose2d(x,y,th), phi, phiRear, v, w, wr);
   }
+ 
   return traj;
 } 
 

@@ -171,6 +171,7 @@ class PathSmootherDynamic : public PathSmootherInterface
 	use_incremental = true;
 	incr_max_nb_points = 20;
 	incr_nb_points_discard = 5;
+  BS = false; //Cecchi_add -
       }
     double v_min;
     double v_max;
@@ -205,6 +206,7 @@ class PathSmootherDynamic : public PathSmootherInterface
     bool use_incremental;
     int incr_max_nb_points;
     int incr_nb_points_discard;
+    bool BS; //Cecchi_add
 
     friend std::ostream& operator<<(std::ostream &os, const PathSmootherDynamic::Params &obj)
       {
@@ -241,6 +243,7 @@ class PathSmootherDynamic : public PathSmootherInterface
 	os << "\nuse_incremental   : " << obj.use_incremental;
 	os << "\nincr_max_nb_points: " << obj.incr_max_nb_points;
 	os << "\nincr_nb_points_dis: " << obj.incr_nb_points_discard;
+  os << "\nbiSteering        : " << obj.BS;
 	return os;
       }
 
@@ -371,11 +374,16 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::cout << "Optimization -- start" << std::endl;
       ACADO::OptimizationAlgorithm algorithm(ocp);
       // ACADO params -- 
-      if (!params.use_multiple_shooting)
-	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::SINGLE_SHOOTING ); // For the non-objective -> there is not any difference.
+      if (!params.use_multiple_shooting){
+      std::cout<< "############### Single shooting ################" << std::endl;
+	      algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::SINGLE_SHOOTING ); // For the non-objective -> there is not any difference.
+      }
       else
-	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
       {
+      std::cout<< "############### Multiple shooting ################" << std::endl;
+	      algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
+      }
+      
 	int ret;
 	algorithm.get( ACADO::DISCRETIZATION_TYPE, ret);
 	if (ret == ACADO::SINGLE_SHOOTING) {
@@ -384,7 +392,7 @@ class PathSmootherDynamic : public PathSmootherInterface
 	if (ret == ACADO::MULTIPLE_SHOOTING) {
 	  std::cout << "MULTIPLE_SHOOTING will be used" << std::endl;
 	}
-      }
+      
 
       algorithm.set( ACADO::MAX_NUM_INTEGRATOR_STEPS, 100 ); // For the integrator.
       algorithm.set( ACADO::MAX_NUM_ITERATIONS, params.nb_iter_steps ); 
@@ -491,7 +499,8 @@ class PathSmootherDynamic : public PathSmootherInterface
   orunav_generic::Trajectory smoothTraj(const orunav_generic::PathInterface &path_orig, const orunav_generic::State2dInterface& start, const orunav_generic::State2dInterface &goal, const constraint_extract::PolygonConstraintsVec &constraints)
     //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
-      bool BS = true; //Cecchi_add - 
+      bool BS = params.BS;
+      std::cout << "######### prova = " << BS << std::endl;
       if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
       else{std::cout << "======= CAR smoother ======" << std::endl;}
       // Always always...
@@ -602,11 +611,11 @@ class PathSmootherDynamic : public PathSmootherInterface
       if (!params.use_incremental)
       {
         if (BS == true) {
-          std::cout << "######################################## \n SMOOTH 4WS  \n #####################################\n";
+          std::cout << "######################################## \n SMOOTH 4WS  \n #####################################" << std::endl;
           return smoothBS_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); 
         }
         else{
-          std::cout << "######################################## \n SMOOTH CAR  \n #####################################\n";
+          std::cout << "######################################## \n SMOOTH CAR  \n #####################################" << std::endl;
 	          return smooth_(traj, constraints, dt, start_time, stop_time, use_pose_constraints); }
       }
      
@@ -688,12 +697,6 @@ class PathSmootherDynamic : public PathSmootherInterface
       ACADO::DifferentialEquation f(start_time, stop_time);
       ACADO::DifferentialState        x,y,th,phi,phiRear;     // the differential states
       ACADO::Control                  v, w, wr;     // the control input u
-      //beta = atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base);
-      //f << dot(x) == cos(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*cos(th);
-      //f << dot(y) == sin(th+atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*v;//-lr*sin(th);
-      //f << dot(th) == v*cos(atan( (lf*tan(phiRear)+lr*tan(phi) )/params.wheel_base))*( tan(phi)+tan(phiRear) )/params.wheel_base;
-      //f << dot(phi) == w;
-      //f << dot(phiRear) == wr;
       //Rear test
       f << dot(x) == cos(th+phiRear)*v;
       f << dot(y) == sin(th+phiRear)*v;
@@ -705,10 +708,10 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       ACADO::OCP ocp(q_init);
       if (params.minimize_phi_and_dist) {
-	ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w); // + params.weight_steering_control*wr*wr);
+	      ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w + params.weight_steering_control*wr*wr);
       }
       else {
-	ocp.minimizeMayerTerm(1.);
+	      ocp.minimizeMayerTerm(1.);
       }
       ocp.subjectTo(f);
       // Enforce the the start / end pose.
@@ -774,10 +777,15 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::cout << "Optimization -- start" << std::endl;
       ACADO::OptimizationAlgorithm algorithm(ocp);
       // ACADO params -- 
-      if (!params.use_multiple_shooting)
-	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::SINGLE_SHOOTING ); // For the non-objective -> there is not any difference.
+            if (!params.use_multiple_shooting){
+      std::cout<< "############### Single shooting ################" << std::endl;
+	      algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::SINGLE_SHOOTING ); // For the non-objective -> there is not any difference.
+      }
       else
-	algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
+      {
+      std::cout<< "############### Multiple shooting ################" << std::endl;
+	      algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
+      }
       {
 	int ret;
 	algorithm.get( ACADO::DISCRETIZATION_TYPE, ret);
