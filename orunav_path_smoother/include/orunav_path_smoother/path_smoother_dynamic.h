@@ -500,7 +500,6 @@ class PathSmootherDynamic : public PathSmootherInterface
     //const std::vector<constraint_extract::PolygonConstraint, Eigen::aligned_allocator<PolygonConstraint> > &constraints)
     {
       bool BS = params.BS;
-      std::cout << "######### prova = " << BS << std::endl;
       if (BS ==true) { std::cout << "======= Bi-Steering smoother ======" << std::endl;}
       else{std::cout << "======= CAR smoother ======" << std::endl;}
       // Always always...

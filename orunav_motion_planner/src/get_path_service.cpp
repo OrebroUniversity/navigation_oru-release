@@ -58,7 +58,7 @@ public:
       param_nh.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.001);
       param_nh.param<bool>("save_paths", save_paths_, false);
       param_nh.param<bool>("biSteering", BS, false);
-      std::cout << "°°°°° test  = " << BS << std::endl;
+      
 
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
