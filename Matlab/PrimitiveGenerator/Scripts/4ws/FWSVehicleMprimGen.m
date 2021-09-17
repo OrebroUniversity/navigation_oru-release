@@ -97,7 +97,7 @@
 % distance =                      2.8;
 % cell_size =                     0.1;
 
-output_filename =               'xa_4ws_Rear_littleAngles';
+output_filename =               'xa_4ws_steering_near';
 car_width =                     2.7;
 car_length_back =               1.3;
 car_length_front =              5.3;
@@ -106,7 +106,7 @@ max_steering_radians =          0.6;
 numberofangles =                8;
 steeringanglepartitions =       1;
 steeringanglecardinality =      1;
-distance =                      15;
+distance =                      3;
 cell_size =                     1;
 
 % output_filename =               'HX_4WS_4wsMINI';

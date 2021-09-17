@@ -707,7 +707,8 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       ACADO::OCP ocp(q_init);
       if (params.minimize_phi_and_dist) {
-	      ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w + params.weight_steering_control*wr*wr);
+        ocp.minimizeLagrangeTerm(v*v + params.weight_steering_control*w*w + params.weight_steering_control*wr*wr );
+	      //ocp.minimizeLagrangeTerm(v*v + (params.weight_steering_control-(sqrt(v*v)/(2*v)))*w*w + (params.weight_steering_control+(sqrt(v*v)/(2*v)))*wr*wr );
       }
       else {
 	      ocp.minimizeMayerTerm(1.);

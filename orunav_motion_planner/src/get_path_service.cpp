@@ -36,7 +36,8 @@ private:
 
   VehicleModel* vehicle_model_;
   bool visualize_;
-  bool BS; 
+  bool BS;
+  int sets; 
   
   ros::Publisher marker_pub_;
   
@@ -53,11 +54,17 @@ public:
       param_nh.param<std::string>("motion_primitives_directory", motion_prim_dir_, "./Primitives/");
       param_nh.param<std::string>("lookup_tables_directory", lookup_tables_dir_, "./LookupTables/");
       param_nh.param<std::string>("maps_directory", maps_dir_, "./");
-      std::string model;
+      std::string model, model2, model3, model4, model5;
       param_nh.param<std::string>("model", model, "");
       param_nh.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.001);
       param_nh.param<bool>("save_paths", save_paths_, false);
       param_nh.param<bool>("biSteering", BS, false);
+      param_nh.param<std::string>("model2", model2, "");
+      param_nh.param<std::string>("model3", model3, "");
+      param_nh.param<std::string>("model4", model4, "");
+      param_nh.param<std::string>("model5", model5, "");
+      param_nh.param<int>("num_of_sets", sets, 1);
+      
       
 
       WP::setPrimitivesDir(motion_prim_dir_);
@@ -67,8 +74,8 @@ public:
 
        if (BS ==true){ 
       //Dual steer start
-      std::array<std::string,5> models{"xa_4ws_Rear_littleAngles","xa_4ws_crab_littleAngles",model,"xa_4ws_crab_ZeroCost","xa_4ws_crab"}; //Cecchi_add
-      int sets = 2;
+      std::array<std::string,5> models{model,model2,model3,model4,model5}; //Cecchi_add
+      //int sets = 4;
       vehicle_model_ = new DualSteerModel(models,sets);//Cecchi_add
       WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
       WP::setVehicleType(WP::VehicleType::XA_4WS);
