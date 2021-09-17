@@ -1,7 +1,7 @@
 function [path, motion] = BiwsVehicleSolverRear(distance_between_axes, s0, s1, movie_flag, plot_flag)
 
 
-%% COME FACCIO A CONSIDERARE L'ALTRO VINCOLO??
+
 
 %%
 % Implementation of the approach in:
