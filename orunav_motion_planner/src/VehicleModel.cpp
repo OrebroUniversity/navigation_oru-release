@@ -462,6 +462,9 @@ std::vector<MotionPrimitiveData*> VehicleModel::selectApplicablePrimitives(
 	} else {
 		MotionPrimitiveSelector* s = (*it).second;
 		std::vector<MotionPrimitiveData*> result = s->getValidPrimitives(w, startXcell, startYcell);
+		std::ostringstream logLine;
+		logLine << "CHECK [" << (int) orientationID  << "," << (int) steeringID << "]";
+		writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
 		return result;
 	}
 }

@@ -87,6 +87,9 @@ public:
 	 */
 	double getCarMaxSteeringAngle();
 
+
+	std::vector<MotionPrimitiveData*> selectApplicablePrimitives(
+		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID);
 	/**
 	/**
 	 * Retrieve the motion primitives from the primitive lookup table
@@ -94,6 +97,8 @@ public:
 	 * @param steeringID The steering ID of the starting configuration, 0 by default
 	 * @returns a vector of motion primitives motionPrimitiveData
 	 */
+	
+
 	std::vector<MotionPrimitiveData*> getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID);
 
 	/**

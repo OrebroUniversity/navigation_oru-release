@@ -97,7 +97,7 @@
 % distance =                      2.8;
 % cell_size =                     0.1;
 
-output_filename =               'xa_4ws_steering_near';
+output_filename =               'xa_4ws_crab1.3';
 car_width =                     2.7;
 car_length_back =               1.3;
 car_length_front =              5.3;
@@ -106,7 +106,7 @@ max_steering_radians =          0.6;
 numberofangles =                8;
 steeringanglepartitions =       1;
 steeringanglecardinality =      1;
-distance =                      3;
+distance =                      15;
 cell_size =                     1;
 
 % output_filename =               'HX_4WS_4wsMINI';
@@ -136,8 +136,8 @@ plotting =                      0;
 % Cost multipliers
 forwardcostmult = 1.0; %1.0;
 forwardturncostmult =1.0; % 1.2;
-crabcostmult = 1.0; %1.1;
-parkingcostmult = 1.0; %2.0;
+crabcostmult = 1.3; %1.1;
+parkingcostmult = 1.5; %2.0;
 backwardcostmult = 1.0; %1.0;
 backwardturncostmult =1.0; % 1.2;
 
@@ -254,79 +254,79 @@ else
                                 % -------------------------------------------------
                                 %CRAB MODE
                                 
-%                                 if goal_o == start_o
-%                                             [intermcells_m, motion] = CrabMode(distance_between_axes, ...
-%                                             [start_x, start_y, start_o, start_phi,start_phi], ...
-%                                             [goal_x, goal_y, goal_o, goal_phi, goal_phi], ...
-%                                             max_steering_radians-0.01, ...
-%                                                 0, 0);
-% 
-%                                         if size(intermcells_m, 1) > 1 % we have a result
-% 
-%                                             %%normalize the angles
-%                                             intermcells_m(:,3) = atan2(sin(intermcells_m(:,3)), cos(intermcells_m(:,3)));
-%                                             intermcells_m(:,4) = atan2(sin(intermcells_m(:,4)), cos(intermcells_m(:,4)));
-%                                             intermcells_m(:,5) = atan2(sin(intermcells_m(:,5)), cos(intermcells_m(:,5)));
-%                                             %%remove -0
-%                                             intermcells_m(logical(abs(intermcells_m) < approxError)) = 0;
-%                                             %%we do not want -3.14 but only 3.14
-%                                             intermcells_m((logical(intermcells_m(:,3) - approxError < -pi)), 3) = pi;
-%                                             intermcells_m((logical(intermcells_m(:,4) - approxError < -pi)), 4) = pi;
-%                                             intermcells_m((logical(intermcells_m(:,5) - approxError < -pi)), 5) = pi;
-% 
-%                                             %%check if the path respects the steering constraints
-%                                             if size(find(abs(intermcells_m(:,4)) > max_steering_radians),1) > 0
-%                                                 fprintf(1,'FAILURE: valid path not found (steering radians constraints violated) [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-%                                                     start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-%                                             else
-%                                                 temp_primitives{goal_orient_ID}{goal_steer_ID} = intermcells_m;
-%                                                 temp_primitives_motions{goal_orient_ID}{goal_steer_ID} = motion;
-%                                                 %%we found a good path
-%                                                 fprintf(1,'SUCCESS: valid path found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-%                                                     start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-%                                             end
-%                                         else
-%                                             fprintf(1,'FAILURE: valid path not found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-%                                                 start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-%                                         end
-%                                     
-%                                     
-%                                 end
+                                if goal_o == start_o
+                                            [intermcells_m, motion] = CrabMode(distance_between_axes, ...
+                                            [start_x, start_y, start_o, start_phi,start_phi], ...
+                                            [goal_x, goal_y, goal_o, goal_phi, goal_phi], ...
+                                            max_steering_radians-0.01, ...
+                                                0, 0);
+
+                                        if size(intermcells_m, 1) > 1 % we have a result
+
+                                            %%normalize the angles
+                                            intermcells_m(:,3) = atan2(sin(intermcells_m(:,3)), cos(intermcells_m(:,3)));
+                                            intermcells_m(:,4) = atan2(sin(intermcells_m(:,4)), cos(intermcells_m(:,4)));
+                                            intermcells_m(:,5) = atan2(sin(intermcells_m(:,5)), cos(intermcells_m(:,5)));
+                                            %%remove -0
+                                            intermcells_m(logical(abs(intermcells_m) < approxError)) = 0;
+                                            %%we do not want -3.14 but only 3.14
+                                            intermcells_m((logical(intermcells_m(:,3) - approxError < -pi)), 3) = pi;
+                                            intermcells_m((logical(intermcells_m(:,4) - approxError < -pi)), 4) = pi;
+                                            intermcells_m((logical(intermcells_m(:,5) - approxError < -pi)), 5) = pi;
+
+                                            %%check if the path respects the steering constraints
+                                            if size(find(abs(intermcells_m(:,4)) > max_steering_radians),1) > 0
+                                                fprintf(1,'FAILURE: valid path not found (steering radians constraints violated) [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+                                                    start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+                                            else
+                                                temp_primitives{goal_orient_ID}{goal_steer_ID} = intermcells_m;
+                                                temp_primitives_motions{goal_orient_ID}{goal_steer_ID} = motion;
+                                                %%we found a good path
+                                                fprintf(1,'SUCCESS: valid path found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+                                                    start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+                                            end
+                                        else
+                                            fprintf(1,'FAILURE: valid path not found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+                                                start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+                                        end
+                                    
+                                    
+                                end
                                 
 %                                 %4WS MODE
-                                    [intermcells_m, motion] = BiwsVehicleSolverRear(distance_between_axes, ...
-                                    [start_x, start_y, start_o, start_phi,start_phi], ...
-                                    [goal_x, goal_y, goal_o, goal_phi, goal_phi], ...
-                                        0, 0);
-                                
-                                if size(intermcells_m, 1) > 1 % we have a result
-                                    
-                                    % normalize the angles
-                                    intermcells_m(:,3) = atan2(sin(intermcells_m(:,3)), cos(intermcells_m(:,3)));
-                                    intermcells_m(:,4) = atan2(sin(intermcells_m(:,4)), cos(intermcells_m(:,4)));
-                                    intermcells_m(:,5) = atan2(sin(intermcells_m(:,5)), cos(intermcells_m(:,5)));
-                                    % remove -0
-                                    intermcells_m(logical(abs(intermcells_m) < approxError)) = 0;
-                                    % we do not want -3.14 but only 3.14
-                                    intermcells_m((logical(intermcells_m(:,3) - approxError < -pi)), 3) = pi;
-                                    intermcells_m((logical(intermcells_m(:,4) - approxError < -pi)), 4) = pi;
-                                    intermcells_m((logical(intermcells_m(:,5) - approxError < -pi)), 5) = pi;
-                                    
-                                    % check if the path respects the steering constraints
-                                    if size(find(abs(intermcells_m(:,4)) > max_steering_radians),1) > 0
-                                        fprintf(1,'FAILURE: valid path not found (steering radians constraints violated) [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-                                            start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-                                    else
-                                        temp_primitives{goal_orient_ID+1}{goal_steer_ID} = intermcells_m;
-                                        temp_primitives_motions{goal_orient_ID+1}{goal_steer_ID} = motion;
-                                        % we found a good path
-                                        fprintf(1,'SUCCESS: valid path found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-                                            start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-                                    end
-                                else
-                                    fprintf(1,'FAILURE: valid path not found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
-                                        start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
-                                end
+%                                     [intermcells_m, motion] = BiwsVehicleSolverRear(distance_between_axes, ...
+%                                     [start_x, start_y, start_o, start_phi,start_phi], ...
+%                                     [goal_x, goal_y, goal_o, goal_phi, goal_phi], ...
+%                                         0, 0);
+%                                 
+%                                 if size(intermcells_m, 1) > 1 % we have a result
+%                                     
+%                                     % normalize the angles
+%                                     intermcells_m(:,3) = atan2(sin(intermcells_m(:,3)), cos(intermcells_m(:,3)));
+%                                     intermcells_m(:,4) = atan2(sin(intermcells_m(:,4)), cos(intermcells_m(:,4)));
+%                                     intermcells_m(:,5) = atan2(sin(intermcells_m(:,5)), cos(intermcells_m(:,5)));
+%                                     % remove -0
+%                                     intermcells_m(logical(abs(intermcells_m) < approxError)) = 0;
+%                                     % we do not want -3.14 but only 3.14
+%                                     intermcells_m((logical(intermcells_m(:,3) - approxError < -pi)), 3) = pi;
+%                                     intermcells_m((logical(intermcells_m(:,4) - approxError < -pi)), 4) = pi;
+%                                     intermcells_m((logical(intermcells_m(:,5) - approxError < -pi)), 5) = pi;
+%                                     
+%                                     % check if the path respects the steering constraints
+%                                     if size(find(abs(intermcells_m(:,4)) > max_steering_radians),1) > 0
+%                                         fprintf(1,'FAILURE: valid path not found (steering radians constraints violated) [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+%                                             start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+%                                     else
+%                                         temp_primitives{goal_orient_ID+1}{goal_steer_ID} = intermcells_m;
+%                                         temp_primitives_motions{goal_orient_ID+1}{goal_steer_ID} = motion;
+%                                         % we found a good path
+%                                         fprintf(1,'SUCCESS: valid path found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+%                                             start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+%                                     end
+%                                 else
+%                                     fprintf(1,'FAILURE: valid path not found [%2.4f %2.4f %2.4f %2.4f] [%2.4f %2.4f %2.4f %2.4f] \n', ...
+%                                         start_x, start_y, start_o, start_phi, goal_x, goal_y, goal_o, goal_phi)
+%                                 end
                            %fine 4ws
                            
                             end % goal steering angle

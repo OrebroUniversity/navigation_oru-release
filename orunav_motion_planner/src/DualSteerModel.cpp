@@ -435,6 +435,52 @@ double DualSteerModel::getCarMaxSteeringAngle() {
 	return carMaxSteeringAngle_;
 }
 
+
+
+// std::vector<MotionPrimitiveData*> DualSteerModel::selectApplicablePrimitives(
+// 		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID) {
+// 	std::vector<MotionPrimitiveData*> primitiveSet;
+// 	std::string str = "\n";
+// 	std::vector<int> setToUse;
+// 	setToUse = this ->selectSet();
+
+// 	for (unsigned vec = 0; vec < setToUse.size(); vec++){
+// 		int set = setToUse[vec];
+		
+// 		motionPrimitiveSelectorLookup::iterator it;
+// 		it = modelMotionPrimitivesSelectorLT_.find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
+// 		if (it == modelMotionPrimitivesSelectorLT_.end()) {
+// 			std::vector<MotionPrimitiveData*> dummy;
+// 			std::ostringstream logLine;
+// 			logLine << "KEY NOT FOUND [" << (int) orientationID  << "," << (int) steeringID << "]";
+// 			writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
+// 			return dummy;
+// 		} else {
+// 			char info[150];
+// 			sprintf(info, "set %d : primitives $$ %lu in [%d,%d]\n", set, (*it).second, orientationID,steeringID );
+// 			str.append(std::string(info));
+// 			//for (unsigned i=0; i<(*it).second; i++){
+
+// 				MotionPrimitiveSelector* s = (*it).second;
+// 				std::vector<MotionPrimitiveData*> result = s->getValidPrimitives(w, startXcell, startYcell);
+//     			primitiveSet.push_back( result.at(vec) );
+// 				std::ostringstream logLine;
+// 				logLine << "CHECK!! [" << (int) orientationID  << "," << (int) steeringID << "]";
+// 				writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
+			
+// 			//}
+// 		}
+// 	}
+// 	char info[150];
+// 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
+// 	str.append(std::string(info));
+// 	writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
+// 	return primitiveSet;
+
+// }
+
+
+
 std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID) {
 	std::vector<MotionPrimitiveData*> primitiveSet;
 	std::string str = "\n";

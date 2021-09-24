@@ -32,31 +32,32 @@ goal_yo = s1(2);
 % -----------------------------------------------
 
 L = distance_between_axes;  % length of the car-like vehicle
+l = L/2;
 t = 5;                      % final time (the initial time is assumed to be 0)
 N = 100;                    % number of sampling times
 
 start_theta = s0(3);    % theta
 start_x = s0(1)+ L/2*cos(start_theta);        % x
 start_y = s0(2)+ L/2*sin(start_theta);        % y
+
 start_phi = s0(4); 
 
 goal_theta = s1(3) ;     % theta
 goal_x = s1(1)+ L/2*cos(goal_theta);         % x
 goal_y = s1(2)+ L/2*sin(goal_theta);         % y
+
 goal_phi = s1(4);
 
 %initial state
 s0(1) = start_x;        % x
 s0(2) = start_y;        % y
 s0(3) = start_theta;    % theta
-
 s0(4) = start_phi;      % phi
 
 % final state
 s1(1) = goal_x;         % x
 s1(2) = goal_y;         % y
 s1(3) = goal_theta;     % theta
-
 s1(4) = goal_phi;       % phi
 
 
@@ -124,8 +125,8 @@ y1 = s1(2);
 dy0 = tan(s0(3));
 dy1 = tan(s1(3));
 
-ddy0 =2*tan(s0(4))/(L*cos(s0(3))^3);
-ddy1 = 2*tan(s1(4))/(L*cos(s1(3))^3);
+ddy0 =tan(s0(4))/(l*cos(s0(3))^3);
+ddy1 = tan(s1(4))/(l*cos(s1(3))^3);
 
 % -----------------------------------------------
 % find parameters
@@ -146,7 +147,7 @@ b = [  y0;
     ddy1];
 
 % matrix ill conditioned
-if cond(A) > 1.0e+20
+if cond(A) > 1.0e+15
     fprintf(1, 'No solution2\n');
     return;
 end
@@ -168,13 +169,12 @@ end
 for i=1:N
     theta(i) = atan(dy(i));
     phi(i) = atan(ddy(i)*(L/2)*cos(theta(i))^3);
-    %phi(i) = atan((ddy(i) * L* cos( atan(dy(i)))^3)/2);
-    %theta(i) = atan(dy(i)) + phi(i);
+
 end
 
-s = [x-L/2*cos(theta);y-L/2*sin(theta);theta;phi;-phi];
+s = [x;y;theta;phi;-phi];
 %s = [x;y;theta;phi;-phi];
-sc = [x;y];
+
 
 % -----------------------------------------------
 % reverse rotation
@@ -190,7 +190,24 @@ if rotAngle ~= 0
     end
 end
 
+for i = 1:N
+    s(1,i) = s(1,i)-L/2*cos(s(3,i));
+    s(2,i) = s(2,i)-L/2*sin(s(3,i));
+end
+%s = [x-L/2*cos(theta);y-L/2*sin(theta);theta;phi;-phi];
+%s = [x;y;theta;phi;-phi];
+sc = [x;y];
+
 path =  [[start_xo; s(1,2:size(s,2)-1)'; goal_xo] [start_yo; s(2,2:size(s,2)-1)'; goal_yo] [start_theta; s(3,2:size(s,2)-1)'; goal_theta] [start_phi; s(4,2:size(s,2)-1)'; goal_phi] [-start_phi; -s(4,2:size(s,2)-1)'; -goal_phi]];
+if ( sign(start_theta) ~= sign(s(3,2)) && start_theta ~= 0)
+    a=1;
+
+end
+
+if ( abs(start_yo-s(2,2)) >2 )
+    a=1;
+
+end
 
 if ~plot_flag
     return
