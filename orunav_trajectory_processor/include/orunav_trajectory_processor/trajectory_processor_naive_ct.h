@@ -122,11 +122,9 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     std::cerr << "getTrajectoryNoCoordination()" << std::endl;
     TrajectoryProcessorNaive gen;
     gen.setParams(this->_params);
-    std::cout << "test2" << std::endl;
     gen.addPathInterface(_path);
     gen.addControlConstraintPoints(this->_controlConstraintPoints);
     gen.addControlConstraintPointAsStart(_startIdx, _startIdxControl);
-    std::cout << "test5" << std::endl;
     orunav_generic::Trajectory traj = gen.getTrajectory();
     this->setGlobalPathTimes(gen);
     std::cerr << "getTrajectoryNoCoordination() - end" << std::endl;

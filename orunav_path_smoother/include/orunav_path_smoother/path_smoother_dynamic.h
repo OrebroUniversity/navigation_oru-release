@@ -8,6 +8,7 @@
 #include <orunav_generic/path_utils.h>
 #include <orunav_trajectory_processor/trajectory_processor_naive.h>
 #include <orunav_constraint_extract/polygon_constraint.h>
+#include "boost/date_time/posix_time/posix_time.hpp"
 //#include <orunav_motion_planner/WorldParameters.h> //Cecchi_add
 
 //! Helper class to divide trajectories into subsections.
@@ -519,16 +520,16 @@ class PathSmootherDynamic : public PathSmootherInterface
       double T = 0.;
       orunav_generic::Trajectory traj_gen;
       {
-	TrajectoryProcessorNaive gen;
-	TrajectoryProcessor::Params p;
-	p.maxVel = 0.5;
-	p.maxAcc = 0.2;
-	p.wheelBaseX = params.wheel_base;
-	gen.setParams(p);
-	gen.addPathInterface(path_orig);
-  std::cout << "----- Traj1 -----" << std::endl;
-	traj_gen = gen.getTrajectory(); 
-	T = orunav_generic::getTotalTime(gen);
+      TrajectoryProcessorNaive gen;
+      TrajectoryProcessor::Params p;
+      p.maxVel = 0.5;
+      p.maxAcc = 0.2;
+      p.wheelBaseX = params.wheel_base;
+      gen.setParams(p);
+      gen.addPathInterface(path_orig);
+      std::cout << "----- Traj1 -----" << std::endl;
+      traj_gen = gen.getTrajectory(); 
+      T = orunav_generic::getTotalTime(gen);
       }
       // Get the min / max time from the trajectory
       
@@ -629,8 +630,9 @@ class PathSmootherDynamic : public PathSmootherInterface
 
       std::vector<constraint_extract::PolygonConstraintsVec> constraints_vec = si.getConstraintsVec(constraints);
 
+      // reset the clock
+	    boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::local_time());
       for (int i = 0; i < si.size(); i++) { 
-        std::cout << "----- Traj3 -----" << std::endl;
         orunav_generic::Trajectory t = si.getTrajectory(i);
         stop_time = dt * t.sizeTrajectory()-1;
         std::cout << "stop_time : " << stop_time << std::endl;
@@ -639,7 +641,7 @@ class PathSmootherDynamic : public PathSmootherInterface
         std::cout << "constraints_vec[i].size() : " << constraints_vec[i].size() << std::endl;
         
         if (BS == true){
-          std::cout << "######################################## \n SMOOTH 4WS 2 \n #####################################";
+          std::cout << "#\n########## SMOOTH 4WS " << i << " ########## \n" << std::endl;
           orunav_generic::Trajectory ts = smoothBS_(t, constraints_vec[i], dt, start_time, stop_time, use_pose_constraints); //Cecchi_add
           std::cout << "ts.sizeTrajectory() : " << ts.sizeTrajectory() << std::endl;
           si.setTrajectory(i, ts);}
@@ -650,6 +652,12 @@ class PathSmootherDynamic : public PathSmootherInterface
           si.setTrajectory(i, ts);
           }        
       }
+      // stop the clock
+      boost::posix_time::ptime endTime(boost::posix_time::microsec_clock::local_time());
+      boost::posix_time::time_duration duration(endTime - startTime);
+
+      std::cout << "#######\nSOLUTION FIND IN : " << duration.total_milliseconds() << "ms \nfor a trajectory dived in:" << si.size() << std::endl;
+      std::cout << "#######\ntrajSize : " << si.getTrajectory().sizePath() << " path / " << si.getTrajectory().sizeTrajectory() <<" trj" <<std::endl;
       return si.getTrajectory();
     }
 

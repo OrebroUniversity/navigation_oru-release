@@ -900,13 +900,11 @@ public:
       path = orunav_conversions::createPathFromPathMsgUsingTargetsAsFirstLast(srv.response.path);
     }
     // Remove duplicate points in the path.
-    std::cout << "PANICO1"<<std::endl;
     orunav_generic::makeValidPathForTrajectoryProcessing(path);
     // Make it less dense... important for the smoothing steps.
     //    path = orunav_generic::minIncrementalDistancePath(path, min_incr_path_dist_);
-    std::cout << "PANICO2"<<std::endl;
     path = orunav_generic::minIncrementalDistanceMinNbPointsPath(path, min_incr_path_dist_, min_nb_path_points_);
-    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath() << " SteeringR "  << path.getSteeringAngleRear(5) );//Cecchi_add
+    ROS_INFO_STREAM("[KMOVehicleExecutionNode] - size of path : " << path.sizePath() );
 
     // Perform smoothing
     orunav_msgs::GetPolygonConstraints srv_constraints;
@@ -931,15 +929,15 @@ public:
         if (client.call(srv))
         {
           ROS_INFO("[KMOVehicleExecutionNode] - polygonconstraint_service - successfull");
-	  msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_SUCCESS;
-	  compute_status_pub_.publish(msg);
+          msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_SUCCESS;
+          compute_status_pub_.publish(msg);
         }
         else
         {
           ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: PolygonConstraint");
-	  res.result = 0;
-	  msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_FAILED;
-	  compute_status_pub_.publish(msg);
+          res.result = 0;
+          msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_FAILED;
+          compute_status_pub_.publish(msg);
           return false;
         }
 
@@ -964,10 +962,10 @@ public:
         else
         {
           ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: GetSmoothedPath");
-	  res.result = 0;
-	  msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_SERVICE_FAILED;
-	  compute_status_pub_.publish(msg);
-	  return false;
+          res.result = 0;
+          msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_SERVICE_FAILED;
+          compute_status_pub_.publish(msg);
+          return false;
         }
         srv_smoothedpath = srv;
         path = orunav_conversions::createPathFromPathMsg(srv.response.path);
@@ -989,9 +987,9 @@ public:
           std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.start).getPose2d() << std::endl;
           std::cout << " orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() : " << orunav_conversions::createState2dFromPoseSteeringMsg(target.goal).getPose2d() << std::endl;
           res.result = 0;
-	  msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_FAILED;
-	  compute_status_pub_.publish(msg);
-	  return false;
+          msg.status = orunav_msgs::ComputeTaskStatus::SMOOTHING_FAILED;
+          compute_status_pub_.publish(msg);
+          return false;
         }
         // The path smoother if enabled select different constraints.
         srv_constraints.response.constraints = srv_smoothedpath.response.constraints;
@@ -1049,24 +1047,24 @@ public:
       if (client.call(srv))
       {
         ROS_INFO("[KMOVehicleExecutionNode] - deltatvec_service successful");
-	msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_SERVICE_SUCCESS;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_SERVICE_SUCCESS;
+        compute_status_pub_.publish(msg);
       }
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: deltatvec_service");
         res.result = 0;
-	msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_SERVICE_FAILURE;
-	compute_status_pub_.publish(msg);
-	return false;
+        msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_SERVICE_FAILURE;
+        compute_status_pub_.publish(msg);
+        return false;
       }
 
       if (!srv.response.valid)
       {
         ROS_WARN("[KMOVehicleExecutionNode] RID:%d - couldn't find deltatvecs, cannot computeTask", robot_id_);
         res.result = 0;
-	msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_CONSTRAINT_FAILURE;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::DELTATVEC_CONSTRAINT_FAILURE;
+        compute_status_pub_.publish(msg);
         return false;
       }
       dts = srv.response.dts;
