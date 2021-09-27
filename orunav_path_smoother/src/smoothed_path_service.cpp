@@ -50,8 +50,8 @@ bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
         return false;
     }
 
-    std::cout << "number of path points : " << constraints.size() << std::endl;;
-    std::cout << "number of constraints : " << path.sizePath() << std::endl;
+    std::cout << "number of constraints : " << constraints.size() << std::endl;;
+    std::cout << "number of path points  : " << path.sizePath() << std::endl;
 
     
     PathSmootherDynamic smoother;

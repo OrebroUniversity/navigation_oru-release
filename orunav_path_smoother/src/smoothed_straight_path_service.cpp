@@ -29,9 +29,9 @@ bool getSmoothedStraightPathCallback(orunav_msgs::GetSmoothedStraightPath::Reque
 
     // Get the path to be optimized.
     orunav_generic::Path path = orunav_generic::createStraightPathFromStartPose(
-        orunav_conversions::createPose2dFromMsg(req.start.pose),
-        orunav_conversions::createPose2dFromMsg(req.goal.pose),
-        req.resolution);
+    orunav_conversions::createPose2dFromMsg(req.start.pose),
+    orunav_conversions::createPose2dFromMsg(req.goal.pose),
+    req.resolution);
 
     // Just hard-code some reasonable inputs here...
     smoother.params.max_nb_opt_points = path.sizePath();

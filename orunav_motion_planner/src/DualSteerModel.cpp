@@ -505,7 +505,7 @@ std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8
 	char info[150];
 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
 	str.append(std::string(info));
-	writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
+	//writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
 	return primitiveSet;
 }
 
