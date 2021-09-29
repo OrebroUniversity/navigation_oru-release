@@ -147,8 +147,8 @@ public:
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
 
     pf->addMission(&vm);
-    //if (req.max_planning_time > 0)
-      //pf->setTimeBound(req.max_planning_time);
+    if (req.max_planning_time > 0)
+      pf->setTimeBound(req.max_planning_time);
     
     ROS_INFO("[GetPathService] - Starting to solve the path planning problem ... ");
     ros::Time start_time = ros::Time::now();

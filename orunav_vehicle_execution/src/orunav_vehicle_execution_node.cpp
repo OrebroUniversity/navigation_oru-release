@@ -951,8 +951,19 @@ public:
         srv.request.path = srv_constraints.request.path;
         srv.request.map = srv_constraints.request.map;
         srv.request.constraints = srv_constraints.response.constraints;
-
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_path");
+        
+        ///
+        ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
+
+        orunav_msgs::GetSmoothedPath srv1;
+        srv1.request.path = srv_constraints.request.path;
+        srv1.request.map = srv_constraints.request.map;
+        srv1.request.constraints = srv_constraints.response.constraints;
+        ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
+        client1.call(srv1);
+        ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll2 - try");
+        ///
         if (client.call(srv))
         {
           ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_path - successfull");

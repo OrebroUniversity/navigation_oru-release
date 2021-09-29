@@ -448,16 +448,16 @@ double DualSteerModel::getCarMaxSteeringAngle() {
 // 		int set = setToUse[vec];
 		
 // 		motionPrimitiveSelectorLookup::iterator it;
-// 		it = modelMotionPrimitivesSelectorLT_.find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
-// 		if (it == modelMotionPrimitivesSelectorLT_.end()) {
+// 		it = modelMotionPrimitivesSelectorLTS_[vec] .find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
+// 		if (it == modelMotionPrimitivesSelectorLTS_[vec].end()) {
 // 			std::vector<MotionPrimitiveData*> dummy;
 // 			std::ostringstream logLine;
 // 			logLine << "KEY NOT FOUND [" << (int) orientationID  << "," << (int) steeringID << "]";
 // 			writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
-// 			return dummy;
+// 			//return dummy;
 // 		} else {
 // 			char info[150];
-// 			sprintf(info, "set %d : primitives $$ %lu in [%d,%d]\n", set, (*it).second, orientationID,steeringID );
+// 			//sprintf(info, "set %d : primitives $$ %lu in [%d,%d]\n", set, (*it).second, orientationID,steeringID );
 // 			str.append(std::string(info));
 // 			//for (unsigned i=0; i<(*it).second; i++){
 
@@ -533,3 +533,5 @@ std::vector<int> DualSteerModel:: selectSet(){
 	}
 	return selectedSet;
 }
+
+
