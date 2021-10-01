@@ -50,7 +50,6 @@ AStar::~AStar() {
 
 /** Binary heap implementation for insertion and extraction of Nodes from the expansion Queue */
 void AStar::insertNewNodeForExpansion(Node* child) {
-
 	// insert the new item at the end
 	openList_.push_back(child);
 	int m = openList_.size();

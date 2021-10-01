@@ -114,7 +114,7 @@ std::vector<Node*> PathNode::generateChildren() {
 		// -- remove the positions of the other vehicles from the map
 
 		for (std::vector<Configuration*>::iterator confit = currentConfigurations_.begin(); confit != currentConfigurations_.end(); confit++) {
-			
+
 			std::vector<Configuration*> newConfigurations = (*confit)->generateNewConfigurations();
 			std::vector<Configuration*> oldConfigurations;
 			oldConfigurations.clear();
@@ -128,11 +128,13 @@ std::vector<Node*> PathNode::generateChildren() {
 					myWorld_->addObstacles(occ);
 				}
 			}
-
+			int count = 0;
 			// create the new nodes
+			//std::cout << "result number " << newConfigurations.size() << std::endl;
+			//getchar();
 			for (std::vector<Configuration*>::iterator newconfit = newConfigurations.begin(); newconfit != newConfigurations.end(); newconfit++) {
 				if (myWorld_->getCollisionDetector()->isCollisionFree(*newconfit)) {
-
+					count++;
 					std::vector<Configuration*> updatedConfigurations;
 					updatedConfigurations.clear();
 					updatedConfigurations.push_back(*newconfit);
@@ -158,8 +160,11 @@ std::vector<Node*> PathNode::generateChildren() {
 				std::vector<cellPosition> free = (*it)->getCellsOccupied();
 				myWorld_->removeObstacles(free);
 			}
+			//std::cout << "\nprimitives number " << children.size() << "  \ncount: " << count  << std::endl;
+			//getchar();
 
 		}
+		
 		return children;
 	} // end 	if(WP::NODE_EXPANSION_METHOD == 0)
 

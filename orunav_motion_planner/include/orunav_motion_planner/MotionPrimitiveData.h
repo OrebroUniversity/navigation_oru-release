@@ -63,6 +63,8 @@ protected:
 	std::vector<cellPosition*> cellsSwept_;
 	/** The discrete positions of the cells occupied by the vehicle at the end of the motion */
 	std::vector<cellPosition*> cellsOccFinal_;
+	/** set */
+	 int set_ = 0;
 
 
 public:
@@ -135,6 +137,8 @@ public:
 	 */
 	void setOccCells(std::vector<cellPosition*> cellsOcc);
 
+	void setSet(int set);
+	int getSet();
 	/**
 	 * Get the ID of the primitive
 	 * @return The ID of the primitive

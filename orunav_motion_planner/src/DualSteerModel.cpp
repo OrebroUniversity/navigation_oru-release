@@ -15,6 +15,7 @@ DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenam
 	carBackLength_ = 0;
 	carMaxSteeringAngle_ = 0;
 	sets = set;
+	min_granularity = 100;
 	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
 	for(int count; count < sets; count++){ //for each set
 		currentSet = count;
@@ -53,6 +54,7 @@ std::vector<cellPosition*> DualSteerModel::getCellsOccupiedInPosition(vehicleSim
 
 void DualSteerModel::loadPrimitiveLookupTable() {
 	int set = currentSet;
+	
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;
@@ -76,6 +78,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	static const boost::regex motiondir("^motiondirection: (.+?)$");
 	// get the resolution for which this model has been built
 	static const boost::regex resolution("^resolution_m: (.+?)$");
+
 	// get the number of orientation angles and set the WorldParameter
 	static const boost::regex angles("^numberofangles: (.+?)$");
 	// get the number of steering angle partitions for this vehicle, calculated as (2*M_PI)/steeringAngleGranularity
@@ -146,8 +149,11 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 			boost::regex_match(line, what, resolution, boost::match_extra);
 			if (what[0].matched) {
 				double worldRes = atof(what[1].str().c_str());
-				vehicleGranularity_ = worldRes;
-				WP::setWorldSpaceGranularity(worldRes);
+				if (worldRes < min_granularity){
+					vehicleGranularity_ = worldRes;
+					min_granularity = worldRes;
+				}
+				WP::setWorldSpaceGranularity(vehicleGranularity_);
 			}
 
 			boost::regex_match(line, what, id, boost::match_extra);
@@ -229,6 +235,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	if (!f.is_open()) {
 		this->generatePrimitiveAdditionalData();
 	} else {
+
 		while (f.good()) {
 			getline(f, line);
 
@@ -259,7 +266,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 			} else {
 				std::vector<MotionPrimitiveData*> primvec = motionit->second;
 				bool primitiveFound = false;
-
+				
 				for (std::vector<MotionPrimitiveData*>::iterator primit = primvec.begin(); primit != primvec.end(); primit++) {
 					// we found the primitive to which we want to assign the data
 					if ((*primit)->getID() == primitiveID) {
@@ -282,6 +289,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 							iss >> cell->x_cell;
 							iss >> cell->y_cell;
 							// swept cells are over. Now the occupied ones
+							
 							if (cell->x_cell == CELL_DELIMITER && cell->y_cell == CELL_DELIMITER) {
 								delete cell;
 								delimiterFound = true;
@@ -298,6 +306,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 
 						(*primit)->setSweptCells(sweptCells);
 						(*primit)->setOccCells(occCells);
+						(*primit)->setSet(set);
 					}
 				}
 				// line.empty prevents an error from the last endl of the file
@@ -320,6 +329,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	modelMotionPrimitivesLT_ = modelMotionPrimitivesLTS_[set];
 	modelMotionPrimitivesSelectorLT_ = modelMotionPrimitivesSelectorLTS_[set];
 	this->prepareMotionPrimitiveSelectorTable();
+	modelMotionPrimitivesSelectorLTS_[set] = modelMotionPrimitivesSelectorLT_;
 }
 
 void DualSteerModel::generatePrimitiveAdditionalData() {
@@ -505,7 +515,7 @@ std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8
 	char info[150];
 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
 	str.append(std::string(info));
-	//writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
+	//writeLogLine(str, "[DualSteerModel]", WP::LOG_FILE);
 	return primitiveSet;
 }
 

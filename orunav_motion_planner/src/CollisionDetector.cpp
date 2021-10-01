@@ -22,6 +22,7 @@ bool CollisionDetector::isCollisionFree(Configuration* conf) {
 			return false;
 		}
 		if (map_->getOccupancyValueInCell((*it).x_cell, (*it).y_cell) >= WP::OCCUPANCY_THRESHOLD) {
+			
 			return false;
 		}
 	}

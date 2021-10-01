@@ -848,7 +848,7 @@ public:
 
       // Update the target goal pose and map based on the load operations
 
-      srv.request.max_planning_time = 20.0; // TODO param
+      srv.request.max_planning_time = 40.0; // TODO param //20 Cecchi
       // Need to package the target + the map and ask the motion planner.
       ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetPath>("get_path");
 

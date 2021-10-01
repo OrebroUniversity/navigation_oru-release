@@ -137,6 +137,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 
 	// create the first node and pass it to the PathPlanner (clone it, because it
 	// shouldn't be destroyed when the planner is done)
+	
 	PathNode* startNode = new PathNode(initialConfs, myWorld_, 0);
 
 	// reset the clock

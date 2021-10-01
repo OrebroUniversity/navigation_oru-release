@@ -141,7 +141,7 @@ public:
     else
       pf = new PathFinder(planner_map);
     
-
+    ROS_INFO("[CHECK START] - start : [%f,%f] ", tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y);
     VehicleMission vm(vehicle_model_,
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);

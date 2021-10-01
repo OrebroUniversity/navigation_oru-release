@@ -122,6 +122,14 @@ void MotionPrimitiveData::setOccCells(std::vector<cellPosition*> cellsOcc){
 	cellsOccFinal_ = cellsOcc;
 }
 
+void MotionPrimitiveData::setSet(int set){
+	set_ = set;
+}
+
+int MotionPrimitiveData::getSet(){
+	return set_;
+}
+
 short unsigned int MotionPrimitiveData::getID(){
 	return ID_;
 }

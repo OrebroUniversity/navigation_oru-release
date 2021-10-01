@@ -20,6 +20,7 @@ class DualSteerConfiguration: public Configuration {
 
 
 public:
+	int set_;
 	/**
 	 * Create a new CarConfiguration given the x,y cell position and the vehicle mission, which contains also the model.
 	 * @param xCell The cell position of the Configuration on the x axis
@@ -28,9 +29,10 @@ public:
 	 * @param steerID The steering angle ID of this configuration
 	 * @param vm The VehicleMission for this vehicle
 	 */
-	DualSteerConfiguration(unsigned short int xCell, unsigned short int yCell, uint8_t orientID, uint8_t steerID, VehicleMission* vm);
+	DualSteerConfiguration(unsigned short int xCell, unsigned short int yCell, uint8_t orientID, uint8_t steerID, VehicleMission* vm, int set);
 
 	~DualSteerConfiguration();
+
 
 	/**
 	 * Copy constructor
@@ -38,6 +40,7 @@ public:
 	 */
 	DualSteerConfiguration(const DualSteerConfiguration& origin);
 
+	int getSet();
 	/**
 	 * Generate new Configuration starting from the current one.
 	 * @deprecated Inefficient function. Use generateNewConfigurations(World* w)

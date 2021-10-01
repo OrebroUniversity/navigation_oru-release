@@ -15,6 +15,7 @@ AStarPathPlanner::AStarPathPlanner(PathNode* startNode, World* world) : AStar(st
 
 	// insert the startNode into the uniqueNodes list
 	std::vector<Configuration*> newConfs = startNode->getConfigurations();
+
 	std::vector<Configuration*> clonedConfs;
 	clonedConfs.clear();
 	for (std::vector<Configuration*>::iterator it = newConfs.begin(); it != newConfs.end(); it ++) {
@@ -200,6 +201,7 @@ std::vector<Node*> AStarPathPlanner::solve() {
 			std::vector<Configuration*> childConfs = child->getConfigurations();
 			std::unordered_map<std::vector<Configuration*>, PathNode* , ConfigurationVectorHash, ConfigurationVectorEqual>::iterator equalit = uniqueNodes_.find(childConfs);
 
+			
 			// the node is completely new: clone its configurations and save it into the uniqueList
 			if (equalit == uniqueNodes_.end()) {
 				std::vector<Configuration*> newConfs = child->getConfigurations();
@@ -231,9 +233,10 @@ std::vector<Node*> AStarPathPlanner::solve() {
 		}
 		if (WP::LOG_LEVEL >= 2 && progress == 10000) {
 			char line[150];
-			sprintf(line, "Open list: %d \tExpanded list: %d", openListSize(), expandedListSize());
+			sprintf(line, "Open list  : %d \t-Expanded list: %d", openListSize(), expandedListSize());
 			writeLogLine(line, "AStarPathPlanner", WP::LOG_FILE);
 			progress = 0;
+			//getchar();
 		}
 		progress += 1;
 	} // end while

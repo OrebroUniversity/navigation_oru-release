@@ -29,6 +29,7 @@ class DualSteerModel: public VehicleModel {
 	/** number of primitives set */
 	int sets;
 	int currentSet;
+	double min_granularity ;
 
 protected:
 
