@@ -739,15 +739,15 @@ public:
       if (vm_client.call(vm_srv))
       {
         ROS_INFO("[KMOVehicleExecutionNode] - get_vector_map successful");
-	msg.status = orunav_msgs::ComputeTaskStatus::VECTOR_MAP_SERVICE_SUCCESS;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::VECTOR_MAP_SERVICE_SUCCESS;
+        compute_status_pub_.publish(msg);
       }
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: get_vector_map");
-	res.result = 0;
-	msg.status = orunav_msgs::ComputeTaskStatus::VECTOR_MAP_SERVICE_FAILURE;
-	compute_status_pub_.publish(msg);
+        res.result = 0;
+        msg.status = orunav_msgs::ComputeTaskStatus::VECTOR_MAP_SERVICE_FAILURE;
+        compute_status_pub_.publish(msg);
         return false;
       }
       vector_map_ = vm_srv.response.vector_map;
@@ -758,15 +758,15 @@ public:
       if (gf_client.call(gf_srv))
       {
         ROS_INFO("[KMOVehicleExecutionNode] - get_geo_fence successful");
-	msg.status = orunav_msgs::ComputeTaskStatus::GEOFENCE_CALL_SUCCESS;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::GEOFENCE_CALL_SUCCESS;
+        compute_status_pub_.publish(msg);
       }
       else
       {
         ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: get_geo_fence");
-	res.result = 0;
-	msg.status = orunav_msgs::ComputeTaskStatus::GEOFENCE_CALL_FAILURE;
-	compute_status_pub_.publish(msg);
+        res.result = 0;
+        msg.status = orunav_msgs::ComputeTaskStatus::GEOFENCE_CALL_FAILURE;
+        compute_status_pub_.publish(msg);
         return false;
       }
       geofence_ = gf_srv.response.geo_fence;
@@ -784,13 +784,13 @@ public:
       // Update the tgt pose, this will currently use the first suggested pose.
       orunav_generic::Pose2d pickup_pose;
       if (req.target.goal_op.operation == req.target.goal_op.LOAD_DETECT)
-	pickup_pose = pm.getPickupPoses().getPose2d(0); // For a pallet - this will contain two poses...
+	      pickup_pose = pm.getPickupPoses().getPose2d(0); // For a pallet - this will contain two poses...
       else // i.e. LOAD
-	pickup_pose = pm.getPickupPoses().getPose2d(2); 
-      ROS_INFO("Will pick up some goods. Changing the goal pose - ");
-      ROS_INFO("(from) Goal :  [%f,%f,%f](%f)", req.target.goal.pose.position.x, req.target.goal.pose.position.y, tf::getYaw(req.target.goal.pose.orientation), req.target.goal.steering);
-      target.goal.pose = orunav_conversions::createMsgFromPose2d(pickup_pose);
-      ROS_INFO("(to) Goal :  [%f,%f,%f](%f)", target.goal.pose.position.x, target.goal.pose.position.y, tf::getYaw(target.goal.pose.orientation), target.goal.steering);
+        pickup_pose = pm.getPickupPoses().getPose2d(2); 
+        ROS_INFO("Will pick up some goods. Changing the goal pose - ");
+        ROS_INFO("(from) Goal :  [%f,%f,%f](%f)", req.target.goal.pose.position.x, req.target.goal.pose.position.y, tf::getYaw(req.target.goal.pose.orientation), req.target.goal.steering);
+        target.goal.pose = orunav_conversions::createMsgFromPose2d(pickup_pose);
+        ROS_INFO("(to) Goal :  [%f,%f,%f](%f)", target.goal.pose.position.x, target.goal.pose.position.y, tf::getYaw(target.goal.pose.orientation), target.goal.steering);
     }
 
     if (req.target.start_op.operation == req.target.start_op.UNLOAD)
@@ -914,6 +914,27 @@ public:
     srv_smoothedpath.response.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+
+    ////
+
+    ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
+    orunav_msgs::GetSmoothedPath srv1;
+    srv1.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
+                                                                                    orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                                                                    orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+
+    ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
+    ///
+    if (client1.call(srv1)){
+      ROS_INFO("[KMOVehicleExecutionNode] - success - try");
+    }
+    else{
+      ROS_INFO("[KMOVehicleExecutionNode] - NO - try");
+    }
+    getchar();
+    no_smoothing_ = true;//Cecchi_add NO smoothing 
+    //
+
     //no_smoothing_ = true;//Cecchi_add NO smoothing 
     if (!no_smoothing_)
     {
@@ -953,17 +974,6 @@ public:
         srv.request.constraints = srv_constraints.response.constraints;
         ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_path");
         
-        ///
-        ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
-
-        orunav_msgs::GetSmoothedPath srv1;
-        srv1.request.path = srv_constraints.request.path;
-        srv1.request.map = srv_constraints.request.map;
-        srv1.request.constraints = srv_constraints.response.constraints;
-        ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
-        client1.call(srv1);
-        ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll2 - try");
-        ///
         if (client.call(srv))
         {
           ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_path - successfull");

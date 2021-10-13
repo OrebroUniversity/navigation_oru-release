@@ -381,3 +381,4 @@ orunav_generic::CoordinatedTimes getCoordinatedTimesFromCoordinatorTimeMsg(const
   }
 
 } // namespace
+

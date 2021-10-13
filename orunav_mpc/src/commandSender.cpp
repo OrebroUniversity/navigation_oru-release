@@ -96,6 +96,7 @@ void commandSender::send(const State & current_state, const Command & command)
     geometry_msgs::Twist cmd_msg;
     cmd_msg.linear.x = command.getVelocity();
     cmd_msg.angular.z = command.getSteeringVelocity();
+    
     ros_publisher.publish(cmd_msg);
 #else // SW_BUILD_SIMULATION
     if (command.isStop())
