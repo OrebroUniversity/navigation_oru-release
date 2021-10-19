@@ -916,21 +916,52 @@ public:
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
 
     ////
-
     ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
-    orunav_msgs::GetSmoothedPath srv1;
-    srv1.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
-                                                                                    orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
-                                                                                    orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
+    
+      { // Compute the constraints goes here
+        orunav_msgs::GetPolygonConstraints srv;
+        srv.request.map = map;
+        srv.request.path = orunav_conversions::createPathMsgFromPathAndState2dInterface(path,
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
+                                                                                        orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
 
-    ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
+        ros::ServiceClient client = nh_.serviceClient<orunav_msgs::GetPolygonConstraints>("polygonconstraint_service");
+        if (client.call(srv))
+        {
+          ROS_INFO("[KMOVehicleExecutionNode] - polygonconstraint_service - successfull");
+          msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_SUCCESS;
+          compute_status_pub_.publish(msg);
+        }
+        else
+        {
+          ROS_ERROR("[KMOVehicleExecutionNode] - Failed to call service: PolygonConstraint");
+          res.result = 0;
+          msg.status = orunav_msgs::ComputeTaskStatus::POLYGONCONSTRAINT_SERVICE_FAILED;
+          compute_status_pub_.publish(msg);
+          return false;
+        }
+
+        // Check that the constraints are valid / add valid flag in the msg.
+        srv_constraints = srv;
+      }
+
+      {
+        // Perform optimization
+        orunav_msgs::GetSmoothedPath srv1;
+        srv1.request.path = srv_constraints.request.path;
+        srv1.request.map = srv_constraints.request.map;
+        srv1.request.constraints = srv_constraints.response.constraints;
+   
+        ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
+        if (client1.call(srv1)){
+          ROS_INFO("[KMOVehicleExecutionNode] - success - try");
+        }
+        else{
+          ROS_INFO("[KMOVehicleExecutionNode] - NO - try");
+        }
+      }
     ///
-    if (client1.call(srv1)){
-      ROS_INFO("[KMOVehicleExecutionNode] - success - try");
-    }
-    else{
-      ROS_INFO("[KMOVehicleExecutionNode] - NO - try");
-    }
+    
     getchar();
     no_smoothing_ = true;//Cecchi_add NO smoothing 
     //

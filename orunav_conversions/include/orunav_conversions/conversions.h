@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef orunav_conversions_H_
+#define orunav_conversions_H_
+
 #include <orunav_generic/types.h>
 #include <orunav_geometry/polygon.h>
 #include <orunav_msgs/Path.h>
@@ -382,3 +385,4 @@ orunav_generic::CoordinatedTimes getCoordinatedTimesFromCoordinatorTimeMsg(const
 
 } // namespace
 
+#endif

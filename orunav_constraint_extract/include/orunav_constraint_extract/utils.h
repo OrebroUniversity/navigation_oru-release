@@ -3,6 +3,7 @@
 #include <orunav_constraint_extract/polygon_constraint.h>
 #include <orunav_generic/path_utils.h>
 
+
 namespace constraint_extract {
 
   //! Is the feaisble pose inside the constraint.

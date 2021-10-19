@@ -695,8 +695,8 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       ACADO::VariablesGrid u_init = convertTrajectoryToACADOControlVariablesGridRear(traj, 0.0, dt);
       if (params.w_zero) {
-	//	u_init = convertTrajectoryToACADOControlVariablesGrid(orunav_generic::setFixedControlValuesW(traj, 0.), 0.0, dt);
-	setFixedACADOControlVariablesGridRear(u_init, 0., 0.,0.);
+      //	u_init = convertTrajectoryToACADOControlVariablesGrid(orunav_generic::setFixedControlValuesW(traj, 0.), 0.0, dt);
+      setFixedACADOControlVariablesGridRear(u_init, 0., 0.,0.);
       }
       double beta;
       double lf = params.wheel_base/2;
@@ -753,30 +753,30 @@ class PathSmootherDynamic : public PathSmootherInterface
 	      assert(constraints.size() == traj.sizePath());
 	      for (size_t i = 0; i < constraints.size(); i++) {
 	        if (i % params.use_constraints_modulus == 0 || i == constraints.size()-1) {
-	    // Use this constraint
-	    //	    std::cout << "Using constraint # : " << i << std::endl;
+	        // Use this constraint
+	        //	    std::cout << "Using constraint # : " << i << std::endl;
           }
           else {
             continue;
           }
-	    // Orientation
-	      if (params.use_th_constraints) {
-        // Check for normalization problems that could occur here... simply make sure that we have a bounds that the current th is within.
-        double lb_th, ub_th;
-        computeThBounds(constraints[i].getThBounds()[0], constraints[i].getThBounds()[1], traj.getPose2d(i)(2), lb_th, ub_th);
-        ocp.subjectTo(i, lb_th <= th <= ub_th);
-      }
-	  // Position
-      if (params.use_xy_constraints) {
-        std::vector<double> A0, A1, b;
-        constraints[i].getInnerConstraint().getMatrixFormAsVectors(A0, A1, b);
-        assert(A0.size() == A1.size());
-        assert(A0.size() == b.size());
-        size_t size = A0.size();
-        for (size_t j = 0; j < size; j++)
-          ocp.subjectTo(i, A0[j]*x + A1[j]*y <= b[j]);
-      }
-    }
+	        // Orientation
+          if (params.use_th_constraints) {
+          // Check for normalization problems that could occur here... simply make sure that we have a bounds that the current th is within.
+          double lb_th, ub_th;
+          computeThBounds(constraints[i].getThBounds()[0], constraints[i].getThBounds()[1], traj.getPose2d(i)(2), lb_th, ub_th);
+          ocp.subjectTo(i, lb_th <= th <= ub_th);
+          }
+          // Position
+          if (params.use_xy_constraints) {
+            std::vector<double> A0, A1, b;
+            constraints[i].getInnerConstraint().getMatrixFormAsVectors(A0, A1, b);
+            assert(A0.size() == A1.size());
+            assert(A0.size() == b.size());
+            size_t size = A0.size();
+            for (size_t j = 0; j < size; j++)
+              ocp.subjectTo(i, A0[j]*x + A1[j]*y <= b[j]);
+          }
+        }
       }
       
       std::cout << "Setting up constraints -- end" << std::endl;
@@ -795,14 +795,14 @@ class PathSmootherDynamic : public PathSmootherInterface
 	      algorithm.set( ACADO::DISCRETIZATION_TYPE, ACADO::MULTIPLE_SHOOTING );
       }
       {
-	int ret;
-	algorithm.get( ACADO::DISCRETIZATION_TYPE, ret);
-	if (ret == ACADO::SINGLE_SHOOTING) {
-	  std::cout << "SINGLE_SHOOTING will be used" << std::endl;
-	}
-	if (ret == ACADO::MULTIPLE_SHOOTING) {
-	  std::cout << "MULTIPLE_SHOOTING will be used" << std::endl;
-	}
+      int ret;
+      algorithm.get( ACADO::DISCRETIZATION_TYPE, ret);
+      if (ret == ACADO::SINGLE_SHOOTING) {
+        std::cout << "SINGLE_SHOOTING will be used" << std::endl;
+      }
+      if (ret == ACADO::MULTIPLE_SHOOTING) {
+        std::cout << "MULTIPLE_SHOOTING will be used" << std::endl;
+      }
       }
 
       algorithm.set( ACADO::MAX_NUM_INTEGRATOR_STEPS, 100 ); // For the integrator.
@@ -832,9 +832,9 @@ class PathSmootherDynamic : public PathSmootherInterface
       
       std::cout << "Initialize variables" << std::endl;
       if (params.init_states)
-	algorithm.initializeDifferentialStates( q_init );
+      	algorithm.initializeDifferentialStates( q_init );
       if (params.init_controls)
-	algorithm.initializeControls( u_init );
+	      algorithm.initializeControls( u_init );
      
       std::cout << "Setting up states / control variables" << std::endl;
       ACADO::VariablesGrid states, controls;
