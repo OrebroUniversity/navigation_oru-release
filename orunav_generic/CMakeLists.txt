@@ -17,7 +17,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS angles
-  DEPENDS Boost Eigen3
+  DEPENDS Boost
 )
 
 ###########

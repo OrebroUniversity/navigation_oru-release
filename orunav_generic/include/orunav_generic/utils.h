@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef generic_utils_H_
-#define generic_utils_H_
-
 #include <string>
 #include <vector>
 #include <numeric>
@@ -115,4 +112,3 @@ fromString(const std::string &s) {
 
 
 } // namespace
-#endif 

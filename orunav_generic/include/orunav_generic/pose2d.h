@@ -1,9 +1,9 @@
 #pragma once
 
 #include <angles/angles.h>
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/SVD>
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Core>
+#include <Eigen/SVD>
+#include <Eigen/Geometry>
 #include <iostream>
 
 namespace orunav_generic
