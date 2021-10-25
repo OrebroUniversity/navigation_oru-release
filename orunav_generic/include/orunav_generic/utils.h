@@ -1,4 +1,7 @@
 #pragma once
+#ifndef orunav_generic_utils_H_
+#define orunav_generic_utils_H_
+
 
 #include <string>
 #include <vector>
@@ -112,3 +115,4 @@ fromString(const std::string &s) {
 
 
 } // namespace
+#endif

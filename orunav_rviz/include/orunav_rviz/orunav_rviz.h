@@ -10,6 +10,8 @@
 #include <Eigen/Eigenvalues>
 #include <vector>
 
+#include <ros/ros.h>
+
 namespace orunav_rviz
 {
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef orunav_conversions_H_
-#define orunav_conversions_H_
+#ifndef orunav_conversions3_H_
+#define orunav_conversions3_H_
 
 #include <orunav_generic/types.h>
 #include <orunav_geometry/polygon.h>

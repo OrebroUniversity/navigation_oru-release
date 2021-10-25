@@ -716,8 +716,8 @@ public:
       {
         ROS_WARN("[KMOVehicleExecutionNode] RID:%d - start from current state2d, current state2d unknown, cannot computeTask", robot_id_);
         res.result = 0;
-	msg.status = orunav_msgs::ComputeTaskStatus::INVALID_START;
-	compute_status_pub_.publish(msg);
+        msg.status = orunav_msgs::ComputeTaskStatus::INVALID_START;
+        compute_status_pub_.publish(msg);
         return false;
       }
       current_mutex_.lock();
@@ -896,7 +896,7 @@ public:
         ROS_INFO("[KMOVehicleExecutionNode] - computed repositioning path based on previous path");
       }
       
-      //std::cout << "PANICO"<<std::endl;
+      
       path = orunav_conversions::createPathFromPathMsgUsingTargetsAsFirstLast(srv.response.path);
     }
     // Remove duplicate points in the path.
@@ -915,7 +915,7 @@ public:
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.start),
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
 
-    ////
+    //// cecchi
     ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
     
       { // Compute the constraints goes here
@@ -964,7 +964,7 @@ public:
     
     getchar();
     no_smoothing_ = true;//Cecchi_add NO smoothing 
-    //
+    ////
 
     //no_smoothing_ = true;//Cecchi_add NO smoothing 
     if (!no_smoothing_)
