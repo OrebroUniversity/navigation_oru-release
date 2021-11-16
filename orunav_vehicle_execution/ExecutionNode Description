@@ -1,0 +1,34 @@
+EXECUTION NODE DESCRIPTION
+------------------------------
+state machine:
+	States: waiting_for_task, performing_task, driving, goal_operation...
+	Control: waiting, active, brake, finalize, error, waiting_for_trajectory..
+
+Input: 
+	point_n_click_target_client.cpp
+		134 client.call (-computeTaskCB -)
+ 
+-----------Excution_node (ExNode) ----
+
+ExNode.computeTaskCB()
+	855 get_path() --> pathService
+			
+			(?)michele-- compute_constraint
+				     MPC_smooth_controller
+
+	970 if (smoothing)
+		973 compute_contraint --> contraint_extractor
+		1001 smooth_service   --> smoother
+		1081 DeltaT_service (?)
+	output:
+	res.task. target / path / contraint
+-- 
+ExNode.run()
+	2047 vehicle_state_canSendTrajectory -> True if robotState = waiting || Active
+	
+	*case3 computeTrajectory
+		2277 computeTrajectoryChunckCase3
+	
+	2313 vehicle_state_.activeTask()
+	2332 sendTrajectoryChunck()
+	2336 sendActiveSTartingComand()

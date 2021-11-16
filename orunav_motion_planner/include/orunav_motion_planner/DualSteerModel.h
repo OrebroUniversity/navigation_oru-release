@@ -12,6 +12,7 @@
 #include "VehicleModel.h"
 #include "WorldParameters.h"
 
+
 /**
  * @class DualSteerModel
  * Models a car basic properties

@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -38,6 +39,7 @@ private:
   bool visualize_;
   bool BS;
   int sets; 
+  int mission = 0;
   
   ros::Publisher marker_pub_;
   
@@ -47,9 +49,15 @@ private:
   ros::NodeHandle nh_;
   ros::ServiceServer service_;
 
+
 public:
   GetPathService(ros::NodeHandle param_nh, std::string name) 
   {
+    std::ofstream f;
+	  f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+    f <<"\n=================================\n"<<std::endl;
+    
+
       // read parameters
       param_nh.param<std::string>("motion_primitives_directory", motion_prim_dir_, "./Primitives/");
       param_nh.param<std::string>("lookup_tables_directory", lookup_tables_dir_, "./LookupTables/");
@@ -71,22 +79,27 @@ public:
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
         
-
-       if (BS ==true){ 
-      //Dual steer start
-      std::array<std::string,5> models{model,model2,model3,model4,model5}; //Cecchi_add
-      //int sets = 4;
-      vehicle_model_ = new DualSteerModel(models,sets);//Cecchi_add
-      WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
-      WP::setVehicleType(WP::VehicleType::XA_4WS);
-      for(int i = 0; i < sets; i++){
-      std::cout << " vehicle type:" << WP::VEHICLE_TYPE << " " << WP::NODE_EXPANSION_METHOD << std::endl;
-      ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");}//Cecchi_add
-      //Dual steer end
+      f << "double steering mode: " << BS << std::endl;
+      if (BS ==true){ 
+        f << "sets of primitives: " << std::endl;
+        //Dual steer start
+        std::array<std::string,5> models{model,model2,model3,model4,model5}; //Cecchi_add
+        //int sets = 4;
+        vehicle_model_ = new DualSteerModel(models,sets);//Cecchi_add
+        WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
+        WP::setVehicleType(WP::VehicleType::XA_4WS);
+        
+        for(int i = 0; i < sets; i++){
+          std::cout << " vehicle type:" << WP::VEHICLE_TYPE << " " << WP::NODE_EXPANSION_METHOD << std::endl;
+          ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");//Cecchi_add
+        }
+        //Dual steer end
       }
       else{ 
-      vehicle_model_ = new CarModel(model);
-        }
+        f << "set of primitives: " << model << std::endl ;
+        vehicle_model_ = new CarModel(model);
+      }
+      f.close();
 
       
 
@@ -116,9 +129,19 @@ public:
 		 orunav_msgs::GetPath::Response &res)
   {
     orunav_msgs::RobotTarget tgt = req.target;
+
     ROS_INFO("[GetPathService] - start : [%f,%f,%f](%f)", tgt.start.pose.position.x, tgt.start.pose.position.y,tf::getYaw(tgt.start.pose.orientation), tgt.start.steering);
     ROS_INFO("[GetPathService] - goal :  [%f,%f,%f](%f)", tgt.goal.pose.position.x, tgt.goal.pose.position.y,tf::getYaw(tgt.goal.pose.orientation), tgt.goal.steering);
     
+    mission += 1;
+    std::ofstream f;
+    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+    f << "\n -- mission number " << mission << " --" << std::endl;
+    f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
+    f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
+    f.close();
+
+
     WorldOccupancyMap planner_map;
     convertNavMsgsOccupancyGridToWorldOccupancyMapRef(req.map, planner_map);
 

@@ -175,6 +175,7 @@ void MotionPrimitiveSelector::identifyMinimumSupersets(){
 	std::string str = std::string(" --> ");
 	char info[90];
 	sprintf(info, "Expanded node # %lu :", selectorNodes_.size() );
+	totalPrimitives += selectorNodes_.size();
 	str.append(std::string(info));
 	for (unsigned int i = 1; i < selectorNodes_.size(); i++) {
 		// clear the marks of all the previous nodes

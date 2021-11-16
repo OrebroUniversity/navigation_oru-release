@@ -38,6 +38,8 @@ class VehicleModel {
 
 protected:
 
+	int totalPrimitives = 0;
+	int totalPrimitivesSets = 0;
 	/** The width of the vehicle (meters) */
 	double width_;
 	/** The length of the vehicle (meters) */

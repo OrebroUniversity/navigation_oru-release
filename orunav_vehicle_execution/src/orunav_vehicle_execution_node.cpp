@@ -916,7 +916,9 @@ public:
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
 
     //// cecchi
-    ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
+    if (true){
+      
+      ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
     
       { // Compute the constraints goes here
         orunav_msgs::GetPolygonConstraints srv;
@@ -940,7 +942,7 @@ public:
           compute_status_pub_.publish(msg);
           return false;
         }
-
+        //return true;
         // Check that the constraints are valid / add valid flag in the msg.
         srv_constraints = srv;
       }
@@ -953,6 +955,8 @@ public:
         srv1.request.constraints = srv_constraints.response.constraints;
    
         ros::ServiceClient client1 = nh_.serviceClient<orunav_msgs::GetSmoothedPath>("get_smoothed_controll");
+        //ros::Publisher smooth_mpc_pub = nh_.advertise<orunav_msgs::GetSmoothedPath>("mpc_path", 10);
+        //smooth_mpc_pub.publish(srv1);
         if (client1.call(srv1)){
           ROS_INFO("[KMOVehicleExecutionNode] - success - try");
         }
@@ -960,13 +964,14 @@ public:
           ROS_INFO("[KMOVehicleExecutionNode] - NO - try");
         }
       }
-    ///
+      no_smoothing_ = true;
+    }
+    // ///
     
-    getchar();
-    no_smoothing_ = true;//Cecchi_add NO smoothing 
+    // getchar();
+    // no_smoothing_ = true;//Cecchi_add NO smoothing 
     ////
 
-    //no_smoothing_ = true;//Cecchi_add NO smoothing 
     if (!no_smoothing_)
     {
 
@@ -1145,6 +1150,7 @@ public:
     res.result = 1;
     msg.status = orunav_msgs::ComputeTaskStatus::COMPUTE_TASK_SUCCESS;
     compute_status_pub_.publish(msg);
+
     return true;
   }
 
@@ -1206,6 +1212,7 @@ public:
       ROS_WARN_STREAM("[KMOVehicleExecutionNode] not a valid task(!) - will be IGNORED");
       return false;
     }
+
 
     inputs_mutex_.lock();
     vehicle_state_.update(req.task);
@@ -1983,6 +1990,7 @@ public:
       current_start_time_ = command.start_time.toSec();
 
       ROS_INFO("[KMOVehicleExecutionNode] - command start time : %f", command.start_time.toSec());
+
       command_pub_.publish(command);
 
       usleep(5000);
@@ -2333,6 +2341,7 @@ public:
       vehicle_state_.trajectorySent();
       if (!vehicle_state_.isActive())
       {
+
         sendActivateStartTimeCommand(start_time);
       }
     } // while

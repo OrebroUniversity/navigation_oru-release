@@ -16,11 +16,19 @@ DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenam
 	carMaxSteeringAngle_ = 0;
 	sets = set;
 	min_granularity = 100;
+	std::ofstream f;
+	f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
 	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
 	for(int count; count < sets; count++){ //for each set
 		currentSet = count;
+		
 		this->loadPrimitiveLookupTable();
+		f << count+1<< ") " << modelPrimitivesFilename[count] << ": " << totalPrimitives << std::endl;
+		totalPrimitivesSets += totalPrimitives;
+		totalPrimitives=0;
 	}
+	f << "total primitives: " << totalPrimitivesSets << std::endl;
+	f.close();
 }
 DualSteerModel::~DualSteerModel() {
 }

@@ -107,9 +107,13 @@ void VehicleModel::prepareMotionPrimitiveSelectorTable() {
 	// modelMotionPrimitiveSelectorLT_
 	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it ++ ) {
 		MotionPrimitiveSelector* selector = new MotionPrimitiveSelector((*it).second);
+		totalPrimitives += selector->getTotalPrimitives();
 		modelMotionPrimitivesSelectorLT_.insert(
 				motionPrimitiveSelectorLookupEntry(std::pair<uint8_t, uint8_t>((*it).first.first,(*it).first.second), selector));
 	}
+	std::ofstream f;
+	f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+	f.close();
 }
 
 void VehicleModel::adjustPrimitiveDistancesWith8AxisSymmetry() {
