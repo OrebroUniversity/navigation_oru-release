@@ -116,7 +116,6 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 	while (this->getFValueOfExtractionCandidate() >= 0) {
 		CandidateCount++;
 		timeElapsed = boost::posix_time::microsec_clock::local_time() - startingTime_;
-
 		// check if we cannot improve over the previous solution or if we have exhausted the time limit
 		if (this->getFValueOfExtractionCandidate() >= currentGoalFValue_ ||
 				(timeElapsed.total_seconds() >= secondsToCalculatePath_)) {
@@ -156,7 +155,7 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 			sol = this->clonePath(candidate);
 			if (WP::LOG_LEVEL >= 2) {
 				char line[150];
-				sprintf(line, "Open list: %d \tExpanded list: %d, CandidateCount: %d", openListSize(), expandedListSize(), CandidateCount);
+				sprintf(line, "Open list: %d \tExpanded list: %d, CandidateCount: %d", openListSize(), expandedListSize(), CandidateCount );
 				writeLogLine(line, "GOAL ARAStarPathPlanner ", WP::LOG_FILE);
 			}
 			// exit the loop
@@ -164,8 +163,10 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 		}
 
 		// if solution not yet found, generate children
+		
 		std::vector<Node*> children = candidate->generateChildren();
 		std::vector<Node*>::iterator it;
+		
 		for (it = children.begin(); it != children.end(); it++) {
 			PathNode* child = dynamic_cast<PathNode*> (*it);
 
@@ -205,6 +206,7 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 				}
 			}
 		}
+
 		if (WP::LOG_LEVEL >= 2 && progress == 10000) {
 			char line[150];
 			sprintf(line, "Open list: %d \tExpanded list: %d", openListSize(), expandedListSize());
@@ -226,7 +228,9 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 				writeLogLine(line, "ARAStarPathPlanner", WP::LOG_FILE);
 			}
 		}
+		else writeLogLine("why?", "ARAStarPathPlanner", WP::LOG_FILE);
 	}
+
 	return sol;
 }
 

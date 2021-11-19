@@ -228,7 +228,13 @@ namespace orunav_generic {
     virtual void setSteeringAngle(double s, size_t idx) { steeringAngles[idx] = s; }
     virtual size_t sizeSteeringAngle() const { return steeringAngles.size(); }
     
-    
+    double getLength(){
+      double length=0;
+      for(int i = 0; i < poses.sizePose2d()-1; i++){
+        length +=  sqrt(pow(poses.getPose2d(i)(0)-poses.getPose2d(i+1)(0),2) + pow(poses.getPose2d(i)(1)-poses.getPose2d(i+1)(1),2));
+      }
+      return length;
+    }
                                                                                                                                                                         
     State2d getState2d(size_t idx) const { return State2d(*this, idx); }
     //void setState2d(const State2dInterface &s, size_t idx) { poses[idx] = s.getPose2d(); steeringAngles[idx] = s.getSteeringAngle(); }

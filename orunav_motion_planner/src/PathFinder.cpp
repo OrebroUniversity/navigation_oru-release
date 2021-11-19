@@ -141,6 +141,8 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 	PathNode* startNode = new PathNode(initialConfs, myWorld_, 0);
 
 	// reset the clock
+	std::ofstream f;
+	f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
 	boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::local_time());
 
 	// solve the problem: check if to use A* or ARA*
@@ -150,6 +152,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 		if (WP::LOG_LEVEL >= 1) {
 			char line[50];
 			sprintf(line, "Using ARA* planner [%d seconds]", timeBound_);
+			f << "ARA* algorithm - time bound:" << timeBound_ << std::endl;
 			writeLogLine(std::string(line), "PathFinder", WP::LOG_FILE);
 		}
 		ARAStarPathPlanner* planner = new ARAStarPathPlanner(startNode, myWorld_, startTime, timeBound_);
@@ -158,6 +161,7 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 	} else {
 		if (WP::LOG_LEVEL >= 1) {
 			writeLogLine("Using A* algorithm", "PathFinder", WP::LOG_FILE);
+			f << "A* algorithm" << std::endl;
 		}
 		AStarPathPlanner* planner = new AStarPathPlanner(startNode, myWorld_);
 		if (dataGatheringForVehicleHT_) {
@@ -171,6 +175,9 @@ std::vector<std::vector<Configuration*>> PathFinder::solve(bool visualization) {
 	boost::posix_time::ptime endTime(boost::posix_time::microsec_clock::local_time());
 	boost::posix_time::time_duration duration(endTime - startTime);
 
+	
+    f <<"Path planner computatio time " << (unsigned long int) duration.total_milliseconds() <<" milli-sec" << std::endl;
+ 
 	if (WP::LOG_LEVEL >= 1) {
 		char line[50];
 		sprintf(line, "Execution time: %lu milliseconds", 	(unsigned long int) duration.total_milliseconds());

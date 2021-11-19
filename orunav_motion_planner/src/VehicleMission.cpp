@@ -163,7 +163,10 @@ VehicleModel*  VehicleMission::getVehicleModel() {
 }
 
 double VehicleMission::getGridDistanceFromGoal(int x, int y) {
+	std::cout << "3.321 gridDst " << gridDistanceFromGoal_.size() << std::endl;
 	if (gridDistanceFromGoal_.size() != 0) {
+		std::cout << "if.. " << x << " " <<y << std::endl;
+		std::cout << "3.322 gridDst[xy] " << gridDistanceFromGoal_[y][x] << std::endl;
 		return gridDistanceFromGoal_[y][x];
 	} else {
 		return 0;

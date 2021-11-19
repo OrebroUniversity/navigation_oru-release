@@ -139,6 +139,7 @@ public:
     f << "\n -- mission number " << mission << " --" << std::endl;
     f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
     f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
+    
     f.close();
 
 
@@ -207,7 +208,18 @@ public:
     }
 
     ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
-    ROS_INFO_STREAM("[GetPathService] - ######### : " << path.getSteeringAngleRear(10));
+    
+    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+
+    double dist = sqrt( pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
+    double orient = abs(start_orientation- path.getPose2d(0)(2));
+    f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
+    
+    orient = abs(goal_orientation- path.getPose2d(path.sizePath()-1)(2));
+    dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
+    f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
+    f << "total length: " << path.getLength() << std::endl;
+    
 
 
     // Cleanup
@@ -258,7 +270,7 @@ public:
       }
       return true;
     }
-    ;
+    
     return false;
     
   }
