@@ -14,6 +14,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <math.h>
+
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -78,7 +80,7 @@ public:
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
-        
+        WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
       f << "double steering mode: " << BS << std::endl;
       if (BS ==true){ 
         f << "sets of primitives: " << std::endl;
@@ -219,6 +221,7 @@ public:
     dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
     f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
     f << "total length: " << path.getLength() << std::endl;
+    f << "cuspidi: " << cuspidi(path) << std::endl;
     
 
 
@@ -275,6 +278,57 @@ public:
     
   }
   
+
+
+
+
+  /*find cuspidi*/
+  int cuspidi( orunav_generic::Path path){
+    int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
+    int cuspide = 0;
+    for (int i = 0; i < path.sizePath()-2; i += 5){
+      motion_old3 = motion_old2;
+      motion_old2 = motion_old;
+      motion_old = motion;
+      motion = findDirection(path.getPose2d(i) , path.getPose2d(i+5));
+      //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
+       //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
+       //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
+      if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
+          cuspide += 1;
+          //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
+      }
+      //getchar();
+    }
+    std::cout << "total cuspidi" << cuspide << std::endl;
+    return cuspide;
+  }
+
+  /*compute the direction of the vehicle
+      1 forward
+      -1 backward*/
+  int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
+      double x0 = prev(0); double y0 = prev(1); double th = prev(2);
+      double x1 = next(0); double y1 = next(1);
+      double m ,sign = 1;
+      //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
+      if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
+          m=1000;
+          
+          if ((y1-y0) < m*(x1-x0)) return 1;
+          else return -1;
+        }
+      else{ m = tan(th+M_PI/2);}
+      
+      if (signbit(th) == 1){
+        if ((y1-y0) < m*(x1-x0)){ return 1;}
+      }
+      else {
+        if ((y1-y0) > m*(x1-x0)){ return 1;}
+      }
+      return -1;
+  }
+
 };
 
 

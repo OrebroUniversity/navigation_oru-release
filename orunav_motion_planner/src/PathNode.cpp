@@ -58,27 +58,18 @@ PathNode::PathNode(std::vector<Configuration*> newConfs, std::vector<Configurati
 	// the cost is the sum of the costs of the individual configurations
 
 	if (parentNode_ != 0) {
-		std::cout << "cecchi 4.1" << std::endl;
 		G_ += parentNode_->getG();
-		std::cout << "cecchi 4.2" << std::endl;
 	}
 	/** @todo this can be sped up considerably by caching the heuristic estimations */
 	// new configurations: calculate the cost
 	for (std::vector<Configuration*>::iterator cit = newConfs.begin(); cit != newConfs.end(); cit++) {
 		currentConfigurations_.push_back((*cit));
-		std::cout << "cecchi 4.3" << std::endl;
 		G_ += (*cit)->getCostToThisConfiguration();
-		std::cout << "cecchi 4.31" << std::endl;
 		if(myWorld_->containsObstacles()) {
-			std::cout << "cecchi 4.32" << std::endl;
 			h1 += (*cit)->getMission()->getGridDistanceFromGoal((*cit)->getXCell(), (*cit)->getYCell());
-			std::cout << "cecchi 4.33" << std::endl;
 		}
-		std::cout << "cecchi 4.34" << std::endl;
 		h2 += (*cit)->estimateCostFromThisConfiguration((*cit)->getMission()->getGoalConfiguration());
-		std::cout << "cecchi 4.35" << std::endl;
 	}
-	std::cout << "cecchi 4.4" << std::endl;
 	for (std::vector<Configuration*>::iterator cit = unchangedConfs.begin(); cit != unchangedConfs.end(); cit++) {
 		// here we do not update the cost, as it is already considered in the parent
 		currentConfigurations_.push_back((*cit));
@@ -87,13 +78,10 @@ PathNode::PathNode(std::vector<Configuration*> newConfs, std::vector<Configurati
 		}
 		h2 += (*cit)->estimateCostFromThisConfiguration((*cit)->getMission()->getGoalConfiguration());
 	}
-	std::cout << "cecchi 4.5" << std::endl;
 
 	// sort the Configuration vector
 	if (currentConfigurations_.size() > 1) {
-		std::cout << "cecchi 4.6" << std::endl;
 		std::sort(currentConfigurations_.begin(), currentConfigurations_.end(), configurationOrderingFunction);
-		std::cout << "cecchi 4.7" << std::endl;
 	}
 
 	// double heuristic -- take the max
@@ -159,9 +147,8 @@ std::vector<Node*> PathNode::generateChildren() {
 					}
 
 					// only updated configurations have changed wrt the parent PathNode
-					std::cout << "cecchi 4" << std::endl;
+		
 					PathNode *newChild = new PathNode(updatedConfigurations, clonedOldConfigurations, myWorld_, this);
-					std::cout << "cecchi 5" << std::endl;
 					children.push_back(newChild);
 				} else {
 					
@@ -180,7 +167,6 @@ std::vector<Node*> PathNode::generateChildren() {
 			//getchar();
 
 		}
-		std::cout << "cecchi 4.6" << std::endl;
 		return children;
 	} // end 	if(WP::NODE_EXPANSION_METHOD == 0)
 

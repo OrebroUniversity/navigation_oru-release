@@ -228,7 +228,7 @@ std::vector<Node*> ARAStarPathPlanner::improvePath() {
 				writeLogLine(line, "ARAStarPathPlanner", WP::LOG_FILE);
 			}
 		}
-		else writeLogLine("why?", "ARAStarPathPlanner", WP::LOG_FILE);
+		
 	}
 
 	return sol;
