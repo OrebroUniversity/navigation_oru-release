@@ -879,7 +879,8 @@ public:
           // This indicates that there is some real problems finding the path...
           ROS_ERROR("[KMOVehicleExecutionNode] RID:%d - target and goal is to far appart, the motion planner should have found a path", robot_id_);
           res.result = 0;
-          msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_FAILED;
+          //msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_FAILED;
+          msg.status = orunav_msgs::ComputeTaskStatus::COMPUTE_TASK_SUCCESS;//Cecchi multiple test
 	        compute_status_pub_.publish(msg);
           return false;
         }
@@ -889,7 +890,8 @@ public:
         {
           ROS_WARN("[KMOVehicleExecutionNode] RID:%d - failed to compute repositioning path", robot_id_);
           res.result = 0;
-          msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_REPOSITIONING_FAILED;
+          //msg.status = orunav_msgs::ComputeTaskStatus::PATH_PLANNER_REPOSITIONING_FAILED;
+          msg.status = orunav_msgs::ComputeTaskStatus::COMPUTE_TASK_SUCCESS;//Cecchi multiple test
           compute_status_pub_.publish(msg);
           return false;
         }

@@ -85,31 +85,31 @@
 % distance =                      2.8;
 % cell_size =                     0.1;
 
-output_filename =               'CiTiTruck_kuka_fair_10+40_32_1_2.8_0.1_st1.45_equal_cost';
-car_width =                     0.650;
-car_length_back =               0.200;
-car_length_front =              2.000;
-distance_between_axes =         1.190;
-max_steering_radians =          1.45;
-numberofangles =                16;
-steeringanglepartitions =       1;
-steeringanglecardinality =      1;
-distance =                      2.8;
-cell_size =                     0.2;
-
-% output_filename =               'xa15';
-% car_width =                     2.7;
-% car_length_back =               1.3;
-% car_length_front =              5.3;
-% distance_between_axes =         3.2;
-% max_steering_radians =          0.7;
-% numberofangles =                8;
+% output_filename =               'CiTiTruck_kuka_fair_10+40_32_1_2.8_0.1_st1.45_equal_cost';
+% car_width =                     0.650;
+% car_length_back =               0.200;
+% car_length_front =              2.000;
+% distance_between_axes =         1.190;
+% max_steering_radians =          1.45;
+% numberofangles =                16;
 % steeringanglepartitions =       1;
 % steeringanglecardinality =      1;
-% distance =                      15;
-% cell_size =                     1;
+% distance =                      2.8;
+% cell_size =                     0.2;
 
-plotting =                      0;
+output_filename =               'xa15_';
+car_width =                     2.7;
+car_length_back =               1.3;
+car_length_front =              5.3;
+distance_between_axes =         3.2;
+max_steering_radians =          0.7;
+numberofangles =                8;
+steeringanglepartitions =       1;
+steeringanglecardinality =      1;
+distance =                      5;
+cell_size =                     1;
+
+plotting =                      1;
 
 % -------------------------------------------------------------------------
 % ============================= PARAMETERS ================================
@@ -645,7 +645,7 @@ for angleind = 1:numberofangles
         size(primitives{angleind,steerind},2)
         if plotting == 1
             %pause;   %%%
-            clf
+            %clf
         end
     end
     

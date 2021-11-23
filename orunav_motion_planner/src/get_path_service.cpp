@@ -100,6 +100,7 @@ public:
       else{ 
         f << "set of primitives: " << model << std::endl ;
         vehicle_model_ = new CarModel(model);
+        f << "total primitives: " << vehicle_model_->getTotalPrimitives() << std::endl;
       }
       f.close();
 
@@ -209,20 +210,6 @@ public:
       }
     }
 
-    ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
-    
-    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-
-    double dist = sqrt( pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
-    double orient = abs(start_orientation- path.getPose2d(0)(2));
-    f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
-    
-    orient = abs(goal_orientation- path.getPose2d(path.sizePath()-1)(2));
-    dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
-    f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
-    f << "total length: " << path.getLength() << std::endl;
-    f << "cuspidi: " << cuspidi(path) << std::endl;
-    
 
 
     // Cleanup
@@ -237,8 +224,27 @@ public:
     solution.clear();
     // Cleanup - end
     
-    if (path.sizePath() == 0)
-      solution_found = false;
+    if (path.sizePath() == 0){
+      return false;
+      //solution_found = false;
+      }
+
+
+    
+    ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
+    
+    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+
+    double dist = sqrt( pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
+    double orient = abs(start_orientation- path.getPose2d(0)(2));
+    f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
+    
+    orient = abs(goal_orientation- path.getPose2d(path.sizePath()-1)(2));
+    dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
+    f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
+    f << "total length: " << path.getLength() << std::endl;
+    f << "cuspidi: " << cuspidi(path) << std::endl;
+    
 
     res.valid = solution_found;
     if (solution_found) {

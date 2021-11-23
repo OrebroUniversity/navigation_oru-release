@@ -326,6 +326,8 @@ public:
 	 */
 	void saveHeuristicTable();
 
+	int getTotalPrimitives(){ return totalPrimitives;};
+
 };
 
 #endif /* VEHICLEMODEL_H_ */
