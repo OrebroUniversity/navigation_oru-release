@@ -26,7 +26,7 @@
 
 
 
-output_filename =               'casadi_5';
+output_filename =               'casadi_12_2';
 car_width =                     2.7;
 car_length_back =               1.3;
 car_length_front =              5.3;
@@ -35,10 +35,10 @@ max_steering_radians =          0.7;
 numberofangles =                8;
 steeringanglepartitions =       1;
 steeringanglecardinality =      1;
-distance =                      1;
-cell_size =                     1;
+distance =                      12;
+cell_size =                     2;
 
-plotting =                      0;
+plotting =                      1;
 
 % -------------------------------------------------------------------------
 % ============================= PARAMETERS ================================
@@ -57,16 +57,16 @@ backwardturncostmult = 1.0;
 approxError = 10e-05;
 
 % max hinge angle rate in rad/s
-max_steering_angle_rate = 1;
+max_steering_angle_rate = 5;
 
 % assumed longitudinal speed to calculate the hinge angle rate (m/s)
-%assumed_longitudinal_speed = 0.85;
-assumed_longitudinal_speed = 0.4;
+assumed_longitudinal_speed = 0.55;
+%assumed_longitudinal_speed = 0.4;
 
 % primitives connecting point A and B should not be longer than
 % allowed_primitive_length_multiplier * linear_distance(A,B)
-%allowed_primitive_length_multiplier = 1.5;
-allowed_primitive_length_multiplier = 1.3;
+allowed_primitive_length_multiplier = 2.5;
+%allowed_primitive_length_multiplier = 1.3;
 
 %
 % -------------------------------------------------------------------------

@@ -8,7 +8,7 @@ load('bounds.mat');
 
 solution = 0;
 motion = 0;
-if  (abs(start(3)-goal(3)) > 1.58 && goal(1)~=0)
+if  (abs(start(3)-goal(3)) > 1.58)
     fprintf("angolo");
     return
 end
