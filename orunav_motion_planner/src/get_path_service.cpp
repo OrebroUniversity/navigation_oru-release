@@ -65,14 +65,17 @@ public:
       param_nh.param<std::string>("lookup_tables_directory", lookup_tables_dir_, "./LookupTables/");
       param_nh.param<std::string>("maps_directory", maps_dir_, "./");
       std::string model, model2, model3, model4, model5;
-      param_nh.param<std::string>("model", model, "");
+      
       param_nh.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.001);
       param_nh.param<bool>("save_paths", save_paths_, false);
       param_nh.param<bool>("biSteering", BS, false);
+
+      param_nh.param<std::string>("model", model, "");
       param_nh.param<std::string>("model2", model2, "");
       param_nh.param<std::string>("model3", model3, "");
       param_nh.param<std::string>("model4", model4, "");
       param_nh.param<std::string>("model5", model5, "");
+
       param_nh.param<int>("num_of_sets", sets, 1);
       
       
@@ -98,7 +101,7 @@ public:
         //Dual steer end
       }
       else{ 
-        f << "set of primitives: " << model << std::endl ;
+        f << "set of primitives: \n1) " << model << std::endl ;
         vehicle_model_ = new CarModel(model);
         f << "total primitives: " << vehicle_model_->getTotalPrimitives() << std::endl;
       }
@@ -140,10 +143,15 @@ public:
     std::ofstream f;
     f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
     f << "\n -- mission number " << mission << " --" << std::endl;
+    f << "goalID:  " << tgt.task_id << std::endl;
     f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
     f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
     
     f.close();
+
+
+    drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation) );
+    drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation) );
 
 
     WorldOccupancyMap planner_map;
@@ -173,6 +181,9 @@ public:
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
 
+    
+    
+    
     pf->addMission(&vm);
     if (req.max_planning_time > 0)
       pf->setTimeBound(req.max_planning_time);
@@ -244,6 +255,18 @@ public:
     f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
     f << "total length: " << path.getLength() << std::endl;
     f << "cuspidi: " << cuspidi(path) << std::endl;
+
+    f << "path: "<< std::endl;
+    for (unsigned int i = 0; i < path.sizePath(); i++)
+      {
+      f << path.getPose2d(i)(0) << " "
+          << path.getPose2d(i)(1) << " "
+          << path.getPose2d(i)(2) << " "
+          << path.getSteeringAngle(i) << " "
+          << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
+          }	  
+    f.close();
+  
     
 
     res.valid = solution_found;
@@ -269,10 +292,13 @@ public:
         orunav_rviz::drawPose2dContainer(orunav_generic::minIncrementalDistancePath(path_dir_change, 0.2), "path_subsampled", 1, marker_pub_);
       }
 
+
+
       if (save_paths_) {
         orunav_generic::Path path = orunav_conversions::createPathFromPathMsg(res.path);
         std::stringstream st;
         st << "path_" << res.path.robot_id << "-" << res.path.goal_id << ".path";
+        
         std::string fn = st.str();
         
         orunav_generic::savePathTextFile(path, fn);
@@ -333,6 +359,50 @@ public:
         if ((y1-y0) > m*(x1-x0)){ return 1;}
       }
       return -1;
+  }
+
+  void drawFootPrint (std::string name, double x, double y, double th){
+        vehicleSimplePoint p;
+        // double x =  tgt.start.pose.position.x;
+        // double y =  tgt.start.pose.position.y;
+        // double th = tf::getYaw(tgt.start.pose.orientation);
+        double x_min=100, x_max=0, y_min=100, y_max=0;
+        double x_tr = -100, y_tr=-100, x_tl = 100, y_tl = -100, x_bl = 100 ,y_bl = 100 , x_br = -100 , y_br = 100;
+
+        p.initVehicleSimplePoint(x , y , th , 0.0 );
+        std::vector<cellPosition*> cells;
+        cells = vehicle_model_->getCellsOccupiedInPosition( &p);
+        for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
+              std::cout <<(*it)->x_cell << "  "<< (*it)->y_cell << std::endl;
+              // if ( (*it)->x_cell >=  x_tr &&  (*it)->y_cell >= y_tr ) {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}
+              // if ( (*it)->x_cell <=  x_tl &&  (*it)->y_cell >= y_tl ) {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}
+              // if ( (*it)->x_cell >=  x_br &&  (*it)->y_cell <= y_br ) {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
+              // if ( (*it)->x_cell <=  x_bl &&  (*it)->y_cell <= y_bl ) {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
+
+              if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell > x_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
+              if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell < x_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
+
+              if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell > x_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
+              if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell < x_tl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
+              
+              if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell > y_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
+              if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell < y_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
+
+              if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell > y_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
+              if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell < y_bl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
+
+              if ( (*it)->y_cell > y_max ) {y_max = (*it)->y_cell;   x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}
+              if ( (*it)->y_cell < y_min ) {y_min = (*it)->y_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
+              if ( (*it)->x_cell > x_max ) {x_max = (*it)->x_cell;   x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
+              if ( (*it)->x_cell < x_min ) {x_min = (*it)->x_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
+
+
+        }
+        orunav_rviz::drawSphere(x_tr+1,y_tr+1,0.5 ,1,name,marker_pub_);
+        orunav_rviz::drawSphere(x_tl,y_tl+1,0.5 ,2,name,marker_pub_);
+        orunav_rviz::drawSphere(x_bl,y_bl,0.5 ,3,name,marker_pub_);
+        orunav_rviz::drawSphere(x_br+1,y_br,0.5 ,4,name,marker_pub_);
+        getchar();
   }
 
 };
