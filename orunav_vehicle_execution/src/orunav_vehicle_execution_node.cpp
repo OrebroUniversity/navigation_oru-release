@@ -246,6 +246,7 @@ private:
 
   bool real_cititruck_;
   bool no_smoothing_;
+  bool mpc_smoothed_;
   bool resolve_motion_planning_error_;
 
   std::set<int> ebrake_id_set_;
@@ -327,6 +328,7 @@ public:
     paramHandle.param<bool>("start_driving_after_recover", start_driving_after_recover_, true);
     paramHandle.param<bool>("real_cititruck", real_cititruck_, false);
     paramHandle.param<bool>("no_smoothing", no_smoothing_, false);
+    paramHandle.param<bool>("mpc_smoothed", mpc_smoothed_, false); // cecchi
     paramHandle.param<bool>("resolve_motion_planning_error", resolve_motion_planning_error_, true);
 
     paramHandle.param<double>("max_linear_vel_pallet_picking", max_linear_vel_pallet_picking_, 0.1);
@@ -918,7 +920,7 @@ public:
                                                                                                   orunav_conversions::createState2dFromPoseSteeringMsg(target.goal));
 
     //// cecchi
-    if (true){
+    if (mpc_smoothed_){
       
       ROS_INFO("[KMOVehicleExecutionNode] - get_smoothed_controll - try");
     
@@ -969,10 +971,6 @@ public:
       no_smoothing_ = true;
     }
     // ///
-    
-    // getchar();
-    // no_smoothing_ = true;//Cecchi_add NO smoothing 
-    ////
 
     if (!no_smoothing_)
     {
@@ -1153,6 +1151,9 @@ public:
     msg.status = orunav_msgs::ComputeTaskStatus::COMPUTE_TASK_SUCCESS;
     compute_status_pub_.publish(msg);
 
+
+    
+
     return true;
   }
 
@@ -1221,6 +1222,8 @@ public:
     inputs_mutex_.unlock();
 
     cond_.notify_one();
+
+
     return true;
   }
 

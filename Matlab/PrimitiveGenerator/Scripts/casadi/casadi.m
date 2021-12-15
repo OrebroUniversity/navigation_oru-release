@@ -3,15 +3,32 @@ addpath('/home/ubuntu18/catkin_ws/src/navigation_oru/Matlab/PrimitiveGenerator/S
 import casadi.*
 %N = 100; % number of control intervals
 load('bounds.mat');
-
-
+% N=200;
+if goal(1)>0
+    max_vel_low = 0;%0
+    max_vel_up = max_vel;
+    mt = 1;
+else
+    max_vel_low = max_vel;
+    max_vel_up = 0;%0
+    mt = -1;
+end
 
 solution = 0;
 motion = 0;
-if  (abs(start(3)-goal(3)) > 1.58)
-    fprintf("angolo");
-    return
+z = goal(3) - start(3);
+z = atan2(sin(z), cos(z));
+
+% not safely computable
+if abs(z) > (2/4 * pi) %3/4
+    %fprintf(1, 'No solution');
+    return;
 end
+
+% if  (abs(start(3)-goal(3)) > 1.58)
+%     fprintf("angolo");
+%     return
+% end
 
 opti = casadi.Opti();
 
@@ -57,12 +74,19 @@ U  =   opti.variable(3,N);
  
     opti.subject_to( -max_steering <= phi1 <= max_steering);
     opti.subject_to( -max_steering <= phi2 <= max_steering);
-    opti.subject_to( -max_vel     <= v    <= max_vel);
+    opti.subject_to( -max_vel_low     <= v    <= max_vel_up);
+    
+   % for k = 2:N
+        %opti.subject_to( v(k)/abs(v(k) ) == v(k-1)/abs(v(k-1)) );
+        %diff = v(k)/abs(v(k) ) - v(k-1)/abs(v(k-1));
+        %diff = abs(diff);
+        %obj = obj + 1000*diff;
+   % end
 
     % --- velocity constraints ---
     opti.subject_to( -max_dv <= dv  <= max_dv);
     opti.subject_to( -max_dw   <= dw  <= max_dw);
-    opti.subject_to( -max_dw   <= dwr <= max_dw);
+    opti.subject_to( -max_dw  <= dwr <= max_dw);
 
   
     % ---  boundary start conitions ---
@@ -89,14 +113,16 @@ U  =   opti.variable(3,N);
     
     solution = [sol.value(x)',sol.value(y)',sol.value(th)',sol.value(phi1)',sol.value(phi2)'];
     solution = round(solution,3);
+    sol_v = sol.value(v);
     catch
      %   opti.debug;
         fprintf("NO SOLUTION");
         return;
     end
     for i = 1:N
-        motion(i) = 1;
+        motion(i) = mt;
     end
+    %motion = sol_v;
     
     if plot_flag
         plot(solution(:,1),solution(:,2));

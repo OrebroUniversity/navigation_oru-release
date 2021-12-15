@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <math.h>
 namespace orunav_generic {
 
   class RobotInternalState2d {
@@ -234,6 +235,100 @@ namespace orunav_generic {
         length +=  sqrt(pow(poses.getPose2d(i)(0)-poses.getPose2d(i+1)(0),2) + pow(poses.getPose2d(i)(1)-poses.getPose2d(i+1)(1),2));
       }
       return length;
+    }
+
+    double wrap_rads( double r )
+    {
+    while ( r > M_PI ) { r -= 2 * M_PI;}
+    while ( r <= -M_PI ) {r += 2 * M_PI;}
+    return r;
+    }
+
+    int findDir(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
+      double s_x = prev(0); double s_y = prev(1); double s_o = wrap_rads(prev(2));
+      double g_x = next(0); double g_y = next(1); double g_o = wrap_rads(next(2));
+      
+      
+      
+      double alfa,beta,x,y;
+      int direction = 0;
+
+      if (s_x == g_x && s_y == g_y && s_o == g_o){
+        alfa = s_o;
+        beta = 0;
+        direction = 0;
+      }
+      else{
+
+        x = g_x - s_x;
+        y = g_y - s_y;
+        alfa = atan2(y,x);
+        beta = alfa - s_o;
+        beta = atan2(sin(beta),cos(beta));
+        if (abs(beta) < 1.58){
+            direction = 1;
+        }
+        else{
+            direction = -1;
+        }
+      }
+      return direction;
+
+    };
+
+    int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
+      double x0 = prev(0); double y0 = prev(1); double th = prev(2);
+      double x1 = next(0); double y1 = next(1);
+      th = wrap_rads(th);
+      double m ,sign = 1;
+      //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
+      if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
+          m=1000;
+          if (th < 3){
+            if ((y1-y0) < m*(x1-x0)) return 1;
+            else return -1;
+          }
+          else{
+            if ((y1-y0) > m*(x1-x0)) return 1;
+            else return -1;
+          }
+        }
+      else{ m = tan(th+M_PI/2);}
+      std::cout << " " << th;
+      if (signbit(th) == 1){
+        if ((y1-y0) < m*(x1-x0)){std::cout << " a "; return 1;}
+      }
+      else {
+        if ((y1-y0) > m*(x1-x0)){std::cout << " b "; return 1;}
+      }
+      //std::cout << " c ";
+      return -1;
+    }
+
+    int cuspidi(int incr ){
+      int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
+      int cuspide = 0;
+      int inc = 1 + incr;
+      for (int i = 0; i < poses.sizePose2d()-2; i += inc){
+        if (motion != 0){
+        motion_old3 = motion_old2;
+        motion_old2 = motion_old;
+        motion_old = motion;
+        }
+        //motion = findDirection(poses.getPose2d(i) , poses.getPose2d(i+inc));
+        motion = findDir(poses.getPose2d(i) , poses.getPose2d(i+inc));
+        //std::cout << " " << motion << std::endl;
+        //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
+        //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
+        //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
+        if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
+            cuspide += 1;
+            //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
+        }
+        //getchar();
+      }
+      std::cout << "total cuspidi" << cuspide << std::endl;
+      return cuspide;
     }
                                                                                                                                                                         
     State2d getState2d(size_t idx) const { return State2d(*this, idx); }

@@ -23,20 +23,20 @@
 % ========================== SCRIPT PARAMETERS ============================
 % -------------------------------------------------------------------------
 
+startTime = datetime;
 
 
-
-output_filename =               'casadi_12_2';
+output_filename =               'casadi_5_new'; %casadi_12_2
 car_width =                     2.7;
 car_length_back =               1.3;
-car_length_front =              5.3;
+car_length_front =              4.5;
 distance_between_axes =         3.2;
 max_steering_radians =          0.7;
 numberofangles =                8;
 steeringanglepartitions =       1;
 steeringanglecardinality =      1;
-distance =                      12;
-cell_size =                     2;
+distance =                      5;
+cell_size =                     1;
 
 plotting =                      1;
 
@@ -65,7 +65,7 @@ assumed_longitudinal_speed = 0.55;
 
 % primitives connecting point A and B should not be longer than
 % allowed_primitive_length_multiplier * linear_distance(A,B)
-allowed_primitive_length_multiplier = 2.5;
+allowed_primitive_length_multiplier = 1.5;
 %allowed_primitive_length_multiplier = 1.3;
 
 %
@@ -73,6 +73,7 @@ allowed_primitive_length_multiplier = 2.5;
 % ======================== PRIMITIVE GENERATION ===========================
 % -------------------------------------------------------------------------
 
+tic;
 base_primitives_filename = sprintf('%s_all_baseprims.mat', output_filename);
 
 % orientation and steering granularity + the initial steering ID
@@ -262,7 +263,15 @@ for angleind = 1:numberofangles/8+1
             if sqrt(goal_x^2 + goal_y^2) > distance + approxError 
                 valid_primitive = false;
             end
-            
+            %
+            z = goal_o - start_o;
+            z = atan2(sin(z), cos(z));
+
+            % not safely computable
+            if abs(z) > (3/4 * pi)
+                %fprintf(1, 'No solution');
+                valid_primitive = false;
+            end
             % prune primitives which are too long
             if valid_primitive
                 % calculate primitive length
@@ -274,6 +283,14 @@ for angleind = 1:numberofangles/8+1
                     valid_primitive = false;
                 end
             end
+            
+            %cuspidi
+            cusp = cuspidi(traj_x,traj_y,traj_o,0);
+            %valid_primitive = false;
+            if cusp ~= 0
+                valid_primitive = false;
+            end
+             
             
             if valid_primitive
                 temp_primitives{angleind,steerind}{size(temp_primitives{angleind,steerind},2)+1} = original;
@@ -318,13 +335,13 @@ for angleind = 1:numberofangles/8+1
                 dt = partial_distance / assumed_longitudinal_speed;
                 current_rate = (abs(atan2(sin(traj_phi(index,1) - traj_phi(index-1,1)), cos(traj_phi(index,1) - traj_phi(index-1,1))))) / dt;
                 if current_rate > max_steering_angle_rate * 1.02
-                    valid_primitive = false;
+                    %valid_primitive = false;
                 else
                     if current_rate > max_steering_angle_rate
                         hinge_error_counter = hinge_error_counter - 1;
                     end
                     if hinge_error_counter <= 0
-                        valid_primitive = false;
+                        %valid_primitive = false;
                     end
                 end
                 if valid_primitive == false
@@ -581,7 +598,14 @@ for angleind = 1:numberofangles
     
     %%% EOF
 end
-fclose('all');
+
+total_time = toc;
+endTime = datetime;
+display(startTime)
+display(total_time);
+display(endTime)
+
+%fclose('all');
 
 
 

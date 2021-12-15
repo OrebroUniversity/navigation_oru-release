@@ -15,6 +15,9 @@
 #include <string>
 #include <fstream>
 #include <math.h>
+#include <chrono>
+#include <ctime>
+
 
 
 #include <boost/archive/text_oarchive.hpp>
@@ -58,6 +61,10 @@ public:
     std::ofstream f;
 	  f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
     f <<"\n=================================\n"<<std::endl;
+    std::time_t t = std::time(NULL);
+    char date_time[100];
+    if (std::strftime(date_time, 100, "%d/%m/%Y %T", std::localtime(&t))) {
+      f << "date: " << date_time << std::endl;}
     
 
       // read parameters
@@ -254,7 +261,7 @@ public:
     dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
     f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
     f << "total length: " << path.getLength() << std::endl;
-    f << "cuspidi: " << cuspidi(path) << std::endl;
+    f << "cuspidi: " << path.cuspidi(4) << std::endl;
 
     f << "path: "<< std::endl;
     for (unsigned int i = 0; i < path.sizePath(); i++)
@@ -315,51 +322,51 @@ public:
 
 
   /*find cuspidi*/
-  int cuspidi( orunav_generic::Path path){
-    int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
-    int cuspide = 0;
-    for (int i = 0; i < path.sizePath()-2; i += 5){
-      motion_old3 = motion_old2;
-      motion_old2 = motion_old;
-      motion_old = motion;
-      motion = findDirection(path.getPose2d(i) , path.getPose2d(i+5));
-      //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
-       //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
-       //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
-      if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
-          cuspide += 1;
-          //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
-      }
-      //getchar();
-    }
-    std::cout << "total cuspidi" << cuspide << std::endl;
-    return cuspide;
-  }
+  // int cuspidi( orunav_generic::Path path){
+  //   int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
+  //   int cuspide = 0;
+  //   for (int i = 0; i < path.sizePath()-2; i += 5){
+  //     motion_old3 = motion_old2;
+  //     motion_old2 = motion_old;
+  //     motion_old = motion;
+  //     motion = findDirection(path.getPose2d(i) , path.getPose2d(i+5));
+  //     //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
+  //      //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
+  //      //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
+  //     if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
+  //         cuspide += 1;
+  //         //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
+  //     }
+  //     //getchar();
+  //   }
+  //   std::cout << "total cuspidi" << cuspide << std::endl;
+  //   return cuspide;
+  // }
 
-  /*compute the direction of the vehicle
-      1 forward
-      -1 backward*/
-  int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
-      double x0 = prev(0); double y0 = prev(1); double th = prev(2);
-      double x1 = next(0); double y1 = next(1);
-      double m ,sign = 1;
-      //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
-      if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
-          m=1000;
+  // /*compute the direction of the vehicle
+  //     1 forward
+  //     -1 backward*/
+  // int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
+  //     double x0 = prev(0); double y0 = prev(1); double th = prev(2);
+  //     double x1 = next(0); double y1 = next(1);
+  //     double m ,sign = 1;
+  //     //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
+  //     if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
+  //         m=1000;
           
-          if ((y1-y0) < m*(x1-x0)) return 1;
-          else return -1;
-        }
-      else{ m = tan(th+M_PI/2);}
+  //         if ((y1-y0) < m*(x1-x0)) return 1;
+  //         else return -1;
+  //       }
+  //     else{ m = tan(th+M_PI/2);}
       
-      if (signbit(th) == 1){
-        if ((y1-y0) < m*(x1-x0)){ return 1;}
-      }
-      else {
-        if ((y1-y0) > m*(x1-x0)){ return 1;}
-      }
-      return -1;
-  }
+  //     if (signbit(th) == 1){
+  //       if ((y1-y0) < m*(x1-x0)){ return 1;}
+  //     }
+  //     else {
+  //       if ((y1-y0) > m*(x1-x0)){ return 1;}
+  //     }
+  //     return -1;
+  // }
 
   void drawFootPrint (std::string name, double x, double y, double th){
         vehicleSimplePoint p;
@@ -373,11 +380,8 @@ public:
         std::vector<cellPosition*> cells;
         cells = vehicle_model_->getCellsOccupiedInPosition( &p);
         for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
-              std::cout <<(*it)->x_cell << "  "<< (*it)->y_cell << std::endl;
-              // if ( (*it)->x_cell >=  x_tr &&  (*it)->y_cell >= y_tr ) {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}
-              // if ( (*it)->x_cell <=  x_tl &&  (*it)->y_cell >= y_tl ) {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}
-              // if ( (*it)->x_cell >=  x_br &&  (*it)->y_cell <= y_br ) {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
-              // if ( (*it)->x_cell <=  x_bl &&  (*it)->y_cell <= y_bl ) {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
+              //std::cout <<(*it)->x_cell << "  "<< (*it)->y_cell << std::endl;
+              
 
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell > x_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell < x_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
@@ -402,7 +406,7 @@ public:
         orunav_rviz::drawSphere(x_tl,y_tl+1,0.5 ,2,name,marker_pub_);
         orunav_rviz::drawSphere(x_bl,y_bl,0.5 ,3,name,marker_pub_);
         orunav_rviz::drawSphere(x_br+1,y_br,0.5 ,4,name,marker_pub_);
-        getchar();
+        //getchar();
   }
 
 };
