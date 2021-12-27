@@ -116,7 +116,7 @@ public:
 
       
 
-      param_nh.param<bool>("visualize",visualize_,false);
+      param_nh.param<bool>("visualize",visualize_,true);
       if (visualize_)
 	{
 	  ROS_INFO("[GetPathService] -  The output is visualized using /visualization_markers (in rviz).");
@@ -192,6 +192,7 @@ public:
     
     
     pf->addMission(&vm);
+    req.max_planning_time = 0;
     if (req.max_planning_time > 0)
       pf->setTimeBound(req.max_planning_time);
     

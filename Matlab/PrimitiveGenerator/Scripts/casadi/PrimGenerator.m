@@ -26,7 +26,7 @@
 startTime = datetime;
 
 
-output_filename =               'casadi_5_new'; %casadi_12_2
+output_filename =               'casadi_dense_new'; %casadi_12_2
 car_width =                     2.7;
 car_length_back =               1.3;
 car_length_front =              4.5;
@@ -35,10 +35,10 @@ max_steering_radians =          0.7;
 numberofangles =                8;
 steeringanglepartitions =       1;
 steeringanglecardinality =      1;
-distance =                      5;
+distance =                      14;
 cell_size =                     1;
 
-plotting =                      1;
+plotting =                      0;
 
 % -------------------------------------------------------------------------
 % ============================= PARAMETERS ================================

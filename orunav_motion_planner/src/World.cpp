@@ -167,7 +167,9 @@ void World::resetVisualization() {
 }
 
 void World::visualizeConfigurations(std::vector<Configuration*> confs) {
-	if (visualization_) {
+	
+	if (visualization_) { //test visualization_
+
 		visualizer_->drawConfigurations(confs);
 	}
 }

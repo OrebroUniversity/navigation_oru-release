@@ -86,6 +86,7 @@ std::vector<vehicleSimplePoint> Configuration::getTrajectory() {
 	std::vector<vehicleSimplePoint> trajectory;
 	// this configuration has been generated from a non-dummy motion primitive
 	/** @todo CHECK */
+	std::cout<< "help";
 	if (primitiveOfThisConfiguration_ != 0 && this->getPrimitiveOfThisConfiguration()->getDistanceCovered() > 0) {
 		// calculate it from the motion primitive
 		double startX = (xcell_ - this->getPrimitiveOfThisConfiguration()->getXOffset()) * WP::WORLD_SPACE_GRANULARITY;

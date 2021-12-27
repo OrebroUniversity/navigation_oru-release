@@ -106,10 +106,17 @@ void DiscWorldVisualizer::drawGoal(Configuration* conf, int vehicleID) {
 }
 
 void DiscWorldVisualizer::drawConfigurations(std::vector<Configuration*> confs) {
+	std::cout <<"1";
+	this->drawPath((*confs.begin())->getTrajectory(), R[1], G[1], B[1]);
+	std::cout <<"2";
 	for (std::vector<Configuration*>::iterator it = confs.begin(); it != confs.end(); it++) {
+		std::cout<<"draw 1?";
 		unsigned short int ind = (*it)->getMission()->getVehicleID() % AVAIL_COLORS;
+		std::cout<<"draw 2?";
 		this->drawPath((*it)->getTrajectory(), R[ind], G[ind], B[ind]);
+		std::cout<<"draw 3?";
 		this->drawConfiguration(*it, R[ind], G[ind], B[ind]);
+
 	}
 
 }
