@@ -227,7 +227,7 @@ public:
     
     //f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
 
-    double dist = sqrt( pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
+    double dist = sqrt(pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
     double orient = abs(start_orientation- path.getPose2d(0)(2));
     //f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
     
@@ -287,27 +287,19 @@ public:
 
   void drawFootPrint(std::string name, double x, double y, double th) {
         vehicleSimplePoint p;
-        double x_min=100, x_max=0, y_min=100, y_max=0;
-        double x_tr = -100, y_tr=-100, x_tl = 100, y_tl = -100, x_bl = 100 ,y_bl = 100 , x_br = -100 , y_br = 100;
+        double x_min = std::numeric_limits<double>::max(), x_max = std::numeric_limits<double>::min(), 
+            y_min = std::numeric_limits<double>::max(), y_max = std::numeric_limits<double>::min();
 
         p.initVehicleSimplePoint(x, y, th, 0.0);
         std::vector<cellPosition*> cells;
         cells = vehicle_model_->getCellsOccupiedInPosition(&p);
         
-        //Find vertices TODO optimize code
+        //Find the four vertices
         for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
-              if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell > x_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
-              if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell < x_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
-              if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell > x_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
-              if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell < x_tl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
-              if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell > y_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
-              if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell < y_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
-              if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell > y_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
-              if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell < y_bl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
-              if ( (*it)->y_cell > y_max ) {y_max = (*it)->y_cell;   x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}
-              if ( (*it)->y_cell < y_min ) {y_min = (*it)->y_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
-              if ( (*it)->x_cell > x_max ) {x_max = (*it)->x_cell;   x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
-              if ( (*it)->x_cell < x_min ) {x_min = (*it)->x_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
+              if ( (*it)->y_cell > y_max ) y_max = (*it)->y_cell;
+              if ( (*it)->y_cell < y_min ) y_min = (*it)->y_cell;
+              if ( (*it)->x_cell > x_max ) x_max = (*it)->x_cell;
+              if ( (*it)->x_cell < x_min ) x_min = (*it)->x_cell;
         }
         
         //Create the polygon and publish it
@@ -321,23 +313,23 @@ public:
         line_strip.color.g = 1.0;
         line_strip.color.a = 1.0;
         
-        geometry_msgs::Point p1, p2, p3, p4;
-        p1.x = x_tr;
-        p1.y = y_tr;
-        line_strip.points.push_back(p1);
+        geometry_msgs::Point ptr, pbr, pbl, ptl;
+        ptr.x = x_max;
+        ptr.y = y_max;
+        line_strip.points.push_back(ptr);
         
-        p2.x = x_br;
-        p2.y = y_br;
-        line_strip.points.push_back(p2);
+        pbr.x = x_max;
+        pbr.y = y_min;
+        line_strip.points.push_back(pbr);
         
-        p3.x = x_bl;
-        p3.y = y_bl;
-        line_strip.points.push_back(p3);
+        pbl.x = x_min;
+        pbl.y = y_min;
+        line_strip.points.push_back(pbl);
 
-        p4.x = x_tl;
-        p4.y = y_tl;
-        line_strip.points.push_back(p4);
-        line_strip.points.push_back(p1);
+        ptl.x = x_min;
+        ptl.y = y_max;
+        line_strip.points.push_back(ptl);
+        line_strip.points.push_back(ptr);
         
         marker_pub_.publish(line_strip);
   }
