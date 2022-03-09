@@ -140,8 +140,8 @@ public:
     f.close();*/
 
 
-    //drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation) );
-    //drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation) );
+    drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation));
+    drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation));
     WorldOccupancyMap planner_map;
     convertNavMsgsOccupancyGridToWorldOccupancyMapRef(req.map, planner_map);
 
@@ -285,37 +285,61 @@ public:
     
   }
 
-  void drawFootPrint(std::string name, double x, double y, double th){
+  void drawFootPrint(std::string name, double x, double y, double th) {
         vehicleSimplePoint p;
         double x_min=100, x_max=0, y_min=100, y_max=0;
         double x_tr = -100, y_tr=-100, x_tl = 100, y_tl = -100, x_bl = 100 ,y_bl = 100 , x_br = -100 , y_br = 100;
 
-        p.initVehicleSimplePoint(x , y , th , 0.0 );
+        p.initVehicleSimplePoint(x, y, th, 0.0);
         std::vector<cellPosition*> cells;
         cells = vehicle_model_->getCellsOccupiedInPosition(&p);
+        
+        //Find vertices TODO optimize code
         for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell > x_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell < x_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
-
               if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell > x_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
               if ( (*it)->y_cell == y_min ) {if ( (*it)->x_cell < x_tl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
-              
               if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell > y_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
               if ( (*it)->x_cell == x_max ) {if ( (*it)->y_cell < y_br )  {x_br = (*it)->x_cell; y_br = (*it)->y_cell;}}
-
               if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell > y_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
               if ( (*it)->x_cell == x_min ) {if ( (*it)->y_cell < y_bl )  {x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}}
-
               if ( (*it)->y_cell > y_max ) {y_max = (*it)->y_cell;   x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}
               if ( (*it)->y_cell < y_min ) {y_min = (*it)->y_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
               if ( (*it)->x_cell > x_max ) {x_max = (*it)->x_cell;   x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
               if ( (*it)->x_cell < x_min ) {x_min = (*it)->x_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
         }
-        orunav_rviz::drawSphere(x_tr+1,y_tr+1,0.5 ,1,name,marker_pub_);
-        orunav_rviz::drawSphere(x_tl,y_tl+1,0.5 ,2,name,marker_pub_);
-        orunav_rviz::drawSphere(x_bl,y_bl,0.5 ,3,name,marker_pub_);
-        orunav_rviz::drawSphere(x_br+1,y_br,0.5 ,4,name,marker_pub_);
-        //getchar();
+        
+        //Create the polygon and publish it
+        visualization_msgs::Marker line_strip;
+        line_strip.id = 0;
+        line_strip.type = visualization_msgs::Marker::LINE_STRIP;
+        line_strip.action = visualization_msgs::Marker::ADD;
+        line_strip.header.frame_id = "map";
+        line_strip.header.stamp = ros::Time::now();
+        line_strip.scale.x = 0.1;
+        line_strip.color.g = 1.0;
+        line_strip.color.a = 1.0;
+        
+        geometry_msgs::Point p1, p2, p3, p4;
+        p1.x = x_tr;
+        p1.y = y_tr;
+        line_strip.points.push_back(p1);
+        
+        p2.x = x_br;
+        p2.y = y_br;
+        line_strip.points.push_back(p2);
+        
+        p3.x = x_bl;
+        p3.y = y_bl;
+        line_strip.points.push_back(p3);
+
+        p4.x = x_tl;
+        p4.y = y_tl;
+        line_strip.points.push_back(p4);
+        line_strip.points.push_back(p1);
+        
+        marker_pub_.publish(line_strip);
   }
 
 };
