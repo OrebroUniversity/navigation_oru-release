@@ -30,17 +30,12 @@ class DualSteerModel: public VehicleModel {
 	/** number of primitives set */
 	int sets;
 	int currentSet;
-	double min_granularity ;
 
 protected:
 
-	/** The name of the file containing the motion primitives */
-	
-/**
-	 * Implementation of the virtual function. Generates the file that contains the
+	 /* Implementation of the virtual function. Generates the file that contains the
 	 * additional data of the motion primitives (length, occupancy)
 	 */
-	
 	void generatePrimitiveAdditionalData();
 
 	/**
@@ -57,9 +52,8 @@ public:
 	 * of the Car are contained in the model primitives file
 	 * @param modelPrimitivesFilename The name of the file of the motion primitives, without path!
 	 */
-	DualSteerModel(std::string modelPrimitivesFilename[], int set);
-	
-	DualSteerModel(std::array<std::string,5>  modelPrimitivesFilename, int set);
+	DualSteerModel(std::array<std::string,5> modelPrimitivesFilenameS, int set = 5);
+
 	virtual ~DualSteerModel();
 
 	/**

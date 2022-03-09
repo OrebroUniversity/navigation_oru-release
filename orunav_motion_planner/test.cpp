@@ -3,9 +3,8 @@
 #include <string>
 
 
-#include "/home/ubuntu18/catkin_ws/src/navigation_oru/orunav_motion_planner/include/orunav_motion_planner/CarModel.h";
-
-#include "/home/ubuntu18/catkin_ws/src/navigation_oru/orunav_motion_planner/include/orunav_motion_planner/PathFinder.h";
+#include "orunav_motion_planner/CarModel.h";
+#include "orunav_motion_planner/PathFinder.h";
 
 
 

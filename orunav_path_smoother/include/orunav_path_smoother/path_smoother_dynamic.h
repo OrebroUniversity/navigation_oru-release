@@ -659,10 +659,10 @@ class PathSmootherDynamic : public PathSmootherInterface
       std::cout << "#######\nSOLUTION FIND IN : " << duration.total_milliseconds() << "ms \nfor a trajectory dived in:" << si.size() << std::endl;
       std::cout << "#######\ntrajSize : " << si.getTrajectory().sizePath() << " path / " << si.getTrajectory().sizeTrajectory() <<" trj" <<std::endl;
 
-      std::ofstream f;
+      /*std::ofstream f;
       f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
       f << "smoothed time ms: " << duration.total_milliseconds() << std::endl;
-      f.close();
+      f.close();*/
 
 
       return si.getTrajectory();

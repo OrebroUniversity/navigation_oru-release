@@ -172,7 +172,7 @@ public:
 	 */
 	VehicleModel(std::string modelPrimitivesFilename);
 
-	VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS,int set);
+	VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS, int set);
 	 
 
 	virtual ~VehicleModel();

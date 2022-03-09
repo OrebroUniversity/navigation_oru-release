@@ -56,84 +56,68 @@ private:
 
 
 public:
-  GetPathService(ros::NodeHandle param_nh, std::string name) 
-  {
-    std::ofstream f;
-	  f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-    f <<"\n=================================\n"<<std::endl;
-    std::time_t t = std::time(NULL);
-    char date_time[100];
-    if (std::strftime(date_time, 100, "%d/%m/%Y %T", std::localtime(&t))) {
-      f << "date: " << date_time << std::endl;}
-    
+  GetPathService(ros::NodeHandle param_nh, std::string name) {
+    //std::ofstream f;
+	//f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+    //f <<"\n=================================\n"<<std::endl;
+    //std::time_t t = std::time(NULL);
+    //char date_time[100];
+    //if (std::strftime(date_time, 100, "%d/%m/%Y %T", std::localtime(&t))) {
+    //f << "date: " << date_time << std::endl;}
 
       // read parameters
       param_nh.param<std::string>("motion_primitives_directory", motion_prim_dir_, "./Primitives/");
+      ROS_WARN_STREAM("motion_primitives_directory: " << motion_prim_dir_);
       param_nh.param<std::string>("lookup_tables_directory", lookup_tables_dir_, "./LookupTables/");
       param_nh.param<std::string>("maps_directory", maps_dir_, "./");
-      std::string model, model2, model3, model4, model5;
-      
+      ROS_WARN_STREAM("maps_directory: " << maps_dir_);
       param_nh.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.001);
       param_nh.param<bool>("save_paths", save_paths_, false);
       param_nh.param<bool>("biSteering", BS, false);
+      ROS_WARN_STREAM("biSteering: " << BS);
 
+      std::string model, model2, model3, model4, model5;
       param_nh.param<std::string>("model", model, "");
       param_nh.param<std::string>("model2", model2, "");
       param_nh.param<std::string>("model3", model3, "");
       param_nh.param<std::string>("model4", model4, "");
       param_nh.param<std::string>("model5", model5, "");
-
       param_nh.param<int>("num_of_sets", sets, 1);
       
-      
-
       WP::setPrimitivesDir(motion_prim_dir_);
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
-        WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
-      f << "double steering mode: " << BS << std::endl;
-      if (BS ==true){ 
-        f << "sets of primitives: " << std::endl;
+      WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
+      //f << "double steering mode: " << BS << std::endl;
+      if (BS) { 
+        //f << "sets of primitives: " << std::endl;
         //Dual steer start
-        std::array<std::string,5> models{model,model2,model3,model4,model5}; //Cecchi_add
-        //int sets = 4;
-        vehicle_model_ = new DualSteerModel(models,sets);//Cecchi_add
+        std::array<std::string,5> models{model, model2, model3, model4, model5}; //Cecchi_add
+        vehicle_model_ = new DualSteerModel(models, sets);//Cecchi_add
         WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
         WP::setVehicleType(WP::VehicleType::XA_4WS);
-        
         for(int i = 0; i < sets; i++){
           std::cout << " vehicle type:" << WP::VEHICLE_TYPE << " " << WP::NODE_EXPANSION_METHOD << std::endl;
-          ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n");//Cecchi_add
+          ROS_INFO_STREAM("\x1B[33m[GetPathService] - Using model : \033[0m" << models[i] << "\n"); //Cecchi_add
         }
-        //Dual steer end
       }
-      else{ 
-        f << "set of primitives: \n1) " << model << std::endl ;
+      else { 
+        //f << "set of primitives: \n1) " << model << std::endl ;
         vehicle_model_ = new CarModel(model);
-        f << "total primitives: " << vehicle_model_->getTotalPrimitives() << std::endl;
+        //f << "total primitives: " << vehicle_model_->getTotalPrimitives() << std::endl;
       }
-      f.close();
-
-      
-
+      //f.close();
       param_nh.param<bool>("visualize",visualize_,true);
-      if (visualize_)
-	{
-	  ROS_INFO("[GetPathService] -  The output is visualized using /visualization_markers (in rviz).");
-	  marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
-	}
-
+      if (visualize_) {
+        ROS_INFO("[GetPathService] -  The output is visualized using /visualization_markers (in rviz).");
+        marker_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
+      }
       service_ = nh_.advertiseService("get_path", &GetPathService::getPathCB, this);
-
-
   }
 
 
-  ~GetPathService()
-    {
-
+  ~GetPathService() {
       delete vehicle_model_;
-      
       ROS_INFO_STREAM("[GetPathService] - shutting down\n");
     }
 
@@ -147,20 +131,17 @@ public:
     ROS_INFO("[GetPathService] - goal :  [%f,%f,%f](%f)", tgt.goal.pose.position.x, tgt.goal.pose.position.y,tf::getYaw(tgt.goal.pose.orientation), tgt.goal.steering);
     
     mission += 1;
-    std::ofstream f;
+    /*std::ofstream f;
     f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
     f << "\n -- mission number " << mission << " --" << std::endl;
     f << "goalID:  " << tgt.task_id << std::endl;
     f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
     f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
-    
-    f.close();
+    f.close();*/
 
 
-    drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation) );
-    drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation) );
-
-
+    //drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation) );
+    //drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation) );
     WorldOccupancyMap planner_map;
     convertNavMsgsOccupancyGridToWorldOccupancyMapRef(req.map, planner_map);
 
@@ -188,9 +169,6 @@ public:
                       tgt.start.pose.position.x-map_offset_x, tgt.start.pose.position.y-map_offset_y, start_orientation, tgt.start.steering,
                       tgt.goal.pose.position.x-map_offset_x, tgt.goal.pose.position.y-map_offset_y, goal_orientation, tgt.goal.steering);
 
-    
-    
-    
     pf->addMission(&vm);
     req.max_planning_time = 0;
     if (req.max_planning_time > 0)
@@ -228,9 +206,6 @@ public:
        
       }
     }
-
-
-
     // Cleanup
     delete pf;
     for (std::vector<std::vector<Configuration*> >::iterator it = solution.begin(); it != solution.end(); it++) {
@@ -248,24 +223,21 @@ public:
       //solution_found = false;
       }
 
-
-    
     ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
     
-    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+    //f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
 
     double dist = sqrt( pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
     double orient = abs(start_orientation- path.getPose2d(0)(2));
-    f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
+    //f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
     
     orient = abs(goal_orientation- path.getPose2d(path.sizePath()-1)(2));
     dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
-    f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
-    f << "total length: " << path.getLength() << std::endl;
-    f << "cuspidi: " << path.cuspidi(4) << std::endl;
-
-    f << "path: "<< std::endl;
-    for (unsigned int i = 0; i < path.sizePath(); i++)
+    //f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
+    //f << "total length: " << path.getLength() << std::endl;
+    //f << "cuspidi: " << path.cuspidi(4) << std::endl;
+    //f << "path: "<< std::endl;
+    /*for (unsigned int i = 0; i < path.sizePath(); i++)
       {
       f << path.getPose2d(i)(0) << " "
           << path.getPose2d(i)(1) << " "
@@ -273,7 +245,7 @@ public:
           << path.getSteeringAngle(i) << " "
           << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
           }	  
-    f.close();
+    f.close();*/
   
     
 
@@ -300,16 +272,11 @@ public:
         orunav_rviz::drawPose2dContainer(orunav_generic::minIncrementalDistancePath(path_dir_change, 0.2), "path_subsampled", 1, marker_pub_);
       }
 
-
-
       if (save_paths_) {
         orunav_generic::Path path = orunav_conversions::createPathFromPathMsg(res.path);
         std::stringstream st;
-        st << "path_" << res.path.robot_id << "-" << res.path.goal_id << ".path";
-        
-        std::string fn = st.str();
-        
-        orunav_generic::savePathTextFile(path, fn);
+        st << "path_" << res.path.robot_id << "-" << res.path.goal_id << ".path";       
+        orunav_generic::savePathTextFile(path, st.str());
       }
       return true;
     }
@@ -317,73 +284,16 @@ public:
     return false;
     
   }
-  
 
-
-
-
-  /*find cuspidi*/
-  // int cuspidi( orunav_generic::Path path){
-  //   int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
-  //   int cuspide = 0;
-  //   for (int i = 0; i < path.sizePath()-2; i += 5){
-  //     motion_old3 = motion_old2;
-  //     motion_old2 = motion_old;
-  //     motion_old = motion;
-  //     motion = findDirection(path.getPose2d(i) , path.getPose2d(i+5));
-  //     //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
-  //      //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
-  //      //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
-  //     if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
-  //         cuspide += 1;
-  //         //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
-  //     }
-  //     //getchar();
-  //   }
-  //   std::cout << "total cuspidi" << cuspide << std::endl;
-  //   return cuspide;
-  // }
-
-  // /*compute the direction of the vehicle
-  //     1 forward
-  //     -1 backward*/
-  // int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
-  //     double x0 = prev(0); double y0 = prev(1); double th = prev(2);
-  //     double x1 = next(0); double y1 = next(1);
-  //     double m ,sign = 1;
-  //     //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
-  //     if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
-  //         m=1000;
-          
-  //         if ((y1-y0) < m*(x1-x0)) return 1;
-  //         else return -1;
-  //       }
-  //     else{ m = tan(th+M_PI/2);}
-      
-  //     if (signbit(th) == 1){
-  //       if ((y1-y0) < m*(x1-x0)){ return 1;}
-  //     }
-  //     else {
-  //       if ((y1-y0) > m*(x1-x0)){ return 1;}
-  //     }
-  //     return -1;
-  // }
-
-  void drawFootPrint (std::string name, double x, double y, double th){
+  void drawFootPrint(std::string name, double x, double y, double th){
         vehicleSimplePoint p;
-        // double x =  tgt.start.pose.position.x;
-        // double y =  tgt.start.pose.position.y;
-        // double th = tf::getYaw(tgt.start.pose.orientation);
         double x_min=100, x_max=0, y_min=100, y_max=0;
         double x_tr = -100, y_tr=-100, x_tl = 100, y_tl = -100, x_bl = 100 ,y_bl = 100 , x_br = -100 , y_br = 100;
 
         p.initVehicleSimplePoint(x , y , th , 0.0 );
         std::vector<cellPosition*> cells;
-        cells = vehicle_model_->getCellsOccupiedInPosition( &p);
+        cells = vehicle_model_->getCellsOccupiedInPosition(&p);
         for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
-              //std::cout <<(*it)->x_cell << "  "<< (*it)->y_cell << std::endl;
-              
-
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell > x_tr )  {x_tr = (*it)->x_cell; y_tr = (*it)->y_cell;}}
               if ( (*it)->y_cell == y_max ) {if ( (*it)->x_cell < x_tl )  {x_tl = (*it)->x_cell; y_tl = (*it)->y_cell;}}
 
@@ -400,8 +310,6 @@ public:
               if ( (*it)->y_cell < y_min ) {y_min = (*it)->y_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
               if ( (*it)->x_cell > x_max ) {x_max = (*it)->x_cell;   x_br = (*it)->x_cell; y_br = (*it)->y_cell;}
               if ( (*it)->x_cell < x_min ) {x_min = (*it)->x_cell;   x_bl = (*it)->x_cell; y_bl = (*it)->y_cell;}
-
-
         }
         orunav_rviz::drawSphere(x_tr+1,y_tr+1,0.5 ,1,name,marker_pub_);
         orunav_rviz::drawSphere(x_tl,y_tl+1,0.5 ,2,name,marker_pub_);

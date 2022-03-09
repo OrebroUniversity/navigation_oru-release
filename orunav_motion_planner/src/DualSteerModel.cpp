@@ -6,30 +6,33 @@
  */
 
 #include "orunav_motion_planner/DualSteerModel.h"
+#include <iostream>
 
 
-
-DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilename, int set) : VehicleModel(modelPrimitivesFilename, set) {
+DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenameS, int set) : VehicleModel(modelPrimitivesFilenameS, set) {
 	// initialization, then overwritten by the data read from the primitives file
 	carFrontLength_ = 0;
 	carBackLength_ = 0;
 	carMaxSteeringAngle_ = 0;
 	sets = set;
-	min_granularity = 100;
-	std::ofstream f;
-	f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-	//motionPrimitivesFilenameS_[0] = modelPrimitivesFilename;
-	for(int count; count < sets; count++){ //for each set
-		currentSet = count;
-		
-		this->loadPrimitiveLookupTable();
-		f << count+1<< ") " << modelPrimitivesFilename[count] << ": " << totalPrimitives << std::endl;
-		totalPrimitivesSets += totalPrimitives;
-		totalPrimitives=0;
+
+	for(int i = 0; i < sets; i++){ //for each set
+		motionPrimitivesFilenameS_[i] = std::string();
+		motionPrimitiveAdditionalDataFilenameS_[i] = std::string();
+		heuristicLTFilenameS_[i] = std::string();
+		(motionPrimitivesFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".mprim");
+		(motionPrimitiveAdditionalDataFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".adat");
+		(heuristicLTFilenameS_[i].append(WP::TABLES_DIR)).append(modelPrimitivesFilenameS[i]).append(".hst");
+		// load heuristic table
+		//loadHeuristicTable(heuristicLTFilenameS_[i]);
+        currentSet = i;
+        this->loadPrimitiveLookupTable();
+        totalPrimitivesSets += totalPrimitives;
+		totalPrimitives *= 0;
+		newEntriesInHT_ = false;
 	}
-	f << "total primitives: " << totalPrimitivesSets << std::endl;
-	f.close();
 }
+
 DualSteerModel::~DualSteerModel() {
 }
 
@@ -157,11 +160,11 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 			boost::regex_match(line, what, resolution, boost::match_extra);
 			if (what[0].matched) {
 				double worldRes = atof(what[1].str().c_str());
-				if (worldRes < min_granularity){
-					vehicleGranularity_ = worldRes;
-					min_granularity = worldRes;
-				}
-				WP::setWorldSpaceGranularity(vehicleGranularity_);
+                if (set == 0 || worldRes < WP::WORLD_SPACE_GRANULARITY) {
+                    vehicleGranularity_ = worldRes;
+                    WP::setWorldSpaceGranularity(vehicleGranularity_);
+                }
+                else vehicleGranularity_ = WP::WORLD_SPACE_GRANULARITY;
 			}
 
 			boost::regex_match(line, what, id, boost::match_extra);

@@ -8,6 +8,7 @@
 
 #include "orunav_motion_planner/VehicleModel.h"
 
+
 VehicleModel::VehicleModel(std::string modelPrimitivesFilename) {
 	// temporary values
 	width_ = -1;
@@ -32,9 +33,7 @@ VehicleModel::VehicleModel(std::string modelPrimitivesFilename) {
 }
 
 
-
-
-VehicleModel::VehicleModel(std::array<std::string,5>  modelPrimitivesFilenameS,int set) {
+VehicleModel::VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS, int set) {
 	// temporary values
 	width_ = -1;
 	length_ = -1;

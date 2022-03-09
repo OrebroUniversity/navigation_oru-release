@@ -158,9 +158,7 @@ bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
         orunav_rviz::drawPose2dContainer(smoothed_path, "path_smoother_new_path", 0, marker_pub);
     }
 
-
-
-    std::ofstream f;
+    /*std::ofstream f;
     f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
     f << "smoothed length: " << smoothed_path.getLength() << std::endl;
     //f << "smoothed cuspidu: " << smoothed_path.cuspidi(0) << std::endl;
@@ -175,7 +173,7 @@ bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
           << smoothed_path.getSteeringAngle(i) << " "
           << smoothed_path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
           }
-    f.close();
+    f.close();*/
 
     
     return true;
