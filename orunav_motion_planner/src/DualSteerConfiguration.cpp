@@ -9,9 +9,8 @@
 #include "orunav_motion_planner/DualSteerConfiguration.h"
 
 DualSteerConfiguration::DualSteerConfiguration(unsigned short int xCell, unsigned short int yCell,
-		uint8_t orientID, uint8_t steerID, VehicleMission* vm,int set) : Configuration(xCell, yCell, orientID, steerID, vm) {
+		uint8_t orientID, uint8_t steerID, VehicleMission* vm) : Configuration(xCell, yCell, orientID, steerID, vm) {
 	// check that the model is the correct one
-		set_ = set;
 	if (!dynamic_cast<DualSteerModel*> (vm->getVehicleModel())) {
 		exit(0);
 	}
@@ -22,19 +21,13 @@ DualSteerConfiguration::DualSteerConfiguration(unsigned short int xCell, unsigne
 DualSteerConfiguration::~DualSteerConfiguration() {
 }
 
-int DualSteerConfiguration::getSet(){
-	return set_;
-}
-
 DualSteerConfiguration::DualSteerConfiguration(const DualSteerConfiguration& origin) : Configuration(origin){};
 
 std::vector<Configuration*> DualSteerConfiguration::generateNewConfigurations() {
-
 	std::vector<Configuration*> result;
 	std::vector<MotionPrimitiveData*> primitives;
 	primitives = dynamic_cast<DualSteerModel*>
 	(this->getMission()->getVehicleModel())->getApplicablePrimitives(this->getOrientationID(), this->getSteeringID());
-
 
 	//getchar();
 	for (std::vector<MotionPrimitiveData*>::iterator primit = primitives.begin(); primit != primitives.end(); primit++) {
@@ -44,7 +37,7 @@ std::vector<Configuration*> DualSteerConfiguration::generateNewConfigurations() 
 		// configurations must be in non-negative cells
 		if (xc >= 0 && yc >= 0) {
 			DualSteerConfiguration* newConf = new DualSteerConfiguration(xc, yc, (*primit)->getFinalOrientationID(),
-					(*primit)->getFinalSteeringID(), this->getMission(),(*primit)->getSet());
+					(*primit)->getFinalSteeringID(), this->getMission());
 			newConf->setConfigurationPrimitive((*primit));
 			result.push_back(newConf);
 		}
@@ -69,7 +62,7 @@ std::vector<Configuration*> DualSteerConfiguration::generateNewConfigurations(Wo
 		// configurations must be in non-negative cells
 		if (xc >= 0 && yc >= 0) {
 			DualSteerConfiguration* newConf = new DualSteerConfiguration(xc, yc, (*primit)->getFinalOrientationID(),
-					(*primit)->getFinalSteeringID(), this->getMission(),(*primit)->getSet());
+					(*primit)->getFinalSteeringID(), this->getMission());
 			newConf->setConfigurationPrimitive((*primit));
 			result.push_back(newConf);
 		}

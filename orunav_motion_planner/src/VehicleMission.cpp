@@ -99,8 +99,8 @@ VehicleMission::VehicleMission(VehicleModel* m, double start_x, double start_y, 
 		start_ = new UnicycleConfiguration(startXcell, startYcell, startOrientationID, startSteeringID, this);
 		goal_ = new UnicycleConfiguration(goalXcell, goalYcell, goalOrientationID, goalSteeringID, this);
 	}else if (dynamic_cast<DualSteerModel*> (m)) {
-		start_ = new DualSteerConfiguration(startXcell, startYcell, startOrientationID, startSteeringID, this,-1);
-		goal_ = new DualSteerConfiguration(goalXcell, goalYcell, goalOrientationID, goalSteeringID, this,-1);
+		start_ = new DualSteerConfiguration(startXcell, startYcell, startOrientationID, startSteeringID, this);
+		goal_ = new DualSteerConfiguration(goalXcell, goalYcell, goalOrientationID, goalSteeringID, this);
 	} else {
 		writeLogLine(std::string("ERROR: vehicle model not recognized!"), "VehicleMission", WP::LOG_FILE);
 		exit(0);
