@@ -40,6 +40,14 @@ public:
 		FSG 	= 2,  //!< FSG Fast Successor Generation
 		EPFSG 	= 3   //!< EPFSG Expansion Pruning + Fast Successor Generation
 	} NodeExpansionMethod;
+    
+    typedef enum	LogLevels {
+		DEBUG 	= 0,
+		INFO 	= 1,
+        WARN    = 2,
+        ERROR   = 3,
+        FATAL   = 4
+	} LogLevels;
 
 
 	/** Select the expansion method for successor generation */
@@ -53,6 +61,8 @@ public:
 	static int LOG_LEVEL;
 	/** The log file name and path -- defulat value: stdout, that means the log output is printed directly on console */
 	static std::string LOG_FILE;
+    /** An aux file name and path useful e.g., to save statistics -- defulat value: "", no file */
+	static std::string AUX_FILE;
 	/** If the planner has a graphical visualization and the visualizer allows it,
 	 * this flag enables to save the final image of the visualization to a file. */
 	static bool SAVE_FINAL_VISUALIZATION_TO_FILE;
@@ -181,6 +191,13 @@ public:
 	 */
 	static void setLogFile(std::string filename);
 
+    
+    /**
+	 * Change the auxiliary file used for saving statistics
+	 * @param filename The new AUX filename
+	 */
+	static void setAuxFile(std::string filename);
+    
 	/**
 	 * Enable image saving. *IF* supported by the visualizer, the final visualized
 	 * image is saved when the destructor is invoked.

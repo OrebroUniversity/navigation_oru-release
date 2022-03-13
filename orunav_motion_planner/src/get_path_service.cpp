@@ -57,24 +57,18 @@ private:
 
 public:
   GetPathService(ros::NodeHandle param_nh, std::string name) {
-    //std::ofstream f;
-	//f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-    //f <<"\n=================================\n"<<std::endl;
-    //std::time_t t = std::time(NULL);
-    //char date_time[100];
-    //if (std::strftime(date_time, 100, "%d/%m/%Y %T", std::localtime(&t))) {
-    //f << "date: " << date_time << std::endl;}
+      std::time_t t = std::time(NULL);
 
       // read parameters
       param_nh.param<std::string>("motion_primitives_directory", motion_prim_dir_, "./Primitives/");
-      ROS_WARN_STREAM("motion_primitives_directory: " << motion_prim_dir_);
       param_nh.param<std::string>("lookup_tables_directory", lookup_tables_dir_, "./LookupTables/");
       param_nh.param<std::string>("maps_directory", maps_dir_, "./");
-      ROS_WARN_STREAM("maps_directory: " << maps_dir_);
+      std::string logfile; param_nh.param<std::string>("log_file", logfile, WP::LOG_FILE);
+      int loglevel; param_nh.param<int>("log_level", loglevel, WP::LOG_LEVEL);
+      std::string auxfile; param_nh.param<std::string>("aux_file", auxfile, WP::AUX_FILE);
       param_nh.param<double>("min_incr_path_dist", min_incr_path_dist_, 0.001);
       param_nh.param<bool>("save_paths", save_paths_, false);
       param_nh.param<bool>("biSteering", BS, false);
-      ROS_WARN_STREAM("biSteering: " << BS);
 
       std::string model, model2, model3, model4, model5;
       param_nh.param<std::string>("model", model, "");
@@ -88,9 +82,20 @@ public:
       WP::setTablesDir(lookup_tables_dir_);
       WP::setMapsDir(maps_dir_);
       WP::setExpansionMethod(WP::NodeExpansionMethod::NAIVE);
-      //f << "double steering mode: " << BS << std::endl;
+      WP::setLogFile(logfile);
+      WP::setAuxFile(auxfile);
+      WP::setLogLevel(loglevel);
+      
+      if(WP::LOG_LEVEL == WP::LogLevels::DEBUG) {
+          writeLogLine("\n=================================\n", "GetPathService", WP::AUX_FILE, std::ios::trunc);
+          char date_time[100];
+          if (std::strftime(date_time, 100, "%d/%m/%Y %T", std::localtime(&t))) 
+              writeLogLine(std::string("date: ") + date_time, WP::AUX_FILE);
+          writeLogLine(std::string("double steering mode: ") + std::to_string(BS), WP::AUX_FILE);
+          writeLogLine(std::string("sets of primitives: "), WP::AUX_FILE);
+      }
+
       if (BS) { 
-        //f << "sets of primitives: " << std::endl;
         //Dual steer start
         std::array<std::string,5> models{model, model2, model3, model4, model5}; //Cecchi_add
         vehicle_model_ = new DualSteerModel(models, sets);//Cecchi_add
@@ -102,11 +107,14 @@ public:
         }
       }
       else { 
-        //f << "set of primitives: \n1) " << model << std::endl ;
         vehicle_model_ = new CarModel(model);
-        //f << "total primitives: " << vehicle_model_->getTotalPrimitives() << std::endl;
+        std::string msg = std::string("total primitives: ").append(std::to_string(vehicle_model_->getTotalPrimitives()));
+        writeLogLine(msg, "GetPathService", WP::AUX_FILE);
       }
-      //f.close();
+      
+      if (WP::LOG_LEVEL == WP::LogLevels::DEBUG) 
+          writeLogLine(std::string("total primitives: ") + std::to_string(vehicle_model_->getTotalPrimitives()), WP::AUX_FILE);
+
       param_nh.param<bool>("visualize",visualize_,true);
       if (visualize_) {
         ROS_INFO("[GetPathService] -  The output is visualized using /visualization_markers (in rviz).");
@@ -131,14 +139,15 @@ public:
     ROS_INFO("[GetPathService] - goal :  [%f,%f,%f](%f)", tgt.goal.pose.position.x, tgt.goal.pose.position.y,tf::getYaw(tgt.goal.pose.orientation), tgt.goal.steering);
     
     mission += 1;
-    /*std::ofstream f;
-    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-    f << "\n -- mission number " << mission << " --" << std::endl;
-    f << "goalID:  " << tgt.task_id << std::endl;
-    f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
-    f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
-    f.close();*/
-
+    if (WP::LOG_LEVEL == WP::LogLevels::DEBUG) {
+        std::ofstream f;
+        f.open(WP::AUX_FILE);
+        f << "\n -- mission number " << mission << " --" << std::endl;
+        f << "goalID:  " << tgt.task_id << std::endl;
+        f << "start : [" << tgt.start.pose.position.x << "," << tgt.start.pose.position.y << "," << tf::getYaw(tgt.start.pose.orientation) << "]" << std::endl;
+        f << "goal :  [" << tgt.goal.pose.position.x  << "," << tgt.goal.pose.position.y  << "," << tf::getYaw(tgt.goal.pose.orientation)  << "]" << std::endl;
+        f.close();
+    }
 
     drawFootPrint("start", tgt.start.pose.position.x, tgt.start.pose.position.y, tf::getYaw(tgt.start.pose.orientation));
     drawFootPrint("goal", tgt.goal.pose.position.x, tgt.goal.pose.position.y, tf::getYaw(tgt.goal.pose.orientation));
@@ -225,27 +234,28 @@ public:
 
     ROS_INFO_STREAM("[GetPathService] - Nb of path points : " << path.sizePath());
     
-    //f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
-
     double dist = sqrt(pow(path.getPose2d(0)(0)- tgt.start.pose.position.x,2) + pow(path.getPose2d(0)(1)- tgt.start.pose.position.y,2));
-    double orient = abs(start_orientation- path.getPose2d(0)(2));
-    //f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient<<std::endl;
-    
+    double orient = abs(start_orientation- path.getPose2d(0)(2));    
     orient = abs(goal_orientation- path.getPose2d(path.sizePath()-1)(2));
-    dist = sqrt( pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
-    //f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
-    //f << "total length: " << path.getLength() << std::endl;
-    //f << "cuspidi: " << path.cuspidi(4) << std::endl;
-    //f << "path: "<< std::endl;
-    /*for (unsigned int i = 0; i < path.sizePath(); i++)
-      {
-      f << path.getPose2d(i)(0) << " "
-          << path.getPose2d(i)(1) << " "
-          << path.getPose2d(i)(2) << " "
-          << path.getSteeringAngle(i) << " "
-          << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
-          }	  
-    f.close();*/
+    dist = sqrt(pow(path.getPose2d(path.sizePath()-1)(0)- tgt.goal.pose.position.x,2) + pow(path.getPose2d(path.sizePath()-1)(1)- tgt.goal.pose.position.y,2));
+    
+    if (WP::LOG_LEVEL == 0) {
+        std::ofstream f;
+        f.open(WP::AUX_FILE);
+        f << "path start:  [" << path.getPose2d(0)(0) << ", " << path.getPose2d(0)(1)<< ", " << path.getPose2d(0)(2) << "]  - dist real:" << dist  << " orient error: "<< orient << std::endl;
+        f << "path goal:  [" << path.getPose2d(path.sizePath()-1)(0) << ", " << path.getPose2d(path.sizePath()-1)(1) << ", "<< path.getPose2d(path.sizePath()-1)(2) <<  "]  - dist real:" << dist << " orient error: "<< orient << std::endl;
+        f << "total length: " << path.getLength() << std::endl;
+        f << "cuspidi: " << path.cuspidi(4) << std::endl;
+        f << "path: "<< std::endl;
+        for (unsigned int i = 0; i < path.sizePath(); i++) {
+            f << path.getPose2d(i)(0) << " "
+            << path.getPose2d(i)(1) << " "
+            << path.getPose2d(i)(2) << " "
+            << path.getSteeringAngle(i) << " "
+            << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
+        }	  
+        f.close();
+    }
   
     
 

@@ -5,6 +5,7 @@ set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
+  roslib
   std_msgs
   nav_msgs
   cv_bridge
@@ -38,7 +39,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES orunav_motion_planner
-  CATKIN_DEPENDS roscpp std_msgs nav_msgs cv_bridge orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs cv_bridge orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry roslib
   DEPENDS Boost
 )
 
