@@ -166,10 +166,10 @@ double VehicleMission::getGridDistanceFromGoal(int x, int y) {
 	
 	if (gridDistanceFromGoal_.size() != 0) {
 		
-		if( x >=  gridDistanceFromGoal_.size() || y >=  gridDistanceFromGoal_.size()){
+		/*if( x >=  gridDistanceFromGoal_.size() || y >=  gridDistanceFromGoal_.size()){
 			std::cout << "prevent error" << std::endl; //cecchi
 			return 0;
-		}
+		}*/
 		
 		return gridDistanceFromGoal_[y][x];
 	} else {

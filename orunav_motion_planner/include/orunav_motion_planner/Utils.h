@@ -244,7 +244,7 @@ double floorPositiveNumber(double n, double base, double tolerance);
  * @param line The line to log
  * @param filename Log file
  */
-void writeLogLine(std::string line, std::string filename);
+void writeLogLine(std::string line, std::string filename, const std::ios_base::openmode mode = std::ios::app);
 
 /**
  * Write a log line into the log file. If filename is equal to "stdout"
@@ -253,7 +253,7 @@ void writeLogLine(std::string line, std::string filename);
  * @param className The name of the class that is calling the logger
  * @param filename Log file
  */
-void writeLogLine(std::string line, const char* className, std::string filename);
+void writeLogLine(std::string line, const char* className, std::string filename, const std::ios_base::openmode mode = std::ios::app);
 
 
 #ifndef _WIN32 // linux function only

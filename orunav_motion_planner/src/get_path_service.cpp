@@ -297,22 +297,14 @@ public:
 
   void drawFootPrint(std::string name, double x, double y, double th) {
         vehicleSimplePoint p;
-        double x_min = std::numeric_limits<double>::max(), x_max = std::numeric_limits<double>::min(), 
-            y_min = std::numeric_limits<double>::max(), y_max = std::numeric_limits<double>::min();
-
         p.initVehicleSimplePoint(x, y, th, 0.0);
-        std::vector<cellPosition*> cells;
-        cells = vehicle_model_->getCellsOccupiedInPosition(&p);
-        
-        //Find the four vertices
-        for (std::vector<cellPosition*>::iterator it = cells.begin(); it != cells.end(); it++ ) {
-              if ( (*it)->y_cell > y_max ) y_max = (*it)->y_cell;
-              if ( (*it)->y_cell < y_min ) y_min = (*it)->y_cell;
-              if ( (*it)->x_cell > x_max ) x_max = (*it)->x_cell;
-              if ( (*it)->x_cell < x_min ) x_min = (*it)->x_cell;
-        }
-        
+
+		// get the vertices of the rectangle
+        simplePoint t_r, b_r, b_l, t_l;
+        vehicle_model_->getFootprintInPose(b_l, b_r, t_l, t_r, &p);
+
         //Create the polygon and publish it
+        geometry_msgs::Point tr, br, bl, tl;
         visualization_msgs::Marker line_strip;
         line_strip.id = 0;
         line_strip.type = visualization_msgs::Marker::LINE_STRIP;
@@ -323,23 +315,22 @@ public:
         line_strip.color.g = 1.0;
         line_strip.color.a = 1.0;
         
-        geometry_msgs::Point ptr, pbr, pbl, ptl;
-        ptr.x = x_max;
-        ptr.y = y_max;
-        line_strip.points.push_back(ptr);
+        tr.x = t_r.x;
+        tr.y = t_r.y;
+        line_strip.points.push_back(tr);
         
-        pbr.x = x_max;
-        pbr.y = y_min;
-        line_strip.points.push_back(pbr);
+        br.x = b_r.x;
+        br.y = b_r.y;
+        line_strip.points.push_back(br);
         
-        pbl.x = x_min;
-        pbl.y = y_min;
-        line_strip.points.push_back(pbl);
+        bl.x = b_l.x;
+        bl.y = b_l.y;
+        line_strip.points.push_back(bl);
 
-        ptl.x = x_min;
-        ptl.y = y_max;
-        line_strip.points.push_back(ptl);
-        line_strip.points.push_back(ptr);
+        tl.x = t_l.x;
+        tl.y = t_l.y;
+        line_strip.points.push_back(tl);
+        line_strip.points.push_back(tr);
         
         marker_pub_.publish(line_strip);
   }

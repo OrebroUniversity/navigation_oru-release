@@ -20,6 +20,10 @@ LHDModel::LHDModel(std::string modelPrimitivesFilename) : VehicleModel(modelPrim
 LHDModel::~LHDModel() {
 }
 
+void LHDModel::getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) {
+    //TODO
+}
+
 std::vector<cellPosition*> LHDModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
 
 	double totalBackLength = this->getLHDBackLength() + this->getLHDBackFromAxle();

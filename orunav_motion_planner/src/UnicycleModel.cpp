@@ -14,16 +14,12 @@ UnicycleModel::UnicycleModel(std::string modelPrimitivesFilename) : 	VehicleMode
 UnicycleModel::~UnicycleModel() {
 }
 
-std::vector<cellPosition*> UnicycleModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
-
-	double base_orient = addAnglesRadians(p->orient, M_PI_2, WP::DECIMAL_APPROXIMATION);
-
+void UnicycleModel::getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) {
+    double base_orient = addAnglesRadians(p->orient, M_PI_2, WP::DECIMAL_APPROXIMATION);
 	double x_bottom_centre = p->x - (this->getLength() / 2) * cos(p->orient);
 	double y_bottom_centre = p->y - (this->getLength() / 2) * sin(p->orient);
 
 	// get the vertices of the rectangle
-	simplePoint b_l, b_r, t_l, t_r;
-
 	b_l.x = x_bottom_centre - ((this->getWidth() / 2) * cos(base_orient));
 	b_l.y = y_bottom_centre - ((this->getWidth() / 2) * sin(base_orient));
 
@@ -35,7 +31,14 @@ std::vector<cellPosition*> UnicycleModel::getCellsOccupiedInPosition(vehicleSimp
 
 	t_r.x = b_r.x + this->getLength() * cos(p->orient);
 	t_r.y = b_r.y + this->getLength() * sin(p->orient);
+}
 
+
+std::vector<cellPosition*> UnicycleModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
+    
+    //Get the vertices of the rectangle
+    simplePoint b_l, b_r, t_l, t_r;
+    UnicycleModel::getFootprintInPose(b_l, b_r, t_l, t_r, p);
 	std::vector<cellPosition*> cellsOccByPos = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
 
 	return cellsOccByPos;
