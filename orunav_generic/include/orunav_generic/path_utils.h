@@ -671,7 +671,7 @@ inline TrajectoryChunks splitToTrajectoryChunks(const orunav_generic::Trajectory
       orunav_generic::Trajectory tr;
       ret.push_back(tr);
     }
-    ret.back().addTrajectoryPoint( traj.getPose2d(i), traj.getSteeringAngle(i),traj.getSteeringAngleRear(i), traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i) );//Cecchi_add-
+    ret.back().addTrajectoryPoint( traj.getPose2d(i), traj.getSteeringAngle(i),traj.getSteeringAngleRear(i), traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));//Cecchi_add-
   }
   return ret;
 }

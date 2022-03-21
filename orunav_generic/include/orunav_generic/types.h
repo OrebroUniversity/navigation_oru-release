@@ -351,17 +351,16 @@ namespace orunav_generic {
   public:
     Trajectory() { }
     Trajectory(const TrajectoryInterface &traj) {
-      for (size_t i = 0; i < traj.sizeTrajectory(); i++) {
-	this->addTrajectoryPoint(traj.getPose2d(i), traj.getSteeringAngle(i), traj.getDriveVel(i), traj.getSteeringVel(i));
-      }
+      for (size_t i = 0; i < traj.sizeTrajectory(); i++)
+        this->addTrajectoryPoint(traj.getPose2d(i), traj.getSteeringAngle(i), traj.getSteeringAngleRear(i), traj.getDriveVel(i), traj.getSteeringVel(i), traj.getSteeringVelRear(i));
     }
     
     Pose2dVec poses;
     std::vector<double> steeringAngles;
-    std::vector<double> steeringAnglesRear;//Cecchi_add
+    std::vector<double> steeringAnglesRear; //Cecchi_add
     std::vector<double> driveVels;
     std::vector<double> steeringVels;
-    std::vector<double> steeringVelsRear;//Cecchi_add
+    std::vector<double> steeringVelsRear; //Cecchi_add
     
     
 
@@ -369,7 +368,7 @@ namespace orunav_generic {
     void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle, const double &fwdVel, const double &rotVel) {
       poses.push_back(pose); steeringAngles.push_back(steeringAngle); driveVels.push_back(fwdVel); steeringVels.push_back(rotVel);
     }
-    void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle,const double &steeringAngleRear, const double &fwdVel, const double &rotVel,const double &rotVelRear) {
+    void addTrajectoryPoint(const Pose2d &pose, const double &steeringAngle, const double &steeringAngleRear, const double &fwdVel, const double &rotVel, const double &rotVelRear) {
       poses.push_back(pose); steeringAngles.push_back(steeringAngle); steeringAnglesRear.push_back(steeringAngleRear);driveVels.push_back(fwdVel); steeringVels.push_back(rotVel); steeringVelsRear.push_back(rotVelRear);
     }//Cecchi_add
     

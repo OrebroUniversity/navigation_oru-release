@@ -175,13 +175,11 @@ namespace orunav_generic
 	getline(ifs, line);
 
 	orunav_generic::Pose2d pose;
-	double steering_angle;
-  //Cecchi_add
-  double steering_angleRear;
-  if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf",
-		  &pose(0), &pose(1), &pose(2), &steering_angle,&steering_angleRear) == 5)
+	double steering_angle, steering_angleRear; //Cecchi_add
+    if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf",
+		  &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angleRear) == 5)
 	  {
-	    path.addPathPoint(pose, steering_angle,steering_angleRear);
+	    path.addPathPoint(pose, steering_angle, steering_angleRear);
 	    nb_steps++;
 	  }
   // was oly this if below
@@ -231,7 +229,7 @@ namespace orunav_generic
 	    << path.getPose2d(i)(1) << " "
 	    << path.getPose2d(i)(2) << " "
 	    << path.getSteeringAngle(i) << " "
-      << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
+        << path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
       }	  
     ofs.close();
   }
@@ -250,7 +248,8 @@ namespace orunav_generic
 	    << path.getPose2d(i)(1) << " "
 	    << q.z() << " "
 	    << q.w() << " "
-	    << path.getSteeringAngle(i) << std::endl;
+	    << path.getSteeringAngle(i) << " " 
+	    << path.getSteeringAngleRear(i) << std::endl;
       }	  
     ofs.close();
   }
@@ -264,20 +263,19 @@ namespace orunav_generic
       std::cerr << __FILE__ << ":" << __LINE__ << " cannot open file : " << fileName << std::endl;
     }
     unsigned int nb_steps;
-    while (!ifs.eof())
-      {
-	std::string line;
-	getline(ifs, line);
-	
-	orunav_generic::Pose2d pose;
-	double steering_angle, fwd_vel, rot_vel;
-	if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf",
-		    &pose(0), &pose(1), &pose(2), &steering_angle, &fwd_vel, &rot_vel) == 6)
-	  {
-	    traj.addTrajectoryPoint(pose, steering_angle, fwd_vel, rot_vel);
-	    nb_steps++;
-	  }
-      }
+    while (!ifs.eof())    {
+        std::string line;
+        getline(ifs, line);
+        
+        orunav_generic::Pose2d pose;
+        double steering_angle, steering_angleRear, fwd_vel, rot_vel, rot_vel_rear;
+        if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
+                &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angleRear, &fwd_vel, &rot_vel) == 6)
+        {
+            traj.addTrajectoryPoint(pose, steering_angle, steering_angleRear, fwd_vel, rot_vel, rot_vel_rear);
+            nb_steps++;
+        }
+    }
     return traj;
     
   }
@@ -290,15 +288,16 @@ namespace orunav_generic
     std::string file_name = st.str();
     std::ofstream ofs(file_name.c_str());
     for (unsigned int i = 0; i < traj.sizePath(); i++)
-      {
-        
+      {        
 	    ofs << traj.getPose2d(i)(0) << " "
 	    << traj.getPose2d(i)(1) << " "
 	    << traj.getPose2d(i)(2) << " "
 	    << traj.getSteeringAngle(i) << " "
+        << traj.getSteeringAngleRear(i) << " "
 	    << traj.getDriveVel(i) << " "
-	    << traj.getSteeringVel(i) << std::endl;
-      }	  //Cecchi_aad
+	    << traj.getSteeringVel(i) << ""
+        << traj.getSteeringVelRear(i) << std::endl;
+      }	  //Cecchi_add
     ofs.close();
   }
 
@@ -340,8 +339,8 @@ namespace orunav_generic
 	  << traj.getSteeringVel(i) << std::endl;
       
       if (i != traj.sizePath() -1) {
-	// Only do this but not the last iter....
-	dist_sum += orunav_generic::getDistBetween(traj.getPose2d(i), traj.getPose2d(i+1));
+        // Only do this but not the last iter....
+        dist_sum += orunav_generic::getDistBetween(traj.getPose2d(i), traj.getPose2d(i+1));
       }
     }	  
     

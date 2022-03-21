@@ -50,7 +50,7 @@ std::vector<Configuration*> DualSteerConfiguration::generateNewConfigurations(Wo
 
 	std::vector<Configuration*> result;
 	std::vector<MotionPrimitiveData*> primitives;
-	std::cout << "chaeck if its work..maybe not!!" << std::endl;
+	std::cout << "check if its work..maybe not!!" << std::endl;
 	primitives = this->getMission()->getVehicleModel()->selectApplicablePrimitives(w, this->getXCell(),
 			this->getYCell(), this->getOrientationID(), this->getSteeringID());
 
