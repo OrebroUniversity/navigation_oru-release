@@ -92,7 +92,7 @@ namespace orunav_conversions
       orunav_generic::State2d s;
       s.setPose2d(p);
       s.setSteeringAngle(state.steering_angle);
-      s.setSteeringAngleRear(state.steering_angleRear);//Cecchi_add_
+      s.setSteeringAngleRear(state.steering_angle_rear); //Cecchi_add_
       return s;
     }
 
@@ -210,11 +210,11 @@ namespace orunav_conversions
 	  s.state.position_y = traj.getPose2d(i)(1);
 	  s.state.orientation_angle = traj.getPose2d(i)(2);
 	  s.state.steering_angle = traj.getSteeringAngle(i);
-    s.state.steering_angleRear = traj.getSteeringAngleRear(i);//Cecchi_add_
+      s.state.steering_angle_rear = traj.getSteeringAngleRear(i); //Cecchi_add_
 	  
 	  s.velocities.tangential = traj.getDriveVel(i);
 	  s.velocities.steering = traj.getSteeringVel(i);
-    s.velocities.steeringRear = traj.getSteeringVelRear(i);//Cecchi_add_
+      s.velocities.steeringRear = traj.getSteeringVelRear(i); //Cecchi_add_
 	  
 	  s.mode = orunav_msgs::ControllerTrajectoryStep::MODE_1;
 
