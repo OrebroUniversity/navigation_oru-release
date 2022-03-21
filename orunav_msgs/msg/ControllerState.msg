@@ -7,4 +7,4 @@ float64 orientation_angle
 
 # Steering angle
 float64 steering_angle
-float64 steering_angleRear #Cecchi_add_
+float64 steering_angle_rear #Cecchi_add_

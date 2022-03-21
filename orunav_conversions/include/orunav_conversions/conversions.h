@@ -214,7 +214,7 @@ namespace orunav_conversions
 	  
 	  s.velocities.tangential = traj.getDriveVel(i);
 	  s.velocities.steering = traj.getSteeringVel(i);
-      s.velocities.steeringRear = traj.getSteeringVelRear(i); //Cecchi_add_
+      s.velocities.steering_rear = traj.getSteeringVelRear(i); //Cecchi_add_
 	  
 	  s.mode = orunav_msgs::ControllerTrajectoryStep::MODE_1;
 
