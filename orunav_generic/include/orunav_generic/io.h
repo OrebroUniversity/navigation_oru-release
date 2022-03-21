@@ -175,11 +175,11 @@ namespace orunav_generic
 	getline(ifs, line);
 
 	orunav_generic::Pose2d pose;
-	double steering_angle, steering_angleRear; //Cecchi_add
+	double steering_angle, steering_angle_rear; //Cecchi_add
     if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf",
-		  &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angleRear) == 5)
+		  &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angle_rear) == 5)
 	  {
-	    path.addPathPoint(pose, steering_angle, steering_angleRear);
+	    path.addPathPoint(pose, steering_angle, steering_angle_rear);
 	    nb_steps++;
 	  }
   // was oly this if below
@@ -268,11 +268,11 @@ namespace orunav_generic
         getline(ifs, line);
         
         orunav_generic::Pose2d pose;
-        double steering_angle, steering_angleRear, fwd_vel, rot_vel, rot_vel_rear;
+        double steering_angle, steering_angle_rear, fwd_vel, rot_vel, rot_vel_rear;
         if (sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
-                &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angleRear, &fwd_vel, &rot_vel) == 6)
+                &pose(0), &pose(1), &pose(2), &steering_angle, &steering_angle_rear, &fwd_vel, &rot_vel) == 6)
         {
-            traj.addTrajectoryPoint(pose, steering_angle, steering_angleRear, fwd_vel, rot_vel, rot_vel_rear);
+            traj.addTrajectoryPoint(pose, steering_angle, steering_angle_rear, fwd_vel, rot_vel, rot_vel_rear);
             nb_steps++;
         }
     }
