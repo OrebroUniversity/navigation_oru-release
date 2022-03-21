@@ -13,7 +13,6 @@ ControllerState state
 # These velocities must be applied to the preceding state to reach the respective 
 # reference state. 
 ControllerVelocities velocities
-ControllerVelocities velocitiesRear #Cecchi_add_
 #####################
 
 # Tracking mode
