@@ -83,9 +83,6 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 	double costMultiplier = 1;
 	// the motion direction of the primitive -- 1 (forward) by default
 	int motionDirection = 1;
-    // the motion primitive (positive) cost -- the path length by default. 
-    // Preset to -1 to check if computed extenally.
-    double primitiveCost = -1.0;
 
 	// regular expressions to look for in the file
 	static const boost::regex poses("^intermediateposes: (.+?)$");
@@ -190,6 +187,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 			// the primitive cost -- if exist is right before the motion
 			// direction and the primitive intermediate poses. 
 			// Conversely, is computed as the trajectory length after parsing the motion primitive.
+            double primitiveCost = -1.0;
 			boost::regex_match(line, what, primitivecost, boost::match_extra);
 			if (what[0].matched) {
 				primitiveCost = atof(what[1].str().c_str());
@@ -232,7 +230,7 @@ void DualSteerModel::loadPrimitiveLookupTable() {
 				primData->setTrajectory(primitiveTrajectory, orientationAngles_, steeringAnglePartitions_);
                 
                 // set the primitive cost
-                if (primitiveCost < 0) primitiveCost = calculateLength(primitiveTrajectory);
+                if (primitiveCost < 0) primitiveCost = calculateLength(primData->getTrajectory());
                 primData->setDistance(primitiveCost);
 
 				// check where to put this primitive : check if the starting angles (steering and orientation) are present in the lookup table
@@ -387,7 +385,7 @@ void DualSteerModel::generatePrimitiveAdditionalData() {
 
 		std::vector<MotionPrimitiveData*> mprimdata = (*it).second;
 		for (std::vector<MotionPrimitiveData*>::iterator primit = mprimdata.begin(); primit != mprimdata.end(); primit++) {
-
+            
 			// now calculate the cells swept and occupied at the end of the motion
 			std::vector<cellPosition*> cellsSwept;
 			cellsSwept.clear();
