@@ -18,6 +18,7 @@ class Configuration;
 class CarModel;
 class LHDModel;
 class UnicycleModel;
+class DualSteerModel;
 
 
 

@@ -5,6 +5,7 @@ set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
+  roslib
   std_msgs
   nav_msgs
   cv_bridge
@@ -38,7 +39,7 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES orunav_motion_planner
-  CATKIN_DEPENDS roscpp std_msgs nav_msgs cv_bridge orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry
+  CATKIN_DEPENDS roscpp roslib std_msgs nav_msgs cv_bridge orunav_msgs orunav_generic orunav_rviz orunav_conversions orunav_geometry
   DEPENDS Boost
 )
 
@@ -54,7 +55,7 @@ include_directories(
 )
 
 ## Declare a cpp executable
-add_executable(get_path_service src/get_path_service.cpp
+add_executable(get_path_service
   src/ARAStarPathPlanner.cpp
   src/AStar.cpp
   src/AStarPathPlanner.cpp
@@ -65,6 +66,8 @@ add_executable(get_path_service src/get_path_service.cpp
   src/DiscWorldVisualizer.cpp
   src/LHDConfiguration.cpp
   src/LHDModel.cpp
+  src/DualSteerConfiguration.cpp
+  src/DualSteerModel.cpp
   src/MapGenerators.cpp
   src/MotionPrimitiveData.cpp
   src/MotionPrimitiveSelector.cpp
@@ -78,6 +81,7 @@ add_executable(get_path_service src/get_path_service.cpp
   src/World.cpp
   src/WorldOccupancyMap.cpp
   src/WorldParameters.cpp
+  src/get_path_service.cpp
 )
 add_dependencies(get_path_service ${catkin_EXPORTED_TARGETS})
 target_link_libraries(get_path_service

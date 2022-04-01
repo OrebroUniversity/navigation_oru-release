@@ -9,8 +9,8 @@
 #ifndef DUAL_STEER_CONFIGURATION_H_
 #define DUAL_STEER_CONFIGURATION_H_
 
-#include <orunav_motion_planner/Configuration.h>
-#include <orunav_motion_planner/DualSteerModel.h>
+#include "Configuration.h"
+#include "DualSteerModel.h"
 
 /**
  * @class CarConfiguration
@@ -64,4 +64,4 @@ public:
 
 };
 
-#endif /* CARCONFIGURATION_H_ */
+#endif /* DUAL_STEER_CONFIGURATION_H_ */

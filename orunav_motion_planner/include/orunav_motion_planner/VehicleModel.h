@@ -336,7 +336,7 @@ public:
 	 */
 	void saveHeuristicTable();
 
-	int getTotalPrimitives(){ return totalPrimitives;};
+	int getTotalPrimitives(){ return totalPrimitives; };
     
 };
 

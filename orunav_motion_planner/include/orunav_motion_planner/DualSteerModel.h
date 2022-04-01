@@ -9,8 +9,8 @@
 #ifndef DUAL_STEER_MODEL_H_
 #define DUAL_STEER_MODEL_H_
 
-#include <orunav_motion_planner/VehicleModel.h>
-#include <orunav_motion_planner/WorldParameters.h>
+#include "VehicleModel.h"
+#include "WorldParameters.h"
 
 
 /**
@@ -96,23 +96,15 @@ public:
 
 	std::vector<MotionPrimitiveData*> selectApplicablePrimitives(
 		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID);
-	/**
+    
 	/**
 	 * Retrieve the motion primitives from the primitive lookup table
 	 * @param orientationID The orientation ID of the starting configuration
 	 * @param steeringID The steering ID of the starting configuration, 0 by default
 	 * @returns a vector of motion primitives motionPrimitiveData
 	 */
-	
-
 	std::vector<MotionPrimitiveData*> getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID);
-
-	/**
-	/**
-	 *defines the heuristics with which to choose the sets of primitives to use
-	 */
-	std::vector<int>  selectSet();
 
 };
 
-#endif /* DualSteerModel_H_ */
+#endif /* DUALSTEERMODEL_H */
