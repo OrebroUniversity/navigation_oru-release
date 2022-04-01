@@ -5,11 +5,9 @@
 
 #include <orunav_msgs/GetPath.h>
 
-#include <orunav_motion_planner/PathFinder.h>
-#include <orunav_motion_planner/VehicleMission.h>
-
-#include <orunav_motion_planner/DualSteerModel.h>
-#include <orunav_motion_planner/DualSteerConfiguration.h>
+#include "orunav_motion_planner/PathFinder.h"
+#include "orunav_motion_planner/VehicleMission.h"
+#include "orunav_motion_planner/DualSteerModel.h"
 
 #include <iostream>
 #include <string>
@@ -28,7 +26,7 @@
 #include <visualization_msgs/Marker.h>
 #include <orunav_rviz/orunav_rviz.h>
 
-#include <orunav_motion_planner/nav_msgs_occupancy_grid_to_planner_map.h>
+#include "orunav_motion_planner/nav_msgs_occupancy_grid_to_planner_map.h"
 
 /**
  * Responds to GetPath requests
