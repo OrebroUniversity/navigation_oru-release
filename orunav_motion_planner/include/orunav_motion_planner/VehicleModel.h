@@ -38,6 +38,8 @@ class VehicleModel {
 
 protected:
 
+	int totalPrimitives = 0;
+	int totalPrimitivesSets = 0;
 	/** The width of the vehicle (meters) */
 	double width_;
 	/** The length of the vehicle (meters) */
@@ -63,8 +65,11 @@ protected:
 
 	/** The name of the file containing the motion primitives */
 	std::string motionPrimitivesFilename_;
+	std::string motionPrimitivesFilenameS_[5];
 	/** The name of the file containing the additional data for each primitive */
 	std::string motionPrimitiveAdditionalDataFilename_;
+	std::string motionPrimitiveAdditionalDataFilenameS_[5];
+	
 
 	/** Motion primitives lookup table type: the two uint8_t are the orientation ID and the steering ID */
 	typedef std::map<std::pair<uint8_t, uint8_t>, std::vector<MotionPrimitiveData*> > motionPrimitivesLookup;
@@ -78,9 +83,11 @@ protected:
 
 	/** Motion primitives lookup table */
 	motionPrimitivesLookup modelMotionPrimitivesLT_;
+	motionPrimitivesLookup modelMotionPrimitivesLTS_[5];
 
 	/** Motion primitive selector lookup table */
 	motionPrimitiveSelectorLookup modelMotionPrimitivesSelectorLT_;
+	motionPrimitiveSelectorLookup modelMotionPrimitivesSelectorLTS_[5];
 
 	/** The Heuristic table should be saved by the destructor only if it has been modified */
 	bool newEntriesInHT_;
@@ -89,6 +96,7 @@ protected:
 	 * Purely virtual function. Load motion primitives.
 	 */
 	virtual void loadPrimitiveLookupTable() = 0;
+	//virtual void loadPrimitiveLookupTable(int set) = 0;
 
 	/**
 	 * Once the modelMotionPrimitivesLT_ has been loaded, we can calculate the modelMotionPrimitivesSelector_
@@ -100,6 +108,7 @@ protected:
 	 * additional data of the motion primitives (length, occupancy)
 	 */
 	virtual void generatePrimitiveAdditionalData() = 0;
+	//virtual void generatePrimitiveAdditionalData(int set) = 0;
 
 	/**
 	 * Correct the distances among primitives to fully support the 8-axis symmetry
@@ -127,9 +136,10 @@ protected:
 
 	/** Heuristic function lookup table */
 	heuristicLookupTable modelHeuristicLT_;
-
+	heuristicLookupTable modelHeuristicLTS_[5];
 	/** Heuristic lookup table filename */
 	std::string heuristicLTFilename_;
+	std::string heuristicLTFilenameS_[5];
 
 	/**
 	 * Load heuristic function from file
@@ -162,6 +172,9 @@ public:
 	 */
 	VehicleModel(std::string modelPrimitivesFilename);
 
+	VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS, int set);
+	 
+
 	virtual ~VehicleModel();
 
 	/**
@@ -171,6 +184,16 @@ public:
 	 * @return The vector of pointers of cells occupied
 	 */
 	virtual std::vector<cellPosition*> getCellsOccupiedInPosition(vehicleSimplePoint* p) = 0;
+    
+    /**
+     * Get the vertices of the robot footprint in a given pose
+     * @param p A pointer to the point where the vehicle is positioned.
+     * @param b_l A container for the bottom left vertex
+     * @param b_r A container for the bottom right vertex
+     * @param t_l A container for the top left vertex
+     * @param t_r A container for the top right vertex
+     */
+    virtual void getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) = 0;
 
 	/**
 	 * Get the width of the vehicle (in meters)
@@ -313,6 +336,8 @@ public:
 	 */
 	void saveHeuristicTable();
 
+	int getTotalPrimitives(){ return totalPrimitives;};
+    
 };
 
 #endif /* VEHICLEMODEL_H_ */

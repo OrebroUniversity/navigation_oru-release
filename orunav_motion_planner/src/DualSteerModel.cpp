@@ -1,122 +1,82 @@
 /**
- * LHDModel.cpp
+ * DualSteerModel.cpp
  *
- *  Created on: Jul 23, 2012
- *      Author: marcello
+ *  Created on: Jul 11, 2021
+ *      Author: michele
  */
 
-#include "orunav_motion_planner/LHDModel.h"
+#include "orunav_motion_planner/DualSteerModel.h"
+#include <iostream>
 
-LHDModel::LHDModel(std::string modelPrimitivesFilename) : VehicleModel(modelPrimitivesFilename) {
+
+DualSteerModel::DualSteerModel(std::array<std::string,5>  modelPrimitivesFilenameS, int set) : VehicleModel(modelPrimitivesFilenameS, set) {
 	// initialization, then overwritten by the data read from the primitives file
-	lhdFrontFromAxle_ = 0;
-	lhdBackFromAxle_ = 0;
-	lhdFrontLength_ = 0;
-	lhdBackLength_ = 0;
-	lhdBoundPhi_ = 0;
-	this->loadPrimitiveLookupTable();
+	carFrontLength_ = 0;
+	carBackLength_ = 0;
+	carMaxSteeringAngle_ = 0;
+	sets = set;
+
+	for(int i = 0; i < sets; i++){ //for each set
+		motionPrimitivesFilenameS_[i] = std::string();
+		motionPrimitiveAdditionalDataFilenameS_[i] = std::string();
+		heuristicLTFilenameS_[i] = std::string();
+		(motionPrimitivesFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".mprim");
+		(motionPrimitiveAdditionalDataFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".adat");
+		(heuristicLTFilenameS_[i].append(WP::TABLES_DIR)).append(modelPrimitivesFilenameS[i]).append(".hst");
+		// load heuristic table
+		//loadHeuristicTable(heuristicLTFilenameS_[i]);
+        currentSet = i;
+        this->loadPrimitiveLookupTable();
+        totalPrimitivesSets += totalPrimitives;
+		totalPrimitives *= 0;
+		newEntriesInHT_ = false;
+	}
 }
 
-LHDModel::~LHDModel() {
+DualSteerModel::~DualSteerModel() {
 }
 
-void LHDModel::getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) {
-    //TODO
-}
-
-std::vector<cellPosition*> LHDModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
-
-	double totalBackLength = this->getLHDBackLength() + this->getLHDBackFromAxle();
-	double totalFrontLength = this->getLHDFrontLength() + this->getLHDFrontFromAxle();
-
-	double cosOrient = cos(p->orient);
-	double sinOrient = sin(p->orient);
-
-	double x_joint = p->x - this->getLHDFrontLength() * cosOrient;
-	double y_joint = p->y - this->getLHDFrontLength() * sinOrient;
-
-	// ----------------- Front body -----------------
+void DualSteerModel::getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) {
 	double base_orient = addAnglesRadians(p->orient, M_PI_2, WP::DECIMAL_APPROXIMATION);
 
-	double x_bottom_centre = x_joint;
-	double y_bottom_centre = y_joint;
+	double x_bottom_centre = p->x - this->getCarBackLength() * cos(p->orient);
+	double y_bottom_centre = p->y - this->getCarBackLength() * sin(p->orient);
 
 	// get the vertices of the rectangle
-	simplePoint b_l, b_r, t_l, t_r;
-
 	b_l.x = x_bottom_centre - ((this->getWidth() / 2) * cos(base_orient));
 	b_l.y = y_bottom_centre - ((this->getWidth() / 2) * sin(base_orient));
 
-	b_r.x = x_bottom_centre + ((this->getWidth() / 2) * cos(base_orient));
+    b_r.x = x_bottom_centre + ((this->getWidth() / 2) * cos(base_orient));
 	b_r.y = y_bottom_centre + ((this->getWidth() / 2) * sin(base_orient));
 
-	t_l.x = b_l.x + totalFrontLength * cosOrient;
-	t_l.y = b_l.y + totalFrontLength * sinOrient;
+	t_l.x = b_l.x + this->getLength() * cos(p->orient);
+	t_l.y = b_l.y + this->getLength() * sin(p->orient);
 
-	t_r.x = b_r.x + totalFrontLength * cosOrient;
-	t_r.y = b_r.y + totalFrontLength * sinOrient;
-
-	std::vector<cellPosition*> occCells = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
-
-	// ----------------- Back body -----------------
-	// steering angle relative to the front body
-	double back_orientation = addAnglesRadians(p->orient, p->steering, 4);
-	base_orient = addAnglesRadians(back_orientation, M_PI_2, WP::DECIMAL_APPROXIMATION);
-
-	cosOrient = cos(back_orientation);
-	sinOrient = sin(back_orientation);
-
-	x_bottom_centre = x_joint - totalBackLength * cosOrient;
-	y_bottom_centre = y_joint - totalBackLength * sinOrient;
-
-	b_l.x = x_bottom_centre - ((this->getWidth() / 2) * cos(base_orient));
-	b_l.y = y_bottom_centre - ((this->getWidth() / 2) * sin(base_orient));
-
-	b_r.x = x_bottom_centre + ((this->getWidth() / 2) * cos(base_orient));
-	b_r.y = y_bottom_centre + ((this->getWidth() / 2) * sin(base_orient));
-
-	t_l.x = b_l.x + totalBackLength * cosOrient;
-	t_l.y = b_l.y + totalBackLength * sinOrient;
-
-	t_r.x = b_r.x + totalBackLength * cosOrient;
-	t_r.y = b_r.y + totalBackLength * sinOrient;
-
-	std::vector<cellPosition*> cellsOccByPos = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
-
-	for (std::vector<cellPosition*>::iterator it = cellsOccByPos.begin(); it != cellsOccByPos.end(); it++ ) {
-		bool found = false;
-		// is it already registered?
-		for (std::vector<cellPosition*>::iterator cellit = occCells.begin(); cellit != occCells.end(); cellit++) {
-			if ((*cellit)->x_cell == (*it)->x_cell && (*cellit)->y_cell == (*it)->y_cell) {
-				found = true;
-				break;
-			}
-		}
-		// add it
-		if (!found) {
-			cellPosition* cel_pos = new cellPosition;
-			cel_pos->x_cell = (*it)->x_cell;
-			cel_pos->y_cell = (*it)->y_cell;
-			occCells.push_back(cel_pos);
-		}
-	}
-	// cleanup
-	for (std::vector<cellPosition*>::iterator it = cellsOccByPos.begin(); it != cellsOccByPos.end(); it++ ) {
-		delete (*it);
-	}
-	return occCells;
+	t_r.x = b_r.x + this->getLength() * cos(p->orient);
+	t_r.y = b_r.y + this->getLength() * sin(p->orient);
 }
 
-void LHDModel::loadPrimitiveLookupTable() {
 
+std::vector<cellPosition*> DualSteerModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
+    //Get the vertices of the rectangle
+    simplePoint b_l, b_r, t_l, t_r;
+    DualSteerModel::getFootprintInPose(b_l, b_r, t_l, t_r, p);
+	std::vector<cellPosition*> cellsOccByPos = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
+
+	return cellsOccByPos;
+}
+
+void DualSteerModel::loadPrimitiveLookupTable() {
+	int set = currentSet;
+	
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;
-		logLine << "Loading motion primitives:  " << motionPrimitivesFilename_;
-		writeLogLine(logLine.str(), "LHDModel", WP::LOG_FILE);
+		logLine << "Loading motion primitives: " << motionPrimitivesFilenameS_[set];
+		writeLogLine(logLine.str(), "\x1B[34mDualSteerModel \034[0m", WP::LOG_FILE);
 	}
 	std::string line;
-	std::ifstream f(motionPrimitivesFilename_.c_str(), std::ifstream::in);
+	std::ifstream f(motionPrimitivesFilenameS_[set].c_str(), std::ifstream::in);
 
 	// the cost multiplier of the primitive (e.g., when moving backwards).
 	// set to 1 by default
@@ -128,11 +88,14 @@ void LHDModel::loadPrimitiveLookupTable() {
 	static const boost::regex poses("^intermediateposes: (.+?)$");
 	// the additional cost multiplier
 	static const boost::regex costmult("^additionalactioncostmult: (.+?)$");
+    // the primitive cost
+    static const boost::regex primitivecost("^primitivecost: (.+?)$");
 	// the motion direction
 	static const boost::regex motiondir("^motiondirection: (.+?)$");
 	// get the resolution for which this model has been built
 	static const boost::regex resolution("^resolution_m: (.+?)$");
-	// get the number of angles and set the WorldParameter
+
+	// get the number of orientation angles and set the WorldParameter
 	static const boost::regex angles("^numberofangles: (.+?)$");
 	// get the number of steering angle partitions for this vehicle, calculated as (2*M_PI)/steeringAngleGranularity
 	static const boost::regex steeringPartitions("^steeringanglepartitions: (.+?)$");
@@ -140,47 +103,33 @@ void LHDModel::loadPrimitiveLookupTable() {
 	static const boost::regex steeringCardinality("^steeringanglecardinality: (.+?)$");
 	// get the primitiveID
 	static const boost::regex id("^primID: (.+?)$");
-	// get the length of the vehicle, from the back axle to the middle joint, in meters
-	static const boost::regex backLength("^lhd_length_back: (.+?)$");
-	// get the length of the vehicle, from the middle joint to the front axle, in meters
-	static const boost::regex frontLength("^lhd_length_front: (.+?)$");
-	// get the length of the vehicle, from the back axle to the back, in meters
-	static const boost::regex backLengthFromAxle("^lhd_length_back_from_axle: (.+?)$");
-	// get the length of the vehicle, from the front axle to the front, in meters
-	static const boost::regex frontLengthFromAxle("^lhd_length_front_from_axle: (.+?)$");
-	// get the vehicle width
-	static const boost::regex width("^lhd_width: (.+?)$");
-
-	// get the vehicle max angle joint angle, in radians
-	static const boost::regex lhdBoundPhi("^bound_phi: (.+?)$");
+	// get the car front length
+	static const boost::regex frontLength("^car_length_front: (.+?)$");
+	// get the car front length
+	static const boost::regex backLength("^car_length_back: (.+?)$");
+	// get the car width
+	static const boost::regex width("^car_width: (.+?)$");
+	// get the car max steering angle (in radians)
+	static const boost::regex maxSteering("^max_steering_radians: (.+?)$");
 
 	boost::smatch what;
 
 	int primID = -1;
 
 	if (f.is_open()) {
+		writeLogLine("readingData", "\x1B[36mDualSteerModel \036[0m", WP::LOG_FILE);
 		while (f.good()) {
 			getline(f, line);
 
-			// dimensions of the lhd
+			// dimensions of the car
 			boost::regex_match(line, what, frontLength, boost::match_extra);
 			if (what[0].matched) {
-				this->lhdFrontLength_ = (double) atof(what[1].str().c_str());
+				this->carFrontLength_ = (double) atof(what[1].str().c_str());
 			}
 
 			boost::regex_match(line, what, backLength, boost::match_extra);
 			if (what[0].matched) {
-				this->lhdBackLength_ = (double) atof(what[1].str().c_str());
-			}
-
-			boost::regex_match(line, what, frontLengthFromAxle, boost::match_extra);
-			if (what[0].matched) {
-				this->lhdFrontFromAxle_ = (double) atof(what[1].str().c_str());
-			}
-
-			boost::regex_match(line, what, backLengthFromAxle, boost::match_extra);
-			if (what[0].matched) {
-				this->lhdBackFromAxle_ = (double) atof(what[1].str().c_str());
+				this->carBackLength_ = (double) atof(what[1].str().c_str());
 			}
 
 			boost::regex_match(line, what, width, boost::match_extra);
@@ -188,13 +137,13 @@ void LHDModel::loadPrimitiveLookupTable() {
 				this->width_ = (double) atof(what[1].str().c_str());
 			}
 
-			// max joint angle
-			boost::regex_match(line, what, lhdBoundPhi, boost::match_extra);
+			// max steering angle of the car
+			boost::regex_match(line, what, maxSteering, boost::match_extra);
 			if (what[0].matched) {
-				this->lhdBoundPhi_ = (double) atof(what[1].str().c_str());
+				this->carMaxSteeringAngle_ = (double) atof(what[1].str().c_str());
 			}
 
-			// update the orientationAngles_ of the vehicle
+			// update the orientationAngles_ of this vehicle
 			boost::regex_match(line, what, angles, boost::match_extra);
 			if (what[0].matched) {
 				this->orientationAngles_ = atoi(what[1].str().c_str());
@@ -216,8 +165,11 @@ void LHDModel::loadPrimitiveLookupTable() {
 			boost::regex_match(line, what, resolution, boost::match_extra);
 			if (what[0].matched) {
 				double worldRes = atof(what[1].str().c_str());
-				vehicleGranularity_ = worldRes;
-				WP::setWorldSpaceGranularity(worldRes);
+                if (set == 0 || worldRes < WP::WORLD_SPACE_GRANULARITY) {
+                    vehicleGranularity_ = worldRes;
+                    WP::setWorldSpaceGranularity(vehicleGranularity_);
+                }
+                else vehicleGranularity_ = WP::WORLD_SPACE_GRANULARITY;
 			}
 
 			boost::regex_match(line, what, id, boost::match_extra);
@@ -225,11 +177,20 @@ void LHDModel::loadPrimitiveLookupTable() {
 				primID = atoi(what[1].str().c_str());
 			}
 
-			// the additional cost multiplier -- if exist is right before the motion
-			// direction and the primitive intermediate poses
+			// the additional cost multiplier -- if exist is right before the primitive cost,
+			// the motion direction and the primitive intermediate poses
 			boost::regex_match(line, what, costmult, boost::match_extra);
 			if (what[0].matched) {
 				costMultiplier = atof(what[1].str().c_str());
+			}
+			
+			// the primitive cost -- if exist is right before the motion
+			// direction and the primitive intermediate poses. 
+			// Conversely, is computed as the trajectory length after parsing the motion primitive.
+            double primitiveCost = -1.0;
+			boost::regex_match(line, what, primitivecost, boost::match_extra);
+			if (what[0].matched) {
+				primitiveCost = atof(what[1].str().c_str());
 			}
 
 			// the motion direction -- if exist is right before the primitive intermediate poses
@@ -243,7 +204,7 @@ void LHDModel::loadPrimitiveLookupTable() {
 			if (what[0].matched) {
 				int intermediatePoints = atoi(what[1].str().c_str());
 
-				// load this primitive into a MotionPrimitiveData
+				// load this primitive and into a MotionPrimitiveData
 				std::vector<vehicleSimplePoint*> primitiveTrajectory;
 				MotionPrimitiveData* primData = new MotionPrimitiveData;
 
@@ -262,21 +223,25 @@ void LHDModel::loadPrimitiveLookupTable() {
 					// check the number of intermediate poses to read for this particular primitive
 					std::stringstream ss(line);
 					// NOTE: we assume already normalized angles
-					ss >> sp->x >> sp->y >> sp->orient >> sp->steering;
+					ss >> sp->x >> sp->y >> sp->orient >> sp->steering >> sp->steeringRear; //Cecchi_add
 					primitiveTrajectory.push_back(sp);
 				}
 				// add the trajectory
 				primData->setTrajectory(primitiveTrajectory, orientationAngles_, steeringAnglePartitions_);
+                
+                // set the primitive cost
+                if (primitiveCost < 0) primitiveCost = calculateLength(primData->getTrajectory());
+                primData->setDistance(primitiveCost);
 
-				// check where to put this primitive : check if the starting angle is present in the lookup table
+				// check where to put this primitive : check if the starting angles (steering and orientation) are present in the lookup table
 				motionPrimitivesLookup::iterator it;
-				it = modelMotionPrimitivesLT_.find(
+				it = modelMotionPrimitivesLTS_[set].find(
 						std::pair<uint8_t, uint8_t>(primData->getStartingOrientationID(), primData->getStartingSteeringID()));
-				if (it == modelMotionPrimitivesLT_.end()) {
+				if (it == modelMotionPrimitivesLTS_[set].end()) {
 					// no match: create a new entry
 					std::vector<MotionPrimitiveData*> primitiveList;
 					primitiveList.push_back(primData);
-					modelMotionPrimitivesLT_.insert(motionPrimitivesLookupEntry(
+					modelMotionPrimitivesLTS_[set].insert(motionPrimitivesLookupEntry(
 							std::pair<uint8_t, uint8_t>(primData->getStartingOrientationID(), primData->getStartingSteeringID()),
 							primitiveList));
 				} else {
@@ -288,17 +253,18 @@ void LHDModel::loadPrimitiveLookupTable() {
 	}
 	f.close();
 
-	// calculate the total length of the lhd
-	this->length_ = this->lhdBackFromAxle_ + this->lhdBackLength_ 	+ this->lhdFrontFromAxle_ + this->lhdFrontLength_;
+	// calculate the total length of the car
+	this->length_ = this->carBackLength_ + this->carFrontLength_;
 	// get the distance reached by the longest primitive
 	double longestPrimitiveReach = 0;
 
 	// now let's see if the file of additional data is there
-	f.open(motionPrimitiveAdditionalDataFilename_.c_str(), std::ifstream::in);
+	f.open(motionPrimitiveAdditionalDataFilenameS_[set].c_str(), std::ifstream::in);
 	// if it is not open, let's generate it and open it again
 	if (!f.is_open()) {
 		this->generatePrimitiveAdditionalData();
 	} else {
+
 		while (f.good()) {
 			getline(f, line);
 
@@ -307,7 +273,7 @@ void LHDModel::loadPrimitiveLookupTable() {
 				break;
 			}
 
-			unsigned int primitiveID;
+			unsigned short int primitiveID;
 			uint8_t orientID;
 			uint8_t steeringID;
 			unsigned int input;
@@ -319,17 +285,17 @@ void LHDModel::loadPrimitiveLookupTable() {
 			iss >> primitiveID;
 
 			// check if the primitive is present in the lookup table
-			motionPrimitivesLookup::iterator motionit = modelMotionPrimitivesLT_.find(std::pair<uint8_t, uint8_t>(orientID,steeringID));
+			motionPrimitivesLookup::iterator motionit = modelMotionPrimitivesLTS_[set].find(std::pair<uint8_t, uint8_t>(orientID,steeringID));
 
-			if (motionit == modelMotionPrimitivesLT_.end()) {
+			if (motionit == modelMotionPrimitivesLTS_[set].end()) {
 				std::ostringstream logLine;
 				logLine << "WARNING: motion primitive not found in data!! -- " <<
 						(unsigned) orientID << "," << (unsigned) steeringID << "," << primitiveID;
-				writeLogLine(logLine.str(), "LHDModel", WP::LOG_FILE);
+				writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
 			} else {
 				std::vector<MotionPrimitiveData*> primvec = motionit->second;
 				bool primitiveFound = false;
-
+				
 				for (std::vector<MotionPrimitiveData*>::iterator primit = primvec.begin(); primit != primvec.end(); primit++) {
 					// we found the primitive to which we want to assign the data
 					if ((*primit)->getID() == primitiveID) {
@@ -352,6 +318,7 @@ void LHDModel::loadPrimitiveLookupTable() {
 							iss >> cell->x_cell;
 							iss >> cell->y_cell;
 							// swept cells are over. Now the occupied ones
+							
 							if (cell->x_cell == CELL_DELIMITER && cell->y_cell == CELL_DELIMITER) {
 								delete cell;
 								delimiterFound = true;
@@ -365,8 +332,10 @@ void LHDModel::loadPrimitiveLookupTable() {
 							iss >> cell->y_cell;
 							occCells.push_back(cell);
 						}
+
 						(*primit)->setSweptCells(sweptCells);
 						(*primit)->setOccCells(occCells);
+						(*primit)->setSet(set);
 					}
 				}
 				// line.empty prevents an error from the last endl of the file
@@ -374,60 +343,59 @@ void LHDModel::loadPrimitiveLookupTable() {
 					std::ostringstream logLine;
 					logLine << "WARNING: motion primitive not found in data!! -- " <<
 							(unsigned) orientID << "," << (unsigned) steeringID << "," << primitiveID;
-					writeLogLine(logLine.str(), "LHDModel", WP::LOG_FILE);
+					writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
 				}
+
 			}
 		}
 	}
-	double longDimension = this->getLength() - this->getLHDFrontLength() > this->getLHDFrontLength() ?
-			this->getLength() - this->getLHDFrontLength() : this->getLHDFrontLength();
+	double longDimension = this->getCarBackLength() > this->getCarFrontLength()? this->getCarBackLength() : this->getCarFrontLength();
 	interferenceRange_ = longestPrimitiveReach + sqrt(pow(this->getWidth()/2,2) + pow(longDimension,2));
 	f.close();
 
 	// once all the primitives have been loaded, we need to prepare the selector table
+	
+	modelMotionPrimitivesLT_ = modelMotionPrimitivesLTS_[set];
+	modelMotionPrimitivesSelectorLT_ = modelMotionPrimitivesSelectorLTS_[set];
 	this->prepareMotionPrimitiveSelectorTable();
+	modelMotionPrimitivesSelectorLTS_[set] = modelMotionPrimitivesSelectorLT_;
 }
 
-void LHDModel::generatePrimitiveAdditionalData() {
-
+void DualSteerModel::generatePrimitiveAdditionalData() {
+	int set = currentSet;
 	// load the file with the primitives
 	if (WP::LOG_LEVEL >= 1) {
 		std::ostringstream logLine;
 		logLine << "Generating primitives' additional data: " << motionPrimitiveAdditionalDataFilename_;
-		writeLogLine(logLine.str(), "LHDModel", WP::LOG_FILE);
+		writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
 	}
 
 	int counter = 0;
 
-	// iterate over the existing primitives and generate the additional data
-	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it++) {
-
+	// iterate over the existing primitives and generate the additional data  //Cecchi_add_data
+	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
+		writeLogLine("addDAta", "\x1B[34mDualSteerModel \034[0m", WP::LOG_FILE);
 		counter ++;
 		// load the file with the primitives
 		if (WP::LOG_LEVEL >= 1) {
 			std::ostringstream logLine;
-			logLine << "Generating additional data [" << counter << "/" << modelMotionPrimitivesLT_.size() << "]";
-			writeLogLine(logLine.str(), "LHDModel", WP::LOG_FILE);
+			logLine << "Generating additional data [" << counter << "/" << modelMotionPrimitivesLTS_[set].size() << "]";
+			writeLogLine(logLine.str(), "DualSteerModel", WP::LOG_FILE);
 		}
 
 		std::vector<MotionPrimitiveData*> mprimdata = (*it).second;
 		for (std::vector<MotionPrimitiveData*>::iterator primit = mprimdata.begin(); primit != mprimdata.end(); primit++) {
-			// calculate the distance
-			(*primit)->setDistance(calculateLength((*primit)->getTrajectory()));
-
+            
 			// now calculate the cells swept and occupied at the end of the motion
 			std::vector<cellPosition*> cellsSwept;
 			cellsSwept.clear();
-			std::vector<cellPosition*> cellsOcc;
-			cellsOcc.clear();
 
 			std::vector<vehicleSimplePoint*> traj = (*primit)->getTrajectory();
 
 			for (std::vector<vehicleSimplePoint*>::iterator pointit = traj.begin(); pointit != traj.end(); pointit++) {
 
-				vehicleSimplePoint* sp = (vehicleSimplePoint*) (*pointit);
-
-				std::vector<cellPosition*> cellsOccByPos =  this->getCellsOccupiedInPosition(sp);
+				vehicleSimplePoint* p = *pointit;
+				std::vector<cellPosition*> cellsOccByPos = this->getCellsOccupiedInPosition(p);
 
 				for (std::vector<cellPosition*>::iterator it = cellsOccByPos.begin(); it != cellsOccByPos.end(); it++ ) {
 					bool found = false;
@@ -451,23 +419,22 @@ void LHDModel::generatePrimitiveAdditionalData() {
 					delete (*it);
 				}
 
-				// last position: set the final cells occupied. Note. In the LHD case, some cells might be occupied by both front and back body
+				// last position: set the final cells occupied
 				if (pointit + 1 == traj.end()){
-					cellsOcc.clear();
-					cellsOcc =  this->getCellsOccupiedInPosition(sp);
+					std::vector<cellPosition*> cellsOccByPos = this->getCellsOccupiedInPosition(p);
+					(*primit)->setOccCells(cellsOccByPos);
 				}
 			}
 			(*primit)->setSweptCells(cellsSwept);
-			(*primit)->setOccCells(cellsOcc);
 		}
 	}
-
 	// adjust the distances for the 8-axis symmetry
+	modelMotionPrimitivesLT_ = modelMotionPrimitivesLTS_[set];
 	this->adjustPrimitiveDistancesWith8AxisSymmetry();
 	// save
 	std::ofstream f;
-	f.open(motionPrimitiveAdditionalDataFilename_.c_str(), std::ios::app);
-	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it++) {
+	f.open(motionPrimitiveAdditionalDataFilenameS_[set].c_str(), std::ios::app);
+	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLTS_[set].begin(); it != modelMotionPrimitivesLTS_[set].end(); it++) {
 		std::vector<MotionPrimitiveData*> mprimdata = (*it).second;
 		for (std::vector<MotionPrimitiveData*>::iterator primit = mprimdata.begin(); primit != mprimdata.end(); primit++) {
 
@@ -492,22 +459,115 @@ void LHDModel::generatePrimitiveAdditionalData() {
 	f.close();
 }
 
-double LHDModel::getLHDBackLength() {
-	return lhdBackLength_;
+double DualSteerModel::getCarFrontLength() {
+	return carFrontLength_;
 }
 
-double LHDModel::getLHDFrontLength() {
-	return lhdFrontLength_;
+double DualSteerModel::getCarBackLength() {
+	return carBackLength_;
 }
 
-double LHDModel::getLHDBackFromAxle() {
-	return lhdBackFromAxle_;
+double DualSteerModel::getCarMaxSteeringAngle() {
+	return carMaxSteeringAngle_;
 }
 
-double LHDModel::getLHDFrontFromAxle() {
-	return lhdFrontFromAxle_;
+
+
+// std::vector<MotionPrimitiveData*> DualSteerModel::selectApplicablePrimitives(
+// 		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID) {
+// 	std::vector<MotionPrimitiveData*> primitiveSet;
+// 	std::string str = "\n";
+// 	std::vector<int> setToUse;
+// 	setToUse = this ->selectSet();
+
+// 	for (unsigned vec = 0; vec < setToUse.size(); vec++){
+// 		int set = setToUse[vec];
+		
+// 		motionPrimitiveSelectorLookup::iterator it;
+// 		it = modelMotionPrimitivesSelectorLTS_[vec] .find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
+// 		if (it == modelMotionPrimitivesSelectorLTS_[vec].end()) {
+// 			std::vector<MotionPrimitiveData*> dummy;
+// 			std::ostringstream logLine;
+// 			logLine << "KEY NOT FOUND [" << (int) orientationID  << "," << (int) steeringID << "]";
+// 			writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
+// 			//return dummy;
+// 		} else {
+// 			char info[150];
+// 			//sprintf(info, "set %d : primitives $$ %lu in [%d,%d]\n", set, (*it).second, orientationID,steeringID );
+// 			str.append(std::string(info));
+// 			//for (unsigned i=0; i<(*it).second; i++){
+
+// 				MotionPrimitiveSelector* s = (*it).second;
+// 				std::vector<MotionPrimitiveData*> result = s->getValidPrimitives(w, startXcell, startYcell);
+//     			primitiveSet.push_back( result.at(vec) );
+// 				std::ostringstream logLine;
+// 				logLine << "CHECK!! [" << (int) orientationID  << "," << (int) steeringID << "]";
+// 				writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
+			
+// 			//}
+// 		}
+// 	}
+// 	char info[150];
+// 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
+// 	str.append(std::string(info));
+// 	writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
+// 	return primitiveSet;
+
+// }
+
+
+
+std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID) {
+	std::vector<MotionPrimitiveData*> primitiveSet;
+	std::string str = "\n";
+	std::vector<int> setToUse;
+	setToUse = this ->selectSet();
+	for (unsigned vec = 0; vec < setToUse.size(); vec++){
+		int set = setToUse[vec];
+		motionPrimitivesLookup::iterator it;
+		it = modelMotionPrimitivesLTS_[set].find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
+		if (it == modelMotionPrimitivesLTS_[set].end()) {
+			char info[150];
+			sprintf(info, "set %d : KEY NOT FOUND in [%d,%d]\n", set, orientationID,steeringID );
+			str.append(std::string(info));
+		} else {
+			char info[150];
+			sprintf(info, "set %d : primitives %lu in [%d,%d]\n", set, (*it).second.size(), orientationID,steeringID );
+			str.append(std::string(info));
+			for (unsigned i=0; i<(*it).second.size(); i++)
+    			primitiveSet.push_back( (*it).second.at(i) );
+		}	
+	}
+	char info[150];
+	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
+	str.append(std::string(info));
+	//writeLogLine(str, "[DualSteerModel]", WP::LOG_FILE);
+	return primitiveSet;
 }
 
-double LHDModel::getLHDMaxSteeringAngle() {
-	return lhdBoundPhi_;
+std::vector<int> DualSteerModel:: selectSet(){
+	std:: vector<int> selectedSet;
+	//condition for set 0
+	if(sets>0 && true){
+		selectedSet.push_back(0);
+	}
+	//condition for set 1
+	if(sets >1 && true){
+		selectedSet.push_back(1);
+	}
+	//condition for set 2
+	if(sets >2 && true){
+		selectedSet.push_back(2);
+	}
+	//condition for set 4
+	if(sets >3 && true){
+		selectedSet.push_back(3);
+	}
+	//condition for set 5
+	if(sets >4 && true){
+		selectedSet.push_back(4);
+	}
+	return selectedSet;
 }
+
+

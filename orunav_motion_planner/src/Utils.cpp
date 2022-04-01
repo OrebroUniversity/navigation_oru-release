@@ -164,23 +164,23 @@ double floorPositiveNumber(double n, double base, double tolerance) {
 	return n;
 }
 
-void writeLogLine(std::string line, std::string filename) {
+void writeLogLine(std::string line, std::string filename, const std::ios_base::openmode mode) {
 	if (filename.compare(std::string("stdout")) == 0) {
 		std::cout << line << std::endl;
 	} else {
 		std::ofstream logfile;
-		logfile.open(filename.c_str(), std::ios::app);
+		logfile.open(filename.c_str(), mode);
 		logfile << line << std::endl;
 		logfile.close();
 	}
 }
 
-void writeLogLine(std::string line, const char* className, std::string filename) {
+void writeLogLine(std::string line, const char* className, std::string filename, const std::ios_base::openmode mode) {
 	if (filename.compare(std::string("stdout")) == 0) {
 		std::cout << "[" << className << "] " << line << std::endl;
 	} else {
 		std::ofstream logfile;
-		logfile.open(filename.c_str(), std::ios::app);
+		logfile.open(filename.c_str(), mode);
 		logfile << "[" << className << "] " << line << std::endl;
 		logfile.close();
 	}

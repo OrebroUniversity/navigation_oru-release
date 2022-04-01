@@ -92,6 +92,16 @@ public:
 	 * @returns the vehicle's max angle joint angle, in radians
 	 */
 	double getLHDMaxSteeringAngle();
+    
+        /**
+     * Get the vertices of the robot footprint in a given pose
+     * @param p A pointer to the point where the vehicle is positioned.
+     * @param b_l A container for the bottom left vertex
+     * @param b_r A container for the bottom right vertex
+     * @param t_l A container for the top left vertex
+     * @param t_r A container for the top right vertex
+     */
+    virtual void getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p);
 
 };
 

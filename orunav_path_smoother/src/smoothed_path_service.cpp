@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 #include <acado_toolkit.hpp>
 #include <acado/bindings/acado_gnuplot/gnuplot_window.hpp>
@@ -24,6 +25,63 @@ int reassign_iters;
 double reassign_min_distance_;
 ros::Publisher marker_pub;
 PathSmootherDynamic::Params smoother_params;
+
+double wrap_rads( double r )
+{
+    while ( r > M_PI ) { r -= 2 * M_PI;}
+    while ( r <= -M_PI ) {r += 2 * M_PI;}
+    return r;
+}
+
+ int findDirection(orunav_generic::Pose2d prev,orunav_generic::Pose2d next){
+      double x0 = prev(0); double y0 = prev(1); double th = prev(2);
+      double x1 = next(0); double y1 = next(1);
+      th = wrap_rads(th);
+      double m ,sign = 1;
+      //std::cout << "th " <<th <<" " << cos(th+M_PI/2)  <<std::endl;
+      if (abs(cos(th+M_PI/2)) <= 0.0001 || th == 0){ 
+          m=1000;
+          
+          if ((y1-y0) < m*(x1-x0)) return 1;
+          else return -1;
+        }
+      else{ m = tan(th+M_PI/2);}
+      std::cout << " " << th;
+      if (signbit(th) == 1){
+        if ((y1-y0) < m*(x1-x0)){std::cout << " a "; return 1;}
+      }
+      else {
+        if ((y1-y0) > m*(x1-x0)){std::cout << " b "; return 1;}
+      }
+      std::cout << " c ";
+      return -1;
+    }
+
+int cuspidi(int incr , orunav_generic::Path path){
+      int motion_old3=0, motion_old2=0, motion_old = 0, motion = 0;
+      int cuspide = 0;
+      int inc = 1 + incr;
+      for (int i = 0; i < path.sizePath()-2; i += inc){
+        motion_old3 = motion_old2;
+        motion_old2 = motion_old;
+        motion_old = motion;
+        motion = findDirection(path.getPose2d(i) , path.getPose2d(i+inc));
+        std::cout << motion << " " << std::endl;
+        //std::cout << "motionOld " << motion_old << " motion "<< motion << " p " <<
+        //path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2)<<std::endl;
+        //orunav_rviz::drawPose2d(path.getPose2d(i), 0, 0, 1.5, "cuspide", marker_pub_);
+        if (motion_old3 != 0 && motion_old != motion_old2 && motion_old == motion && motion_old2 == motion_old3){
+          //if (motion_old != motion_old2 && motion_old == motion){
+            cuspide += 1;
+            //std::cout << "cuspide!         -" << path.getPose2d(i)(0) << " " << path.getPose2d(i)(1) <<" "<< path.getPose2d(i)(2) << std::endl;
+        }
+        //getchar();
+      }
+      std::cout << "total cuspidi" << cuspide << std::endl;
+      return cuspide;
+    }
+  
+
 
 bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
                              orunav_msgs::GetSmoothedPath::Response &res )
@@ -50,8 +108,8 @@ bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
         return false;
     }
 
-    std::cout << "number of path points : " << constraints.size() << std::endl;;
-    std::cout << "number of constraints : " << path.sizePath() << std::endl;
+    std::cout << "number of constraints : " << constraints.size() << std::endl;;
+    std::cout << "number of path points  : " << path.sizePath() << std::endl;
 
     
     PathSmootherDynamic smoother;
@@ -99,9 +157,29 @@ bool getSmoothedPathCallback(orunav_msgs::GetSmoothedPath::Request  &req,
     if (visualize) {
         orunav_rviz::drawPose2dContainer(smoothed_path, "path_smoother_new_path", 0, marker_pub);
     }
+
+    /*std::ofstream f;
+    f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+    f << "smoothed length: " << smoothed_path.getLength() << std::endl;
+    //f << "smoothed cuspidu: " << smoothed_path.cuspidi(0) << std::endl;
+    f << "smoothed cuspidi: " << cuspidi(0, smoothed_path) << std::endl;
+
+    f << "smoothed path: "<< std::endl;
+    for (unsigned int i = 0; i < smoothed_path.sizePath(); i++)
+      {
+      f << smoothed_path.getPose2d(i)(0) << " "
+          << smoothed_path.getPose2d(i)(1) << " "
+          << smoothed_path.getPose2d(i)(2) << " "
+          << smoothed_path.getSteeringAngle(i) << " "
+          << smoothed_path.getSteeringAngleRear(i) << std::endl; //Cecchi_add
+          }
+    f.close();*/
+
     
     return true;
 }
+
+
 
 int main(int argc, char **argv)
 {
@@ -126,9 +204,10 @@ int main(int argc, char **argv)
   nh.param<bool>("reassign_constraints", reassign_constraints, false);
   nh.param<int>("reassign_iters", reassign_iters, 1);
   nh.param<double>("reassign_min_distance", reassign_min_distance_, -1.);
-  nh.param<bool>("use_incremental", smoother_params.use_incremental, false);
+  nh.param<bool>("use_incremental", smoother_params.use_incremental, false); 
   nh.param<int>("incr_max_nb_points", smoother_params.incr_max_nb_points, 20);
   nh.param<int>("incr_nb_points_discard", smoother_params.incr_nb_points_discard, 5);
+  nh.param<bool>("biSteering", smoother_params.BS, false);
   if (visualize)
   {
       std::cout << "The output is visualized using visualization_markers (in rviz)." << std::endl;

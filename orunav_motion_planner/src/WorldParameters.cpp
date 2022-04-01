@@ -6,16 +6,18 @@
  *      Author: marcello
  */
 #include "orunav_motion_planner/WorldParameters.h"
+#include <ros/package.h>
 
 // initialization of the world parameters
 
-int WP::LOG_LEVEL = 1;
+int WP::LOG_LEVEL = 4;
 std::string WP::LOG_FILE = std::string("stdout");
+std::string WP::AUX_FILE = ros::package::getPath("orunav_motion_planner") + std::string("/auxfile.txt");
 bool WP::SAVE_FINAL_VISUALIZATION_TO_FILE = false;
 
-std::string WP::PRIMITIVES_DIR = std::string("/home/mco/Workspace/ALLO/src/branches/MRTimelessPathFinder/Primitives/");
-std::string WP::TABLES_DIR = std::string("/home/mco/Workspace/ALLO/src/branches/MRTimelessPathFinder/LookupTables/");
-std::string WP::MAPS_DIR = std::string("/home/mco/Workspace/ALLO/src/branches/MRTimelessPathFinder/Maps/");
+std::string WP::PRIMITIVES_DIR = ros::package::getPath("orunav_motion_planner") + std::string("/Primitives/");
+std::string WP::TABLES_DIR = ros::package::getPath("orunav_motion_planner") + std::string("/LookupTables/");
+std::string WP::MAPS_DIR = ros::package::getPath("gazebo_oru") + std::string("/gazebo_worlds_oru/maps");
 
 unsigned long int WP::EXPANSION_QUEUE_MAX = 10000000;
 double WP::COST_CUTOFF = INFINITY;
@@ -29,11 +31,15 @@ double WP::CALCULATION_APPROXIMATION_ERROR = 0.001;
 double WP::OCCUPANCY_THRESHOLD = 0.5;
 
 int WP::DECIMAL_APPROXIMATION = 4;
-WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::EPFSG;
-
+WP::NodeExpansionMethod WP::NODE_EXPANSION_METHOD = WP::NodeExpansionMethod::EPFSG; //NAIVE ; // Cecchi_modify
+WP::VehicleType WP::VEHICLE_TYPE = WP::VehicleType::CAR ; // Cecchi_add
 
 void WP::setExpansionMethod(WP::NodeExpansionMethod method) {
 	WP::NODE_EXPANSION_METHOD = method;
+}
+
+void WP::setVehicleType(WP::VehicleType vehicle){
+	WP::VEHICLE_TYPE = vehicle;
 }
 
 void WP::setPrimitivesDir(std::string dir) {
@@ -86,6 +92,10 @@ void WP::setOccupancyThreshold(double threshold) {
 
 void WP::setLogFile(std::string filename) {
 	WP::LOG_FILE = filename;
+}
+
+void WP::setAuxFile(std::string filename) {
+	WP::AUX_FILE = filename;
 }
 
 void WP::setSaveFinalVisualizationToFile(bool enable) {

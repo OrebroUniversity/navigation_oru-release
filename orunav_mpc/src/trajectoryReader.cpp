@@ -227,7 +227,7 @@ void trajectoryReader::processTrajectoryChunk_(
                 ROS_WARN("Trajectory message parser: Unknown step mode, default is used.");
                 step.mode = SW_STEP_MODE_DEFAULT;
             }
-
+             ROS_WARN("______________________!!!!!!!!!!!!!!!!!!!____________________________.");
             step.state.set(
                     msg.steps[i].state.position_x,
                     msg.steps[i].state.position_y,

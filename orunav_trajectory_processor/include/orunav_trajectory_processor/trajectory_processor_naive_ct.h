@@ -10,7 +10,7 @@
 class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_generic::DeltaTInterface
 {
  public:
- TrajectoryProcessorNaiveCT() : _startIdx(0), _startIdxControl(0.,0.), _startIdxTime(-1.) { }
+ TrajectoryProcessorNaiveCT() : _startIdx(0), _startIdxControl(0.,0.,0.), _startIdxTime(-1.) { }//Cecchi_add-
 
   void addPathInterface(const orunav_generic::PathInterface &path)
   {
@@ -35,7 +35,6 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
   }
 
   orunav_generic::Trajectory getTrajectory() {
-
     if (_params.debug) {
       orunav_generic::saveDoubleVecTextFile(this->_coordinatedTimes, _params.debugPrefix + std::string("tpnct_input.ct"));
       orunav_generic::savePathTextFile(this->_path, _params.debugPrefix + std::string("tpnct_input.path"));
@@ -43,7 +42,6 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     if (_coordinatedTimes.empty()) { // No coordination times - no need with any special handling.
       return getTrajectoryNoCoordination();
     }
-
     if (_startIdx == 0) { // Starting from beginning? no special handling. - this is where CASE 2 will end up...
       // CANNOT DO THIS TO CLOSE TO THE END!!!
       // if (orunav_generic::coordinationPairTimeStep(_coordinatedTimes, _startIdx) > 3.) {
@@ -113,7 +111,8 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     for (size_t i = 0; i < _controlConstraintPoints.size(); i++) {
       std::cout << "constraint[" << i << "] : idx : " << _controlConstraintPoints[i].first;
       std::cout << " control.v " << _controlConstraintPoints[i].second.v;
-      std::cout << " control.w " << _controlConstraintPoints[i].second.w << std::endl;
+      std::cout << " control.w " << _controlConstraintPoints[i].second.w; //<< std::endl;
+      std::cout << " control.wr " << _controlConstraintPoints[i].second.wr << std::endl;//Cecchi_add-
     }
   }
   
@@ -126,7 +125,6 @@ class TrajectoryProcessorNaiveCT : public TrajectoryProcessor //, public orunav_
     gen.addPathInterface(_path);
     gen.addControlConstraintPoints(this->_controlConstraintPoints);
     gen.addControlConstraintPointAsStart(_startIdx, _startIdxControl);
-    
     orunav_generic::Trajectory traj = gen.getTrajectory();
     this->setGlobalPathTimes(gen);
     std::cerr << "getTrajectoryNoCoordination() - end" << std::endl;

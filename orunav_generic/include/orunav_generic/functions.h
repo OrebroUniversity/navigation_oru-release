@@ -74,6 +74,7 @@ inline State2d addState2d(const State2d &origin, const State2d &incr)
   State2d ret;
   ret.pose = addPose2d(origin.getPose2d(), incr.getPose2d());
   ret.steeringAngle = origin.getSteeringAngle() + incr.getSteeringAngle();
+  ret.steeringAngleRear = origin.getSteeringAngleRear() + incr.getSteeringAngleRear(); //Cecchi_add-
   return ret;
 }
 

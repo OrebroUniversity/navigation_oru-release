@@ -89,6 +89,7 @@ namespace orunav_conversions
       orunav_generic::State2d s;
       s.setPose2d(p);
       s.setSteeringAngle(state.steering_angle);
+      s.setSteeringAngleRear(state.steering_angle_rear); //Cecchi_add_
       return s;
     }
 
@@ -97,6 +98,7 @@ namespace orunav_conversions
       orunav_generic::State2d s;
       s.pose = createPose2dFromMsg(ps.pose);
       s.steeringAngle = ps.steering;
+      s.steeringAngleRear = ps.steeringRear; //Cecchi_add_
       return s;
     }
 
@@ -105,6 +107,7 @@ namespace orunav_conversions
       orunav_msgs::PoseSteering ps;
       ps.pose = createMsgFromPose2d(state.getPose2d());
       ps.steering = state.steeringAngle;
+      ps.steeringRear = state.steeringAngleRear;//Cecchi_add_
       return ps;
     }
 
@@ -119,6 +122,7 @@ namespace orunav_conversions
       ps.pose.position.y = path.getPose2d(i)(1);
       ps.pose.position.z = 0.;
       ps.steering = path.getSteeringAngle(i);
+      ps.steeringRear = path.getSteeringAngleRear(i);//Cecchi_add_
       p.path.push_back(ps);
     }
   return p;
@@ -142,18 +146,18 @@ namespace orunav_conversions
       orunav_generic::Path p;
       for (unsigned int i = 0; i < path.path.size(); i++)
 	{
-	  p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering);
+    p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering, path.path[i].steeringRear); //Cecchi_add ?
 	}
       return p;
     }
 
   orunav_generic::Path createPathFromPathMsgUsingTargetsAsFirstLast(const orunav_msgs::Path &path) {
       orunav_generic::Path p;
-      p.addPathPoint(createPose2dFromMsg(path.target_start.pose), path.target_start.steering);
+      p.addPathPoint(createPose2dFromMsg(path.target_start.pose), path.target_start.steering, path.target_start.steeringRear);//Cecchi_add
       for (unsigned int i = 1; i < path.path.size()-1; i++) {
-	p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering);
+	p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering, path.path[i].steeringRear);//Cecchi_add
       }
-      p.addPathPoint(createPose2dFromMsg(path.target_goal.pose), path.target_goal.steering);
+      p.addPathPoint(createPose2dFromMsg(path.target_goal.pose), path.target_goal.steering,path.target_goal.steeringRear);//Cecchi_add
       return p;
   }
 
@@ -168,9 +172,11 @@ namespace orunav_conversions
 	  tp.pose.pose.position.y = traj.getPose2d(i)(1);
 	  tp.pose.pose.position.z = 0.;
 	  tp.pose.steering = traj.getSteeringAngle(i);
+    tp.pose.steeringRear = traj.getSteeringAngleRear(i);//Cecchi_add_
 
 	  tp.velocity.drive = traj.getDriveVel(i);
 	  tp.velocity.steering = traj.getSteeringVel(i);
+    tp.velocity.steering = traj.getSteeringVelRear(i);//Cecchi_add_
 	  
 	  t.trajectory.push_back(tp);
 	}
@@ -198,9 +204,11 @@ namespace orunav_conversions
 	  s.state.position_y = traj.getPose2d(i)(1);
 	  s.state.orientation_angle = traj.getPose2d(i)(2);
 	  s.state.steering_angle = traj.getSteeringAngle(i);
+      s.state.steering_angle_rear = traj.getSteeringAngleRear(i); //Cecchi_add_
 	  
 	  s.velocities.tangential = traj.getDriveVel(i);
 	  s.velocities.steering = traj.getSteeringVel(i);
+      s.velocities.steering_rear = traj.getSteeringVelRear(i); //Cecchi_add_
 	  
 	  s.mode = orunav_msgs::ControllerTrajectoryStep::MODE_1;
 

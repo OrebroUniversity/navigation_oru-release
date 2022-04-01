@@ -3,6 +3,7 @@
 #include <orunav_generic/pose2d.h>
 #include <vector>
 
+
 namespace orunav_generic
 {
   class Pose2dInterface
@@ -58,6 +59,8 @@ namespace orunav_generic
   public:
     virtual double getSteeringAngle() const = 0;
     virtual void setSteeringAngle(double angle) = 0;
+    virtual double getSteeringAngleRear() const = 0;//Cecchi_add
+    virtual void setSteeringAngleRear(double angle) = 0;//Cecchi_add
   };
   
   class SteeringAngleContainerInterface
@@ -66,6 +69,10 @@ namespace orunav_generic
     virtual double getSteeringAngle(size_t idx) const = 0;
     virtual void setSteeringAngle(double angle, size_t idx) = 0;
     virtual size_t sizeSteeringAngle() const = 0;
+    //Cecchi_add :
+    virtual double getSteeringAngleRear(size_t idx) const = 0;
+    virtual void setSteeringAngleRear(double angle, size_t idx) = 0;
+    virtual size_t sizeSteeringAngleRear() const = 0;
   };
   
   class State2dInterface : public Pose2dInterface, public SteeringAngleInterface
@@ -80,6 +87,9 @@ namespace orunav_generic
     virtual void setFwdVel(double fwdVel) = 0;
     virtual double getRotVel() const = 0;
     virtual void setRotVel(double rotVel) = 0;
+    //Ceechi_add
+    virtual double getRotVelRear() const = 0;
+    virtual void setRotVelRear(double rotVel) = 0;
   };
 
   class LoadInterface
@@ -110,6 +120,8 @@ namespace orunav_generic
     virtual void setDriveVel(double v, size_t idx) = 0;
     virtual double getSteeringVel(size_t idx) const = 0;
     virtual void setSteeringVel(double w, size_t idx) = 0;
+    virtual double getSteeringVelRear(size_t idx) const = 0; //Cecchi_add
+    virtual void setSteeringVelRear(double wr, size_t idx) = 0;//Cecchi_add
     size_t sizeTrajectory() const { return sizePose2d(); }
   };
   

@@ -181,6 +181,7 @@ int main(int argc, char** argv) {
      if (step_idx_control_constraint > 0) {
        c.v = control_constraint_speed;
        c.w = 0.;
+       c.wr = 0.; //Cecchi_add-
        if (control_constraint_as_start) {
 	 gen.addControlConstraintPointAsStart(step_idx_control_constraint, c);
        }

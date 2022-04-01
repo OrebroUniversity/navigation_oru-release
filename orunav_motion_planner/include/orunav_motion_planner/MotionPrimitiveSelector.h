@@ -127,6 +127,7 @@ class MotionPrimitiveSelector {
 private:
 
 	std::vector<MPSelectorNode> selectorNodes_;
+	int totalPrimitives = 0;
 
 	/**
 	 * Verifies if the first vector of pointers to MotionPrimitiveData passed as argument
@@ -167,6 +168,7 @@ public:
 
 	~MotionPrimitiveSelector();
 
+	int getTotalPrimitives(){return  totalPrimitives;};
 	/**
 	 * Returns a vector of pointers to MotionPrimitiveData. All the primitives returned are
 	 * directly applicable as they are guaranteed to be collision free

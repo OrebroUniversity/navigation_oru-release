@@ -177,6 +177,9 @@ namespace orunav_generic {
     void addPathPoint(const Pose2d &pose, const double &steeringAngle) { poses.push_back(pose); steeringAngles.push_back(steeringAngle); }
     void addPathPointInterface(const Pose2dInterface &pose, const SteeringAngleInterface& steeringAngle) { this->addPathPoint(pose.getPose2d(), steeringAngle.getSteeringAngle()); }
     void addState2dInterface(const State2dInterface &state) { this->addPathPointInterface(state, state); }
+      // if (p == 15){
+      //  std::cout << "\x1B[33m[Trajectory] - Pose : \033[0m" << steeringAngle << " " << steeringAngleRear << "\n"; p=0;}
+      //  else {p++;}
 
     // Interfaces
     virtual Pose2d getPose2d(size_t idx) const { return poses.getPose2d(idx); }
@@ -187,6 +190,9 @@ namespace orunav_generic {
     virtual void setSteeringAngle(double s, size_t idx) { steeringAngles[idx] = s; }
     virtual size_t sizeSteeringAngle() const { return steeringAngles.size(); }
     
+      
+      
+      
 
     State2d getState2d(size_t idx) const { return State2d(*this, idx); }
     void setState2d(const State2dInterface &s, size_t idx) { poses[idx] = s.getPose2d(); steeringAngles[idx] = s.getSteeringAngle(); }

@@ -83,6 +83,7 @@ public:
 	/** Default initialization */
 	vehicleSimplePoint() : simplePoint() {
 		steering = 0;
+		steeringRear = 0;//Cecchi_add_planner
 	}
 	/** Initialize the vehicleSimplePoint */
 	void initVehicleSimplePoint(double px, double py, double po, double ps) {
@@ -90,9 +91,22 @@ public:
 		y = py;
 		orient = po;
 		steering = ps;
+		steeringRear = 0;//Cecchi_add_planner
 	}
+
+	void initVehicleSimplePoint(double px, double py, double po, double ps, double pr) { //Cecchi_add
+		x = px;
+		y = py;
+		orient = po;
+		steering = ps;
+		steeringRear = pr;//Cecchi_add_planner
+	}
+
 	/** The steering angle of a vehicle traversing the point */
 	double steering;
+
+	/** The rear steering angle of a vehicle traversing the point */
+	double steeringRear;//Cecchi_add
 };
 
 
@@ -107,6 +121,7 @@ struct waypoint {
 	double y;
 	/** The steering angle, in radians */
 	double steeringAngle;
+	double steeringAngleRear; //Cecchi_add
 	/** Distance from the beginning of the path, in meters */
 	double distanceFromStartOfPath;
 	/** Print waypoint */
@@ -229,7 +244,7 @@ double floorPositiveNumber(double n, double base, double tolerance);
  * @param line The line to log
  * @param filename Log file
  */
-void writeLogLine(std::string line, std::string filename);
+void writeLogLine(std::string line, std::string filename, const std::ios_base::openmode mode = std::ios::app);
 
 /**
  * Write a log line into the log file. If filename is equal to "stdout"
@@ -238,7 +253,7 @@ void writeLogLine(std::string line, std::string filename);
  * @param className The name of the class that is calling the logger
  * @param filename Log file
  */
-void writeLogLine(std::string line, const char* className, std::string filename);
+void writeLogLine(std::string line, const char* className, std::string filename, const std::ios_base::openmode mode = std::ios::app);
 
 
 #ifndef _WIN32 // linux function only

@@ -8,6 +8,7 @@
 
 #include "orunav_motion_planner/VehicleModel.h"
 
+
 VehicleModel::VehicleModel(std::string modelPrimitivesFilename) {
 	// temporary values
 	width_ = -1;
@@ -30,6 +31,33 @@ VehicleModel::VehicleModel(std::string modelPrimitivesFilename) {
 	loadHeuristicTable(heuristicLTFilename_);
 	newEntriesInHT_ = false;
 }
+
+
+VehicleModel::VehicleModel(std::array<std::string,5> modelPrimitivesFilenameS, int set) {
+	// temporary values
+	width_ = -1;
+	length_ = -1;
+	vehicleGranularity_ = -1;
+	interferenceRange_ = -1;
+
+	// by default, we consider a single steering angle and a single partition
+	steeringAngleCardinality_ = 1;
+	steeringAnglePartitions_ = 1;
+	orientationAngles_ = 1;
+	// the files with primitives, additional data and heuristic values
+	for (int i=0; i < set; i ++){
+		motionPrimitivesFilenameS_[i] = std::string();
+		motionPrimitiveAdditionalDataFilenameS_[i] = std::string();
+		heuristicLTFilenameS_[i] = std::string();
+		(motionPrimitivesFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".mprim");
+		(motionPrimitiveAdditionalDataFilenameS_[i].append(WP::PRIMITIVES_DIR)).append(modelPrimitivesFilenameS[i]).append(".adat");
+		(heuristicLTFilenameS_[i].append(WP::TABLES_DIR)).append(modelPrimitivesFilenameS[i]).append(".hst");
+		// load heuristic table
+		loadHeuristicTable(heuristicLTFilenameS_[i]);
+		newEntriesInHT_ = false;
+	}
+}
+
 
 VehicleModel::~VehicleModel() {
 	// save the table we used
@@ -78,9 +106,14 @@ void VehicleModel::prepareMotionPrimitiveSelectorTable() {
 	// modelMotionPrimitiveSelectorLT_
 	for (motionPrimitivesLookup::iterator it = modelMotionPrimitivesLT_.begin(); it != modelMotionPrimitivesLT_.end(); it ++ ) {
 		MotionPrimitiveSelector* selector = new MotionPrimitiveSelector((*it).second);
+		totalPrimitives += selector->getTotalPrimitives();
 		modelMotionPrimitivesSelectorLT_.insert(
 				motionPrimitiveSelectorLookupEntry(std::pair<uint8_t, uint8_t>((*it).first.first,(*it).first.second), selector));
 	}
+	// std::ofstream f;
+	// f.open("/home/ubuntu18/catkin_ws/src/volvo_ce/hx_smooth_control/results/data.txt", std::ios::app);
+	// f << "totalPrimitives: " << totalPrimitives << std::endl;
+	// f.close();
 }
 
 void VehicleModel::adjustPrimitiveDistancesWith8AxisSymmetry() {
@@ -433,6 +466,9 @@ std::vector<MotionPrimitiveData*> VehicleModel::selectApplicablePrimitives(
 	} else {
 		MotionPrimitiveSelector* s = (*it).second;
 		std::vector<MotionPrimitiveData*> result = s->getValidPrimitives(w, startXcell, startYcell);
+		std::ostringstream logLine;
+		logLine << "CHECK [" << (int) orientationID  << "," << (int) steeringID << "]";
+		writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
 		return result;
 	}
 }

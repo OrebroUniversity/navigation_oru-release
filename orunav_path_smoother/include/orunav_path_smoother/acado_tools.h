@@ -116,3 +116,104 @@ inline ACADO::DVector convertACADOStateVariableGridToVector(const ACADO::Variabl
   return vec;
 }
 
+//############# Cecchi_add ###################
+inline ACADO::VariablesGrid convertTrajectoryToACADOVariablesGridRear(const orunav_generic::TrajectoryInterface &traj, double start, double deltaT)
+{
+  double end = start + (traj.sizeTrajectory() -1 )* deltaT; 
+  ACADO::VariablesGrid grid(8, start, end, traj.sizeTrajectory());
+
+  for (unsigned int i = 0; i < traj.sizeTrajectory(); i++) {
+    ACADO::DVector v( 8 );
+    v(0) = traj.getPose2d(i)(0);
+    v(1) = traj.getPose2d(i)(1);
+    v(2) = traj.getPose2d(i)(2);
+    v(3) = traj.getSteeringAngle(i);
+    v(4) = traj.getSteeringAngleRear(i);
+    v(5) = traj.getDriveVel(i);
+    v(6) = traj.getSteeringVel(i);
+    v(7) = traj.getSteeringVelRear(i);
+
+    grid.setVector( i,v );
+  }
+  return grid;
+}
+
+inline ACADO::VariablesGrid convertTrajectoryToACADOControlVariablesGridRear(const orunav_generic::TrajectoryInterface &traj, double start, double deltaT)
+{
+  double end = start + (traj.sizeTrajectory() -1 )* deltaT; 
+  ACADO::VariablesGrid grid(3, start, end, traj.sizeTrajectory());
+
+  for (unsigned int i = 0; i < traj.sizeTrajectory(); i++) {
+    ACADO::DVector v( 3 );
+    v(0) = traj.getDriveVel(i);
+    v(1) = traj.getSteeringVel(i);
+    v(2) = traj.getSteeringVelRear(i);
+
+    grid.setVector( i,v );
+  }
+  return grid;
+}
+
+inline void setFixedACADOControlVariablesGridRear(ACADO::VariablesGrid &grid, double v, double w, double wr) {
+  for (unsigned int i = 0; i < grid.getLastIndex(); i++) {
+    ACADO::DVector tmp( 3 );
+    tmp(0) = v;
+    tmp(1) = w;
+    tmp(2) =wr;
+    grid.setVector(i, tmp);
+  }
+}
+
+inline ACADO::VariablesGrid convertPathToACADOStateVariableGridRear(const orunav_generic::PathInterface &path, double start, double deltaT)
+{
+  double end = start + (path.sizePath() -1 )* deltaT; 
+  ACADO::VariablesGrid grid(5, start, end, path.sizePath());
+
+  for (unsigned int i = 0; i < path.sizePath(); i++) {
+    ACADO::DVector v( 5 );
+    v(0) = path.getPose2d(i)(0);
+    v(1) = path.getPose2d(i)(1);
+    v(2) = path.getPose2d(i)(2);
+    v(3) = path.getSteeringAngle(i);
+    v(4) = path.getSteeringAngleRear(i);
+
+    grid.setVector( i,v );
+  }
+  return grid;
+}
+
+inline orunav_generic::Path convertACADOStateVariableGridToPathRear(const ACADO::VariablesGrid &states, int nbStates = 5)
+{
+  orunav_generic::Path path;
+  nbStates = states.getNumRows(); // Why isn't this always used?!?
+
+  for (unsigned int i = 0; i < states.getDim()/nbStates; i++) {
+    double x = states(i,0);
+    double y = states(i,1);
+    double th = states(i,2);
+    double phi = states(i,3);
+    double phiRear = states(i,4);
+    path.addPathPoint(orunav_generic::Pose2d(x,y,th), phi, phiRear);
+  }
+  return path;
+}
+
+inline orunav_generic::Trajectory convertACADOStateControlVariableGridToTrajectoryRear(const ACADO::VariablesGrid &states, const ACADO::VariablesGrid &controls) {
+  orunav_generic::Trajectory traj;
+  int nbStates = states.getNumRows();
+
+  for (unsigned int i = 0; i < states.getDim()/nbStates; i++) {
+    double x = states(i,0);
+    double y = states(i,1);
+    double th = states(i,2);
+    double phi = states(i,3);
+    double phiRear = states(i,4);
+    double v = controls(i,0);
+    double w = controls(i,1);
+    double wr = controls(i,2);
+    traj.addTrajectoryPoint(orunav_generic::Pose2d(x,y,th), phi, phiRear, v, w, wr);
+  }
+ 
+  return traj;
+} 
+

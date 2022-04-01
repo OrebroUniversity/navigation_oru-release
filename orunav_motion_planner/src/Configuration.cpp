@@ -86,6 +86,7 @@ std::vector<vehicleSimplePoint> Configuration::getTrajectory() {
 	std::vector<vehicleSimplePoint> trajectory;
 	// this configuration has been generated from a non-dummy motion primitive
 	/** @todo CHECK */
+	std::cout<< "help";
 	if (primitiveOfThisConfiguration_ != 0 && this->getPrimitiveOfThisConfiguration()->getDistanceCovered() > 0) {
 		// calculate it from the motion primitive
 		double startX = (xcell_ - this->getPrimitiveOfThisConfiguration()->getXOffset()) * WP::WORLD_SPACE_GRANULARITY;
@@ -97,6 +98,7 @@ std::vector<vehicleSimplePoint> Configuration::getTrajectory() {
 			sp.y = startY + (*it)->y;
 			sp.orient = (*it)->orient;
 			sp.steering = (*it)->steering;
+			sp.steeringRear = (*it)->steeringRear;//Cecchi_add
 			trajectory.push_back(sp);
 		}
 	} else {
@@ -202,7 +204,7 @@ void Configuration::print() {
 		steering = atan2(sin(steering), cos(steering));
 	}
 	sprintf(info, "[Vehicle %d] x: %3.2f \ty: %3.2f \to: %1.4f \ts: %1.4f", this->getMission()->getVehicleID(),
-			xcell_ * WP::WORLD_SPACE_GRANULARITY, ycell_ * WP::WORLD_SPACE_GRANULARITY, orient, steering);
+			xcell_ * WP::WORLD_SPACE_GRANULARITY, ycell_ * WP::WORLD_SPACE_GRANULARITY, orient, steering );
 	writeLogLine(std::string(info), "Configuration", WP::LOG_FILE);
 }
 
@@ -218,8 +220,8 @@ std::string Configuration::printToString() {
 	if (steering > M_PI) {
 		steering = atan2(sin(steering), cos(steering));
 	}
-	sprintf(info, "[Vehicle %d] x: %3.2f \ty: %3.2f \to: %1.4f \ts: %1.4f", this->getMission()->getVehicleID(),
-			xcell_ * WP::WORLD_SPACE_GRANULARITY, ycell_ * WP::WORLD_SPACE_GRANULARITY, orient, steering);
+	sprintf(info, "[Vehicle %d] x: %3.2f \ty: %3.2f \to: %1.4f \ts: %1.4f ", this->getMission()->getVehicleID(),
+			xcell_ * WP::WORLD_SPACE_GRANULARITY, ycell_ * WP::WORLD_SPACE_GRANULARITY, orient, steering );
 	return std::string(info);
 }
 

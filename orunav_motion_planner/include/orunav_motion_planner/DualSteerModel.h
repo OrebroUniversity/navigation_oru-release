@@ -1,24 +1,25 @@
 /**
- * @file CarModel.h
- * @author Marcello Cirillo
+ * @file DualSteerModel.h
+ * @author Michele Cecchi
  *
- *  Created on: Dec 8, 2011
- *      Author: marcello
+ *  Created on: Jul 11, 2021
+ *      Author: michele
  */
 
-#ifndef CARMODEL_H_
-#define CARMODEL_H_
+#ifndef DUALSTEERMODEL_H_
+#define DUALSTEERMODEL_H_
 
 #include "VehicleModel.h"
 #include "WorldParameters.h"
 
+
 /**
- * @class CarModel
+ * @class DualSteerModel
  * Models a car basic properties
  * Note: The current position of a car is represented by the middle point
  * of the rear axel
  */
-class CarModel: public VehicleModel {
+class DualSteerModel: public VehicleModel {
 
 	/** The length of the car, from the back axle to the front, in meters */
 	double carFrontLength_;
@@ -26,10 +27,13 @@ class CarModel: public VehicleModel {
 	double carBackLength_;
 	/** The car max steering angle, in radians */
 	double carMaxSteeringAngle_;
+	/** number of primitives set */
+	int sets;
+	int currentSet;
 
 protected:
-	/**
-	 * Implementation of the virtual function. Generates the file that contains the
+
+	 /* Implementation of the virtual function. Generates the file that contains the
 	 * additional data of the motion primitives (length, occupancy)
 	 */
 	void generatePrimitiveAdditionalData();
@@ -42,15 +46,15 @@ protected:
 public:
 
 	/**
-	 * Constructor of a CarModel
+	 * Constructor of a DualSteerModel
 	 * The modelPrimitive source file must have normalized angles (-pi / pi).
 	 * The physical width and length (front and back from the back axle)
 	 * of the Car are contained in the model primitives file
 	 * @param modelPrimitivesFilename The name of the file of the motion primitives, without path!
 	 */
-	CarModel(std::string modelPrimitivesFilename);
+	DualSteerModel(std::array<std::string,5> modelPrimitivesFilenameS, int set = 5);
 
-	virtual ~CarModel();
+	virtual ~DualSteerModel();
 
 	/**
 	 * Returns a vectors of pointers to the cells occupied by a car like vehicle in
@@ -89,6 +93,26 @@ public:
 	 */
 	double getCarMaxSteeringAngle();
 
+
+	std::vector<MotionPrimitiveData*> selectApplicablePrimitives(
+		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID);
+	/**
+	/**
+	 * Retrieve the motion primitives from the primitive lookup table
+	 * @param orientationID The orientation ID of the starting configuration
+	 * @param steeringID The steering ID of the starting configuration, 0 by default
+	 * @returns a vector of motion primitives motionPrimitiveData
+	 */
+	
+
+	std::vector<MotionPrimitiveData*> getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID);
+
+	/**
+	/**
+	 *defines the heuristics with which to choose the sets of primitives to use
+	 */
+	std::vector<int>  selectSet();
+
 };
 
-#endif /* CARMODEL_H_ */
+#endif /* DualSteerModel_H_ */
