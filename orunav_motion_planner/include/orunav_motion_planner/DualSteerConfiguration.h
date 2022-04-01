@@ -6,11 +6,11 @@
  *      Author: michele
  */
 
-#ifndef DUALSTEERCONFIGURATION_H_
-#define DUALSTEERCONFIGURATION_H_
+#ifndef DUAL_STEER_CONFIGURATION_H_
+#define DUAL_STEER_CONFIGURATION_H_
 
-#include "Configuration.h"
-#include "DualSteerModel.h"
+#include <orunav_motion_planner/Configuration.h>
+#include <orunav_motion_planner/DualSteerModel.h>
 
 /**
  * @class CarConfiguration

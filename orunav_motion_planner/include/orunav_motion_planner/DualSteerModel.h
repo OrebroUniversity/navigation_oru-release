@@ -6,11 +6,11 @@
  *      Author: michele
  */
 
-#ifndef DUALSTEERMODEL_H_
-#define DUALSTEERMODEL_H_
+#ifndef DUAL_STEER_MODEL_H_
+#define DUAL_STEER_MODEL_H_
 
-#include "VehicleModel.h"
-#include "WorldParameters.h"
+#include <orunav_motion_planner/VehicleModel.h>
+#include <orunav_motion_planner/WorldParameters.h>
 
 
 /**
