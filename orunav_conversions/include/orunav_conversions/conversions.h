@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ORUNAV_CONVERSION_H_
+#define ORUNAV_CONVERSION_H_
 
 #include <orunav_generic/types.h>
 #include <orunav_geometry/polygon.h>
@@ -146,6 +147,8 @@ namespace orunav_conversions
       orunav_generic::Path p;
       for (unsigned int i = 0; i < path.path.size(); i++)
 	{
+	  //p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering);
+    //std::cout << "!!!!!" << path.path[i].steeringRear <<std::endl;
     p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering, path.path[i].steeringRear); //Cecchi_add ?
 	}
       return p;
@@ -155,6 +158,7 @@ namespace orunav_conversions
       orunav_generic::Path p;
       p.addPathPoint(createPose2dFromMsg(path.target_start.pose), path.target_start.steering, path.target_start.steeringRear);//Cecchi_add
       for (unsigned int i = 1; i < path.path.size()-1; i++) {
+        //std::cout << "!2!" << path.path[i].steeringRear <<std::endl;
 	p.addPathPoint(createPose2dFromMsg(path.path[i].pose), path.path[i].steering, path.path[i].steeringRear);//Cecchi_add
       }
       p.addPathPoint(createPose2dFromMsg(path.target_goal.pose), path.target_goal.steering,path.target_goal.steeringRear);//Cecchi_add
@@ -378,3 +382,5 @@ orunav_generic::CoordinatedTimes getCoordinatedTimesFromCoordinatorTimeMsg(const
   }
 
 } // namespace
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ORUNAV_GENERIC_UTILS_H_
+#define ORUNAV_GENERIC_UTILS_H_
+
 
 #include <string>
 #include <vector>
@@ -112,3 +114,4 @@ fromString(const std::string &s) {
 
 
 } // namespace
+#endif
