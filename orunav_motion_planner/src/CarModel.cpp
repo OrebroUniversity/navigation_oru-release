@@ -18,31 +18,33 @@ CarModel::CarModel(std::string modelPrimitivesFilename) : VehicleModel(modelPrim
 CarModel::~CarModel() {
 }
 
+void CarModel::getFootprintInPose(simplePoint & b_l, simplePoint & b_r, simplePoint & t_l, simplePoint & t_r, const vehicleSimplePoint* p) {
+	double base_orient = addAnglesRadians(p->orient, M_PI_2, WP::DECIMAL_APPROXIMATION);
+
+	double x_bottom_centre = p->x - this->getCarBackLength() * cos(p->orient);
+	double y_bottom_centre = p->y - this->getCarBackLength() * sin(p->orient);
+
+    // get the vertices of the rectangle
+	b_l.x = x_bottom_centre - ((this->getWidth() / 2) * cos(base_orient));
+	b_l.y = y_bottom_centre - ((this->getWidth() / 2) * sin(base_orient));
+
+	b_r.x = x_bottom_centre + ((this->getWidth() / 2) * cos(base_orient));
+	b_r.y = y_bottom_centre + ((this->getWidth() / 2) * sin(base_orient));
+
+	t_l.x = b_l.x + this->getLength() * cos(p->orient);
+	t_l.y = b_l.y + this->getLength() * sin(p->orient);
+
+	t_r.x = b_r.x + this->getLength() * cos(p->orient);
+	t_r.y = b_r.y + this->getLength() * sin(p->orient);
+}
+
 std::vector<cellPosition*> CarModel::getCellsOccupiedInPosition(vehicleSimplePoint* p) {
+    //Get the vertices of the rectangle
+    simplePoint b_l, b_r, t_l, t_r;
+    CarModel::getFootprintInPose(b_l, b_r, t_l, t_r, p);
+	std::vector<cellPosition*> cellsOccByPos = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
 
-		double base_orient = addAnglesRadians(p->orient, M_PI_2, WP::DECIMAL_APPROXIMATION);
-
-		double x_bottom_centre = p->x - this->getCarBackLength() * cos(p->orient);
-		double y_bottom_centre = p->y - this->getCarBackLength() * sin(p->orient);
-
-		// get the vertices of the rectangle
-		simplePoint b_l, b_r, t_l, t_r;
-
-		b_l.x = x_bottom_centre - ((this->getWidth() / 2) * cos(base_orient));
-		b_l.y = y_bottom_centre - ((this->getWidth() / 2) * sin(base_orient));
-
-		b_r.x = x_bottom_centre + ((this->getWidth() / 2) * cos(base_orient));
-		b_r.y = y_bottom_centre + ((this->getWidth() / 2) * sin(base_orient));
-
-		t_l.x = b_l.x + this->getLength() * cos(p->orient);
-		t_l.y = b_l.y + this->getLength() * sin(p->orient);
-
-		t_r.x = b_r.x + this->getLength() * cos(p->orient);
-		t_r.y = b_r.y + this->getLength() * sin(p->orient);
-
-		std::vector<cellPosition*> cellsOccByPos = getOccupiedCells(b_l, t_l, t_r, b_r, this->getModelGranularity());
-
-		return cellsOccByPos;
+	return cellsOccByPos;
 }
 
 void CarModel::loadPrimitiveLookupTable() {
