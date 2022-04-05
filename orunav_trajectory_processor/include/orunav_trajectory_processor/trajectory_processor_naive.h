@@ -297,7 +297,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
   {
     for (size_t i = 0; i < steps.size()-1; i++)
       {
-	steps[i].ds = orunav_generic::subState2d(steps[i].s_point, steps[i+1].s_point);
+        steps[i].ds = orunav_generic::subState2d(steps[i].s_point, steps[i+1].s_point);
       }
   }
 
@@ -360,7 +360,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       double position_diff = steps[i].getPositionDiff();
       double dt_creep = position_diff / _params.creepSpeed;
       if (dt_creep > steps[i].dt) {
-	steps[i].dt = dt_creep;
+        steps[i].dt = dt_creep;
       }
     }
     // Note: this utilizes the step velocities and turns them into a point velocity.
@@ -400,6 +400,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       
       // Don't use the last one to check the direction - the one before the back.
       c.w = 0.;
+      c.wr = 0;
       if (steps[steps.size()-2].c_step.v >= 0)
     	c.v = _params.creepSpeed;
       else
@@ -409,17 +410,20 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     {
       c.v = _params.endVel;
       c.w = _params.endSteeringAngleVel;
+      c.wr = _params.endSteeringAngleVel;
     }    
     steps.back().cc_point.assignControl(c);
 
     c.v = _params.initVel;
     c.w = _params.initSteeringAngleVel;
+    c.wr = _params.initSteeringAngleVel;
     steps.front().cc_point.assignControl(c);
     
     // For all turning points, when the direction changes, we need to set constraints on these points to have velocities = 0.
     std::vector<size_t> dir_changes = steps.getDirectionChangeIdx();
     c.v = 0.;
     c.w = 0.;
+    c.wr = 0.;
     for (size_t i = 0; i < dir_changes.size(); i++) {
       steps[dir_changes[i]].cc_point.assignControl(c);
     }
@@ -436,10 +440,10 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
   {
     for (size_t i = 0; i < steps.size(); i++) {
       if (steps[i].cc_point.isValid()) {
-	steps[i].c_point = steps[i].cc_point.c;
+        steps[i].c_point = steps[i].cc_point.c;
       }
       else {
-	steps[i].c_point = steps[i].getControlStep();
+        steps[i].c_point = steps[i].getControlStep();
       }
     }
   }
@@ -629,6 +633,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 
      c.v = 0.5*(steps[prev_idx].c_step.v + steps[current_idx].c_step.v);
      c.w = 0.5*(steps[prev_idx].c_step.w + steps[current_idx].c_step.w);
+     c.wr = 0.5*(steps[prev_idx].c_step.wr + steps[current_idx].c_step.wr);
 
      std::cout << "[TPN:] : c.v : " << c.v << ", c.w : " << c.w << std::endl;
      // steps[prev_idx].cc_point.assignControl(c);
