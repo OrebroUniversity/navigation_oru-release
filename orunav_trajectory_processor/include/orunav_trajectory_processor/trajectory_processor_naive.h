@@ -35,7 +35,6 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
 
   void computeDts()
     { 
-      
       setupSteps(_steps);
       assignDs(_steps);
       assignDir(_steps);
@@ -50,8 +49,8 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       // Update the control steps, only used for visualizing the correct steps.
       assignControlSteps(_steps);
       if (_params.debug) {
-	_steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
-	orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
+        _steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
+        orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt"); //Cecchi_delete
       }
     }
   
@@ -67,31 +66,29 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
         assignControlSteps(_steps);    // Compute the current speed, not including acceleration constraint nor control point constraints, note this is only using ds and dt.
         assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
       	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
-	// This sometimes works a bit better (but not always).
-	if (_params.useCoordTimeContraintPoints) {
+        // This sometimes works a bit better (but not always).
+        if (_params.useCoordTimeContraintPoints) {
+        assignControlConstraintPointsFromCT(_steps);
+        }
     
-	  assignControlConstraintPointsFromCT(_steps);
-	}
-  
-	// Reassign points.
-      	assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
-      	assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
-      	assignAccelerationConstraints(_steps);
-      	// Update the control steps, only used for visualizing the correct steps.
-      	assignControlSteps(_steps);
-	assignTotalTime(_steps);
-  
-	if (_params.debug) {
-	  _steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
-	  orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt");
-	}
-	assignCoordinationTimes(_steps); // This will modify the dt's, do ths assigning one more time, this now is using the mean velocities around the coordinated points.
+        // Reassign points.
+        assignControlConstraintPoints(_steps); // Add start / end speeds constraints including directional changes speeds to be zero.
+        assignControlPoints(_steps);  // Use the control constraint points. Fill the rest with control steps.
+        assignAccelerationConstraints(_steps);
+        // Update the control steps, only used for visualizing the correct steps.
+        assignControlSteps(_steps);
+        assignTotalTime(_steps);
+    
+        if (_params.debug) {
+        _steps.saveGnuplotFile(_params.debugPrefix + std::string("naive_trajectory.txt"));
+        orunav_generic::saveTrajectoryTextFile(_steps.convertNaiveStepsToTrajectory(), _params.debugPrefix + "naive_trajectoryXY.txt");
+        }
+        assignCoordinationTimes(_steps); // This will modify the dt's, do ths assigning one more time, this now is using the mean velocities around the coordinated points.
       }
       assignTotalTime(_steps);
       if (_params.debug) {
-	// Save all path points that have coordination times.
-  
-	orunav_generic::savePathTextFile(this->coordinationPathPoints(), _params.debugPrefix + "naive_trajectoryXY_coordination_times.txt");
+        // Save all path points that have coordination times.
+        orunav_generic::savePathTextFile(this->coordinationPathPoints(), _params.debugPrefix + "naive_trajectoryXY_coordination_times.txt");
       }
     }
     
@@ -102,9 +99,9 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
       
       int start_clear_idx = output.size() - _params.citiTruckNbClearSpeedCommands - _params.nbZeroVelControlCommands;
       if (start_clear_idx > 0) {
-	for (size_t i = start_clear_idx; i < output.size(); i++) {
-	  output[i].c_step.v = 0.;
-	}
+        for (size_t i = start_clear_idx; i < output.size(); i++) {
+        output[i].c_step.v = 0.;
+        }
       }
     }
     //_params.debug = false;//CECCHI_NO
@@ -274,17 +271,17 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
             continue;
           }
 
-	double dist = orunav_generic::getDistBetween(steps.back().s_point.getPose2d(), _path.getPose2d(i));
-	if (dist < _params.minDist)
-	  {
-	    std::cerr << "The states are not separated enough. This is a core requirement for this function. (use orunav_generic::minIncrementalDistancePath(), to fix your path), this path is saved as [traj_proc_fail.path]." << std::endl;
-	    orunav_generic::savePathTextFile(_path, "traj_proc_fail.path");
-	    assert(false);
-	  }
-	else
-	  {
-	    steps.push_back(s);
-	  }
+        double dist = orunav_generic::getDistBetween(steps.back().s_point.getPose2d(), _path.getPose2d(i));
+        if (dist < _params.minDist)
+        {
+            std::cerr << "The states are not separated enough. This is a core requirement for this function. (use orunav_generic::minIncrementalDistancePath(), to fix your path), this path is saved as [traj_proc_fail.path]." << std::endl;
+            orunav_generic::savePathTextFile(_path, "traj_proc_fail.path");
+            assert(false);
+        }
+        else
+        {
+            steps.push_back(s);
+        }
       }
     // Clean the last bit. Since the delta and steps (only points) can be in the very end of the vector. Clean these here.
     steps.back().ds = orunav_generic::State2d(orunav_generic::Pose2d(0.,0.,0.), 0.);
@@ -330,7 +327,7 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
   {
     for (size_t i = 0; i < steps.size()-1; i++)
       {
-	steps[i].dt = minDtValidSpeed(steps[i]);
+        steps[i].dt = minDtValidSpeed(steps[i]);
       }
   }
 
@@ -560,19 +557,22 @@ class TrajectoryProcessorNaive : public TrajectoryProcessor, public orunav_gener
     double dt_position = position_diff / max_vel;
     double dt_rotation = fabs(step.getHeadingDiff()) / max_rotational_vel;
     double dt_steering = fabs(step.getSteeringDiff()) / _params.maxSteeringAngleVel;
+    double dt_steering_rear = fabs(step.getSteeringDiffRear()) / _params.maxSteeringAngleVel;
     double dt = dt_position;
     if (dt < dt_rotation)
       dt = dt_rotation;
     if (dt < dt_steering)
       dt = dt_steering;
+    if (dt < dt_steering_rear)
+      dt = dt_steering_rear;
 
     if (_params.useSteerDriveVel)
       {
-	double phi = step.getPhiStep();
-	double drivewheel_diff = position_diff / (cos(phi)*cos(phi)); // This will make it go even slower when turning, should be only cos (and not cos^2).
-	double dt_drivewheel = drivewheel_diff / max_vel;
-	if (dt < dt_drivewheel)
-	  dt = dt_drivewheel;
+        double phi = step.getPhiStep();
+        double drivewheel_diff = position_diff / (cos(phi)*cos(phi)); // This will make it go even slower when turning, should be only cos (and not cos^2).
+        double dt_drivewheel = drivewheel_diff / max_vel;
+        if (dt < dt_drivewheel)
+        dt = dt_drivewheel;
       }
     return dt;
   }
