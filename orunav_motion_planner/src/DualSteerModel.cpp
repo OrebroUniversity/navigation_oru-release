@@ -471,59 +471,10 @@ double DualSteerModel::getCarMaxSteeringAngle() {
 	return carMaxSteeringAngle_;
 }
 
-
-
-// std::vector<MotionPrimitiveData*> DualSteerModel::selectApplicablePrimitives(
-// 		World* w, short int startXcell, short int startYcell, uint8_t orientationID, uint8_t steeringID) {
-// 	std::vector<MotionPrimitiveData*> primitiveSet;
-// 	std::string str = "\n";
-// 	std::vector<int> setToUse;
-// 	setToUse = this ->selectSet();
-
-// 	for (unsigned vec = 0; vec < setToUse.size(); vec++){
-// 		int set = setToUse[vec];
-		
-// 		motionPrimitiveSelectorLookup::iterator it;
-// 		it = modelMotionPrimitivesSelectorLTS_[vec] .find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
-// 		if (it == modelMotionPrimitivesSelectorLTS_[vec].end()) {
-// 			std::vector<MotionPrimitiveData*> dummy;
-// 			std::ostringstream logLine;
-// 			logLine << "KEY NOT FOUND [" << (int) orientationID  << "," << (int) steeringID << "]";
-// 			writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
-// 			//return dummy;
-// 		} else {
-// 			char info[150];
-// 			//sprintf(info, "set %d : primitives $$ %lu in [%d,%d]\n", set, (*it).second, orientationID,steeringID );
-// 			str.append(std::string(info));
-// 			//for (unsigned i=0; i<(*it).second; i++){
-
-// 				MotionPrimitiveSelector* s = (*it).second;
-// 				std::vector<MotionPrimitiveData*> result = s->getValidPrimitives(w, startXcell, startYcell);
-//     			primitiveSet.push_back( result.at(vec) );
-// 				std::ostringstream logLine;
-// 				logLine << "CHECK!! [" << (int) orientationID  << "," << (int) steeringID << "]";
-// 				writeLogLine(logLine.str(), "VehicleModel", WP::LOG_FILE);
-			
-// 			//}
-// 		}
-// 	}
-// 	char info[150];
-// 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
-// 	str.append(std::string(info));
-// 	writeLogLine(str, "DualSteerModel", WP::LOG_FILE);
-// 	return primitiveSet;
-
-// }
-
-
-
 std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8_t orientationID, uint8_t steeringID) {
 	std::vector<MotionPrimitiveData*> primitiveSet;
 	std::string str = "\n";
-	std::vector<int> setToUse;
-	setToUse = this ->selectSet();
-	for (unsigned vec = 0; vec < setToUse.size(); vec++){
-		int set = setToUse[vec];
+	for (int set = 0; set < sets; set++) {
 		motionPrimitivesLookup::iterator it;
 		it = modelMotionPrimitivesLTS_[set].find(std::pair<uint8_t, uint8_t>(orientationID, steeringID));
 		if (it == modelMotionPrimitivesLTS_[set].end()) {
@@ -541,33 +492,7 @@ std::vector<MotionPrimitiveData*>  DualSteerModel::getApplicablePrimitives(uint8
 	char info[150];
 	sprintf(info, "Total primitives %lu \n", primitiveSet.size() );
 	str.append(std::string(info));
-	//writeLogLine(str, "[DualSteerModel]", WP::LOG_FILE);
 	return primitiveSet;
-}
-
-std::vector<int> DualSteerModel:: selectSet(){
-	std:: vector<int> selectedSet;
-	//condition for set 0
-	if(sets>0 && true){
-		selectedSet.push_back(0);
-	}
-	//condition for set 1
-	if(sets >1 && true){
-		selectedSet.push_back(1);
-	}
-	//condition for set 2
-	if(sets >2 && true){
-		selectedSet.push_back(2);
-	}
-	//condition for set 4
-	if(sets >3 && true){
-		selectedSet.push_back(3);
-	}
-	//condition for set 5
-	if(sets >4 && true){
-		selectedSet.push_back(4);
-	}
-	return selectedSet;
 }
 
 

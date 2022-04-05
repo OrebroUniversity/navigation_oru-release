@@ -54,6 +54,7 @@ class TrajectoryStepNaive
   double getPositionDiff() const { return orunav_generic::getDist(ds.getPose2d()); }
   double getHeadingDiff() const { return orunav_generic::getHeading(ds.getPose2d()); }
   double getSteeringDiff() const { return ds.getSteeringAngle(); }
+  double getSteeringDiffRear() const { return ds.getSteeringAngleRear(); }
   
   //! State value - never changes
   orunav_generic::State2d s_point;

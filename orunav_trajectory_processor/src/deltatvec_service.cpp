@@ -65,6 +65,7 @@ int main(int argc, char **argv)
   
   nh.param<double>("fast_max_vel", fast_params.maxVel, 1.);
   nh.param<double>("fast_max_rotational_vel", fast_params.maxRotationalVel, 1.);
+  nh.param<double>("fast_max_rotational_vel_rev", fast_params.maxRotationalVelRev, 1.);
   nh.param<double>("fast_max_acc", fast_params.maxAcc, 1.);
   nh.param<double>("fast_max_steering_angle_vel", fast_params.maxSteeringAngleVel, 1.);
   nh.param<double>("fast_creep_speed", fast_params.creepSpeed, 0.);
@@ -72,6 +73,7 @@ int main(int argc, char **argv)
   
   nh.param<double>("slow_max_vel", slow_params.maxVel, 0.2);
   nh.param<double>("slow_max_rotational_vel", slow_params.maxRotationalVel, 0.2);
+  nh.param<double>("slow_max_rotational_vel_rev", slow_params.maxRotationalVelRev, 0.2);
   nh.param<double>("slow_max_acc", slow_params.maxAcc, 0.2);
   nh.param<double>("slow_max_steering_angle_vel", slow_params.maxSteeringAngleVel, 0.2);
   nh.param<double>("slow_creep_speed", slow_params.creepSpeed, 0.);
